@@ -1,6 +1,21 @@
-VSCodium/
-Arduino IDE/
-arduino-ide/
-.zsh_history
-BraveSoftware/
-gtk*/
+*
+
+!.gitignore
+!README.md
+
+!alacritty/
+!dunst/
+!hypr/
+!lf/
+!mc/
+!nano/
+!nvim/
+!rofi/
+!scripts/
+!swayidle/
+!swaylock/
+!thefuck/
+!vim/
+!wallpaper/
+!waybar/
+!zsh/
