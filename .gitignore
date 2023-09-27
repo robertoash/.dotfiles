@@ -1,8 +1,11 @@
+# Ignore everything
 *
 
+# Except for these files...
 !.gitignore
-!README.md
+!/README.md
 
+# ...and these directories...
 !alacritty/
 !dunst/
 !hypr/
@@ -12,6 +15,7 @@
 !nvim/
 !rofi/
 !scripts/
+!swappy/
 !swayidle/
 !swaylock/
 !thefuck/
@@ -19,3 +23,25 @@
 !wallpaper/
 !waybar/
 !zsh/
+
+# ...as well as anything in them...
+!alacritty/**/*
+!dunst/**/*
+!hypr/**/*
+!lf/**/*
+!mc/**/*
+!nano/**/*
+!nvim/**/*
+!rofi/**/*
+!scripts/**/*
+!swappy/**/*
+!swayidle/**/*
+!swaylock/**/*
+!thefuck/**/*
+!vim/**/*
+!wallpaper/**/*
+!waybar/**/*
+!zsh/**/*
+
+# ... but not these.
+.zsh_history
