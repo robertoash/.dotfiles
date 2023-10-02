@@ -4,6 +4,7 @@
 # Except for these files...
 !.gitignore
 !/README.md
+!rofimoji.rc
 
 # ...and these directories...
 !alacritty/
