@@ -19,6 +19,7 @@ alias lls="lll -s size"
 alias llt="ll -T -L"
 alias vim="vim -u ~/.config/vim/vimrc"
 alias lf="lfcd"
+alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 
 # options
 unsetopt menu_complete

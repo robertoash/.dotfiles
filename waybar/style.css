@@ -27,16 +27,12 @@ window#waybar.empty {
 window#waybar.solo {
     background-color: #FFFFFF;
 }
-*/
-
-window#waybar.termite {
-    background-color: #3F3F3F;
-}
 
 window#waybar.chromium {
     background-color: #000000;
     border: none;
 }
+*/
 
 button {
     /* Use box-shadow instead of border so the text isn't offset */
@@ -44,6 +40,7 @@ button {
     /* Avoid rounded borders under each button name */
     border: none;
     border-radius: 0;
+    padding: 0px 4px;
 }
 
 /* https://github.com/Alexays/Waybar/wiki/FAQ#the-workspace-buttons-have-a-strange-hover-effect */
@@ -53,7 +50,6 @@ button:hover {
 }
 
 #workspaces button {
-    padding: 0px 5px;
     background-color: transparent;
     color: #ffffff;
 }
@@ -95,13 +91,8 @@ button:hover {
 #mpd {
     padding: 6px 10px;
     color: #ffffff;
-    margin-top: 8px;
-    margin-bottom: 8px;
-}
-
-#window,
-#workspaces {
-    margin: 0 4px;
+    margin-top: 6px;
+    margin-bottom: 6px;
 }
 
 /* If workspaces is the leftmost module, omit left margin */
@@ -115,11 +106,11 @@ button:hover {
 }*/
 
 .modules-left {
-    margin-left: 5;
+    margin-left: 4px;
 }
 
 .modules-right {
-    margin-right: 5;
+    margin-right: 4px;
 }
 
 #clock {
