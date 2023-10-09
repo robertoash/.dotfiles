@@ -46,3 +46,4 @@
 
 # ... but not these.
 .zsh_history
+__pycache__
