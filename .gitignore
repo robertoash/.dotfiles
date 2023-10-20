@@ -47,3 +47,4 @@
 # ... but not these.
 .zsh_history
 __pycache__
+.zcompdump
