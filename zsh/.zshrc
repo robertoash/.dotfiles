@@ -13,8 +13,8 @@ HISTFILE=~/.config/zsh/.zsh_history
 
 # aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
-alias ll="exa --color=always --icons --group-directories-first --git -Hah"
-alias lll="ll -l"
+alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
+alias lll="ll -l -a"
 alias lls="lll -s size"
 alias llt="ll -T -L"
 alias vim="vim -u ~/.config/vim/vimrc"
