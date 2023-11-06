@@ -19,12 +19,12 @@ while true; do
         if [[ "$active_window_title" =~ " Work " ]]; then
             window_browser_map["VSCodium"]="chromium.desktop"
         else
-            window_browser_map["VSCodium"]="brave-browser.desktop"
+            window_browser_map["VSCodium"]="vivaldi-stable.desktop"
         fi
     fi
 
     # Default browser in case the active window doesn't match any entry in the mapping
-    default_browser="brave-browser.desktop"
+    default_browser="vivaldi-stable.desktop"
 
     # Check if the active window name is in the mapping
     if [ -v window_browser_map["$active_window_class"] ]; then
