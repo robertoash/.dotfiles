@@ -4,6 +4,9 @@
 # depending on which app opens the link. hyprctl is used to monitor the active window at the time
 # the link is opened.
 
+# Default browser in case the active window doesn't match any entry in the mapping
+default_browser="vivaldi-stable.desktop"
+
 while true; do
     # Variable to store the active window name
     active_window_class=$(hyprctl activewindow -j | jq -r '.class')
@@ -22,9 +25,6 @@ while true; do
             window_browser_map["VSCodium"]="vivaldi-stable.desktop"
         fi
     fi
-
-    # Default browser in case the active window doesn't match any entry in the mapping
-    default_browser="vivaldi-stable.desktop"
 
     # Check if the active window name is in the mapping
     if [ -v window_browser_map["$active_window_class"] ]; then
