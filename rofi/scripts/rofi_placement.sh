@@ -5,16 +5,11 @@
 # rotated vertically or not.
 
 
-# Variable to store the monitor with the active window
-monitor_index=$(hyprctl activewindow -j | jq '.monitor')
+# Variable to store the monitor ID with the active workspace
+monitor_index=$(hyprctl activeworkspace -j | jq '.monitorID')
 
 # Variable to store whether the active monitor is vertical or horizontal
 is_vertical=$(hyprctl monitors -j | jq --argjson monitor_index ${monitor_index} '.[$monitor_index].transform')
-
-# Variables to store monitor orientation in string format
-#monitor_orientation=""
-#monitor_width=0
-#monitor_height=0
 
 # For the VSCodium window class, look at the title and set the>
 if [ "$is_vertical" = "1" ]; then

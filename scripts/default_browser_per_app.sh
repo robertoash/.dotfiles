@@ -18,11 +18,11 @@ while true; do
     window_browser_map["chromium"]="chromium.desktop"
     window_browser_map["Slack"]="chromium.desktop"
     # For the VSCodium window class, look at the title and set the browser accordingly
-    if [ "$active_window_class" = "VSCodium" ]; then
+    if [ "$active_window_class" = "Code" ]; then
         if [[ "$active_window_title" =~ " Work " ]]; then
-            window_browser_map["VSCodium"]="chromium.desktop"
+            window_browser_map["Code"]="chromium.desktop"
         else
-            window_browser_map["VSCodium"]="vivaldi-stable.desktop"
+            window_browser_map["Code"]="vivaldi-stable.desktop"
         fi
     fi
 
@@ -33,8 +33,7 @@ while true; do
         selected_browser="$default_browser"
     fi
 
-    # Set the BROWSER environment variable to the selected browser
-    #export BROWSER="$selected_browser"
+    # Set xdg-settings to the selected browser
     unset BROWSER
     xdg-settings set default-web-browser "$selected_browser"
 
