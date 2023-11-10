@@ -11,7 +11,7 @@ monitor_index=$(hyprctl activeworkspace -j | jq '.monitorID')
 # Variable to store whether the active monitor is vertical or horizontal
 is_vertical=$(hyprctl monitors -j | jq --argjson monitor_index ${monitor_index} '.[$monitor_index].transform')
 
-# For the VSCodium window class, look at the title and set the>
+# If the active monitor is vertical, then output the width and height
 if [ "$is_vertical" = "1" ]; then
     monitor_orientation="vertical"
     monitor_width=$(hyprctl monitors -j | jq --argjson monitor_index ${monitor_index} '.[$monitor_index].height')
@@ -22,7 +22,7 @@ else
     monitor_height=$(hyprctl monitors -j | jq --argjson monitor_index ${monitor_index} '.[$monitor_index].height')
 fi
 
-#
+# Use a set of default values for the Rofi width and height for simplicity
 rofi_width=384
 rofi_height=191
 
