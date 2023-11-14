@@ -11,19 +11,12 @@
 declare -A LABELS
 declare -A COMMANDS
 
-# Run script to place rofi correctly on active screen
-rofi_placement="$(/home/rash/.config/rofi/scripts/rofi_placement.sh)"
-
 ###
 # List of defined 'bangs'
 
 # launch apps
 COMMANDS["apps"]="~/.config/rofi/scripts/rofi_drun.sh"
 LABELS["apps"]=""
-
-# launch calc
-COMMANDS["calc"]="~/.config/rofi/scripts/rofi_calc.sh"
-LABELS["calc"]=""
 
 # search local files
 COMMANDS["locate"]="~/.config/rofi/scripts/rofi_locate.sh"
@@ -72,7 +65,7 @@ function print_menu()
 function start()
 {
     # print_menu | rofi -dmenu -p "?=>" 
-    print_menu | sort | rofi show run -dmenu -mesg ">>> launch your collection of rofi scripts" -i -p "rofi-bangs: " $rofi_placement
+    print_menu | sort | rofi show run -dmenu -mesg ">>> launch your collection of rofi scripts" -i -p "rofi-bangs: "
 
 }
 
@@ -103,5 +96,5 @@ then
 else
  eval  $choice | rofi
  # prefer my above so I can use this same script to also launch apps like geany or leafpad etc (DK) 
- #   echo "Unknown command: ${choice}" | rofi -dmenu -p "error" $rofi_placement
+ #   echo "Unknown command: ${choice}" | rofi -dmenu -p "error"
 fi
