@@ -2,7 +2,7 @@ configuration {
     display-drun: "Applications:";
     display-window: "Windows:";
     drun-display-format: "{name}";
-    font: "JetBrainsMono Nerd Font Medium 10";
+    font: "JetBrainsMono NF Medium 10";
     modi: "run,drun";
     steal-focus: true;
     hide-scrollbar: true;
