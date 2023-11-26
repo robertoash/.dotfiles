@@ -21,6 +21,10 @@ alias vim="vim -u ~/.config/vim/vimrc"
 alias lf="lfcd"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias xeyes="xprop"
+alias "??"="gh copilot suggest -t shell "
+alias "??g"="gh copilot suggest -t git "
+alias "??gh"="gh copilot suggest -t gh "
+alias "??x"="gh copilot explain "
 
 # options
 unsetopt menu_complete
