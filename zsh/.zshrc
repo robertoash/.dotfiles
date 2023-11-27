@@ -25,6 +25,7 @@ alias "??"="gh copilot suggest -t shell "
 alias "??g"="gh copilot suggest -t git "
 alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
+alias "dsp"="bash ~/.config/scripts/docker_simple.sh"
 
 # options
 unsetopt menu_complete
