@@ -26,6 +26,7 @@ alias "??g"="gh copilot suggest -t git "
 alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
 alias "dsp"="bash ~/.config/scripts/docker_simple.sh"
+alias drdp="bash ~/.config/scripts/docker_redeploy_container.sh "
 
 # options
 unsetopt menu_complete
