@@ -11,6 +11,13 @@ HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.config/zsh/.zsh_history
 
+# default apps
+export EDITOR="nano"
+export TERMINAL="alacritty"
+
+# source secrets
+source ~/.config/scripts/secure_env_secrets.sh
+
 # aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
@@ -91,6 +98,9 @@ eval "$(pyenv init -)"
 # Change vimrc location
 #export VIMINIT='source $MYVIMRC'
 #export MYVIMRC='~/.config/vim/vimrc'
+
+# Enable hass-cli autocompletion
+eval "$(_HASS_CLI_COMPLETE=source_zsh hass-cli)"
 
 # Set cwd on lf exit
 LFCD="/home/rash/.config/lf/lfcd.sh"                    # pre-built binary, make sure to use absolute path

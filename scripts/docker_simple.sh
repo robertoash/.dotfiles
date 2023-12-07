@@ -1,3 +1,6 @@
+#! /bin/bash
+# Simple docker ps with combined ports
+
 awk -F '[[:space:]][[:space:]]+' '
 BEGIN {
     printf "%-15s %-25s %-60s %-10s\n", "CONTAINER ID", "STATUS", "PORTS", "NAMES";
