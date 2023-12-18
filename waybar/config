@@ -17,7 +17,7 @@
     
     // Modules-left configuration
     "hyprland/workspaces": {
-        "format": "{name} {icon}",
+        "format": "{name}",
         "on-click": "activate",
         "sort-by-number": true
     },
@@ -77,8 +77,17 @@
 //    },
     "clock": {
         // "timezone": "America/New_York",
+        "format": "{:%d/%m %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
+        //"format-alt": "{:%Y-%m-%d}"
+	//"timezones": [
+	//    "Europe/Stockholm",
+	//    "America/El_Salvador"
+	//]
+	"actions": {
+	    "on-scroll-down": "tz_up",
+	    "on-scroll-up": "tz_down"
+	}
     },
     
     
