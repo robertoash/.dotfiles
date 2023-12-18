@@ -1,12 +1,12 @@
-#! /bin/bash
-# Simple docker ps with combined ports
+#!/bin/bash
 
-awk -F '[[:space:]][[:space:]]+' '
-BEGIN {
-    printf "%-15s %-25s %-60s %-10s\n", "CONTAINER ID", "STATUS", "PORTS", "NAMES";
-}
-(NR>1){
-    split($6, ports, ", ");
+# First AWK command: Process ports and calculate max_ports_width
+awk_output=$(awk -F '[[:space:]][[:space:]]+' '
+
+# Function to process ports and return the combined port string
+
+function process_ports(ports_str,    ports, tcp_ports, udp_ports, i, port_split, protocol, port_only) {
+    split(ports_str, ports, ", ");
     tcp_ports = "";
     udp_ports = "";
 
@@ -45,5 +45,45 @@ BEGIN {
     if (tcp_ports != "") combined_ports = tcp_ports "/tcp";
     if (udp_ports != "") combined_ports = combined_ports (combined_ports ? "," : "") udp_ports "/udp";
 
-    printf "%-15s %-25s %-60s %-10s\n", $1, $5, combined_ports, $NF
-}' <(docker ps)
+    return combined_ports;
+}
+
+BEGIN { max_ports_width = 15; max_status_width = 10; }  # Initialize with minimum widths
+
+NR > 1 {
+    processed_ports = process_ports($6);
+    print $1 "|" $5 "|" processed_ports "|" $NF;
+    if (length(processed_ports) > max_ports_width) {
+        max_ports_width = length(processed_ports);
+    }
+    if (length($5) > max_status_width) {
+        max_status_width = length($5);
+    }
+}
+
+END {
+    print "MAX_WIDTH:" max_ports_width + 3 "|" max_status_width + 3;
+}
+' <(docker ps))
+
+# Extract max_ports_width, max_status_width and remove them from the output
+max_widths=$(echo "$awk_output" | grep "MAX_WIDTH:" | cut -d':' -f2)
+max_ports_width=$(echo "$max_widths" | cut -d'|' -f1)
+max_status_width=$(echo "$max_widths" | cut -d'|' -f2)
+awk_output=$(echo "$awk_output" | grep -v "MAX_WIDTH:")
+
+# Ensure widths are within their respective ranges
+max_ports_width=$((max_ports_width > 60 ? 60 : max_ports_width))
+max_ports_width=$((max_ports_width < 15 ? 15 : max_ports_width))
+max_status_width=$((max_status_width > 30 ? 30 : max_status_width))
+max_status_width=$((max_status_width < 10 ? 10 : max_status_width))
+
+# Second AWK command: Print the data
+echo "$awk_output" | awk -v max_ports_width="$max_ports_width" -v max_status_width="$max_status_width" -F '|' '
+BEGIN {
+    printf "%-15s %-" max_status_width "s %-" max_ports_width "s %-10s\n", "CONTAINER ID", "STATUS", "PORTS", "NAMES";
+}
+{
+    printf "%-15s %-" max_status_width "s %-" max_ports_width "s %-10s\n", $1, $2, $3, $4;
+}
+'
