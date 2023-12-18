@@ -34,6 +34,9 @@ alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
 alias "dsp"="bash ~/.config/scripts/docker_simple.sh"
 alias drdp="bash ~/.config/scripts/docker_redeploy_container.sh "
+alias mcon="mullvad connect"
+alias mdis="mullvad disconnect"
+alias mst="mullvad status"
 
 # options
 unsetopt menu_complete
