@@ -26,6 +26,10 @@ LABELS["locate"]=""
 COMMANDS["keybinds"]="~/.config/rofi/scripts/rofi_hyprkeys.sh"
 LABELS["keybinds"]=""
 
+# get offline media size
+COMMANDS["media_size"]="~/.config/rofi/scripts/rofi_media_size.sh"
+LABELS["media_size"]=""
+
 # open custom web searches
 # COMMANDS["websearch"]="~/.scripts/rofi-surfraw-websearch.sh"
 # LABELS["websearch"]=""
