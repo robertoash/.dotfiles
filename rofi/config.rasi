@@ -8,4 +8,4 @@ configuration {
     hide-scrollbar: true;
 }
 
-@theme "catppuccin-mocha"
+@theme "catppuccin_mocha"
