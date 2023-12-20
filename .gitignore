@@ -13,6 +13,7 @@
 !lf/
 !mc/
 !nano/
+!ncdu/
 !nvim/
 !rofi/
 !scripts/
@@ -32,6 +33,7 @@
 !lf/**/*
 !mc/**/*
 !nano/**/*
+!ncdu/**/*
 !nvim/**/*
 !rofi/**/*
 !scripts/**/*
