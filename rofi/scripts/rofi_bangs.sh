@@ -22,6 +22,10 @@ LABELS["apps"]=""
 COMMANDS["locate"]="~/.config/rofi/scripts/rofi_locate.sh"
 LABELS["locate"]=""
 
+# get keybinds
+COMMANDS["keybinds"]="~/.config/rofi/scripts/rofi_hyprkeys.sh"
+LABELS["keybinds"]=""
+
 # open custom web searches
 # COMMANDS["websearch"]="~/.scripts/rofi-surfraw-websearch.sh"
 # LABELS["websearch"]=""
