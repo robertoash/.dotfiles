@@ -3,7 +3,6 @@
 # sentby: MoreChannelNoise (https://www.youtube.com/user/MoreChannelNoise)
 # editby: gotbletu (https://www.youtube.com/user/gotbletu)
 
-# demo: https://www.youtube.com/watch?v=kxJClZIXSnM
 # info: this is a script to launch other rofi scripts,
 #       saves us the trouble of binding multiple hotkeys for each script,
 #       when we can just use one hotkey for everything.
@@ -30,6 +29,14 @@ LABELS["keybinds"]=""
 COMMANDS["media_size"]="~/.config/rofi/scripts/rofi_media_size.sh"
 LABELS["media_size"]=""
 
+# mullvad
+COMMANDS["mullvad"]="~/.config/rofi/scripts/rofi_mullvad.sh"
+LABELS["mullvad"]=""
+
+# calc
+COMMANDS["calc"]="~/.config/rofi/scripts/rofi_calc.sh"
+LABELS["calc"]=""
+
 # open custom web searches
 # COMMANDS["websearch"]="~/.scripts/rofi-surfraw-websearch.sh"
 # LABELS["websearch"]=""
@@ -53,43 +60,34 @@ LABELS["media_size"]=""
 # LABELS["#screenshot"]="screenshot"
 
 ################################################################################
-# do not edit below
+# main script (don't touch below)
 ################################################################################
-##
+
 # Generate menu
-##
 function print_menu()
 {
     for key in ${!LABELS[@]}
     do
-  echo "$key    ${LABELS}"
-     #   echo "$key    ${LABELS[$key]}"
-     # my top version just shows the first field in labels row, not two words side by side
+        echo "$key"
+        # echo "$key    ${LABELS[$key]}"
     done
 }
-##
-# Show rofi.
-##
+
+# Show rofi
 function start()
 {
-    # print_menu | rofi -dmenu -p "?=>" 
-    print_menu | sort | rofi show run -dmenu -mesg ">>> launch your collection of rofi scripts" -i -p "rofi-bangs: "
-
+    # print_menu | rofi -dmenu -p "?=>"
+    print_menu | sort | rofi show run -dmenu -mesg ">>> launch rofi scripts" -i -p "mullvad: "
 }
-
 
 # Run it
 value="$(start)"
 
 # Split input.
-# grab upto first space.
-choice=${value%%\ *}
-# graph remainder, minus space.
-input=${value:$((${#choice}+1))}
+choice=${value%%\ *} # grab upto first space.
+input=${value:$((${#choice}+1))} # graph remainder, minus space.
 
-##
 # Cancelled? bail out
-##
 if test -z ${choice}
 then
     exit
@@ -102,7 +100,7 @@ then
     eval echo "Executing: ${COMMANDS[$choice]}"
     eval ${COMMANDS[$choice]}
 else
- eval  $choice | rofi
- # prefer my above so I can use this same script to also launch apps like geany or leafpad etc (DK) 
- #   echo "Unknown command: ${choice}" | rofi -dmenu -p "error"
+    eval  $choice | rofi
+    # prefer my above so I can use this same script to also launch apps like geany or leafpad etc (DK)
+    # echo "Unknown command: ${choice}" | rofi -dmenu -p "error"
 fi
