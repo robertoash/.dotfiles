@@ -1,18 +1,31 @@
 #!/bin/bash
-#             _   _     _      _
-#  __ _  ___ | |_| |__ | | ___| |_ _   _
-# / _` |/ _ \| __| '_ \| |/ _ \ __| | | |
-#| (_| | (_) | |_| |_) | |  __/ |_| |_| |
-# \__, |\___/ \__|_.__/|_|\___|\__|\__,_|
-# |___/
-#       https://www.youtube.com/user/gotbletu
-#       https://twitter.com/gotbletu
-#       https://plus.google.com/+gotbletu
-#       https://github.com/gotbletu
-#       gotbletu@gmail.com
 
-# info: rofi-locate is a script to search local files and folders on your computer using the locate command and the updatedb database
-# requirements: rofi mlocate
-# playlist: rofi      https://www.youtube.com/playlist?list=PLqv94xWU9zZ0LVP1SEFQsLEYjZC_SUB3m
+# Function to handle the selected action
+handle_action() {
+    case "$1" in
+        open)
+            xdg-open "$2"
+            ;;
+        copy_path)
+            echo -n "$2" | wl-copy
+            ;;
+        copy_file)
+            wl-copy < "$2"
+            ;;
+    esac
+}
 
-xdg-open "$(locate home media | rofi -threads 0 -width 100 -dmenu -i -p "locate:" )"
+# Locate files and select one using Rofi
+FILE=$(locate home media | rofi -theme catppuccin_mocha_single_column -dmenu -p "Select File")
+
+# If no file is selected, exit
+[ -z "$FILE" ] && exit
+
+# Choose an action for the selected file
+ACTION=$(echo -e "open\ncopy_path\ncopy_file" | rofi -dmenu -p "Action for $FILE")
+
+# If no action is selected, exit
+[ -z "$ACTION" ] && exit
+
+# Handle the selected action
+handle_action "$ACTION" "$FILE"
