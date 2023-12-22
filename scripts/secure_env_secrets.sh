@@ -4,6 +4,7 @@
 # List of secret files
 SECRETS_FILES=(
     '/home/rash/.secrets/.hass-cli_conf'
+    '/home/rash/.secrets/.shell-gpt_conf'
 )
 GPG_ID=j.roberto.ash@gmail.com
 
