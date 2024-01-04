@@ -5,6 +5,7 @@
 !.gitignore
 !/README.md
 !rofimoji.rc
+!helpers.rc
 
 # ...and these directories...
 !alacritty/
@@ -24,9 +25,10 @@
 !vim/
 !wallpaper/
 !waybar/
+!xfce4/
 !zsh/
 
-# ...as well as anything in them...
+# ...as well as any subfolders in them and their contents...
 !alacritty/**/*
 !dunst/**/*
 !hypr/**/*
