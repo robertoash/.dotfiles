@@ -77,7 +77,7 @@ function print_menu()
 function start()
 {
     # print_menu | rofi -dmenu -p "?=>"
-    print_menu | sort | rofi show run -dmenu -mesg ">>> launch rofi scripts" -i -p "mullvad: "
+    print_menu | sort | rofi show run -dmenu -mesg ">>> launch rofi scripts" -i -p "select: "
 }
 
 # Run it
