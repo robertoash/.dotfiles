@@ -23,7 +23,6 @@
 !swaylock/
 !thefuck/
 !vim/
-!wallpaper/
 !waybar/
 !xfce4/
 !zsh/
@@ -44,7 +43,6 @@
 !swaylock/**/*
 !thefuck/**/*
 !vim/**/*
-!wallpaper/**/*
 !waybar/**/*
 !zsh/**/*
 
