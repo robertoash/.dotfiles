@@ -8,9 +8,8 @@ SECRETS_FILES=(
 )
 GPG_ID=j.roberto.ash@gmail.com
 
-profile_source() {
+conf_source() {
     local file=$1
-    # Check if file is not empty
     if [[ -s "$file" ]]; then
         source "$file"
     else
@@ -19,45 +18,41 @@ profile_source() {
     fi
 }
 
-profile_decrypt() {
+conf_encrypt() {
     local file=$1
-    local encrypted_file="${file}.asc"
-    if [[ -f "$encrypted_file" ]]; then
-        gpg --quiet -d "$encrypted_file" > "$file" # Decrypt files
-        if [ $? -eq 0 ]; then
-            rm "$encrypted_file"
-        else
-            echo "Decryption failed for $encrypted_file"
-            return 1
-        fi
-    fi
-}
-
-profile_encrypt() {
-    local file=$1
-    gpg --quiet -ea -r ${GPG_ID} "$file" # Encrypt files using ascii output
+    gpg --yes --quiet -ea -r ${GPG_ID} "$file" # Encrypt files using ascii output
     if [ $? -eq 0 ]; then
-        rm "$file"
+        rm "$file" # Remove source file if encryption is successful
     else
         echo "Encryption failed for $file"
         return 1
     fi
 }
 
-# Decrypt, source, and re-encrypt each file
-for file in "${SECRETS_FILES[@]}"; do
-    profile_decrypt "$file"
-    if [ $? -eq 0 ]; then
-        profile_source "$file"
+conf_decrypt() {
+    local file=$1
+    local encrypted_file="${file}.asc"
+    if [[ -f "$encrypted_file" ]]; then
+        gpg --quiet -d "$encrypted_file" > "$file" # Decrypt files
         if [ $? -eq 0 ]; then
-            profile_encrypt "$file"
-            if [ $? -ne 0 ]; then
-                echo "Failed to re-encrypt $file, leaving it decrypted."
-            fi
+            conf_source "$file"
+            conf_encrypt "$file"
         else
-            echo "Failed to source $file. It will not be re-encrypted."
+            echo "Decryption failed for $encrypted_file"
+            return 1
         fi
     else
-        echo "Skipping $file due to decryption failure."
+        echo "Encrypted file $encrypted_file not found."
+        return 1
     fi
+}
+
+# Process each file
+for file in "${SECRETS_FILES[@]}"; do
+    if [[ -f "$file" ]]; then
+        # If _conf file exists, encrypt it
+        conf_encrypt "$file"
+    fi
+    # Process the .asc file regardless
+    conf_decrypt "$file"
 done
