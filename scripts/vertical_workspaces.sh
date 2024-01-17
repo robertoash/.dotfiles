@@ -5,6 +5,9 @@
 # Variable to store workspace information from the previous run
 previous_run_workspaces=""
 
+# List of any workspaces that should not changed by this script
+excluded_workspaces=(1 2 3 4 5 6 7 8 9 10)
+
 # Delay to give time for the workspaces to be created on boot
 sleep 5
 
@@ -26,27 +29,31 @@ VERTICAL_MONITOR_NAMES=$(echo $VERTICAL_MONITORS | jq -r '.name')
 while true; do
     # Get the workspace JSON for the current run
     current_run_workspaces=$(hyprctl workspaces -j | jq -r '.[] | select(.name != "special") | "\(.monitor):\(.id)"')
-    
+
     # Compare with the previous run to identify new workspaces
     new_workspaces=$(comm -13 <(echo "$previous_run_workspaces" | tr ' ' '\n' | sort) <(echo "$current_run_workspaces" | tr ' ' '\n' | sort))
-    
+
     # Update the variable with current workspaces for the next run
     previous_run_workspaces="$current_run_workspaces"
-    
+
     # Iterate through each vertical monitor
     for monitor in $VERTICAL_MONITOR_NAMES; do
         # Filter the new workspaces for the current monitor
         monitor_new_workspaces=$(echo "$new_workspaces" | grep "^$monitor:" | cut -d: -f2-)
-        
+
         # Cycle through each workspace and set the layout to vertical if not processed
         while read -r workspace_id; do
+            # Check if the workspace_id is in the excluded list
+            if [[ " ${excluded_workspaces[@]} " =~ " ${workspace_id} " ]]; then
+                # If it is, skip this workspace
+                continue
+            fi
             # Check if workspace_id is not empty
             if [ -n "$workspace_id" ]; then
                 # Select the workspace
                 hyprctl dispatch "workspace $workspace_id" > /dev/null  # Redirect "ok" to /dev/null
                 # Set the layout to vertical
                 hyprctl dispatch "layoutmsg orientationtop" > /dev/null  # Redirect "ok" to /dev/null
-                #echo "Orientationtop set for workspace $workspace_id on monitor $monitor"
             fi
         done <<< "$monitor_new_workspaces"
     done
