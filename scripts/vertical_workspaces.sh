@@ -6,6 +6,7 @@
 previous_run_workspaces=""
 
 # List of any workspaces that should not changed by this script
+# since they are already handled by the base Hyprland config
 excluded_workspaces=(1 2 3 4 5 6 7 8 9 10)
 
 # Delay to give time for the workspaces to be created on boot
