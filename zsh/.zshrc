@@ -16,7 +16,7 @@ export EDITOR="nano"
 export TERMINAL="alacritty"
 
 # source secrets
-source ~/.config/scripts/secure_env_secrets.sh
+source ~/.config/scripts/shell/secure_env_secrets.sh
 
 # aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
@@ -32,8 +32,8 @@ alias "??"="gh copilot suggest -t shell "
 alias "??g"="gh copilot suggest -t git "
 alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
-alias "dsp"="bash ~/.config/scripts/docker_simple.sh"
-alias drdp="bash ~/.config/scripts/docker_redeploy_container.sh "
+alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
+alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh "
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
 alias mst="mullvad status"

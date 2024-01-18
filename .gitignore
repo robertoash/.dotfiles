@@ -47,6 +47,7 @@
 !zsh/**/*
 
 # ... but not these.
+.env
 .zsh_history
 __pycache__
 .zcompdump
