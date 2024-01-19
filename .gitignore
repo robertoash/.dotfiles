@@ -48,6 +48,8 @@
 
 # ... but not these.
 .env
+.python-version
 .zsh_history
 __pycache__
 .zcompdump
+venv/
