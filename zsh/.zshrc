@@ -57,6 +57,9 @@ setopt share_history
 
 autoload -U compinit; compinit
 
+# source additional configs
+source ~/.config/zsh/.oda.zsh
+
 # keybinds
 source ~/.config/zsh/keybinds.zsh
 
