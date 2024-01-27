@@ -95,9 +95,6 @@ neofetch
 # The fuck
 eval $(thefuck --alias fuck)
 
-# Use pyenv
-eval "$(pyenv init -)"
-
 # Enable resh
 [[ -f ~/.resh/shellrc ]] && source ~/.resh/shellrc
 
