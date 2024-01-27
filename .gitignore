@@ -53,3 +53,5 @@
 __pycache__
 .zcompdump
 venv/
+zsh/.oda.zsh
+zsh/.zshrc.save
