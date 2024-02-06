@@ -10,6 +10,7 @@
 # ...and these directories...
 !alacritty/
 !dunst/
+!foot/
 !hypr/
 !lf/
 !mc/
@@ -30,6 +31,7 @@
 # ...as well as any subfolders in them and their contents...
 !alacritty/**/*
 !dunst/**/*
+!foot/**/*
 !hypr/**/*
 !lf/**/*
 !mc/**/*
