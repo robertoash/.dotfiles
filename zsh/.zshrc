@@ -16,7 +16,7 @@ export EDITOR="nano"
 export TERMINAL="alacritty"
 
 # source secrets
-bash -c 'source ~/.config/scripts/shell/secure_env_secrets.sh'
+eval $(.config/scripts/shell/secure_env_secrets.py)
 
 # aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
@@ -111,4 +111,3 @@ if [ -f "$LFCD" ]; then
     source "$LFCD"
 fi
 bindkey -s '^o' 'lfcd\n'
-source "${XDG_CONFIG_HOME:-$HOME/.config}/asdf-direnv/zshrc"
