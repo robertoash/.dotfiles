@@ -34,9 +34,12 @@ def set_gh_browser(browser):
 def main():
     # Browser mappings
     browser_map = {
+        # Format: (window_class, string_to_search_for_in_window_title): 'browser.desktop'
         ('default', '*'): 'vivaldi-stable.desktop',
-        ('Code', ' Work '): 'chromium.desktop',  # Checks if " Work " is in the title
+        ('Code', ' Work '): 'chromium.desktop',
         ('Code', '*'): 'vivaldi-stable.desktop',
+        ('code-insiders-url-handler', ' Work '): 'chromium.desktop',
+        ('code-insiders-url-handler', '*'): 'vivaldi-stable.desktop',
         ('chromium', '*'): 'chromium.desktop',
         ('Slack', '*'): 'chromium.desktop'
     }
