@@ -1,3 +1,6 @@
+" Specific location for .viminfo file
+set viminfo+=n~/.config/vim/.viminfo
+
 " Disable compatibility with vi which can cause unexpected issues.
 set nocompatible
 

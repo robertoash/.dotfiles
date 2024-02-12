@@ -11,9 +11,12 @@ HISTSIZE=10000
 SAVEHIST=10000
 HISTFILE=~/.config/zsh/.zsh_history
 
-# default apps
+# set ENV variables
 export EDITOR="nano"
 export TERMINAL="alacritty"
+export _Z_DATA=~/.config/z/.z
+export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
+export YARN_RC_FILENAME=~/.config/yarn/.yarnrc
 
 # source secrets
 eval $(.config/scripts/shell/secure_env_secrets.py)
@@ -59,13 +62,12 @@ autoload -U compinit; compinit
 
 # source additional configs
 source ~/.config/zsh/.oda.zsh
+source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
 
 # keybinds
 source ~/.config/zsh/keybinds.zsh
 
 # theme/plugins
-#source ~/.config/lf/lfcd.sh
-#source ~/.config/zsh/zsh-auto-notify/auto-notify.plugin.zsh
 #source ~/.config/zsh/you-should-use/you-should-use.plugin.zsh
 source ~/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.config/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -83,8 +85,6 @@ bindkey '^[[B' history-substring-search-down
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-
-source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.config/zsh/.p10k.zsh.
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
