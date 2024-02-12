@@ -14,31 +14,31 @@ declare -A COMMANDS
 # List of defined 'bangs'
 
 # launch apps
-COMMANDS["apps"]="~/.config/rofi/scripts/rofi_drun.sh"
+COMMANDS["apps"]="~/.config/scripts/rofi/rofi_drun.sh"
 LABELS["apps"]=""
 
 # search local files
-COMMANDS["locate"]="~/.config/rofi/scripts/rofi_locate.sh"
+COMMANDS["locate"]="~/.config/scripts/rofi/rofi_locate.sh"
 LABELS["locate"]=""
 
 # get keybinds
-COMMANDS["keybinds"]="~/.config/rofi/scripts/rofi_hyprkeys.sh"
+COMMANDS["keybinds"]="~/.config/scripts/rofi/rofi_hyprkeys.sh"
 LABELS["keybinds"]=""
 
 # get offline media size
-COMMANDS["media_size"]="~/.config/rofi/scripts/rofi_media_size.sh"
+COMMANDS["media_size"]="~/.config/scripts/rofi/rofi_media_size.sh"
 LABELS["media_size"]=""
 
 # mullvad
-COMMANDS["mullvad"]="~/.config/rofi/scripts/rofi_mullvad.sh"
+COMMANDS["mullvad"]="~/.config/scripts/rofi/rofi_mullvad.sh"
 LABELS["mullvad"]=""
 
 # calc
-COMMANDS["calc"]="~/.config/rofi/scripts/rofi_calc.sh"
+COMMANDS["calc"]="~/.config/scripts/rofi/rofi_calc.sh"
 LABELS["calc"]=""
 
 # restart_bluetooth
-COMMANDS["restart_bt"]="~/.config/rofi/scripts/rofi_restart_bt.sh"
+COMMANDS["restart_bt"]="~/.config/scripts/rofi/rofi_restart_bt.sh"
 LABELS["restart_bt"]=""
 
 # open custom web searches

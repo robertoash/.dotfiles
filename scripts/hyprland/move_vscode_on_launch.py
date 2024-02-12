@@ -7,7 +7,7 @@ import json
 # Delay in seconds to wait before moving windows
 DELAY = 10
 # Size as a percentage of the screen to resize the VSCode window when 2 windows are open
-size_percentage = "exact 65% 65%"
+size_percentage = "exact 60% 60%"
 
 
 # Workspace assignments for VS Code windows
