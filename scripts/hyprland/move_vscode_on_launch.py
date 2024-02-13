@@ -6,12 +6,11 @@ import json
 
 # Delay in seconds to wait before moving windows
 DELAY = 10
-# Size as a percentage of the screen to resize the VSCode window when 2 windows are open
-size_percentage = "exact 60% 60%"
+# # Size as a percentage of the screen to resize the VSCode window when 2 windows are open
+# size_percentage = "exact 100% 65%"
 
 
 # Workspace assignments for VS Code windows
-# Example: {"personal": 5, "work": 2}
 # Adjust according to your workspace names and the titles of your VS Code windows
 workspace_assignments = {
     "tienda (Workspace)": 2,
@@ -63,15 +62,15 @@ def move_window_to_workspace_and_make_master(window_address, workspace):
     except subprocess.CalledProcessError as e:
         print(f"Error processing window {window_address} for workspace {workspace}: {e}")
 
-def resize_window(window_address, workspace):
-    """Resize the window to a specified size."""
-    try:
-        windows_in_workspace = get_windows_in_workspace(workspace)
-        if windows_in_workspace == 2:
-            # Resize when multiple window are open
-            subprocess.run(["hyprctl", "dispatch", "resizewindowpixel", f"{size_percentage},address:{window_address}"], check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Error resizing window {window_address} in workspace {workspace}: {e}")
+# def resize_window(window_address, workspace):
+#     """Resize the window to a specified size."""
+#     try:
+#         windows_in_workspace = get_windows_in_workspace(workspace)
+#         if windows_in_workspace == 2:
+#             # Resize when multiple window are open
+#             subprocess.run(["hyprctl", "dispatch", "resizewindowpixel", f"{size_percentage},address:{window_address}"], check=True)
+#     except subprocess.CalledProcessError as e:
+#         print(f"Error resizing window {window_address} in workspace {workspace}: {e}")
 
 def main():
     # Wait for a bit to let VS Code initialize and create windows
@@ -87,7 +86,7 @@ def main():
         for keyword, workspace in workspace_assignments.items():
             if keyword in title:  # Adjust string matching as needed
                 move_window_to_workspace_and_make_master(window_address, workspace)
-                resize_window(window_address, workspace)
+                # resize_window(window_address, workspace)
                 break  # Move to the next window after assigning the current one
 
     # Switch back to the first workspace
