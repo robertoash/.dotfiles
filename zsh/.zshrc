@@ -31,32 +31,6 @@ eval $(.config/scripts/shell/secure_env_secrets.py)
 
 
 # #################################
-# # Aliases
-# #################################
-
-# Shell aliases
-[ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
-# App aliases
-alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
-alias lll="ll -l -a"
-alias lls="lll -s size"
-alias llt="ll -T -L"
-alias vim="vim -u ~/.config/vim/vimrc"
-alias lf="lfcd"
-alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
-alias xeyes="xprop"
-alias "??"="gh copilot suggest -t shell "
-alias "??g"="gh copilot suggest -t git "
-alias "??gh"="gh copilot suggest -t gh "
-alias "??x"="gh copilot explain "
-alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
-alias "drdp"="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
-alias "mcon"="mullvad connect"
-alias "mdis"="mullvad disconnect"
-alias "mst"="mullvad status"
-
-
-# #################################
 # # Options
 # #################################
 
@@ -83,7 +57,9 @@ zstyle ':completion:*' menu select
 # #################################
 
 # Custom
-source ~/.config/zsh/.oda.zsh
+source ~/.config/zsh/.zsh_oda
+# Aliases
+source ~/.config/zsh/.zsh_aliases
 # Theme
 source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
 # Plugins
