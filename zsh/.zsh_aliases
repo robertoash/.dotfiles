@@ -4,6 +4,7 @@
 
 ## Shell aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
+alias "putdown"="sudo shutdown -h now"
 alias "systemdown"="sudo shutdown -h now"
 
 ## App aliases
