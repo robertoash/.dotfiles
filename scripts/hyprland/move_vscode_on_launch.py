@@ -5,7 +5,7 @@ import time
 import json
 
 # Delay in seconds to wait before moving windows
-DELAY = 10
+DELAY = 5
 # # Size as a percentage of the screen to resize the VSCode window when 2 windows are open
 # size_percentage = "exact 100% 65%"
 
@@ -15,7 +15,7 @@ DELAY = 10
 workspace_assignments = {
     "tienda (Workspace)": 2,
     "dbt-models (Workspace)": 2,
-    "personal (Workspace)": 6
+    "personal (Workspace)": 1
 }
 
 def get_windows():

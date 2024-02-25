@@ -4,7 +4,7 @@ import subprocess
 import time
 import json
 
-DELAY = 120  # Initial delay before starting the script
+DELAY = 6  # Initial delay before starting the script
 
 window_class_combinations = {
     "75% 100%": [
