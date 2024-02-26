@@ -3,6 +3,7 @@
 
 # Except for these files...
 !.gitignore
+!all-packages.txt
 !/README.md
 !rofimoji.rc
 !helpers.rc
