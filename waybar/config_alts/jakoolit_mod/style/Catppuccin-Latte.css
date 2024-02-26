@@ -11,14 +11,14 @@ font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
 padding: 1px;
 }
 
-@import "./config_alts/jakoolit/style/catppuccin-themes/latte.css";
+@import "./config_alts/jakoolit_mod/style/catppuccin-themes/latte.css";
 
 window#waybar {
   transition-property: background-color;
   transition-duration: 0.5s;
   /*background: transparent;*/
   border-bottom: 2px solid @sapphire;
-  background: @theme_base_color;
+  background: @base;
   border-radius: 10px;
 }
 

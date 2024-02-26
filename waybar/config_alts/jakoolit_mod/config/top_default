@@ -2,7 +2,7 @@
 
 // ### DEFAULT - Top ### //
 {
-	"include": "modules",
+	"include": "/home/rash/.config/waybar/modules",
 	"layer": "top",
 	//"mode": "dock",
 	"exclusive": true,
