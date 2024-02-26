@@ -1,0 +1,65 @@
+# Ignore everything
+*
+
+# Except for these files...
+!.gitignore
+!helpers.rc
+!mimeapps.list
+!resh.toml
+!/README.md
+!rofimoji.rc
+!user-dirs.dirs
+!user-dirs.locale
+
+# ...and these directories...
+!alacritty/
+!dunst/
+!foot/
+!hypr/
+!lf/
+!mc/
+!nano/
+!ncdu/
+!nvim/
+!rofi/
+!scripts/
+!swappy/
+!swayidle/
+!swaylock/
+!thefuck/
+!vim/
+!waybar/
+!xfce4/
+!zsh/
+
+# ...as well as any subfolders in them and their contents...
+!alacritty/**/*
+!dunst/**/*
+!foot/**/*
+!hypr/**/*
+!lf/**/*
+!mc/**/*
+!nano/**/*
+!ncdu/**/*
+!nvim/**/*
+!rofi/**/*
+!scripts/**/*
+!swappy/**/*
+!swayidle/**/*
+!swaylock/**/*
+!thefuck/**/*
+!vim/**/*
+!waybar/**/*
+!zsh/**/*
+
+# ... but not these.
+.env
+.python-version
+.zsh_history
+__pycache__
+.zcompdump
+waybar/configs/JakooLit_Hyprland_Dots
+waybar/styles/JakooLit_Hyprland_Dots
+venv/
+zsh/.oda.zsh
+zsh/.zshrc.save
