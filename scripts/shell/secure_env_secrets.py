@@ -9,8 +9,7 @@ lock_file = "/tmp/secrets_script.lock"
 
 # List of secret files
 secrets_files = [
-    '/home/rash/.secrets/.hass-cli_conf',
-    '/home/rash/.secrets/.shell-gpt_conf'
+    '/home/rash/.secrets/.hass-cli_conf'
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
