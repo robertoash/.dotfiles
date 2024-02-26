@@ -7,6 +7,10 @@
 alias "putdown"="sudo shutdown -h now"
 alias "systemdown"="sudo shutdown -h now"
 
+## Backup aliases
+alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
+alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/all-packages.txt"
+
 ## App aliases
 #Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
