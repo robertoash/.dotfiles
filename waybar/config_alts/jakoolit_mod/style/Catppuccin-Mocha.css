@@ -267,6 +267,10 @@ window#waybar.hidden {
   color:@lavender;
 }
 
+#custom-separator {
+  color: @blue;
+}
+
 #network {
   color: @teal;
 }
