@@ -12,7 +12,9 @@ alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(d
 alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/all-packages.txt"
 
 ## App aliases
-#Exa
+# Neovim
+alias "nv"="nvim"
+# Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
 alias lll="ll -l -a"
 alias lls="lll -s size"
