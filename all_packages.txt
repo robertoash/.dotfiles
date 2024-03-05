@@ -27,6 +27,7 @@ dosfstools///pacman
 downgrade///pacman
 dracut///pacman
 duf///pacman
+dunst///pacman
 e2fsprogs///pacman
 efibootmgr///pacman
 efitools///pacman
@@ -44,6 +45,7 @@ ethtool///pacman
 exfatprogs///pacman
 eza///pacman
 f2fs-tools///pacman
+fd///pacman
 ffmpegthumbnailer///pacman
 firewalld///pacman
 foot///pacman
@@ -55,6 +57,7 @@ gst-libav///pacman
 gst-plugin-pipewire///pacman
 gst-plugins-bad///pacman
 gst-plugins-ugly///pacman
+gvfs///pacman
 haveged///pacman
 hdparm///pacman
 hwdetect///pacman
@@ -62,6 +65,8 @@ hwinfo///pacman
 hyprkeys///pacman
 hyprland-git///pacman
 hyprlang///pacman
+hyprpaper-git///pacman
+imv///pacman
 inetutils///pacman
 insync-thunar///pacman
 intel-ucode///pacman
@@ -69,6 +74,7 @@ inxi///pacman
 iptables-nft///pacman
 iwd///pacman
 jfsutils///pacman
+lazygit///pacman
 less///pacman
 libdvdcss///pacman
 libgsf///pacman
@@ -85,14 +91,18 @@ ly-git///pacman
 man-db///pacman
 man-pages///pacman
 mdadm///pacman
+megacmd///pacman
 meld///pacman
 mesa-utils///pacman
 mlocate///pacman
 modemmanager///pacman
 mtools///pacman
+mullvad-browser-bin///pacman
+mullvad-vpn-bin///pacman
 nano///pacman
 nano-syntax-highlighting///pacman
 neofetch///pacman
+neovim///pacman
 netctl///pacman
 networkmanager///pacman
 networkmanager-openconnect///pacman
@@ -114,10 +124,10 @@ pavucontrol///pacman
 perl///pacman
 pipewire-alsa///pacman
 pipewire-jack///pacman
+pipewire-pulse///pacman
 pkgfile///pacman
 poppler-glib///pacman
 power-profiles-daemon///pacman
-pulseaudio///pacman
 pv///pacman
 pyenv///pacman
 python///pacman
@@ -129,7 +139,8 @@ rebuild-detector///pacman
 reflector///pacman
 reflector-simple///pacman
 reiserfsprogs///pacman
-rofi-git///pacman
+ripgrep///pacman
+rofi///pacman
 rsync///pacman
 rtkit///pacman
 s-nail///pacman
@@ -145,7 +156,9 @@ systemd-sysvcompat///pacman
 texinfo///pacman
 thefuck///pacman
 thunar///pacman
+tk///pacman
 tldr///pacman
+trash-cli///pacman
 ttf-bitstream-vera///pacman
 ttf-dejavu///pacman
 ttf-jetbrains-mono-nerd///pacman
@@ -158,7 +171,8 @@ usb_modeswitch///pacman
 usbutils///pacman
 vi///pacman
 vivaldi///pacman
-waybar-git///pacman
+vlc-git///pacman
+waybar///pacman
 welcome///pacman
 wget///pacman
 which///pacman
@@ -207,6 +221,7 @@ dosfstools///yay
 downgrade///yay
 dracut///yay
 duf///yay
+dunst///yay
 e2fsprogs///yay
 efibootmgr///yay
 efitools///yay
@@ -224,6 +239,7 @@ ethtool///yay
 exfatprogs///yay
 eza///yay
 f2fs-tools///yay
+fd///yay
 ffmpegthumbnailer///yay
 firewalld///yay
 foot///yay
@@ -235,6 +251,7 @@ gst-libav///yay
 gst-plugin-pipewire///yay
 gst-plugins-bad///yay
 gst-plugins-ugly///yay
+gvfs///yay
 haveged///yay
 hdparm///yay
 hwdetect///yay
@@ -242,6 +259,8 @@ hwinfo///yay
 hyprkeys///yay
 hyprland-git///yay
 hyprlang///yay
+hyprpaper-git///yay
+imv///yay
 inetutils///yay
 insync-thunar///yay
 intel-ucode///yay
@@ -249,6 +268,7 @@ inxi///yay
 iptables-nft///yay
 iwd///yay
 jfsutils///yay
+lazygit///yay
 less///yay
 libdvdcss///yay
 libgsf///yay
@@ -265,14 +285,18 @@ ly-git///yay
 man-db///yay
 man-pages///yay
 mdadm///yay
+megacmd///yay
 meld///yay
 mesa-utils///yay
 mlocate///yay
 modemmanager///yay
 mtools///yay
+mullvad-browser-bin///yay
+mullvad-vpn-bin///yay
 nano///yay
 nano-syntax-highlighting///yay
 neofetch///yay
+neovim///yay
 netctl///yay
 networkmanager///yay
 networkmanager-openconnect///yay
@@ -294,10 +318,10 @@ pavucontrol///yay
 perl///yay
 pipewire-alsa///yay
 pipewire-jack///yay
+pipewire-pulse///yay
 pkgfile///yay
 poppler-glib///yay
 power-profiles-daemon///yay
-pulseaudio///yay
 pv///yay
 pyenv///yay
 python///yay
@@ -309,7 +333,8 @@ rebuild-detector///yay
 reflector///yay
 reflector-simple///yay
 reiserfsprogs///yay
-rofi-git///yay
+ripgrep///yay
+rofi///yay
 rsync///yay
 rtkit///yay
 s-nail///yay
@@ -325,7 +350,9 @@ systemd-sysvcompat///yay
 texinfo///yay
 thefuck///yay
 thunar///yay
+tk///yay
 tldr///yay
+trash-cli///yay
 ttf-bitstream-vera///yay
 ttf-dejavu///yay
 ttf-jetbrains-mono-nerd///yay
@@ -338,7 +365,8 @@ usb_modeswitch///yay
 usbutils///yay
 vi///yay
 vivaldi///yay
-waybar-git///yay
+vlc-git///yay
+waybar///yay
 welcome///yay
 wget///yay
 which///yay
