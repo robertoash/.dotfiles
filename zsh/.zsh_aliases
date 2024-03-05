@@ -9,7 +9,7 @@ alias "systemdown"="sudo shutdown -h now"
 
 ## Backup aliases
 alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
-alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/all-packages.txt"
+alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
 
 ## App aliases
 # CNN
