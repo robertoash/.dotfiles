@@ -27,6 +27,7 @@
 !vim/
 !waybar/
 !xfce4/
+!zellij/
 !zsh/
 
 # ...as well as any subfolders in them and their contents...
@@ -47,6 +48,7 @@
 !thefuck/**/*
 !vim/**/*
 !waybar/**/*
+!zellij/**/*
 !zsh/**/*
 
 # ... but not these.
