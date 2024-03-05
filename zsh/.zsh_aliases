@@ -12,6 +12,8 @@ alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(d
 alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/all-packages.txt"
 
 ## App aliases
+# CNN
+alias cnn='youtube-dl $(yt-dlp --quiet -g https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings) --add-header "Referer: https://www.livenewsnow.com/" -o - | mpv -'
 # Neovim
 alias "nv"="nvim"
 # Exa
@@ -27,12 +29,17 @@ alias "??x"="gh copilot explain "
 # Docker Scripts
 alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
 alias "drdp"="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
+# Lazygit
+alias "lg"="lazygit"
 # Mullvad
 alias "mcon"="mullvad connect"
 alias "mdis"="mullvad disconnect"
 alias "mst"="mullvad status"
+# Mega
+alias "mega"="mega-cmd"
 #Other
 alias vim="vim -u ~/.config/vim/vimrc"
 alias lf="lfcd"
+alias "code"="code-insiders"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias xeyes="xprop"
