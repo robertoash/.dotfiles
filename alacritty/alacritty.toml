@@ -25,15 +25,22 @@ style = "Italic"
 family = "JetBrainsMono NF"
 style = "Regular"
 
+[mouse]
+
+hide_when_typing = true  # Default: false
+# Example: bindings = [{ mouse = "Left", action = "Paste" }]
+bindings = []
+
 [scrolling]
 history = 10000
 multiplier = 3
 
 [selection]
-save_to_clipboard = false
+save_to_clipboard = true
 
 [shell]
-program = "/usr/bin/zsh"
+program = "/bin/zsh"
+# args = ["-l", "-c", "zellij attach --index 0 || zellij"]
 
 [window]
 opacity = 1
@@ -49,7 +56,9 @@ y = 10
 [keyboard]
 bindings = [
   { key = "Enter", mods = "Super|Shift", action = "SpawnNewInstance"},
-  { key = "Space", mods = "Shift|Control", action = "ToggleViMode"}
+  { key = "Space", mods = "Shift|Control", action = "ToggleViMode"},
+  { key = "Home", mods = "None", chars = "\u001bOH" },
+  { key = "End", mods = "None", chars = "\u001bOF" }
 ]
 
 ### Reference

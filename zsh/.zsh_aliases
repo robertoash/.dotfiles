@@ -37,6 +37,8 @@ alias "mdis"="mullvad disconnect"
 alias "mst"="mullvad status"
 # Mega
 alias "mega"="mega-cmd"
+# Zellij
+alias "zj"="zsh -l -c 'zellij attach --index 0 || zellij'"
 #Other
 alias vim="vim -u ~/.config/vim/vimrc"
 alias lf="lfcd"
