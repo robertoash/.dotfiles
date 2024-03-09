@@ -8,7 +8,8 @@ min-height: 0;
 /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
 font-size: 97%;
 font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
-padding: 1px;
+margin-top: 1px;
+padding: 0px;
 }
 
 @import "./config_alts/jakoolit_mod/style/catppuccin-themes/mocha.css";
@@ -43,7 +44,7 @@ window#waybar.hidden {
 }
 
 .modules-left, .modules-right {
-  	border: 1px solid @blue;
+  border: 1px solid @blue;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-right: 4px;
@@ -167,14 +168,15 @@ window#waybar.hidden {
 }
 
 #workspaces button {
-    box-shadow: none;
+  color: @overlay2;
+  box-shadow: none;
 	text-shadow: none;
-    padding: 0px;
-    border-radius: 9px;
-    padding-left: 4px;
-    padding-right: 4px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
+  padding: 0px;
+  border-radius: 9px;
+  padding-left: 4px;
+  padding-right: 4px;
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button:hover {
@@ -260,7 +262,7 @@ window#waybar.hidden {
 }
 
 #window {
-  color: @mauve;
+  color: @blue;
 }
 
 #custom-waybar-mpris {
