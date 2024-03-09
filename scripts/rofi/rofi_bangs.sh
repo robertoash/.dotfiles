@@ -37,9 +37,13 @@ LABELS["mullvad"]=""
 COMMANDS["calc"]="~/.config/scripts/rofi/rofi_calc.sh"
 LABELS["calc"]=""
 
+# shutdown
+COMMANDS["shutdown"]="~/.config/scripts/rofi/rofi_shutdown.sh"
+LABELS["shutdown"]=""
+
 # restart_bluetooth
-COMMANDS["restart_bt"]="~/.config/scripts/rofi/rofi_restart_bt.sh"
-LABELS["restart_bt"]=""
+#COMMANDS["restart_bt"]="~/.config/scripts/rofi/rofi_restart_bt.sh"
+#LABELS["restart_bt"]=""
 
 # open custom web searches
 # COMMANDS["websearch"]="~/.scripts/rofi-surfraw-websearch.sh"

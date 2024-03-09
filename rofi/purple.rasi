@@ -4,6 +4,7 @@
  * Copyright: Rasmus Steinke
  ******************************************************************************/
 * {
+    font: "JetBrainsMono NF 10";
     selected-normal-foreground:  rgba ( 255, 255, 255, 100 % );
     foreground:                  rgba ( 180, 180, 180, 100 % );
     normal-foreground:           @foreground;
