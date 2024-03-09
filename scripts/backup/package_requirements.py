@@ -8,21 +8,30 @@ from textwrap import dedent
 SEPARATOR = "///"
 
 
-def save_packages(filename):
-    with open(filename, "w") as f:  # Open file in write mode
+def save_packages(filename, SEPARATOR="///"):
+    # Get all explicitly installed packages
+    all_explicit_packages = set(
+        subprocess.check_output(["pacman", "-Qe"]).decode().splitlines()
+    )
+
+    # Get explicitly installed AUR packages
+    aur_packages = set(
+        subprocess.check_output(["pacman", "-Qme"]).decode().splitlines()
+    )
+
+    # Determine explicitly installed pacman packages by excluding AUR packages
+    pacman_packages = all_explicit_packages - aur_packages
+
+    with open(filename, "w") as f:
         # Save Pacman packages
-        pacman_packages = (
-            subprocess.check_output(["pacman", "-Qqe"]).decode().splitlines()
-        )
         for package in pacman_packages:
             f.write(f"{package}{SEPARATOR}pacman\n")
 
-        # Save Yay packages
-        yay_packages = subprocess.check_output(["yay", "-Qqe"]).decode().splitlines()
-        for package in yay_packages:
+        # Save AUR packages
+        for package in aur_packages:
             f.write(f"{package}{SEPARATOR}yay\n")
 
-        # Save Pipx packages
+        # Get and save Pipx packages
         pipx_packages = (
             subprocess.check_output(["pipx", "list", "--short"]).decode().splitlines()
         )
