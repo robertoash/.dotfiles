@@ -14,34 +14,27 @@
 	"margin-top": 3,
 	"margin-left": 8,
 	"margin-right": 8,
+	"reload_style_on_change": true,
 
 	"modules-left": [
 		"hyprland/workspaces#numbers",
 		"custom/separator#dot-line",
 		"cpu",
 		"custom/separator#dot-line",
-		"temperature",
-		"custom/separator#dot-line",
 		"memory"
 	],
 
 	"modules-center": [
-		"idle_inhibitor",
-		"custom/separator#dot-line",
-		"clock",
-		"custom/separator#dot-line",
-		"custom/lock"
+		"hyprland/window"
 	],
 
 	"modules-right": [
-		"network#speed",
+		"network",
 		"custom/separator#dot-line",
 		"bluetooth",
 		"custom/separator#dot-line",
 		"pulseaudio",
 		"custom/separator#dot-line",
-		"pulseaudio#microphone",
-		"custom/separator#dot-line",
-		"custom/power"
+		"clock"
 	]
 }
