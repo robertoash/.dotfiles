@@ -1,390 +1,203 @@
-accountsservice///pacman
-alacritty-git///pacman
-alsa-firmware///pacman
-alsa-plugins///pacman
-alsa-utils///pacman
-b43-fwcutter///pacman
-base///pacman
-base-devel///pacman
-bash-completion///pacman
-bind///pacman
-blueman///pacman
-bluez///pacman
-bluez-utils///pacman
-btrfs-progs///pacman
-calc///pacman
-cantarell-fonts///pacman
-code-insiders-bin///pacman
-cryptsetup///pacman
-device-mapper///pacman
-dhclient///pacman
-diffutils///pacman
-direnv///pacman
-dmidecode///pacman
-dmraid///pacman
-dnsmasq///pacman
-dosfstools///pacman
-downgrade///pacman
-dracut///pacman
-duf///pacman
-dunst///pacman
-e2fsprogs///pacman
-efibootmgr///pacman
-efitools///pacman
-endeavouros-keyring///pacman
-endeavouros-mirrorlist///pacman
-eos-apps-info///pacman
-eos-dracut///pacman
-eos-hooks///pacman
-eos-log-tool///pacman
-eos-packagelist///pacman
-eos-quickstart///pacman
-eos-rankmirrors///pacman
-eos-update-notifier///pacman
-ethtool///pacman
-exfatprogs///pacman
-eza///pacman
-f2fs-tools///pacman
-fd///pacman
-ffmpegthumbnailer///pacman
-firewalld///pacman
-foot///pacman
-fsarchiver///pacman
-github-cli///pacman
-glances///pacman
-grub///pacman
-gst-libav///pacman
-gst-plugin-pipewire///pacman
-gst-plugins-bad///pacman
-gst-plugins-ugly///pacman
-gvfs///pacman
-haveged///pacman
-hdparm///pacman
-hwdetect///pacman
-hwinfo///pacman
-hyprkeys///pacman
-hyprland-git///pacman
-hyprlang///pacman
-hyprpaper-git///pacman
-imv///pacman
-inetutils///pacman
-insync-thunar///pacman
-intel-ucode///pacman
-inxi///pacman
-iptables-nft///pacman
-iwd///pacman
-jfsutils///pacman
-lazygit///pacman
-less///pacman
-libdvdcss///pacman
-libgsf///pacman
-libopenraw///pacman
-libwnck3///pacman
-linux///pacman
-linux-firmware///pacman
-linux-headers///pacman
-logrotate///pacman
-lsb-release///pacman
-lsscsi///pacman
-lvm2///pacman
-ly-git///pacman
-man-db///pacman
-man-pages///pacman
-mdadm///pacman
-megacmd///pacman
-meld///pacman
-mesa-utils///pacman
-mlocate///pacman
-modemmanager///pacman
-mtools///pacman
-mullvad-browser-bin///pacman
-mullvad-vpn-bin///pacman
-nano///pacman
-nano-syntax-highlighting///pacman
-neofetch///pacman
-neovim///pacman
-netctl///pacman
-networkmanager///pacman
-networkmanager-openconnect///pacman
-networkmanager-openvpn///pacman
-nfs-utils///pacman
-nilfs-utils///pacman
-noto-fonts///pacman
-noto-fonts-cjk///pacman
-noto-fonts-emoji///pacman
-noto-fonts-extra///pacman
-nss-mdns///pacman
-ntfs-3g///pacman
-ntp///pacman
-obsidian///pacman
-openssh///pacman
-os-prober///pacman
-pacman-contrib///pacman
-pavucontrol///pacman
-perl///pacman
-pipewire-alsa///pacman
-pipewire-jack///pacman
-pipewire-pulse///pacman
-pkgfile///pacman
-poppler-glib///pacman
-power-profiles-daemon///pacman
-pv///pacman
-pyenv///pacman
-python///pacman
-python-capng///pacman
-python-packaging///pacman
-python-pipx///pacman
-python-pyqt5///pacman
-rebuild-detector///pacman
-reflector///pacman
-reflector-simple///pacman
-reiserfsprogs///pacman
-ripgrep///pacman
-rofi///pacman
-rsync///pacman
-rtkit///pacman
-s-nail///pacman
-sg3_utils///pacman
-smartmontools///pacman
-sof-firmware///pacman
-solaar///pacman
-sudo///pacman
-swayidle///pacman
-swaylock-effects-git///pacman
-sysfsutils///pacman
-systemd-sysvcompat///pacman
-texinfo///pacman
-thefuck///pacman
-thunar///pacman
-tk///pacman
-tldr///pacman
-trash-cli///pacman
-ttf-bitstream-vera///pacman
-ttf-dejavu///pacman
-ttf-jetbrains-mono-nerd///pacman
-ttf-liberation///pacman
-ttf-opensans///pacman
-unrar///pacman
-unzip///pacman
-upower///pacman
-usb_modeswitch///pacman
-usbutils///pacman
-vi///pacman
-vivaldi///pacman
-vlc-git///pacman
-waybar///pacman
-welcome///pacman
-wget///pacman
-which///pacman
-wireplumber///pacman
-wpa_supplicant///pacman
-xdg-user-dirs///pacman
-xdg-utils///pacman
-xf86-input-libinput///pacman
-xfsprogs///pacman
-xl2tpd///pacman
-xorg-server///pacman
-xorg-xdpyinfo///pacman
-xorg-xinit///pacman
-xorg-xinput///pacman
-xorg-xkill///pacman
-xorg-xrandr///pacman
-xterm///pacman
-yay///pacman
-zsh///pacman
-accountsservice///yay
-alacritty-git///yay
-alsa-firmware///yay
-alsa-plugins///yay
-alsa-utils///yay
-b43-fwcutter///yay
-base///yay
-base-devel///yay
-bash-completion///yay
-bind///yay
-blueman///yay
-bluez///yay
-bluez-utils///yay
-btrfs-progs///yay
-calc///yay
-cantarell-fonts///yay
-code-insiders-bin///yay
-cryptsetup///yay
-device-mapper///yay
-dhclient///yay
-diffutils///yay
-direnv///yay
-dmidecode///yay
-dmraid///yay
-dnsmasq///yay
-dosfstools///yay
-downgrade///yay
-dracut///yay
-duf///yay
-dunst///yay
-e2fsprogs///yay
-efibootmgr///yay
-efitools///yay
-endeavouros-keyring///yay
-endeavouros-mirrorlist///yay
-eos-apps-info///yay
-eos-dracut///yay
-eos-hooks///yay
-eos-log-tool///yay
-eos-packagelist///yay
-eos-quickstart///yay
-eos-rankmirrors///yay
-eos-update-notifier///yay
-ethtool///yay
-exfatprogs///yay
-eza///yay
-f2fs-tools///yay
-fd///yay
-ffmpegthumbnailer///yay
-firewalld///yay
-foot///yay
-fsarchiver///yay
-github-cli///yay
-glances///yay
-grub///yay
-gst-libav///yay
-gst-plugin-pipewire///yay
-gst-plugins-bad///yay
-gst-plugins-ugly///yay
-gvfs///yay
-haveged///yay
-hdparm///yay
-hwdetect///yay
-hwinfo///yay
-hyprkeys///yay
-hyprland-git///yay
-hyprlang///yay
-hyprpaper-git///yay
-imv///yay
-inetutils///yay
-insync-thunar///yay
-intel-ucode///yay
-inxi///yay
-iptables-nft///yay
-iwd///yay
-jfsutils///yay
-lazygit///yay
-less///yay
-libdvdcss///yay
-libgsf///yay
-libopenraw///yay
-libwnck3///yay
-linux///yay
-linux-firmware///yay
-linux-headers///yay
-logrotate///yay
-lsb-release///yay
-lsscsi///yay
-lvm2///yay
-ly-git///yay
-man-db///yay
-man-pages///yay
-mdadm///yay
-megacmd///yay
-meld///yay
-mesa-utils///yay
-mlocate///yay
-modemmanager///yay
-mtools///yay
-mullvad-browser-bin///yay
-mullvad-vpn-bin///yay
-nano///yay
-nano-syntax-highlighting///yay
-neofetch///yay
-neovim///yay
-netctl///yay
-networkmanager///yay
-networkmanager-openconnect///yay
-networkmanager-openvpn///yay
-nfs-utils///yay
-nilfs-utils///yay
-noto-fonts///yay
-noto-fonts-cjk///yay
-noto-fonts-emoji///yay
-noto-fonts-extra///yay
-nss-mdns///yay
-ntfs-3g///yay
-ntp///yay
-obsidian///yay
-openssh///yay
-os-prober///yay
-pacman-contrib///yay
-pavucontrol///yay
-perl///yay
-pipewire-alsa///yay
-pipewire-jack///yay
-pipewire-pulse///yay
-pkgfile///yay
-poppler-glib///yay
-power-profiles-daemon///yay
-pv///yay
-pyenv///yay
-python///yay
-python-capng///yay
-python-packaging///yay
-python-pipx///yay
-python-pyqt5///yay
-rebuild-detector///yay
-reflector///yay
-reflector-simple///yay
-reiserfsprogs///yay
-ripgrep///yay
-rofi///yay
-rsync///yay
-rtkit///yay
-s-nail///yay
-sg3_utils///yay
-smartmontools///yay
-sof-firmware///yay
-solaar///yay
-sudo///yay
-swayidle///yay
-swaylock-effects-git///yay
-sysfsutils///yay
-systemd-sysvcompat///yay
-texinfo///yay
-thefuck///yay
-thunar///yay
-tk///yay
-tldr///yay
-trash-cli///yay
-ttf-bitstream-vera///yay
-ttf-dejavu///yay
-ttf-jetbrains-mono-nerd///yay
-ttf-liberation///yay
-ttf-opensans///yay
-unrar///yay
-unzip///yay
-upower///yay
-usb_modeswitch///yay
-usbutils///yay
-vi///yay
-vivaldi///yay
-vlc-git///yay
-waybar///yay
-welcome///yay
-wget///yay
-which///yay
-wireplumber///yay
-wpa_supplicant///yay
-xdg-user-dirs///yay
-xdg-utils///yay
-xf86-input-libinput///yay
-xfsprogs///yay
-xl2tpd///yay
-xorg-server///yay
-xorg-xdpyinfo///yay
-xorg-xinit///yay
-xorg-xinput///yay
-xorg-xkill///yay
-xorg-xrandr///yay
-xterm///yay
-yay///yay
-zsh///yay
+github-cli 2.45.0-1///pacman
+xdg-user-dirs 0.18-1///pacman
+ttf-liberation 2.1.5-1///pacman
+mesa-utils 9.0.0-3///pacman
+alsa-plugins 1:1.2.7.1-2///pacman
+python 3.11.8-1///pacman
+glances 3.4.0.3-1///pacman
+eos-hooks 1.15-1///pacman
+wpa_supplicant 2:2.10-8///pacman
+dracut 059-5///pacman
+thefuck 3.32-6///pacman
+libgsf 1.14.52-1///pacman
+xorg-xdpyinfo 1.3.4-1///pacman
+noto-fonts 1:24.3.1-1///pacman
+os-prober 1.81-1///pacman
+unrar 1:7.0.7-1///pacman
+mdadm 4.3-2///pacman
+telegram-desktop 4.15.1-1///pacman
+exfatprogs 1.2.2-1///pacman
+sg3_utils 1.47-1///pacman
+yt-dlp 2023.12.30-1///pacman
+rsync 3.2.7-6///pacman
+efitools 1.9.2-5///pacman
+lazygit 0.40.2-1///pacman
+dunst 1.10.0-1///pacman
+dnsmasq 2.90-1///pacman
+linux 6.7.9.arch1-1///pacman
+libopenraw 0.3.7-1///pacman
+noto-fonts-extra 1:24.3.1-1///pacman
+diffutils 3.10-1///pacman
+ntp 4.2.8.p17-1///pacman
+less 1:643-1///pacman
+nfs-utils 2.6.4-1///pacman
+cantarell-fonts 1:0.303.1-1///pacman
+hdparm 9.65-1///pacman
+python-pyqt5 5.15.10-1///pacman
+gst-plugins-bad 1.24.0-1///pacman
+solaar 1.1.11-1///pacman
+ripgrep 14.1.0-1///pacman
+usbutils 017-1///pacman
+pipewire-pulse 1:1.0.3-1///pacman
+bluez-utils 5.73-3///pacman
+foot 1.16.2-2///pacman
+efibootmgr 18-2///pacman
+lvm2 2.03.23-3///pacman
+feh 3.10.2-1///pacman
+waybar 0.9.24-3///pacman
+xl2tpd 1.3.18-1///pacman
+welcome 24.4-1///pacman
+hyprlang 0.4.1-1///pacman
+logrotate 3.21.0-2///pacman
+alsa-utils 1.2.11-1///pacman
+firewalld 2.1.1-1///pacman
+bluez 5.73-3///pacman
+dhclient 4.4.3.P1-2///pacman
+eos-apps-info 24.2-1///pacman
+linux-headers 6.7.9.arch1-1///pacman
+obsidian 1.5.8-2///pacman
+vi 1:070224-6///pacman
+eos-update-notifier 24.1-1///pacman
+lsb-release 2.0.r53.a86f885-1///pacman
+xf86-input-libinput 1.4.0-1///pacman
+power-profiles-daemon 0.20-1///pacman
+python-pipx 1.4.3-1///pacman
+fd 9.0.0-1///pacman
+hwdetect 2024.03.05-1///pacman
+e2fsprogs 1.47.0-1///pacman
+accountsservice 23.13.9-1///pacman
+eos-rankmirrors 24.2-1///pacman
+reflector-simple 2023-4///pacman
+networkmanager-openvpn 1.10.2-3///pacman
+grub 2:2.12-1///pacman
+xdg-utils 1.2.1-1///pacman
+xorg-xinput 1.6.4-1///pacman
+eos-dracut 1.3-1///pacman
+ttf-bitstream-vera 1.10-15///pacman
+jfsutils 1.1.15-8///pacman
+btrfs-progs 6.7.1-1///pacman
+perl 5.38.2-1///pacman
+alsa-firmware 1.2.4-3///pacman
+xorg-xrandr 1.5.2-1///pacman
+pipewire-jack 1:1.0.3-1///pacman
+rtkit 0.13-2///pacman
+dosfstools 4.2-3///pacman
+mpv 1:0.37.0-2///pacman
+pacman-contrib 1.10.4-3///pacman
+meld 3.22.1-1///pacman
+blueman 2.3.5-3///pacman
+usb_modeswitch 2.6.1-3///pacman
+modemmanager 1.22.0-1///pacman
+networkmanager 1.46.0-2///pacman
+base-devel 1-1///pacman
+python-packaging 23.2-1///pacman
+eos-quickstart 1.3.1-2///pacman
+nano-syntax-highlighting 2020.10.10-1///pacman
+systemd-sysvcompat 255.4-2///pacman
+trash-cli 0.23.11.10-1///pacman
+ttf-dejavu 2.37+18+g9b5d1b2f-6///pacman
+haveged 1.9.18-1///pacman
+inxi 3.3.33.1-1///pacman
+upower 1.90.2-1///pacman
+xorg-xkill 1.0.6-1///pacman
+dmidecode 3.5-1///pacman
+cryptsetup 2.7.1-1///pacman
+mlocate 0.26.git.20170220-7///pacman
+ffmpegthumbnailer 2.2.2-5///pacman
+unzip 6.0-20///pacman
+hwinfo 23.2-1///pacman
+eos-packagelist 2.2-1///pacman
+wireplumber 0.4.17-1///pacman
+linux-firmware 20240220.97b693d2-1///pacman
+downgrade 11.3.0-1///pacman
+nano 7.2-1///pacman
+thunar 4.18.10-1///pacman
+nss-mdns 0.15.1-1///pacman
+b43-fwcutter 019-4///pacman
+noto-fonts-cjk 20230817-1///pacman
+gvfs 1.52.2-2///pacman
+pyenv 1:2.3.36-1///pacman
+ttf-opensans 1.101-2///pacman
+tldr 3.2.0-1///pacman
+xorg-server 21.1.11-1///pacman
+megacmd 1.6.3-12///pacman
+direnv 2.33.0-1///pacman
+dmraid 1.0.0.rc16.3-14///pacman
+fsarchiver 0.8.7-1///pacman
+calc 2.15.0.5-1///pacman
+gst-plugin-pipewire 1:1.0.3-1///pacman
+mtools 1:4.0.43-1///pacman
+xorg-xinit 1.4.2-1///pacman
+noto-fonts-emoji 1:2.042-1///pacman
+neofetch 7.1.0-2///pacman
+networkmanager-openconnect 1.2.10-1///pacman
+zsh 5.9-4///pacman
+pkgfile 21-2///pacman
+reflector 2023-1///pacman
+eos-log-tool 23-3///pacman
+neovim 0.9.5-2///pacman
+endeavouros-mirrorlist 24.2-1///pacman
+which 2.21-6///pacman
+base 3-2///pacman
+iwd 2.16-1///pacman
+f2fs-tools 1.16.0-2///pacman
+gst-plugins-ugly 1.24.0-1///pacman
+man-pages 6.06-2///pacman
+smartmontools 7.4-1///pacman
+yay 12.3.1-1///pacman
+nilfs-utils 2.2.9-2///pacman
+eza 0.18.6-1///pacman
+bind 9.18.24-1///pacman
+device-mapper 2.03.23-3///pacman
+intel-ucode 20231114-2///pacman
+btop 1.3.2-1///pacman
+greetd 0.9.0-3///pacman
+duf 0.8.1-2///pacman
+libwnck3 43.0-3///pacman
+sof-firmware 2023.12.1-1///pacman
+rebuild-detector 4.4.2-1///pacman
+pipewire-alsa 1:1.0.3-1///pacman
+wl-clipboard 1:2.2.1-1///pacman
+libdvdcss 1.4.3-1///pacman
+iptables-nft 1:1.8.10-1///pacman
+vivaldi 6.6.3271.48-1///pacman
+gst-libav 1.24.0-1///pacman
+lsscsi 0.32-1///pacman
+netctl 1.29-1///pacman
+bash-completion 2.11-3///pacman
+sudo 1.9.15.p5-1///pacman
+xfsprogs 6.6.0-1///pacman
+python-capng 0.8.4-1///pacman
+texinfo 7.1-2///pacman
+endeavouros-keyring 20231222-1///pacman
+man-db 2.12.0-1///pacman
+xterm 390-1///pacman
+ethtool 1:6.7-1///pacman
+pavucontrol 1:5.0+r64+geba9ca6-1///pacman
+poppler-glib 24.01.0-1///pacman
+s-nail 14.9.24-2///pacman
+swayidle 1.8.0-1///pacman
+openssh 9.6p1-3///pacman
+ntfs-3g 2022.10.3-1///pacman
+pv 1.8.5-2///pacman
+wget 1.21.4-1///pacman
+ttf-jetbrains-mono-nerd 3.1.1-1///pacman
+sysfsutils 2.1.1-1///pacman
+tk 8.6.14-1///pacman
+inetutils 2.5-1///pacman
+reiserfsprogs 3.6.27-4///pacman
+rofi-lbonn-wayland-git 1.7.5.wayland3.r3.g47ae31eb-1///yay
+hyprpaper-git 0.6.0.r6.gdfd3d090-1///yay
+mullvad-vpn-bin 2023.6-1///yay
+mullvad-browser-bin 13.0.10-1///yay
+zellij-git 0.39.2.r53.g12daac3-1///yay
+swaylock-effects-git r470.496059a-1///yay
+alacritty-git 1:0.14.0.2296.gcb3a79db-1///yay
+insync-thunar 3.7.9.50368-1///yay
+vlc-git 4.0.0.r27978.ge648e23872-1///yay
+greetd-tuigreet-git 0.8.0.r51.g372eecf-1///yay
+code-insiders-bin 1.87.0_1708735079-1///yay
+hyprland-git 0.36.0.r44.9d89b710-1///yay
+hyprkeys 1.0.3-1///yay
 homeassistant-cli 0.9.6///pipx
 shell-gpt 1.4.0///pipx
