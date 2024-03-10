@@ -135,6 +135,7 @@ reflector 2023-1///pacman
 reflector-simple 2023-4///pacman
 reiserfsprogs 3.6.27-4///pacman
 ripgrep 14.1.0-1///pacman
+rofimoji 6.2.0-1///pacman
 rsync 3.2.7-6///pacman
 rtkit 0.13-2///pacman
 s-nail 14.9.24-2///pacman
@@ -163,7 +164,6 @@ upower 1.90.2-1///pacman
 usb_modeswitch 2.6.1-3///pacman
 usbutils 017-1///pacman
 vi 1:070224-6///pacman
-vivaldi 6.6.3271.48-1///pacman
 waybar 0.9.24-3///pacman
 welcome 24.4-1///pacman
 wget 1.21.4-1///pacman
@@ -171,6 +171,7 @@ which 2.21-6///pacman
 wireplumber 0.4.17-1///pacman
 wl-clipboard 1:2.2.1-1///pacman
 wpa_supplicant 2:2.10-8///pacman
+wtype 0.4-1///pacman
 xdg-user-dirs 0.18-1///pacman
 xdg-utils 1.2.1-1///pacman
 xf86-input-libinput 1.4.0-1///pacman
@@ -198,6 +199,7 @@ insync-thunar 3.7.9.50368-1///yay
 mullvad-browser-bin 13.0.10-1///yay
 mullvad-vpn-bin 2023.6-1///yay
 rofi-lbonn-wayland-git 1.7.5.wayland3.r3.g47ae31eb-1///yay
+vivaldi-snapshot 6.6.3271.44-1///yay
 vlc-git 4.0.0.r27978.ge648e23872-1///yay
 zellij-git 0.39.2.r53.g12daac3-1///yay
 homeassistant-cli 0.9.6///pipx
