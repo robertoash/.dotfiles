@@ -35,6 +35,7 @@ export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
 export YARN_RC_FILENAME=~/.config/yarn/.yarnrc
 export XDG_CONFIG_HOME="$HOME/.config"
 export ZELLIJ_CONFIG_FILE=~/.config/zellij/config.kdl
+export FZF_DEFAULT_COMMAND='find . \! \( -type d -path ./.git -prune \) \! -type d \! -name '\''*.tags'\'' -printf '\''%P\n'\'
 
 # Secrets
 eval $(.config/scripts/shell/secure_env_secrets.py)

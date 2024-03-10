@@ -29,6 +29,8 @@ alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
 alias "drdp"="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
 # Lazygit
 alias "lg"="lazygit"
+# Fzf
+alias "fzf"="fzf --preview 'bat --color=always {}' --preview-window '~3' --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa'"
 # Mullvad
 alias "mcon"="mullvad connect"
 alias "mdis"="mullvad disconnect"
