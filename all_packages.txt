@@ -6,6 +6,7 @@ b43-fwcutter 019-4///pacman
 base 3-2///pacman
 base-devel 1-1///pacman
 bash-completion 2.11-3///pacman
+bat 0.24.0-1///pacman
 bind 9.18.24-1///pacman
 blueman 2.3.5-3///pacman
 bluez 5.73-3///pacman
@@ -142,7 +143,6 @@ smartmontools 7.4-1///pacman
 sof-firmware 2023.12.1-1///pacman
 solaar 1.1.11-1///pacman
 sudo 1.9.15.p5-1///pacman
-swayidle 1.8.0-1///pacman
 sysfsutils 2.1.1-1///pacman
 systemd-sysvcompat 255.4-2///pacman
 telegram-desktop 4.15.1-1///pacman
@@ -189,14 +189,15 @@ zsh 5.9-4///pacman
 alacritty-git 1:0.14.0.2296.gcb3a79db-1///yay
 code-insiders-bin 1.87.0_1708735079-1///yay
 greetd-tuigreet-git 0.8.0.r51.g372eecf-1///yay
+hypridle-git 0.1.1.r2.g029f0880-1///yay
 hyprkeys 1.0.3-1///yay
 hyprland-git 0.36.0.r44.9d89b710-1///yay
+hyprlock-git 0.1.0.r45.g160fe355-1///yay
 hyprpaper-git 0.6.0.r6.gdfd3d090-1///yay
 insync-thunar 3.7.9.50368-1///yay
 mullvad-browser-bin 13.0.10-1///yay
 mullvad-vpn-bin 2023.6-1///yay
 rofi-lbonn-wayland-git 1.7.5.wayland3.r3.g47ae31eb-1///yay
-swaylock-effects-git r470.496059a-1///yay
 vlc-git 4.0.0.r27978.ge648e23872-1///yay
 zellij-git 0.39.2.r53.g12daac3-1///yay
 homeassistant-cli 0.9.6///pipx
