@@ -53,6 +53,7 @@ foot 1.16.2-2///pacman
 fsarchiver 0.8.7-1///pacman
 github-cli 2.45.0-1///pacman
 glances 3.4.0.3-1///pacman
+gnome-tweaks 45.1-1///pacman
 greetd 0.9.0-3///pacman
 grub 2:2.12-1///pacman
 gst-libav 1.24.0-1///pacman
@@ -188,6 +189,7 @@ yay 12.3.1-1///pacman
 yt-dlp 2023.12.30-1///pacman
 zsh 5.9-4///pacman
 alacritty-git 1:0.14.0.2296.gcb3a79db-1///yay
+catppuccin-gtk-theme-mocha 0.7.1-1///yay
 code-insiders-bin 1.87.0_1708735079-1///yay
 greetd-tuigreet-git 0.8.0.r51.g372eecf-1///yay
 hypridle-git 0.1.1.r2.g029f0880-1///yay
