@@ -10,17 +10,17 @@ SEPARATOR = "///"
 
 def save_packages(filename, SEPARATOR="///"):
     # Get all explicitly installed packages
-    all_explicit_packages = set(
+    all_explicit_packages = (
         subprocess.check_output(["pacman", "-Qe"]).decode().splitlines()
     )
+    all_explicit_packages.sort()
 
     # Get explicitly installed AUR packages
-    aur_packages = set(
-        subprocess.check_output(["pacman", "-Qme"]).decode().splitlines()
-    )
+    aur_packages = subprocess.check_output(["pacman", "-Qme"]).decode().splitlines()
+    aur_packages.sort()
 
     # Determine explicitly installed pacman packages by excluding AUR packages
-    pacman_packages = all_explicit_packages - aur_packages
+    pacman_packages = sorted(set(all_explicit_packages) - set(aur_packages))
 
     with open(filename, "w") as f:
         # Save Pacman packages
