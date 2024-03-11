@@ -37,6 +37,8 @@ alias "mdis"="mullvad disconnect"
 alias "mst"="mullvad status"
 # Mega
 alias "mega"="mega-cmd"
+# Vault
+alias "vault"="~/.config/scripts/backup/vault.py"
 # Zellij
 alias "zj"="zsh -l -c 'zellij attach --index 0 || zellij'"
 #Other
