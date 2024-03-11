@@ -57,6 +57,7 @@
 .zsh_history
 __pycache__
 .zcompdump
+scripts/backup/vault.py
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
 venv/

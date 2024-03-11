@@ -78,6 +78,8 @@ source ~/.config/zsh/zsh-history-substring-search/zsh-history-substring-search.z
 source ~/.config/zsh/zsh-z/zsh-z.plugin.zsh
 # Functions
 source ~/.config/zsh/.zsh_functions
+# Broot
+source ~/.config/broot/launcher/bash/br
 # Prompt Customization & Utilities
 [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
