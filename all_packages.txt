@@ -11,6 +11,7 @@ bind 9.18.24-1///pacman
 blueman 2.3.5-3///pacman
 bluez 5.73-3///pacman
 bluez-utils 5.73-3///pacman
+broot 1.36.0-1///pacman
 btop 1.3.2-1///pacman
 btrfs-progs 6.7.1-1///pacman
 calc 2.15.0.5-1///pacman
@@ -25,10 +26,12 @@ dmraid 1.0.0.rc16.3-14///pacman
 dnsmasq 2.90-1///pacman
 dosfstools 4.2-3///pacman
 downgrade 11.3.0-1///pacman
-dracut 059-5///pacman
+dracut 059-6///pacman
 duf 0.8.1-2///pacman
 dunst 1.10.0-1///pacman
+dust 0.9.0-1///pacman
 e2fsprogs 1.47.0-1///pacman
+ecryptfs-utils 111-8///pacman
 efibootmgr 18-2///pacman
 efitools 1.9.2-5///pacman
 endeavouros-keyring 20231222-1///pacman
@@ -123,7 +126,7 @@ pipewire-alsa 1:1.0.3-1///pacman
 pipewire-jack 1:1.0.3-1///pacman
 pipewire-pulse 1:1.0.3-1///pacman
 pkgfile 21-2///pacman
-poppler-glib 24.01.0-1///pacman
+poppler-glib 24.03.0-1///pacman
 power-profiles-daemon 0.20-1///pacman
 pv 1.8.5-2///pacman
 pyenv 1:2.3.36-1///pacman
@@ -170,7 +173,7 @@ usbutils 017-1///pacman
 vi 1:070224-6///pacman
 waybar 0.9.24-3///pacman
 welcome 24.4-1///pacman
-wget 1.21.4-1///pacman
+wget 1.24.5-1///pacman
 which 2.21-6///pacman
 wireplumber 0.4.17-1///pacman
 wl-clipboard 1:2.2.1-1///pacman
@@ -189,7 +192,7 @@ xorg-xkill 1.0.6-1///pacman
 xorg-xrandr 1.5.2-1///pacman
 xterm 390-1///pacman
 yay 12.3.1-1///pacman
-yt-dlp 2023.12.30-1///pacman
+yt-dlp 2024.03.10-1///pacman
 zsh 5.9-4///pacman
 alacritty-git 1:0.14.0.2296.gcb3a79db-1///yay
 catppuccin-gtk-theme-mocha 0.7.1-1///yay
@@ -204,6 +207,7 @@ insync-thunar 3.7.9.50368-1///yay
 mullvad-browser-bin 13.0.10-1///yay
 mullvad-vpn-bin 2023.6-1///yay
 rofi-lbonn-wayland-git 1.7.5.wayland3.r3.g47ae31eb-1///yay
+sublime-text-4 4.4169-1///yay
 vivaldi-snapshot 6.6.3271.44-1///yay
 vlc-git 4.0.0.r27978.ge648e23872-1///yay
 zellij-git 0.39.2.r53.g12daac3-1///yay
