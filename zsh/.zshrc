@@ -20,6 +20,7 @@ export PATH="$PATH:/home/rash/.local/bin"
 
 HISTSIZE=10000
 SAVEHIST=10000
+HISTCONTROL=ignoreboth
 HISTFILE=~/.config/zsh/.zsh_history
 
 
