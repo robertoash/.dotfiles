@@ -29,6 +29,8 @@
 	],
 
 	"modules-right": [
+		"custom/vpn",
+		"custom/separator#dot-line",
 		"network",
 		"custom/separator#dot-line",
 		"bluetooth",

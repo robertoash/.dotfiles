@@ -2,14 +2,14 @@
 /* Catppuccin Mocha */
 
 * {
-font-family: "JetBrainsMono NF";
-font-weight: bold;
-min-height: 0;
-/* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
-font-size: 97%;
-font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
-margin-top: 1px;
-padding: 0px;
+  font-family: "JetBrainsMono NF";
+  font-weight: bold;
+  min-height: 0;
+  /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+  font-size: 97%;
+  font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+  margin-top: 1px;
+  padding: 0px;
 }
 
 @import "./config_alts/jakoolit_mod/style/catppuccin-themes/mocha.css";
@@ -84,6 +84,7 @@ window#waybar.hidden {
 #custom-power,
 #custom-swaync,
 #custom-updater,
+#custom-vpn,
 #custom-weather,
 #custom-weather.clearNight,
 #custom-weather.cloudyFoggyDay,
@@ -274,13 +275,23 @@ window#waybar.hidden {
 }
 
 #network {
-  color: @teal;
+  color: @blue;
 }
+
+#custom-vpn.vpn-connected {
+  color: @green;
+}
+
+#custom-vpn.vpn-disconnected {
+  color: @red;
+}
+
 #network.disconnected,
 #network.disabled {
   background-color: @surface0;
   color: @text;
 }
+
 #pulseaudio-slider slider {
 	min-width: 0px;
 	min-height: 0px;
