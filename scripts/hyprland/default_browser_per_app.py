@@ -44,11 +44,11 @@ def main():
     # Browser mappings
     browser_map = {
         # Format: (window_class, string_to_search_for_in_window_title): 'browser.desktop'
-        ("default", "*"): "vivaldi.desktop",
+        ("default", "*"): "vivaldi-snapshot.desktop",
         ("Code", " Work "): "chromium.desktop",
-        ("Code", "*"): "vivaldi.desktop",
+        ("Code", "*"): "vivaldi-snapshot.desktop",
         ("code-insiders-url-handler", " Work "): "chromium.desktop",
-        ("code-insiders-url-handler", "*"): "vivaldi.desktop",
+        ("code-insiders-url-handler", "*"): "vivaldi-snapshot.desktop",
         ("chromium", "*"): "chromium.desktop",
         ("Slack", "*"): "chromium.desktop",
     }
