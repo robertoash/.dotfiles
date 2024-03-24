@@ -40,7 +40,7 @@ save_to_clipboard = true
 
 [shell]
 program = "/bin/zsh"
-# args = ["-l", "-c", "zellij attach --index 0 || zellij"]
+args = ["-l", "-c", "zellij attach --index 0 || zellij"]
 
 [window]
 opacity = 0.6
