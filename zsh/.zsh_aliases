@@ -37,6 +37,8 @@ alias "mdis"="mullvad disconnect"
 alias "mst"="mullvad status"
 # Mega
 alias "mega"="mega-cmd"
+# SVTText
+alias "svttext"="svttext -colors -interactive"
 # Vault
 alias "vault"="~/.config/scripts/backup/vault.py"
 # Vivaldi
