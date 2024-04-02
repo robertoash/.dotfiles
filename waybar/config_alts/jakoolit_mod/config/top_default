@@ -29,6 +29,8 @@
 	],
 
 	"modules-right": [
+		"custom/tibber",
+		"custom/separator#dot-line",
 		"custom/vpn",
 		"custom/separator#dot-line",
 		"network",

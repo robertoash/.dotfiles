@@ -35,20 +35,20 @@ window#waybar.hidden {
 .modules-left, .modules-center, .modules-right {
 	background: @base;
  	border: 0.5px solid @overlay0;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 6px;
+	padding-left: 6px;
 	border-radius: 10px;
 
 }
 
 .modules-left, .modules-right {
   border: 1px solid @blue;
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-right: 4px;
-	padding-left: 4px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 6px;
+	padding-left: 6px;
 }
 
 #backlight,
@@ -84,6 +84,7 @@ window#waybar.hidden {
 #custom-power,
 #custom-swaync,
 #custom-updater,
+#custom-tibber,
 #custom-vpn,
 #custom-weather,
 #custom-weather.clearNight,
@@ -185,9 +186,9 @@ window#waybar.hidden {
 	color: @overlay0;
 	background-color: @surface0;
  	padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  padding-right: 2px;
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.persistent {
@@ -197,11 +198,11 @@ window#waybar.hidden {
 
 #workspaces button.active {
 	color: @peach;
-  	border-radius: 10px;
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  border-radius: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button.urgent {
@@ -210,17 +211,17 @@ window#waybar.hidden {
 }
 
 #taskbar button.active {
-    padding-left: 8px;
-    padding-right: 8px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  padding-left: 8px;
+  padding-right: 8px;
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #taskbar button:hover {
-    padding-left: 2px;
-    padding-right: 2px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
+  padding-left: 2px;
+  padding-right: 2px;
+  animation: gradient_f 20s ease-in infinite;
+  transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #custom-cava_mviz {
@@ -283,6 +284,14 @@ window#waybar.hidden {
 }
 
 #custom-vpn.vpn-disconnected {
+  color: @red;
+}
+
+#custom-tibber.tibber-decrease {
+  color: @green;
+}
+
+#custom-tibber.tibber-increase {
   color: @red;
 }
 
