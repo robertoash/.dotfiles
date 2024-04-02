@@ -11,7 +11,7 @@ alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.co
 
 ## App aliases
 # CNN
-alias cnn='yt-dlp --quiet https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal - & '
+alias cnn='yt-dlp --quiet https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --keepaspect-window --really-quiet --quiet --no-terminal - & '
 # Neovim
 alias "nv"="nvim"
 # Exa
@@ -29,6 +29,12 @@ alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
 alias "drdp"="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
 # Lazygit
 alias "lg"="lazygit"
+# Monitor
+alias monitor_windows="xprop"
+alias monitor_key_presses="stdbuf -oL wev | grep --line-buffered 'sym'"
+alias monitor_mouse_presses="wev -f wl_pointer:button"
+alias monitor_keys_filtered="wev -f wl_pointer:motion -F wl_pointer:enter -F wl_pointer:leave -F wl_keyboard:enter -F wl_keyboard:leave -F wl_pointer:frame -F xdg_surface -F wl_data_offer -F wl_data_device -F xdg_toplevel"
+alias monitor_keys_full="wev"
 # Fzf
 alias "fzf"="fzf --preview 'bat --color=always {}' --preview-window '~3' --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa'"
 # Mullvad
