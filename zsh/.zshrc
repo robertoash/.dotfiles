@@ -31,7 +31,7 @@ HISTFILE=~/.config/zsh/.zsh_history
 # Plain
 export EDITOR="nano"
 export TERMINAL="alacritty"
-export BROWSER="vivaldi-snapshot"
+export BROWSER="brave-browser-beta"
 export _Z_DATA=~/.config/z/.z
 export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
 export YARN_RC_FILENAME=~/.config/yarn/.yarnrc
