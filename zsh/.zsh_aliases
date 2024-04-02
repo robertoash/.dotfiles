@@ -11,7 +11,7 @@ alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.co
 
 ## App aliases
 # CNN
-alias cnn='yt-dlp --quiet https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --keepaspect-window --really-quiet --quiet --no-terminal - & '
+alias cnn='yt-dlp --quiet https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal - & '
 # Neovim
 alias "nv"="nvim"
 # Exa
@@ -44,7 +44,8 @@ alias "mst"="mullvad status"
 # Mega
 alias "mega"="mega-cmd"
 # SVTText
-alias "svttext"="svttext -colors -interactive"
+alias svttext="svttext -colors -interactive"
+alias svtt="svt-text"
 # Vault
 alias "vault"="~/.config/scripts/backup/vault.py"
 # Vivaldi
