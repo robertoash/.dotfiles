@@ -40,7 +40,7 @@ export ZELLIJ_CONFIG_FILE=~/.config/zellij/config.kdl
 export FZF_DEFAULT_COMMAND='find . \! \( -type d -path ./.git -prune \) \! -type d \! -name '\''*.tags'\'' -printf '\''%P\n'\'
 
 # Secrets
-eval $(.config/scripts/shell/secure_env_secrets.py)
+eval $(/home/rash/.config/scripts/shell/secure_env_secrets.py)
 
 
 # #################################
