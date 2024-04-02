@@ -586,7 +586,7 @@
       },
 
     "custom/vpn": {
-        "exec": "~/.config/scripts/waybar/vpn.sh",
+        "exec": "~/.config/scripts/waybar/vpn.py",
         "interval": 2,
         "return-type": "json"
       },
