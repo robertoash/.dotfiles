@@ -25,6 +25,8 @@
 	],
 
 	"modules-center": [
+		"idle_inhibitor",
+		"custom/separator#dot-line",
 		"hyprland/window"
 	],
 
