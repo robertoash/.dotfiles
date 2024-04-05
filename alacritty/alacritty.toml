@@ -26,7 +26,6 @@ family = "JetBrainsMono NF"
 style = "Regular"
 
 [mouse]
-
 hide_when_typing = true  # Default: false
 # Example: bindings = [{ mouse = "Left", action = "Paste" }]
 bindings = []
