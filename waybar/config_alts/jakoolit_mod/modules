@@ -582,13 +582,15 @@
     "custom/tibber": {
         "exec": "~/.config/scripts/waybar/tibber_price.py",
         "interval": 60,
-        "return-type": "json"
+        "return-type": "json",
+        "on-click": "~/.config/scripts/hyprland/toggle_elpris.py"
       },
 
     "custom/vpn": {
         "exec": "~/.config/scripts/waybar/vpn.py",
         "interval": 2,
-        "return-type": "json"
+        "return-type": "json",
+        "on-click": "~/.config/scripts/rofi/rofi_mullvad.sh"
       },
 
 
