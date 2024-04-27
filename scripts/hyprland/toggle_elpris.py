@@ -3,10 +3,10 @@ import os
 import subprocess
 
 # Path to the image
-image_path = "/home/rash/pictures/cheatsheets/vim_cheatsheet.png"
+image_path = "http://10.20.10.50:8999/elpris.png"
 
 # PID file to track the feh process
-pid_file = "/tmp/quicklook_vim_cheatsheet.pid"
+pid_file = "/tmp/quicklook_elpris.pid"
 
 
 def toggle_image():
@@ -27,7 +27,7 @@ def toggle_image():
             "feh",
             "--auto-zoom",
             "--title",
-            "quicklook_vim_cheatsheet",
+            "quicklook_elpris",
             image_path,
         ]
     )
