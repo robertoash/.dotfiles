@@ -392,10 +392,10 @@
             "ignored-sinks": ["Easy Effects Sink"]
         },
         "scroll-step": 5.0,
-        "on-click": "~/.config/hypr/scripts/Volume.sh --toggle",
+        "on-click": "~/.config/scripts/waybar/audio.py --toggle",
         "on-click-right": "pavucontrol -t 3",
-        "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
-        "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
+        "on-scroll-up": "~/.config/scripts/waybar/audio.py --inc",
+        "on-scroll-down": "~/.config/scripts/waybar/audio.py --dec",
         "tooltip-format": "{icon} {desc} | {volume}%",
         "smooth-scrolling-threshold": 1
     },
@@ -404,10 +404,10 @@
         "format": "{format_source}",
         "format-source": " {volume}%",
         "format-source-muted": "",
-        "on-click": "~/.config/hypr/scripts/Volume.sh --toggle-mic",
+        "on-click": "~/.config/scripts/waybar/mic.py --toggle",
         "on-click-right": "pavucontrol -t 4",
-        "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --mic-inc",
-        "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --mic-dec",
+        "on-scroll-up": "~/.config/scripts/waybar/mic.py --inc",
+        "on-scroll-down": "~/.config/scripts/waybar/mic.py --dec",
         "tooltip-format": "{source_desc} | {source_volume}%",
         "scroll-step": 5
     },
