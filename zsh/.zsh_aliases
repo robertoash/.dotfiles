@@ -11,7 +11,8 @@ alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.co
 
 ## App aliases
 # CNN
-alias cnn='yt-dlp --quiet https://www.livenewsnow.com/american/cnn-news-usa.html --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal - & '
+alias cnn='yt-dlp --quiet "https://www.livenewsnow.com/american/cnn-news-usa.html" --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal --cache=yes --cache-secs=30 - &'
+
 # Neovim
 alias "nv"="nvim"
 # Exa
