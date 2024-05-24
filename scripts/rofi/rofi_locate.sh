@@ -16,7 +16,7 @@ handle_action() {
 }
 
 # Locate files and select one using Rofi
-FILE=$(locate home media | rofi -theme catppuccin_mocha_single_column -dmenu -p "Select File")
+FILE=$(locate home media | rofi -theme catppuccin_mocha_single_column -dmenu -p "Locate File")
 
 # If no file is selected, exit
 [ -z "$FILE" ] && exit
