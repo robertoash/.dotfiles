@@ -31,7 +31,8 @@
 	],
 
 	"modules-right": [
-		"custom/tibber",
+		"custom/tibber_text",
+		"custom/tibber_icon",
 		"custom/separator#dot-line",
 		"custom/vpn",
 		"custom/separator#dot-line",

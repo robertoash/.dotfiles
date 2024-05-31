@@ -580,12 +580,21 @@
         "tooltip" : true
     },
 
-    "custom/tibber": {
-        "exec": "~/.config/scripts/waybar/tibber_price.py",
+    "custom/tibber_text": {
+        "exec": "~/.config/scripts/waybar/tibber_price.py --text",
         "interval": 60,
         "return-type": "json",
-        "on-click": "~/.config/scripts/hyprland/toggle_elpris.py"
-      },
+        "format": "{}",
+        "tooltip": true
+    },
+    "custom/tibber_icon": {
+        "exec": "~/.config/scripts/waybar/tibber_price.py --icon",
+        "interval": 60,
+        "return-type": "json",
+        "format": "{}",
+        "tooltip": true
+    },
+
 
     "custom/vpn": {
         "exec": "~/.config/scripts/waybar/vpn.py",
