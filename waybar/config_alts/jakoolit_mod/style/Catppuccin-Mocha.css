@@ -84,7 +84,6 @@ window#waybar.hidden {
 #custom-power,
 #custom-swaync,
 #custom-updater,
-#custom-tibber,
 #custom-vpn,
 #custom-weather,
 #custom-weather.clearNight,
@@ -287,13 +286,32 @@ window#waybar.hidden {
   color: @red;
 }
 
-#custom-tibber.tibber-decrease {
+
+
+
+#custom-tibber_text {
+  padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 1px;
+	padding-left: 6px;
+}
+#custom-tibber_icon {
+  padding-top: 3px;
+	padding-bottom: 3px;
+	padding-right: 6px;
+	padding-left: 1px;
+}
+#custom-tibber_text.price-green,
+#custom-tibber_icon.icon-green {
   color: @green;
 }
-
-#custom-tibber.tibber-increase {
+#custom-tibber_text.price-red,
+#custom-tibber_icon.icon-red {
   color: @red;
 }
+
+
+
 
 #network.disconnected,
 #network.disabled {
