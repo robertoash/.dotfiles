@@ -25,7 +25,10 @@ def toggle_image():
     process = subprocess.Popen(
         [
             "feh",
+            "--fullscreen",
             "--auto-zoom",
+            "--zoom",
+            "125",
             "--title",
             "quicklook_vim_cheatsheet",
             image_path,
