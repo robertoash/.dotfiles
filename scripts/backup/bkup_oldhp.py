@@ -9,7 +9,7 @@ from _utils import logging_utils
 
 
 def backup_old_hp():
-    remote_host = "old_hp"
+    remote_host = "oldhp"
     remote_backup_dir = "/mnt/usb_bkups/oldhp_backups"
     local_backup_dir = "/media/sda1/server_bkups/old_hp"
 
