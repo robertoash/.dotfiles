@@ -6,12 +6,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+
 # #################################
 # # Path setting
 # #################################
 
 # Pipx path
 export PATH="$PATH:/home/rash/.local/bin"
+
+# Add sutff to python path
+export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
 
 
 # #################################
