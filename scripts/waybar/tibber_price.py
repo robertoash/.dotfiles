@@ -10,6 +10,9 @@ import pytz
 
 
 def fetch_prices():
+
+    price_leeway = 0.12  # Percentage of the price range to consider for margin
+
     # Your Tibber token must be set as an environment variable 'TIBBER_TOKEN'.
     TIBBER_TOKEN = os.environ["TIBBER_TOKEN"]
 
@@ -60,7 +63,7 @@ def fetch_prices():
     ]
     awake_prices = [hour["total"] for hour in awake_hours]
 
-    # Calculate the 25th percentile
+    # Calculate the 25th and 75th percentiles
     def calculate_percentile(prices, percentile):
         prices.sort()
         index = (len(prices) - 1) * percentile / 100
@@ -72,6 +75,11 @@ def fetch_prices():
             return prices[lower] * (upper - index) + prices[upper] * (index - lower)
 
     percentile_25 = calculate_percentile(awake_prices, 25)
+    percentile_75 = calculate_percentile(awake_prices, 75)
+
+    # Calculate dynamic margin as a percentage of the price range
+    price_range = max(awake_prices) - min(awake_prices)
+    margin = price_leeway * price_range  # Adjust this percentage as needed
 
     # Ensure the index is found and valid; otherwise, set to a default
     current_hour_index = next(
@@ -97,7 +105,13 @@ def fetch_prices():
 
     # Formatting the output
     current_price = current_price_info["total"]
-    price_class = "price-green" if current_price < percentile_25 else "price-red"
+    if current_price < (percentile_25 + margin):
+        price_class = "price-green"  # Cheap
+    elif current_price > percentile_75:
+        price_class = "price-red"  # Expensive
+    else:
+        price_class = "price-yellow"  # Mid-range
+
     icon_class = "icon-green" if not price_increases else "icon-red"
     arrow_icon = "" if price_increases else ""
 
