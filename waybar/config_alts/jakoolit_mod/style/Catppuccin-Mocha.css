@@ -309,6 +309,9 @@ window#waybar.hidden {
 #custom-tibber_icon.icon-red {
   color: @red;
 }
+#custom-tibber_text.price-yellow {
+  color: @yellow;
+}
 
 
 
