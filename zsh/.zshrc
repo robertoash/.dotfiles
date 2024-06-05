@@ -32,19 +32,7 @@ HISTFILE=~/.config/zsh/.zsh_history
 # # Environment Variables
 # #################################
 
-# Plain
-export EDITOR="nano"
-export TERMINAL="alacritty"
-export BROWSER="brave-browser"
-export _Z_DATA=~/.config/z/.z
-export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"
-export YARN_RC_FILENAME=~/.config/yarn/.yarnrc
-export XDG_CONFIG_HOME="$HOME/.config"
-export ZELLIJ_CONFIG_FILE=~/.config/zellij/config.kdl
-export FZF_DEFAULT_COMMAND='find . \! \( -type d -path ./.git -prune \) \! -type d \! -name '\''*.tags'\'' -printf '\''%P\n'\'
-
-# Secrets
-eval $(/home/rash/.config/scripts/shell/secure_env_secrets.py)
+source ~/.config/zsh/.zsh_envs
 
 
 # #################################
@@ -76,12 +64,12 @@ zstyle ':completion:*' menu select
 # Aliases
 source ~/.config/zsh/.zsh_aliases
 # Theme
-source ~/.config/zsh/powerlevel10k/powerlevel10k.zsh-theme
+source ~/.config/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme
 # Plugins
-source ~/.config/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.config/zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.config/zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
-source ~/.config/zsh/zsh-z/zsh-z.plugin.zsh
+source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ~/.config/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source ~/.config/zsh/plugins/zsh-z/zsh-z.plugin.zsh
 # Functions
 source ~/.config/zsh/.zsh_functions
 # Broot
