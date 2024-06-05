@@ -27,6 +27,7 @@ def backup_old_hp():
         rsync_command = [
             "rsync",
             "-aHvz",
+            "--progress",
             "--delete",
             f"{remote_host}:{remote_backup_dir}/",
             f"{local_backup_dir}/",
