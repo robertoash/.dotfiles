@@ -27,6 +27,7 @@ def backup_proxmox():
         rsync_command = [
             "rsync",
             "-avz",
+            "--progress",
             "--delete",
             f"{remote_host}:{remote_backup_dir}/",
             f"{local_backup_dir}/",
