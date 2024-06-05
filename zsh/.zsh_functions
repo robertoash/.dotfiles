@@ -1,3 +1,4 @@
 source ~/.config/zsh/zsh_functions/sgpt.zsh
 source ~/.config/zsh/zsh_functions/shell_history.zsh
 source ~/.config/zsh/zsh_functions/symlinks.zsh
+source ~/.config/zsh/zsh_functions/buku.zsh

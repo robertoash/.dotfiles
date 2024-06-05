@@ -15,6 +15,19 @@ alias cnn='yt-dlp --quiet "https://www.livenewsnow.com/american/cnn-news-usa.htm
 
 # Neovim
 alias "nv"="nvim"
+# BukuBUK
+alias b="buku --suggest"
+alias bl="b -p" # Buku list
+alias ba="b -w" # Buku add (interactive)
+alias bll="b -l" # Buku lock
+alias blu="b -k" # Buku unlock
+alias bs="b --np -s" # Buku search (no prompt)
+alias bsp="b -s" # Buku search (prompt)
+alias bd="b -d" # Buku delete
+alias bw="b -w" # Buku write
+alias bo="b --np --oa" # Buku search & open all
+alias boi="b -o" # Buku open index
+
 # Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
 alias lll="ll -l -a"
