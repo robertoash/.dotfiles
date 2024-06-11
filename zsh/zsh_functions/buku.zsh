@@ -3,17 +3,16 @@ DB_DIR=~/.local/share/buku
 CURRENT_DB_FILE="$DB_DIR/current_db.txt"
 
 # Save the original BROWSER value
-export ORIGINAL_BROWSER="${BROWSER:-brave}"
+ORIGINAL_BROWSER="${BROWSER:-brave}"
 
-# Function to set BROWSER mode based on current database
+# Export the original BROWSER value so it can be accessed in the wrapper script
+export ORIGINAL_BROWSER
+
+# Function to set BROWSER mode based on the current database
 set_browser_mode() {
     local current_db=$(cat "$CURRENT_DB_FILE")
     echo "Current DB: $current_db"  # Debug statement
-    if [ "$current_db" = "rashp.db" ]; then
-        export BROWSER="brave --incognito"
-    else
-        export BROWSER="$ORIGINAL_BROWSER"
-    fi
+    export BROWSER="$HOME/.config/scripts/shell/buku_browser_wrapper.sh"
     echo "BROWSER set to: $BROWSER"  # Debug statement
 }
 
@@ -118,9 +117,9 @@ switch_buku_db() {
             fi
             ( monitor_bookmarks_db "$target_db" & echo $! > "$WATCH_FILE" ) > /dev/null
         fi
+
         # Update CURRENT_DB_FILE
         echo "$target_db" > "$CURRENT_DB_FILE"
-        # Set BROWSER mode
         set_browser_mode
     }
 
