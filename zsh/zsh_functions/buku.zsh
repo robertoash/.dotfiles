@@ -1,6 +1,7 @@
 # Set global variables
 DB_DIR=~/.local/share/buku
 CURRENT_DB_FILE="$DB_DIR/current_db.txt"
+IS_SWITCH_STARTUP=1  # Variable to indicate startup mode
 
 # Save the original BROWSER value
 ORIGINAL_BROWSER="${BROWSER:-brave}"
@@ -11,9 +12,7 @@ export ORIGINAL_BROWSER
 # Function to set BROWSER mode based on the current database
 set_browser_mode() {
     local current_db=$(cat "$CURRENT_DB_FILE")
-    echo "Current DB: $current_db"  # Debug statement
     export BROWSER="$HOME/.config/scripts/shell/buku_browser_wrapper.sh"
-    echo "BROWSER set to: $BROWSER"  # Debug statement
 }
 
 switch_buku_db() {
@@ -109,6 +108,9 @@ switch_buku_db() {
         # Rename the target_db to bookmarks.db or bookmarks.db.<suffix>
         if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
             mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix" 2>/dev/null || true
+            if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
+                echo "Database '$target_db' loaded successfully."
+            fi
         else
             # Start monitoring for bookmarks.db creation in the background
             if [ -f "$WATCH_FILE" ]; then
@@ -116,6 +118,7 @@ switch_buku_db() {
                 rm "$WATCH_FILE"
             fi
             ( monitor_bookmarks_db "$target_db" & echo $! > "$WATCH_FILE" ) > /dev/null
+            echo "Database '$target_db' does not exist. It will be created automatically."
         fi
 
         # Update CURRENT_DB_FILE
@@ -133,3 +136,5 @@ switch_buku_db() {
 
 # Call switch_buku_db on startup to ensure the correct db is set
 switch_buku_db rash
+# After the startup is complete, set IS_STARTUP to 0
+IS_SWITCH_STARTUP=0
