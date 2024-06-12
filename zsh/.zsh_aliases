@@ -9,6 +9,10 @@
 alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
 
+# History aliases
+alias stop_history="stp_history"
+alias start_history="strt_history"
+
 ## App aliases
 # CNN
 #alias cnn='yt-dlp --quiet "https://www.livenewsnow.com/american/cnn-live-free.html" --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal --cache=yes --cache-secs=30 - &'
