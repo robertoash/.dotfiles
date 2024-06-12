@@ -11,11 +11,11 @@ alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.co
 
 ## App aliases
 # CNN
-alias cnn='yt-dlp --quiet "https://www.livenewsnow.com/american/cnn-news-usa.html" --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal --cache=yes --cache-secs=30 - &'
+#alias cnn='yt-dlp --quiet "https://www.livenewsnow.com/american/cnn-live-free.html" --add-header "Referer: https://www.livenewsnow.com/" --no-warnings --downloader ffmpeg --hls-use-mpegts -o - | mpv --really-quiet --quiet --no-terminal --cache=yes --cache-secs=30 - &'
 
 # Neovim
 alias "nv"="nvim"
-# BukuBUK
+# Buku
 alias bk="buku --suggest"
 alias bkl="bk -p" # Buku list
 alias bka="bk -w" # Buku add (interactive)
@@ -25,9 +25,12 @@ alias bks="bk --np -s" # Buku search (no prompt)
 alias bksp="bk -s" # Buku search (prompt)
 alias bkd="bk -d" # Buku delete
 alias bkw="bk -w" # Buku write
-alias bko="bk --np --oa" # Buku search & open all
+alias bko="bk_o" # Buku with fzf
 alias bkoi="bk -o" # Buku open index
-alias bkdb="switch_buku_db current"
+# Buku functions
+alias "bk_c"="switch_buku_db current"
+alias "bk_r"="switch_buku_db rash"
+alias "bk_p"="switch_buku_db rashp"
 
 # Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
@@ -52,7 +55,7 @@ alias monitor_mouse_presses="wev -f wl_pointer:button"
 alias monitor_keys_filtered="wev -f wl_pointer:motion -F wl_pointer:enter -F wl_pointer:leave -F wl_keyboard:enter -F wl_keyboard:leave -F wl_pointer:frame -F xdg_surface -F wl_data_offer -F wl_data_device -F xdg_toplevel"
 alias monitor_keys_full="wev"
 # Fzf
-alias "fzf"="fzf --preview 'bat --color=always {}' --preview-window '~3' --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa'"
+alias fzf='set_fzf_alias; fzf'
 # Mullvad
 alias "mcon"="mullvad connect"
 alias "mdis"="mullvad disconnect"
