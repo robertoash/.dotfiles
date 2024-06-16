@@ -5,6 +5,9 @@
 ## Shell aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
 
+## Sudo
+alias "sudo"="sudo "
+
 ## Backup aliases
 alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
