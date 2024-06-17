@@ -30,6 +30,7 @@ alias bksp="bk -s" # Buku search (prompt)
 alias bkd="bk -d" # Buku delete
 alias bkw="bk -w" # Buku write
 alias bko="bk_o" # Buku with fzf
+alias bkso="bk_so" # Buku search string and open from cli
 alias bkoi="bk -o" # Buku open index
 # Buku functions
 alias "bk_c"="switch_buku_db current"
