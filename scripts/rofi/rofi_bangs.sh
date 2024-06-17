@@ -25,6 +25,10 @@ LABELS["locate"]=""
 COMMANDS["keybinds"]="~/.config/scripts/rofi/rofi_hyprkeys.sh"
 LABELS["keybinds"]=""
 
+# get zsh aliases
+COMMANDS["zsh_aliases"]="~/.config/scripts/rofi/rofi_zsh_aliases.sh"
+LABELS["zsh_aliases"]=""
+
 # get offline media size
 COMMANDS["media_size"]="~/.config/scripts/rofi/rofi_media_size.sh"
 LABELS["media_size"]=""
@@ -41,14 +45,6 @@ LABELS["calc"]=""
 COMMANDS["shutdown"]="~/.config/scripts/rofi/rofi_shutdown.sh"
 LABELS["shutdown"]=""
 
-# restart_bluetooth
-#COMMANDS["restart_bt"]="~/.config/scripts/rofi/rofi_restart_bt.sh"
-#LABELS["restart_bt"]=""
-
-# open custom web searches
-# COMMANDS["websearch"]="~/.scripts/rofi-surfraw-websearch.sh"
-# LABELS["websearch"]=""
-
 # show clipboard history
 # source: https://bitbucket.org/pandozer/rofi-clipboard-manager/overview
 # COMMANDS["clipboard"]='rofi -modi "clipboard:~/.bin/rofi-clipboard-manager/mclip.py menu" -show clipboard && ~/.bin/rofi-clipboard-manager/mclip.py paste'
@@ -63,9 +59,6 @@ LABELS["shutdown"]=""
 
 # COMMANDS[".bin"]="spacefm -r '/home/dka/bin'"
 # LABELS[".bin"]=".bin"
-
-# COMMANDS["#screenshot"]='/home/dka/bin/screenshot-scripts/myscreenshot.sh'
-# LABELS["#screenshot"]="screenshot"
 
 ################################################################################
 # main script (don't touch below)
