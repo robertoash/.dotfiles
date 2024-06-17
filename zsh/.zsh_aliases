@@ -6,11 +6,11 @@
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
 
 ## Sudo
-alias "sudo"="sudo "
+alias sudo="sudo "
 
 ## Backup aliases
-alias "bkup_system"='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
-alias "bkup_packages"="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
+alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
+alias bkup_packages="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
 
 # History aliases
 alias stop_history="stp_history"
@@ -18,7 +18,7 @@ alias start_history="strt_history"
 
 ## App aliases
 # Neovim
-alias "nv"="nvim"
+alias nv="nvim"
 # Buku
 alias bk="buku --suggest"
 alias bkl="bk -p" # Buku list
@@ -33,9 +33,9 @@ alias bko="bk_o" # Buku with fzf
 alias bkso="bk_so" # Buku search string and open from cli
 alias bkoi="bk -o" # Buku open index
 # Buku functions
-alias "bk_c"="switch_buku_db current"
-alias "bk_r"="switch_buku_db rash"
-alias "bk_p"="switch_buku_db rashp"
+alias bk_c="switch_buku_db current"
+alias bk_r="switch_buku_db rash"
+alias bk_p="switch_buku_db rashp"
 
 # Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
@@ -49,10 +49,10 @@ alias "??g"="gh copilot suggest -t git "
 alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
 # Docker Scripts
-alias "dsp"="bash ~/.config/scripts/docker/docker_simple.sh"
-alias "drdp"="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
+alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
+alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
 # Lazygit
-alias "lg"="lazygit"
+alias lg="lazygit"
 # Monitor
 alias monitor_windows="xprop"
 alias monitor_key_presses="stdbuf -oL wev | grep --line-buffered 'sym'"
@@ -62,23 +62,21 @@ alias monitor_keys_full="wev"
 # Fzf
 alias fzf='set_fzf_alias; fzf'
 # Mullvad
-alias "mcon"="mullvad connect"
-alias "mdis"="mullvad disconnect"
-alias "mst"="mullvad status"
+alias mcon="mullvad connect"
+alias mdis="mullvad disconnect"
+alias mst="mullvad status"
 # Mega
-alias "mega"="mega-cmd"
+alias mega="mega-cmd"
 # SVTText
 alias svttext="svttext -colors -interactive"
 alias svtt="svt-text"
 # Vault
-alias "vault"="~/.config/scripts/backup/vault.py"
-# Vivaldi
-alias "vivaldi"="vivaldi-snapshot"
+alias vault="~/.config/scripts/backup/vault.py"
 # Zellij
-alias "zj"="zsh -l -c 'zellij attach --index 0 || zellij'"
+alias zj="zsh -l -c 'zellij attach --index 0 || zellij'"
 #Other
 alias vim="vim -u ~/.config/vim/vimrc"
 alias lf="lfcd"
-alias "code"="code-insiders"
+alias code="code-insiders"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias xeyes="xprop"
