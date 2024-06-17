@@ -18,6 +18,7 @@
 !nano/
 !ncdu/
 !nvim/
+!onagre/
 !rofi/
 !scripts/
 !swappy/
@@ -40,6 +41,7 @@
 !nano/**/*
 !ncdu/**/*
 !nvim/**/*
+!onagre/**/*
 !rofi/**/*
 !scripts/**/*
 !swappy/**/*

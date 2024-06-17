@@ -1,0 +1,62 @@
+.onagre {
+    --exit-unfocused: false;
+    --font-family: "JetBrainsMono NF";
+    height: 500px;
+    width: 700px;
+    font-size: 14px;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 10px;
+    border-width: 3px;
+    border-color: #1e1e2e;
+    border-radius: 5;
+
+    .container {
+        background: #1e1e2e;
+
+        .search {
+            background: #1e1e2e;
+            border-radius: 5;
+            padding: 2px;
+            --height: fill-portion 1;
+
+            .input {
+                padding: 6px;
+                color: #cdd6f4;
+                background: #1e1e2e;
+            }
+        }
+
+        .rows {
+            --height: fill-portion 6;
+            padding: 6px;
+            background: #1e1e2e;
+
+            .row {
+                padding: 5px;
+                background: #1e1e2e;
+                color: #cdd6f4;
+
+                .icon {
+                    --icon-size: 25px;
+                }
+            }
+
+            .row-selected {
+                background: #1e1e2e;
+                color: #f38ba8;
+            }
+        }
+
+        .scrollable {
+            width: 2px;
+            background: #6c7086;
+            border-radius: 5;
+
+            .scroller {
+                width: 4px;
+            }
+        }
+    }
+
+}
