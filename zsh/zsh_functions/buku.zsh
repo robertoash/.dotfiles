@@ -18,3 +18,12 @@ bk_o() {
         buku -o "$index"
     done
 }
+
+bk_so() {
+    if [ -z "$1" ]; then
+        echo "A search term is required."
+    else
+        arg=$1
+    fi
+    bk --np --oa "$arg"
+}
