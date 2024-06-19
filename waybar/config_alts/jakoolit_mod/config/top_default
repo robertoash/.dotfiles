@@ -31,6 +31,8 @@
 	],
 
 	"modules-right": [
+		"custom/in_office_idle",
+		"custom/separator#dot-line",
 		"custom/tibber_text",
 		"custom/tibber_icon",
 		"custom/separator#dot-line",
