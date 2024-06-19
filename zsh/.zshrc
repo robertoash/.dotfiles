@@ -14,7 +14,7 @@ fi
 # Pipx path
 export PATH="$PATH:/home/rash/.local/bin"
 
-# Add sutff to python path
+# Add stuff to python path
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
 
 
