@@ -580,6 +580,13 @@
         "tooltip" : true
     },
 
+    "custom/in_office_idle": {
+        "exec": "~/.config/scripts/waybar/in_office_idle.py",
+        "return-type": "json",
+        "interval" : 2,
+        "tooltip": true
+    },
+
     "custom/tibber_text": {
         "exec": "~/.config/scripts/waybar/tibber_price.py --text",
         "interval": 60,
