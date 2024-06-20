@@ -93,6 +93,7 @@ window#waybar.hidden {
 #custom-swaync,
 #custom-updater,
 #custom-in_office_idle,
+#custom-speedtest,
 #custom-vpn,
 #custom-weather,
 #custom-weather.clearNight,
@@ -151,7 +152,7 @@ window#waybar.hidden {
 
 #custom-keyboard,
 #memory {
-  color: @sky;
+  color: @green;
 }
 
 #disk {
@@ -296,7 +297,9 @@ window#waybar.hidden {
 }
 
 
-
+#custom-speedtest {
+  color: @blue;
+}
 
 #custom-tibber_text {
   padding-top: 3px;
