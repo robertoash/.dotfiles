@@ -6,6 +6,8 @@ import os
 import subprocess
 import sys
 
+import psutil
+
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
@@ -15,7 +17,6 @@ logging_utils.configure_logging()
 logging.info("Script launched.")
 
 
-# Function to load environment variables
 def load_environment_variables():
     try:
         result = (
@@ -38,7 +39,6 @@ def load_environment_variables():
         logging.error(f"Unexpected error while loading environment variables: {e}")
 
 
-# Function to check if the computer is unlocked
 def is_unlocked():
     try:
         user = subprocess.check_output("whoami").strip().decode()
@@ -62,7 +62,6 @@ def is_unlocked():
         return False
 
 
-# Function to get the state of input_boolean.rob_in_office
 def get_state():
     try:
         result = (
@@ -79,19 +78,69 @@ def get_state():
         return None
 
 
-# Load environment variables
-logging.info("Loading environment variables")
-load_environment_variables()
-
-# Check the state and print the JSON output
-state = get_state()
-if state:
-    print(
-        json.dumps(
-            {
-                "text": "󰀈" if state == "on" else "󰀒",
-                "tooltip": f"Presence idle_inhibit is {state}",
-                "class": "idle-blue" if state == "on" else "idle-grey",
-            }
+def start_inhibit(reason):
+    try:
+        logging.info(f"Systemd-inhibit started due to: {reason}")
+        process = subprocess.Popen(
+            [
+                "systemd-inhibit",
+                "--what=idle",
+                f"--why={reason}",
+                "bash",
+                "-c",
+                "sleep infinity",
+            ]
         )
-    )
+        with open("/tmp/inhibit_process.pid", "w") as f:
+            f.write(str(process.pid))
+        return process
+    except Exception as e:
+        logging.error(f"Error starting systemd-inhibit: {e}")
+        return None
+
+
+def stop_inhibit(process, reason):
+    try:
+        logging.info(f"Systemd-inhibit stopped due to: {reason}")
+        process.terminate()
+        os.remove("/tmp/inhibit_process.pid")
+    except Exception as e:
+        logging.error(f"Error stopping systemd-inhibit: {e}")
+
+
+def check_inhibit_process():
+    if os.path.exists("/tmp/inhibit_process.pid"):
+        with open("/tmp/inhibit_process.pid", "r") as f:
+            pid = int(f.read().strip())
+            if psutil.pid_exists(pid):
+                return psutil.Process(pid)
+    return None
+
+
+def main():
+    logging.info("Loading environment variables")
+    load_environment_variables()
+
+    inhibit_process = check_inhibit_process()
+    state = get_state()
+    output = {"text": "󰀒", "tooltip": "Error fetching state", "class": "idle-grey"}
+
+    if state:
+        if state == "on" and is_unlocked():
+            if not inhibit_process:
+                inhibit_process = start_inhibit("User is in the office")
+        else:
+            if inhibit_process:
+                stop_inhibit(inhibit_process, "User is no longer in the office")
+                inhibit_process = None
+        output = {
+            "text": "󰀈" if state == "on" else "󰀒",
+            "tooltip": f"Presence idle_inhibit is {state}",
+            "class": "idle-blue" if state == "on" else "idle-grey",
+        }
+
+    print(json.dumps(output))
+
+
+if __name__ == "__main__":
+    main()
