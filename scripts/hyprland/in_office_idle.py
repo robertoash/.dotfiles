@@ -95,7 +95,11 @@ def start_hypridle():
     try:
         logging.info("Starting hypridle")
         subprocess.Popen(
-            ["hypridle", "-c", os.path.expanduser("~/.config/hypr/hypridle.conf")]
+            [
+                "hypridle",
+                "-c",
+                os.path.expanduser("~/.config/hypr/hypridle_immediate.conf"),
+            ]
         )
     except Exception as e:
         logging.error(f"Error starting hypridle: {e}")
