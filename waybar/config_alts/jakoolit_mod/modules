@@ -588,8 +588,8 @@
     },
 
     "custom/speedtest": {
-        "exec": "~/.config/scripts/waybar/speedtest.py",
-        "interval": 900,
+        "exec": "cat /tmp/speedtest_output.json",
+        "interval": 10,
         "return-type": "json",
         "tooltip": true
     },
