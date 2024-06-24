@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 
 import psutil
 
@@ -14,7 +15,7 @@ from _utils import logging_utils
 
 # Configure logging
 logging_utils.configure_logging()
-logging.info("Script launched.")
+logging.getLogger().setLevel(logging.ERROR)
 
 
 def load_environment_variables():
@@ -30,9 +31,6 @@ def load_environment_variables():
             if line.startswith("export "):
                 key, value = line[len("export ") :].split("=", 1)
                 os.environ[key] = value.strip('"')
-        logging.info("Environment variables loaded successfully.")
-        logging.info(f"HASS_SERVER: {os.environ.get('HASS_SERVER')}")
-        logging.info(f"HASS_TOKEN: {os.environ.get('HASS_TOKEN')}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error loading environment variables: {e}")
     except Exception as e:
@@ -66,7 +64,8 @@ def get_state():
     try:
         result = (
             subprocess.check_output(
-                "/home/rash/.local/bin/hass-cli state get input_boolean.rob_in_office | awk -F '  +' 'NR==2 {print $3}'",
+                "/home/rash/.local/bin/hass-cli state get input_boolean.rob_in_office "
+                "| awk -F '  +' 'NR==2 {print $3}'",
                 shell=True,
             )
             .strip()
@@ -78,39 +77,31 @@ def get_state():
         return None
 
 
-def start_inhibit(reason):
+def start_hypridle():
     try:
-        logging.info(f"Systemd-inhibit started due to: {reason}")
         process = subprocess.Popen(
-            [
-                "systemd-inhibit",
-                "--what=idle",
-                f"--why={reason}",
-                "bash",
-                "-c",
-                "sleep infinity",
-            ]
+            ["hypridle", "-c", os.path.expanduser("~/.config/hypr/hypridle.conf")]
         )
-        with open("/tmp/inhibit_process.pid", "w") as f:
+        with open("/tmp/hypridle_process.pid", "w") as f:
             f.write(str(process.pid))
         return process
     except Exception as e:
-        logging.error(f"Error starting systemd-inhibit: {e}")
+        logging.error(f"Error starting hypridle: {e}")
         return None
 
 
-def stop_inhibit(process, reason):
+def stop_hypridle():
     try:
-        logging.info(f"Systemd-inhibit stopped due to: {reason}")
-        process.terminate()
-        os.remove("/tmp/inhibit_process.pid")
+        subprocess.check_call(["pkill", "hypridle"])
+        if os.path.exists("/tmp/hypridle_process.pid"):
+            os.remove("/tmp/hypridle_process.pid")
     except Exception as e:
-        logging.error(f"Error stopping systemd-inhibit: {e}")
+        logging.error(f"Error stopping hypridle: {e}")
 
 
-def check_inhibit_process():
-    if os.path.exists("/tmp/inhibit_process.pid"):
-        with open("/tmp/inhibit_process.pid", "r") as f:
+def check_hypridle_process():
+    if os.path.exists("/tmp/hypridle_process.pid"):
+        with open("/tmp/hypridle_process.pid", "r") as f:
             pid = int(f.read().strip())
             if psutil.pid_exists(pid):
                 return psutil.Process(pid)
@@ -118,28 +109,39 @@ def check_inhibit_process():
 
 
 def main():
+    output_file = "/tmp/in_office_idle_output.json"
+    interval = 2  # Interval in seconds
+    last_output = None
+
     logging.info("Loading environment variables")
     load_environment_variables()
 
-    inhibit_process = check_inhibit_process()
-    state = get_state()
-    output = {"text": "󰀒", "tooltip": "Error fetching state", "class": "idle-grey"}
+    while True:
+        hypridle_process = check_hypridle_process()
+        state = get_state()
+        output = {"text": "󰀒", "tooltip": "Error fetching state", "class": "idle-grey"}
 
-    if state:
-        if state == "on" and is_unlocked():
-            if not inhibit_process:
-                inhibit_process = start_inhibit("User is in the office")
-        else:
-            if inhibit_process:
-                stop_inhibit(inhibit_process, "User is no longer in the office")
-                inhibit_process = None
-        output = {
-            "text": "󰀈" if state == "on" else "󰀒",
-            "tooltip": f"Presence idle_inhibit is {state}",
-            "class": "idle-blue" if state == "on" else "idle-grey",
-        }
+        if state:
+            if state == "on" and is_unlocked():
+                if not hypridle_process:
+                    hypridle_process = start_hypridle()
+            else:
+                if hypridle_process:
+                    stop_hypridle()
+                    hypridle_process = None
+            output = {
+                "text": "󰀈" if state == "on" else "󰀒",
+                "tooltip": f"Presence idle_inhibit is {state}",
+                "class": "idle-blue" if state == "on" else "idle-grey",
+            }
 
-    print(json.dumps(output))
+        if last_output != output:
+            with open(output_file, "w") as f:
+                json.dump(output, f)
+            logging.info(f"Output: {output}")
+            last_output = output
+
+        time.sleep(interval)
 
 
 if __name__ == "__main__":
