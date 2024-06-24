@@ -7,8 +7,6 @@ import subprocess
 import sys
 import time
 
-import psutil
-
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
@@ -77,35 +75,30 @@ def get_state():
         return None
 
 
-def start_hypridle():
+def is_hypridle_running():
     try:
-        process = subprocess.Popen(
-            ["hypridle", "-c", os.path.expanduser("~/.config/hypr/hypridle.conf")]
-        )
-        with open("/tmp/hypridle_process.pid", "w") as f:
-            f.write(str(process.pid))
-        return process
-    except Exception as e:
-        logging.error(f"Error starting hypridle: {e}")
-        return None
+        result = subprocess.check_output(["pgrep", "-x", "hypridle"])
+        return bool(result.strip())
+    except subprocess.CalledProcessError:
+        return False
 
 
 def stop_hypridle():
     try:
+        logging.info("Stopping hypridle")
         subprocess.check_call(["pkill", "hypridle"])
-        if os.path.exists("/tmp/hypridle_process.pid"):
-            os.remove("/tmp/hypridle_process.pid")
-    except Exception as e:
+    except subprocess.CalledProcessError as e:
         logging.error(f"Error stopping hypridle: {e}")
 
 
-def check_hypridle_process():
-    if os.path.exists("/tmp/hypridle_process.pid"):
-        with open("/tmp/hypridle_process.pid", "r") as f:
-            pid = int(f.read().strip())
-            if psutil.pid_exists(pid):
-                return psutil.Process(pid)
-    return None
+def start_hypridle():
+    try:
+        logging.info("Starting hypridle")
+        subprocess.Popen(
+            ["hypridle", "-c", os.path.expanduser("~/.config/hypr/hypridle.conf")]
+        )
+    except Exception as e:
+        logging.error(f"Error starting hypridle: {e}")
 
 
 def main():
@@ -117,18 +110,16 @@ def main():
     load_environment_variables()
 
     while True:
-        hypridle_process = check_hypridle_process()
         state = get_state()
         output = {"text": "󰀒", "tooltip": "Error fetching state", "class": "idle-grey"}
 
         if state:
             if state == "on" and is_unlocked():
-                if not hypridle_process:
-                    hypridle_process = start_hypridle()
-            else:
-                if hypridle_process:
+                if is_hypridle_running():
                     stop_hypridle()
-                    hypridle_process = None
+            else:
+                if not is_hypridle_running():
+                    start_hypridle()
             output = {
                 "text": "󰀈" if state == "on" else "󰀒",
                 "tooltip": f"Presence idle_inhibit is {state}",
