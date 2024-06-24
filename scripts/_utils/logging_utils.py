@@ -8,7 +8,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 def configure_logging():
     base_scripts_dir = "~/.config/scripts"
-    base_log_dir = "~/.config/scripts/logs"
+    base_log_dir = "~/.config/scripts/_logs"
     log_limit = 30  # Number of log files to keep (one daily)
 
     # Expand the base directories
