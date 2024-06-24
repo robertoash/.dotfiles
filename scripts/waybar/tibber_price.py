@@ -16,7 +16,7 @@ from _utils import logging_utils
 
 # Configure logging
 logging_utils.configure_logging()
-logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.INFO)
 
 
 def fetch_prices():
