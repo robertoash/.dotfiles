@@ -595,14 +595,14 @@
     },
 
     "custom/tibber_text": {
-        "exec": "~/.config/scripts/waybar/tibber_price.py --text",
+        "exec": "cat /tmp/tibber_price_text_output.json",
         "interval": 60,
         "return-type": "json",
         "format": "{}",
         "tooltip": true
     },
     "custom/tibber_icon": {
-        "exec": "~/.config/scripts/waybar/tibber_price.py --icon",
+        "exec": "cat /tmp/tibber_price_icon_output.json",
         "interval": 60,
         "return-type": "json",
         "format": "{}",
