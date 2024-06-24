@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 
 import json
+import logging
 import os
 import subprocess
 import sys
-from datetime import datetime
+import time
+from datetime import datetime, timedelta
 
 import pytz
+
+# Add the custom script path to PYTHONPATH
+sys.path.append("/home/rash/.config/scripts")
+from _utils import logging_utils
+
+# Configure logging
+logging_utils.configure_logging()
+logging.getLogger().setLevel(logging.ERROR)
 
 
 def fetch_prices():
@@ -119,35 +129,53 @@ def fetch_prices():
 
 
 def main():
-    part = sys.argv[1]
-    current_price, arrow_icon, price_class, icon_class, next_3_hr_avg, error = (
-        fetch_prices()
-    )
+    text_output_file = "/tmp/tibber_price_text_output.json"
+    icon_output_file = "/tmp/tibber_price_icon_output.json"
+    last_text_output = None
+    last_icon_output = None
 
-    if error:
-        print(error)
-        return
+    logging.info("Script started.")
 
-    if part == "--text":
-        print(
-            json.dumps(
-                {
-                    "text": f"{current_price:.2f}kr",
-                    "tooltip": f"next 3 hour average: {next_3_hr_avg:.2f}",
-                    "class": price_class,
-                }
-            )
+    while True:
+        current_time = datetime.now(pytz.timezone("Europe/Stockholm"))
+        next_hour = (current_time + timedelta(hours=1)).replace(
+            minute=1, second=0, microsecond=0
         )
-    elif part == "--icon":
-        print(
-            json.dumps(
-                {
-                    "text": f"{arrow_icon}",
-                    "tooltip": f"next 3 hour average: {next_3_hr_avg:.2f}",
-                    "class": icon_class,
-                }
-            )
+        sleep_duration = (next_hour - current_time).total_seconds()
+
+        current_price, arrow_icon, price_class, icon_class, next_3_hr_avg, error = (
+            fetch_prices()
         )
+
+        if error:
+            logging.error(error)
+            continue
+
+        text_output = {
+            "text": f"{current_price:.2f}kr",
+            "tooltip": f"next 3 hour average: {next_3_hr_avg:.2f}",
+            "class": price_class,
+        }
+        icon_output = {
+            "text": f"{arrow_icon}",
+            "tooltip": f"next 3 hour average: {next_3_hr_avg:.2f}",
+            "class": icon_class,
+        }
+
+        if text_output != last_text_output:
+            with open(text_output_file, "w") as f:
+                json.dump(text_output, f)
+            logging.info(f"Output: {text_output}")
+            last_text_output = text_output
+
+        if icon_output != last_icon_output:
+            with open(icon_output_file, "w") as f:
+                json.dump(icon_output, f)
+            logging.info(f"Output: {icon_output}")
+            last_icon_output = icon_output
+
+        # Sleep until the start of the next hour
+        time.sleep(sleep_duration)
 
 
 if __name__ == "__main__":
