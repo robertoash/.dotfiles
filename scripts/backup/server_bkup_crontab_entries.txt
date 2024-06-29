@@ -1,5 +1,0 @@
-# Run the old_hp backup script at 3:30 AM every day
-30 3 * * * /home/rash/.config/scripts/backup/bkup_oldhp.py
-
-# Run the Proxmox backup script at 3:30 AM every day
-30 3 * * * /home/rash/.config/scripts/backup/bkup_proxmox.py
