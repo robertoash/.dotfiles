@@ -124,7 +124,7 @@ nss-mdns 0.15.1-1///pacman
 ntfs-3g 2022.10.3-1///pacman
 ntp 4.2.8.p18-1///pacman
 obsidian 1.6.5-1///pacman
-openssh 9.7p1-2///pacman
+openssh 9.8p1-1///pacman
 os-prober 1.81-1///pacman
 pacman-contrib 1.10.6-1///pacman
 pavucontrol 1:6.0-1///pacman
@@ -221,7 +221,7 @@ code-insiders-bin 1.91.0_1718000210-1///yay
 greetd-tuigreet-git 0.9.1.r0.g86bf7bb-0///yay
 hypridle-git 0.1.2.r0.g7cff4581-1///yay
 hyprkeys 1.0.3-1///yay
-hyprland-git 0.40.0.r183.1423707d-1///yay
+hyprland-git 0.41.2.r14.d7ea1b77-1///yay
 hyprlock-git 0.2.0.r20.g2448774d-1///yay
 hyprpaper-git 0.7.0.r8.gf4abf59-3///yay
 insync-thunar 3.7.9.50368-1///yay
