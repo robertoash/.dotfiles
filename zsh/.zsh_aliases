@@ -11,6 +11,9 @@ alias sudo="sudo "
 ## Backup aliases
 alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 alias bkup_packages="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
+alias bkup_oldhp="bash ~/.config/scripts/backup/run_oldhp_bkup.sh"
+alias bkup_proxmox="bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
+alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
 
 # History aliases
 alias stop_history="stp_history"
@@ -34,7 +37,6 @@ alias bko="bk_o" # Buku with fzf
 alias bk_c="switch_buku_db current"
 alias bk_r="switch_buku_db rash"
 alias bk_p="switch_buku_db rashp"
-
 # Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
 alias lll="ll -l -a"
@@ -73,8 +75,9 @@ alias vault="~/.config/scripts/backup/vault.py"
 # Zellij
 alias zj="zsh -l -c 'zellij attach --index 0 || zellij'"
 #Other
-alias vim="vim -u ~/.config/vim/vimrc"
-alias lf="lfcd"
 alias code="code-insiders"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
+alias hyprland="Hyprland"
+alias lf="lfcd"
+alias vim="vim -u ~/.config/vim/vimrc"
 alias xeyes="xprop"
