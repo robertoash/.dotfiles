@@ -4,5 +4,6 @@ source ~/.config/zsh/zsh_functions/shell_helper.zsh
 source ~/.config/zsh/zsh_functions/shell_history.zsh
 source ~/.config/zsh/zsh_functions/symlinks.zsh
 source ~/.config/zsh/zsh_functions/fzf.zsh
+source ~/.config/zsh/zsh_functions/brave.zsh
 source ~/.config/zsh/zsh_functions/buku.zsh
 source ~/.config/zsh/zsh_functions/switch_buku.zsh
