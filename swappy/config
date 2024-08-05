@@ -1,10 +1,11 @@
 [Default]
-save_dir=$HOME/pictures/screenshots/
-save_filename_format=swappy-%Y%m%d-%H%M%S.png
-show_panel=true
-line_size=5
-text_size=14
-text_font=JetBrainsMono NF
-paint_mode=ellipse
-early_exit=true
-fill_shape=false
+save_dir = $HOME/pictures/screenshots/
+save_filename_format = swappy-%Y%m%d_%H%M%S.png
+show_panel = true
+default_tool = ellipse
+line_size = 5
+text_size = 14
+text_font = JetBrainsMono NF
+paint_mode = ellipse
+early_exit = true
+fill_shape = false
