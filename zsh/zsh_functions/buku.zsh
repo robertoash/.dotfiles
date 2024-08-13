@@ -24,9 +24,15 @@ bk_o() {
             # Argument is a number, open the bookmark with that index
             buku -o "$1"
         else
-            # Argument is a string, perform a search and open
+            # Argument is a string, perform a fuzzy search and open the first match
             arg=$1
-            bk --np --oa "$arg"
+            first_match=$(buku -p -f 5 | column -ts$'\t' | fzf --filter="$arg")
+
+            if [ -n "$first_match" ]; then
+                index="$(echo "$first_match" | awk 'NR==1 {print $1}')"
+                buku -p "$index"
+                buku -o "$index"
+            fi
         fi
     fi
 }
