@@ -95,6 +95,7 @@ bk_o() {
                 echo "  bk_o --url 1        # Print the URL at index 1."
                 echo "  bk_o --url string   # Fuzzy search and print the first matching URL for 'string'."
                 return
+                ;;
             --url)
                 shift
                 if [ -z "$1" ]; then
