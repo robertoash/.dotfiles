@@ -27,6 +27,7 @@ alias z_max="b_zen https://max.se"
 alias z_px="b_zen https://perplexity.ai"
 alias z_yt="b_zen https://youtube.com"
 alias z_gpt="b_zen https://chatgpt.com/"
+alias z_="b_zen"
 
 ## App aliases
 # Neovim
