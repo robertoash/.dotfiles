@@ -17,6 +17,11 @@ export PATH="$PATH:/home/rash/.local/bin"
 # Add stuff to python path
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
 
+# Pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
 
 # #################################
 # # History & Cache
