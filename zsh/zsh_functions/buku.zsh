@@ -74,7 +74,8 @@ bk_o() {
                 echo
                 echo "Options:"
                 echo "  --help    Display this help message."
-                echo "  --url     Extract and print URL based on fuzzy search:"
+                echo "  --url     Extract and print URL based on fuzzy search."
+                echo "            This option is mainly used to ouput URLs for other commands to use."
                 echo
                 echo "Usage without --url:"
                 echo "  - Without any argument: Opens a multi-select fuzzy search to open multiple bookmarks."
