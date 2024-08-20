@@ -20,14 +20,13 @@ alias stop_history="stp_history"
 alias start_history="strt_history"
 
 ## Zen websites
-alias z_disney="brave_zen https://disneyplus.se"
-alias z_svt="brave_zen https://svtplay.se"
-alias z_netflix="brave_zen https://netflix.com"
-alias z_max="brave_zen https://max.se"
-alias z_px="brave_zen https://perplexity.ai"
-alias z_yt="brave_zen https://youtube.com"
-alias z_gpt="brave_zen https://chatgpt.com/"
-alias z_="brave_zen"
+alias z_disney="b_zen https://disneyplus.se"
+alias z_svt="b_zen https://svtplay.se"
+alias z_netflix="b_zen https://netflix.com"
+alias z_max="b_zen https://max.se"
+alias z_px="b_zen https://perplexity.ai"
+alias z_yt="b_zen https://youtube.com"
+alias z_gpt="b_zen https://chatgpt.com/"
 
 ## App aliases
 # Neovim
