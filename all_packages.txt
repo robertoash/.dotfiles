@@ -243,5 +243,6 @@ sublime-text-4 4.4180-1///yay
 ticktick 6.0.0-1///yay
 zellij-git 0.40.1.r34.g5b3a9b5-1///yay
 homeassistant-cli 0.9.6///pipx
+notesh 0.8.0///pipx
 shell-gpt 1.4.0///pipx
 svt-text 0.2.1///pipx
