@@ -58,6 +58,8 @@ alias "??"="gh copilot suggest -t shell "
 alias "??g"="gh copilot suggest -t git "
 alias "??gh"="gh copilot suggest -t gh "
 alias "??x"="gh copilot explain "
+# Notesh
+alias note="notesh -f ~/notes/quick.json"
 # Docker Scripts
 alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
 alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
