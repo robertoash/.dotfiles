@@ -12,6 +12,7 @@
 !alacritty/
 !dunst/
 !foot/
+!fzf-tab/
 !hypr/
 !lf/
 !mc/
@@ -35,6 +36,7 @@
 !alacritty/**/*
 !dunst/**/*
 !foot/**/*
+!fzf-tab/**/*
 !hypr/**/*
 !lf/**/*
 !mc/**/*

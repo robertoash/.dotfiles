@@ -71,6 +71,7 @@ source ~/.config/zsh/.zsh_aliases
 # Theme
 source ~/.config/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme
 # Plugins
+source ~/.config/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh
 source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.config/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
@@ -101,6 +102,8 @@ bindkey -s '^o' 'lfcd\n'
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 # Suggestion Strategy
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+# FZF Tab Config
+source ~/.config/fzf-tab/fzf-tab.zsh
 
 
 # #################################
