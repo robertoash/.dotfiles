@@ -53,3 +53,8 @@ function llf() {
         eval echo "${last_files[$index]}"
     fi
 }
+
+# Shortcut to find a file anywhere by name
+function ff() {
+    sudo find / -iname "$1" 2>/dev/null
+}
