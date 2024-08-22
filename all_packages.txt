@@ -8,7 +8,7 @@ base 3-2///pacman
 base-devel 1-1///pacman
 bash-completion 2.14.0-2///pacman
 bat 0.24.0-2///pacman
-bind 9.20.0-1///pacman
+bind 9.20.1-1///pacman
 blueman 2.4.3-1///pacman
 bluez 5.77-1///pacman
 bluez-utils 5.77-1///pacman
@@ -42,10 +42,10 @@ efibootmgr 18-3///pacman
 efitools 1.9.2-5///pacman
 endeavouros-keyring 20231222-1///pacman
 endeavouros-mirrorlist 24.7-1///pacman
-eos-apps-info 24.8-2///pacman
+eos-apps-info 24.8.1-1///pacman
 eos-dracut 1.4-1///pacman
 eos-hooks 1.16-1///pacman
-eos-log-tool 24.8-1///pacman
+eos-log-tool 24.8.1-1///pacman
 eos-packagelist 2.3.1-1///pacman
 eos-quickstart 1.4.1-1///pacman
 eos-rankmirrors 24.7-1///pacman
@@ -149,7 +149,7 @@ python-pyqt5 5.15.11-1///pacman
 python-pytz 2024.1-2///pacman
 rebuild-detector 4.4.3-3///pacman
 reflector 2023-2///pacman
-reflector-simple 2024.8-1///pacman
+reflector-simple 2024.8.1-1///pacman
 reiserfsprogs 3.6.27-5///pacman
 ripgrep 14.1.0-1///pacman
 rofimoji 6.3.2-1///pacman
@@ -191,7 +191,7 @@ usbutils 017-1///pacman
 vi 1:070224-6///pacman
 vlc 3.0.21-2///pacman
 waybar 0.10.4-2///pacman
-welcome 24.8-1///pacman
+welcome 24.8.1-1///pacman
 wev 1.0.0-13///pacman
 wget 1.24.5-3///pacman
 which 2.21-6///pacman
