@@ -26,7 +26,7 @@ alias z_netflix="b_zen --web https://netflix.com"
 alias z_max="b_zen --web https://max.se"
 alias z_yt="b_zen --web https://youtube.com"
 alias z_ppx="b_zen --web https://perplexity.ai"
-alias z_gpt="b_zen --web https://chatgpt.com/""
+alias z_gpt="b_zen --web https://chatgpt.com/"
 alias zen="b_zen"
 
 ## App aliases
