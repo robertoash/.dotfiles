@@ -39,10 +39,12 @@
 		"custom/vpn",
 		"custom/separator#dot-line",
 		"network",
-		"custom/separator#dot-line",
-		"bluetooth",
+		//"custom/separator#dot-line",
+		//"bluetooth",
 		"custom/separator#dot-line",
 		"pulseaudio",
+		"custom/separator#dot-line",
+		"tray",
 		"custom/separator#dot-line",
 		"clock"
 	]
