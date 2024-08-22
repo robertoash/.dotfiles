@@ -1,5 +1,5 @@
 # Function to get the last N-th unique directory from the command history
-function lld() {
+lld() {
     local index=${1:-1}  # Default index is 1 if no argument is provided
     local last_dirs=()
     local last_dir=""
@@ -27,7 +27,7 @@ function lld() {
 }
 
 # Function to get the last N-th unique file from the command history
-function llf() {
+llf() {
     local index=${1:-1}  # Default index is 1 if no argument is provided
     local last_files=()
     local last_file=""
@@ -55,6 +55,25 @@ function llf() {
 }
 
 # Shortcut to find a file anywhere by name
-function ff() {
+ff() {
     sudo find / -iname "$1" 2>/dev/null
 }
+
+# Launch apps in a specific workspace
+in_ws() {
+  local workspace_number=$1
+  shift
+  local command="$@"
+
+  # Start the job with a descriptive name
+  ( eval "$command") &
+
+  # Wait briefly to allow the window to open
+  sleep 0.5
+
+  # Move the most recently focused window to the specified workspace
+  hyprctl dispatch movetoworkspace $workspace_number
+}
+
+
+
