@@ -14,6 +14,7 @@ def run_command(cmd):
 active_window_json = run_command("hyprctl activewindow -j")
 active_window = json.loads(active_window_json)
 window_id = active_window.get("address")
+floating = active_window.get("floating")
 pinned = active_window.get("pinned")
 
 if pinned:
@@ -21,6 +22,9 @@ if pinned:
     run_command("hyprctl dispatch pin")
     run_command(f"hyprctl setprop address:{window_id} nodim 0")
 else:
+    # Float the window first if it's not already floating
+    if not floating:
+        run_command("~/.config/scripts/hyprland/lagom_floating.py")
     # Pin the window and set nodim property
     run_command("hyprctl dispatch pin")
     run_command(f"hyprctl setprop address:{window_id} nodim 1")
