@@ -49,6 +49,10 @@ if __name__ == "__main__":
     window_info = get_active_window_info()
 
     if window_info:
+        # Check if the window is floating
+        if not window_info.get("floating"):
+            sys.exit("Window is not floating. Exiting without snapping.")
+
         was_pinned = "pinned" in window_info and window_info["pinned"]
         if was_pinned:
             run_command("hyprctl dispatch pin")
