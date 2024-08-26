@@ -1,6 +1,6 @@
 b_zen() {
   if [ -z "$1" ]; then
-      brave --app=$(bk_o --url)
+      brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url)
       echo "Opening Buku Fuzzy Search"
   else
     case $1 in
@@ -34,24 +34,24 @@ b_zen() {
         shift
         case $1 in
           https://*|http://*)
-            brave --app="$1"
+            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app="$1"
             echo "Opening $1"
             return
             ;;
           *)
-            brave --app="https://$1"
+            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app="https://$1"
             echo "Opening https://$1"
             return
             ;;
         esac
         ;;
       [0-9]*)
-        brave --app=$(bk_o --url "$1")
+        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url "$1")
         echo "Opening Buku index $1"
         return
         ;;
       *)
-        brave --app=$(bk_o --url "$1")
+        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url "$1")
         echo "Opening Buku first match for string '$1'"
         return
         ;;
