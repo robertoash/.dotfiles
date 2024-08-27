@@ -64,7 +64,7 @@ switch_buku_db() {
     }
 
     # Function to create a backup
-    create_backup() {
+    create_or_update_backup() {
         local file="$1"
         local backup="${file}.backup"
         cp "$file" "$backup" #&& echo "Backup created: $backup"
@@ -76,6 +76,8 @@ switch_buku_db() {
         local current_db
         local current_suffix=""
         local target_suffix=""
+        local renamed_current=0
+        local renamed_target=0
 
         # Simulate corrupted database error for rashp
         if [ "$target_db" = "rashp.db" ]; then
@@ -107,13 +109,16 @@ switch_buku_db() {
             done
         fi
 
-        # Create backups before any file operations
-        if [ -f "$DB_DIR/bookmarks.db$current_suffix" ]; then
-            create_backup "$DB_DIR/bookmarks.db$current_suffix"
-        fi
-        if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
-            create_backup "$DB_DIR/$target_db$target_suffix"
-        fi
+        # Function to rollback changes
+        rollback_changes() {
+            if [ $renamed_current -eq 1 ]; then
+                mv "$DB_DIR/$current_db$current_suffix" "$DB_DIR/bookmarks.db$current_suffix"
+            fi
+            if [ $renamed_target -eq 1 ]; then
+                mv "$DB_DIR/bookmarks.db$target_suffix" "$DB_DIR/$target_db$target_suffix"
+            fi
+            echo "Changes rolled back due to an error."
+        }
 
         # Rename the current bookmarks.db or bookmarks.db.<suffix> to its original name
         if [ -f "$DB_DIR/bookmarks.db$current_suffix" ]; then
@@ -125,18 +130,24 @@ switch_buku_db() {
                 echo "Error: Failed to rename current database."
                 return 1
             fi
+            renamed_current=1
         fi
 
-        # Rename the target_db to bookmarks.db or bookmarks.db.<suffix>
+        # Create or update backup of the target_db before renaming
         if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
+            create_or_update_backup "$DB_DIR/$target_db$target_suffix"
+
             if [ -f "$DB_DIR/bookmarks.db$target_suffix" ]; then
                 echo "Error: Cannot rename target database. File bookmarks.db$target_suffix already exists."
+                rollback_changes
                 return 1
             fi
             if ! mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix"; then
                 echo "Error: Failed to rename target database."
+                rollback_changes
                 return 1
             fi
+            renamed_target=1
             if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
                 echo "Database '$target_db' loaded successfully."
             fi
