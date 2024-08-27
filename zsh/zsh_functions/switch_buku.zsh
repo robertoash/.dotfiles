@@ -4,7 +4,7 @@ CURRENT_DB_FILE="$DB_DIR/current_db.txt"
 IS_SWITCH_STARTUP=1  # Variable to indicate startup mode
 
 # Save the original BROWSER value
-ORIGINAL_BROWSER="${BROWSER:-brave}"
+ORIGINAL_BROWSER="${BROWSER:-zen-browser}"
 
 # Export the original BROWSER value so it can be accessed in the wrapper script
 export ORIGINAL_BROWSER
