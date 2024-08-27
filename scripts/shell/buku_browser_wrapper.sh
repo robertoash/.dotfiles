@@ -22,7 +22,7 @@ open_local_file() {
 if ps -o command= -p $PPID | grep -q '[b]uku'; then
     if is_url "$1"; then
         if [ "$current_db" = "rashp.db" ]; then
-            brave --incognito "$@"
+            mullvad-browser "$@"
         else
             # Call the original browser stored in an environment variable
             "$ORIGINAL_BROWSER" "$@"

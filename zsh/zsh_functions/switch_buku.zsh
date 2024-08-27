@@ -63,6 +63,13 @@ switch_buku_db() {
         echo "Substituted location: $substituted_location"
     }
 
+    # Function to create a backup
+    create_backup() {
+        local file="$1"
+        local backup="${file}.backup"
+        cp "$file" "$backup" #&& echo "Backup created: $backup"
+    }
+
     # Function to switch database
     switch_db() {
         local target_db="${1}.db"
@@ -100,14 +107,36 @@ switch_buku_db() {
             done
         fi
 
+        # Create backups before any file operations
+        if [ -f "$DB_DIR/bookmarks.db$current_suffix" ]; then
+            create_backup "$DB_DIR/bookmarks.db$current_suffix"
+        fi
+        if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
+            create_backup "$DB_DIR/$target_db$target_suffix"
+        fi
+
         # Rename the current bookmarks.db or bookmarks.db.<suffix> to its original name
         if [ -f "$DB_DIR/bookmarks.db$current_suffix" ]; then
-            mv "$DB_DIR/bookmarks.db$current_suffix" "$DB_DIR/$current_db$current_suffix" 2>/dev/null || true
+            if [ -f "$DB_DIR/$current_db$current_suffix" ]; then
+                echo "Error: Cannot rename current database. File $current_db$current_suffix already exists."
+                return 1
+            fi
+            if ! mv "$DB_DIR/bookmarks.db$current_suffix" "$DB_DIR/$current_db$current_suffix"; then
+                echo "Error: Failed to rename current database."
+                return 1
+            fi
         fi
 
         # Rename the target_db to bookmarks.db or bookmarks.db.<suffix>
         if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
-            mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix" 2>/dev/null || true
+            if [ -f "$DB_DIR/bookmarks.db$target_suffix" ]; then
+                echo "Error: Cannot rename target database. File bookmarks.db$target_suffix already exists."
+                return 1
+            fi
+            if ! mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix"; then
+                echo "Error: Failed to rename target database."
+                return 1
+            fi
             if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
                 echo "Database '$target_db' loaded successfully."
             fi
