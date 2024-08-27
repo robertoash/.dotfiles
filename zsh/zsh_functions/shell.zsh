@@ -56,7 +56,7 @@ llf() {
 
 # Shortcut to find a file anywhere by name
 ff() {
-    sudo find / -path "*/.snapshots/*" -prune -o -iname "$1" -print 2>/dev/null
+    sudo find / -path "*/.snapshots/*" -prune -o -iname "*$1*" -print 2>/dev/null
 }
 
 # Launch apps in a specific workspace
