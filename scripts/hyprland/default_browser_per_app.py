@@ -44,11 +44,11 @@ def main():
     # Browser mappings
     browser_map = {
         # Format: (window_class, string_to_search_for_in_window_title): 'browser.desktop'
-        ("default", "*"): "brave-browser.desktop",
+        ("default", "*"): "zen-browser.desktop",
         ("Code", " Work "): "chromium.desktop",
-        ("Code", "*"): "brave-browser.desktop",
+        ("Code", "*"): "zen-browser.desktop",
         ("code-insiders-url-handler", " Work "): "chromium.desktop",
-        ("code-insiders-url-handler", "*"): "brave-browser.desktop",
+        ("code-insiders-url-handler", "*"): "zen-browser.desktop",
         ("chromium", "*"): "chromium.desktop",
         ("Slack", "*"): "chromium.desktop",
     }
