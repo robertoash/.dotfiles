@@ -56,7 +56,17 @@ llf() {
 
 # Shortcut to find a file anywhere by name
 ff() {
-    sudo find / -path "*/.snapshots/*" -prune -o -iname "*$1*" -print 2>/dev/null
+    local selections
+    selections=$(sudo find / -path "*/.snapshots/*" -prune -o -iname "*$1*" -print 2>/dev/null \
+    | command fzf --tac --multi --preview 'bat --color=always {}' \
+    --preview-window '~3' \
+    --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa')
+
+    if [ -n "$selections" ]; then
+        echo "$selections" | while IFS= read -r file; do
+            xdg-open "$file" &
+        done
+    fi
 }
 
 # Launch apps in a specific workspace
