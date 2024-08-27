@@ -1,5 +1,6 @@
 # Set global variables
 DB_DIR=~/.local/share/buku
+BACKUP_DIR="$DB_DIR/bkups"
 CURRENT_DB_FILE="$DB_DIR/current_db.txt"
 IS_SWITCH_STARTUP=1  # Variable to indicate startup mode
 
@@ -17,6 +18,17 @@ set_browser_mode() {
 
 switch_buku_db() {
     local WATCH_FILE="$DB_DIR/.watch_pid"
+    local encrypt_flag=""
+    local current_db=$(cat "$CURRENT_DB_FILE")
+
+    if [[ "$@" == *"--enc"* ]]; then
+        encrypt_flag="--enc"
+    fi
+
+    # If current_db is rashp, set encrypt_flag
+    if [[ "$current_db" == "rashp.db" ]]; then
+        encrypt_flag="--enc"
+    fi
 
     # Ensure tracking files exist
     [ -f "$CURRENT_DB_FILE" ] || echo "rash.db" > "$CURRENT_DB_FILE"
@@ -66,13 +78,35 @@ switch_buku_db() {
     # Function to create a backup
     create_or_update_backup() {
         local file="$1"
-        local backup="${file}.backup"
-        cp "$file" "$backup" #&& echo "Backup created: $backup"
+        local file_name=$(basename "$file")
+        local base_name="${file_name%.*}"  # Remove the last extension
+        local extension="${file_name##*.}"  # Get the last extension
+        local backup
+
+        # Remove .backup from the base_name if it exists
+        base_name="${base_name%.backup}"
+
+        # If the file is a .gpg file, keep the .gpg extension in the backup
+        if [[ "$extension" == "gpg" ]]; then
+            backup="$BACKUP_DIR/${base_name}.backup.gpg"
+        else
+            backup="$BACKUP_DIR/${base_name}.backup"
+        fi
+
+        # Ensure the backup directory exists
+        mkdir -p "$BACKUP_DIR"
+
+        # Remove any existing backup
+        rm -f "$backup"
+
+        # Create the new backup
+        cp "$file" "$backup" && echo "Backup created: $backup"
     }
 
     # Function to switch database
     switch_db() {
         local target_db="${1}.db"
+        local encrypt_flag="$2"
         local current_db
         local current_suffix=""
         local target_suffix=""
@@ -102,8 +136,8 @@ switch_buku_db() {
         fi
 
         # Determine the suffix for the target_db
-        if find "$DB_DIR" -name "${target_db}*" | grep -q .; then
-            for file in "$DB_DIR/${target_db}"*; do
+        if find "$DB_DIR" -name "${target_db%.*}*" | grep -q .; then
+            for file in "$DB_DIR/${target_db%.*}"*; do
                 target_suffix=$(get_suffix "$file")
                 break
             done
@@ -131,11 +165,34 @@ switch_buku_db() {
                 return 1
             fi
             renamed_current=1
+
+            # Encrypt the current database if it's rashp or if --enc flag is provided
+            if [ "$current_db" = "rashp.db" ] || [ "$encrypt_flag" = "--enc" ]; then
+                gpg -c --cipher-algo AES256 "$DB_DIR/$current_db$current_suffix" && rm "$DB_DIR/$current_db$current_suffix"
+                echo "Current database encrypted: $DB_DIR/$current_db$current_suffix.gpg"
+            fi
         fi
 
-        # Create or update backup of the target_db before renaming
-        if [ -f "$DB_DIR/$target_db$target_suffix" ]; then
-            create_or_update_backup "$DB_DIR/$target_db$target_suffix"
+        # Create or update backup of the target_db before decrypting or renaming
+        if [ -f "$DB_DIR/$target_db$target_suffix" ] || [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
+            if [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
+                create_or_update_backup "$DB_DIR/${target_db%.*}.gpg"
+                echo "Decrypting ${target_db%.*}.gpg. Please enter your password."
+                if ! gpg --decrypt --output "$DB_DIR/$target_db" "$DB_DIR/${target_db%.*}.gpg"; then
+                    echo "Decryption failed. Aborting database switch."
+                    return 1
+                fi
+                # Don't remove the original encrypted file
+            else
+                create_or_update_backup "$DB_DIR/$target_db$target_suffix"
+            fi
+
+            # Check if the target database is encrypted and decrypt if necessary
+            if [ -f "$DB_DIR/${target_db}.gpg" ]; then
+                gpg -d "$DB_DIR/${target_db}.gpg" > "$DB_DIR/$target_db" && rm "$DB_DIR/${target_db}.gpg"
+                echo "Target database decrypted: $DB_DIR/$target_db"
+                target_suffix=""
+            fi
 
             if [ -f "$DB_DIR/bookmarks.db$target_suffix" ]; then
                 echo "Error: Cannot rename target database. File bookmarks.db$target_suffix already exists."
@@ -152,13 +209,8 @@ switch_buku_db() {
                 echo "Database '$target_db' loaded successfully."
             fi
         else
-            # Start monitoring for bookmarks.db creation in the background
-            if [ -f "$WATCH_FILE" ]; then
-                kill "$(cat "$WATCH_FILE")" 2>/dev/null || true
-                rm "$WATCH_FILE"
-            fi
-            ( monitor_bookmarks_db "$target_db" & echo $! > "$WATCH_FILE" ) > /dev/null
-            echo "Database '$target_db' does not exist. It will be created automatically."
+            echo "Error: Target database $target_db not found."
+            return 1
         fi
 
         # Update CURRENT_DB_FILE
@@ -170,7 +222,7 @@ switch_buku_db() {
     if [ "$1" = "current" ]; then
         get_current_db_path
     else
-        switch_db "$1"
+        switch_db "$1" "$encrypt_flag"
     fi
 }
 
