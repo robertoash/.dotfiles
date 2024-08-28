@@ -38,7 +38,8 @@ def backup_old_hp():
         elapsed_time = end_time - start_time
         minutes, seconds = divmod(elapsed_time, 60)
         logging.info(
-            f"[bkup_oldhp]: Backup completed successfully in {int(minutes)}m{int(seconds)}s"
+            f"[bkup_oldhp]: Backup completed successfully in "
+            f"{int(minutes)}m{int(seconds)}s"
         )
     except subprocess.CalledProcessError as e:
         logging.error(f"[bkup_oldhp]: ERROR during backup: {e}")
