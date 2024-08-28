@@ -9,11 +9,13 @@
 alias sudo="sudo "
 
 ## Backup aliases
-alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 alias bkup_packages="~/.config/scripts/backup/package_requirements.py -s ~/.config/all-packages.txt"
+alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 alias bkup_oldhp="bash ~/.config/scripts/backup/run_oldhp_bkup.sh"
 alias bkup_proxmox="bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
 alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
+alias bkup_buku="bash ~/.config/scripts/backup/run_buku_bkup.sh"
+alias bkup_all="bkup_packages && bkup_system && bkup_servers && bkup_buku"
 
 # History aliases
 alias stop_history="stp_history"
