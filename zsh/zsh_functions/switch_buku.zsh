@@ -19,7 +19,7 @@ set_browser_mode() {
 switch_buku_db() {
     local WATCH_FILE="$DB_DIR/.watch_pid"
     local encrypt_flag=""
-    local current_db=$(cat "$CURRENT_DB_FILE")
+    local current_db=$(cat "$CURRENT_DB_FILE" 2>/dev/null || echo "rash.db")
 
     if [[ "$@" == *"--enc"* ]]; then
         encrypt_flag="--enc"
@@ -100,18 +100,27 @@ switch_buku_db() {
         rm -f "$backup"
 
         # Create the new backup
-        cp "$file" "$backup" && echo "Backup created: $backup"
+        cp "$file" "$backup" #&& echo "Backup created: $backup"
     }
 
     # Function to switch database
     switch_db() {
-        local target_db="${1}.db"
+        local target_db=$(basename "${1%.*}").db
         local encrypt_flag="$2"
         local current_db
         local current_suffix=""
         local target_suffix=""
         local renamed_current=0
         local renamed_target=0
+
+        # Read the current database from the tracking file, or use "rash.db" if file doesn't exist
+        current_db=$(cat "$CURRENT_DB_FILE" 2>/dev/null || echo "rash.db")
+
+        # Check if bookmarks.db exists and handle startup scenario
+        if [ -f "$DB_DIR/bookmarks.db" ] && [ ! -f "$DB_DIR/$target_db" ] && [ "$target_db" = "$current_db" ]; then
+            #echo "Already using $target_db (currently named bookmarks.db)"
+            return 0
+        fi
 
         # Simulate corrupted database error for rashp
         if [ "$target_db" = "rashp.db" ]; then
@@ -123,9 +132,6 @@ switch_buku_db() {
             echo "Error: target_db cannot be bookmarks.db"
             return 1
         fi
-
-        # Read the current database from the tracking file
-        current_db=$(cat "$CURRENT_DB_FILE")
 
         # Determine the suffix for the current bookmarks.db
         if find "$DB_DIR" -name "bookmarks.db*" | grep -q .; then
@@ -173,11 +179,17 @@ switch_buku_db() {
             fi
         fi
 
+        # If the target database doesn't exist and it's startup, create an empty database
+        if [ ! -f "$DB_DIR/$target_db$target_suffix" ] && [ ! -f "$DB_DIR/${target_db%.*}.gpg" ] && [ "$IS_SWITCH_STARTUP" -eq 1 ]; then
+            touch "$DB_DIR/$target_db"
+            echo "Created empty database: $DB_DIR/$target_db"
+        fi
+
         # Create or update backup of the target_db before decrypting or renaming
         if [ -f "$DB_DIR/$target_db$target_suffix" ] || [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
             if [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
                 create_or_update_backup "$DB_DIR/${target_db%.*}.gpg"
-                echo "Decrypting ${target_db%.*}.gpg. Please enter your password."
+                #echo "Decrypting ${target_db%.*}.gpg. Please enter your password."
                 if ! gpg --decrypt --output "$DB_DIR/$target_db" "$DB_DIR/${target_db%.*}.gpg"; then
                     echo "Decryption failed. Aborting database switch."
                     return 1
@@ -190,7 +202,7 @@ switch_buku_db() {
             # Check if the target database is encrypted and decrypt if necessary
             if [ -f "$DB_DIR/${target_db}.gpg" ]; then
                 gpg -d "$DB_DIR/${target_db}.gpg" > "$DB_DIR/$target_db" && rm "$DB_DIR/${target_db}.gpg"
-                echo "Target database decrypted: $DB_DIR/$target_db"
+                #echo "Target database decrypted: $DB_DIR/$target_db"
                 target_suffix=""
             fi
 
@@ -206,7 +218,7 @@ switch_buku_db() {
             fi
             renamed_target=1
             if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
-                echo "Database '$target_db' loaded successfully."
+                #echo "Database '$target_db' loaded successfully."
             fi
         else
             echo "Error: Target database $target_db not found."
@@ -222,11 +234,11 @@ switch_buku_db() {
     if [ "$1" = "current" ]; then
         get_current_db_path
     else
-        switch_db "$1" "$encrypt_flag"
+        switch_db "$(basename "$1")" "$encrypt_flag"
     fi
 }
 
-# Call switch_buku_db on startup to ensure the correct db is set
-switch_buku_db rash
+# Modify the startup call to use the full path
+switch_buku_db "$DB_DIR/rash"
 # After the startup is complete, set IS_STARTUP to 0
 IS_SWITCH_STARTUP=0
