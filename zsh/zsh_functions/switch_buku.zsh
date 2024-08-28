@@ -10,36 +10,22 @@ ORIGINAL_BROWSER="${BROWSER:-zen-browser}"
 # Export the original BROWSER value so it can be accessed in the wrapper script
 export ORIGINAL_BROWSER
 
-# Function to set BROWSER mode based on the current database
-set_browser_mode() {
-    local current_db=$(cat "$CURRENT_DB_FILE")
-    export BROWSER="$HOME/.config/scripts/shell/buku_browser_wrapper.sh"
-}
-
 switch_buku_db() {
     local WATCH_FILE="$DB_DIR/.watch_pid"
     local encrypt_flag=""
     local current_db=$(cat "$CURRENT_DB_FILE" 2>/dev/null || echo "rash.db")
 
-    if [[ "$@" == *"--enc"* ]]; then
-        encrypt_flag="--enc"
-    fi
+    # Helper functions
+    set_browser_mode() {
+        local current_db=$(cat "$CURRENT_DB_FILE")
+        export BROWSER="$HOME/.config/scripts/shell/buku_browser_wrapper.sh"
+    }
 
-    # If current_db is rashp, set encrypt_flag
-    if [[ "$current_db" == "rashp.db" ]]; then
-        encrypt_flag="--enc"
-    fi
-
-    # Ensure tracking files exist
-    [ -f "$CURRENT_DB_FILE" ] || echo "rash.db" > "$CURRENT_DB_FILE"
-
-    # Function to monitor the creation of bookmarks.db or bookmarks.db.<suffix>
     monitor_bookmarks_db() {
         local target_db="$1"
 
         while true; do
             if find "$DB_DIR" -name "bookmarks.db*" | grep -q .; then
-                # Update tracking file
                 echo "$target_db" > "$CURRENT_DB_FILE"
                 set_browser_mode
                 break
@@ -48,7 +34,6 @@ switch_buku_db() {
         done
     }
 
-    # Function to get the suffix of a file
     get_suffix() {
         local file="$1"
         local suffix=""
@@ -58,7 +43,6 @@ switch_buku_db() {
         echo "$suffix"
     }
 
-    # Function to get the current database path
     get_current_db_path() {
         local current_db=$(cat "$CURRENT_DB_FILE")
         local suffix=""
@@ -75,35 +59,26 @@ switch_buku_db() {
         echo "Substituted location: $substituted_location"
     }
 
-    # Function to create a backup
     create_or_update_backup() {
         local file="$1"
         local file_name=$(basename "$file")
-        local base_name="${file_name%.*}"  # Remove the last extension
-        local extension="${file_name##*.}"  # Get the last extension
+        local base_name="${file_name%.*}"
+        local extension="${file_name##*.}"
         local backup
 
-        # Remove .backup from the base_name if it exists
         base_name="${base_name%.backup}"
 
-        # If the file is a .gpg file, keep the .gpg extension in the backup
         if [[ "$extension" == "gpg" ]]; then
             backup="$BACKUP_DIR/${base_name}.backup.gpg"
         else
             backup="$BACKUP_DIR/${base_name}.backup"
         fi
 
-        # Ensure the backup directory exists
         mkdir -p "$BACKUP_DIR"
-
-        # Remove any existing backup
         rm -f "$backup"
-
-        # Create the new backup
-        cp "$file" "$backup" #&& echo "Backup created: $backup"
+        cp "$file" "$backup"
     }
 
-    # Function to switch database
     switch_db() {
         local target_db=$(basename "${1%.*}").db
         local encrypt_flag="$2"
@@ -113,54 +88,78 @@ switch_buku_db() {
         local renamed_current=0
         local renamed_target=0
 
-        # Read the current database from the tracking file, or use "rash.db" if file doesn't exist
         current_db=$(cat "$CURRENT_DB_FILE" 2>/dev/null || echo "rash.db")
 
-        # Check if bookmarks.db exists and handle startup scenario
-        if [ -f "$DB_DIR/bookmarks.db" ] && [ ! -f "$DB_DIR/$target_db" ] && [ "$target_db" = "$current_db" ]; then
-            #echo "Already using $target_db (currently named bookmarks.db)"
+        if check_startup_scenario "$target_db" "$current_db"; then
             return 0
         fi
 
-        # Simulate corrupted database error for rashp
-        if [ "$target_db" = "rashp.db" ]; then
-            echo "Database 'rashp.db' is corrupted and cannot be loaded."
-        fi
+        simulate_rashp_error "$target_db"
 
-        # Prevent target_db from being bookmarks.db
         if [ "$target_db" = "bookmarks.db" ]; then
             echo "Error: target_db cannot be bookmarks.db"
             return 1
         fi
 
-        # Determine the suffix for the current bookmarks.db
+        current_suffix=$(get_current_suffix)
+        target_suffix=$(get_target_suffix "$target_db")
+
+        if ! rename_current_db "$current_db" "$current_suffix"; then
+            return 1
+        fi
+        renamed_current=1
+
+        encrypt_current_db_if_needed "$current_db" "$current_suffix" "$encrypt_flag"
+
+        if ! handle_target_db "$target_db" "$target_suffix"; then
+            rollback_changes "$renamed_current" "$renamed_target" "$current_db" "$current_suffix" "$target_db" "$target_suffix"
+            return 1
+        fi
+        renamed_target=1
+
+        finalize_switch "$target_db"
+    }
+
+    check_startup_scenario() {
+        local target_db="$1"
+        local current_db="$2"
+        if [ -f "$DB_DIR/bookmarks.db" ] && [ ! -f "$DB_DIR/$target_db" ] && [ "$target_db" = "$current_db" ]; then
+            return 0
+        fi
+        return 1
+    }
+
+    simulate_rashp_error() {
+        local target_db="$1"
+        if [ "$target_db" = "rashp.db" ]; then
+            echo "Database 'rashp.db' is corrupted and cannot be loaded."
+        fi
+    }
+
+    get_current_suffix() {
         if find "$DB_DIR" -name "bookmarks.db*" | grep -q .; then
             for file in "$DB_DIR/bookmarks.db"*; do
-                current_suffix=$(get_suffix "$file")
-                break
+                echo $(get_suffix "$file")
+                return
             done
         fi
+        echo ""
+    }
 
-        # Determine the suffix for the target_db
+    get_target_suffix() {
+        local target_db="$1"
         if find "$DB_DIR" -name "${target_db%.*}*" | grep -q .; then
             for file in "$DB_DIR/${target_db%.*}"*; do
-                target_suffix=$(get_suffix "$file")
-                break
+                echo $(get_suffix "$file")
+                return
             done
         fi
+        echo ""
+    }
 
-        # Function to rollback changes
-        rollback_changes() {
-            if [ $renamed_current -eq 1 ]; then
-                mv "$DB_DIR/$current_db$current_suffix" "$DB_DIR/bookmarks.db$current_suffix"
-            fi
-            if [ $renamed_target -eq 1 ]; then
-                mv "$DB_DIR/bookmarks.db$target_suffix" "$DB_DIR/$target_db$target_suffix"
-            fi
-            echo "Changes rolled back due to an error."
-        }
-
-        # Rename the current bookmarks.db or bookmarks.db.<suffix> to its original name
+    rename_current_db() {
+        local current_db="$1"
+        local current_suffix="$2"
         if [ -f "$DB_DIR/bookmarks.db$current_suffix" ]; then
             if [ -f "$DB_DIR/$current_db$current_suffix" ]; then
                 echo "Error: Cannot rename current database. File $current_db$current_suffix already exists."
@@ -170,67 +169,103 @@ switch_buku_db() {
                 echo "Error: Failed to rename current database."
                 return 1
             fi
-            renamed_current=1
-
-            # Encrypt the current database if it's rashp or if --enc flag is provided
-            if [ "$current_db" = "rashp.db" ] || [ "$encrypt_flag" = "--enc" ]; then
-                gpg -c --cipher-algo AES256 "$DB_DIR/$current_db$current_suffix" && rm "$DB_DIR/$current_db$current_suffix"
-                echo "Current database encrypted: $DB_DIR/$current_db$current_suffix.gpg"
-            fi
         fi
+        return 0
+    }
 
-        # If the target database doesn't exist and it's startup, create an empty database
+    encrypt_current_db_if_needed() {
+        local current_db="$1"
+        local current_suffix="$2"
+        local encrypt_flag="$3"
+        if [ "$current_db" = "rashp.db" ] || [ "$encrypt_flag" = "--enc" ]; then
+            gpg -c --cipher-algo AES256 "$DB_DIR/$current_db$current_suffix" && rm "$DB_DIR/$current_db$current_suffix"
+            echo "Current database encrypted: $DB_DIR/$current_db$current_suffix.gpg"
+        fi
+    }
+
+    handle_target_db() {
+        local target_db="$1"
+        local target_suffix="$2"
+
         if [ ! -f "$DB_DIR/$target_db$target_suffix" ] && [ ! -f "$DB_DIR/${target_db%.*}.gpg" ] && [ "$IS_SWITCH_STARTUP" -eq 1 ]; then
             touch "$DB_DIR/$target_db"
             echo "Created empty database: $DB_DIR/$target_db"
         fi
 
-        # Create or update backup of the target_db before decrypting or renaming
         if [ -f "$DB_DIR/$target_db$target_suffix" ] || [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
-            if [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
-                create_or_update_backup "$DB_DIR/${target_db%.*}.gpg"
-                #echo "Decrypting ${target_db%.*}.gpg. Please enter your password."
-                if ! gpg --decrypt --output "$DB_DIR/$target_db" "$DB_DIR/${target_db%.*}.gpg"; then
-                    echo "Decryption failed. Aborting database switch."
-                    return 1
-                fi
-                # Don't remove the original encrypted file
-            else
-                create_or_update_backup "$DB_DIR/$target_db$target_suffix"
-            fi
-
-            # Check if the target database is encrypted and decrypt if necessary
-            if [ -f "$DB_DIR/${target_db}.gpg" ]; then
-                gpg -d "$DB_DIR/${target_db}.gpg" > "$DB_DIR/$target_db" && rm "$DB_DIR/${target_db}.gpg"
-                #echo "Target database decrypted: $DB_DIR/$target_db"
-                target_suffix=""
-            fi
-
-            if [ -f "$DB_DIR/bookmarks.db$target_suffix" ]; then
-                echo "Error: Cannot rename target database. File bookmarks.db$target_suffix already exists."
-                rollback_changes
-                return 1
-            fi
-            if ! mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix"; then
-                echo "Error: Failed to rename target database."
-                rollback_changes
-                return 1
-            fi
-            renamed_target=1
-            if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
-                #echo "Database '$target_db' loaded successfully."
-            fi
+            handle_existing_target_db "$target_db" "$target_suffix"
         else
             echo "Error: Target database $target_db not found."
             return 1
         fi
+    }
 
-        # Update CURRENT_DB_FILE
+    handle_existing_target_db() {
+        local target_db="$1"
+        local target_suffix="$2"
+
+        if [ -f "$DB_DIR/${target_db%.*}.gpg" ]; then
+            create_or_update_backup "$DB_DIR/${target_db%.*}.gpg"
+            if ! gpg --decrypt --output "$DB_DIR/$target_db" "$DB_DIR/${target_db%.*}.gpg"; then
+                echo "Decryption failed. Aborting database switch."
+                return 1
+            fi
+        else
+            create_or_update_backup "$DB_DIR/$target_db$target_suffix"
+        fi
+
+        if [ -f "$DB_DIR/${target_db}.gpg" ]; then
+            gpg -d "$DB_DIR/${target_db}.gpg" > "$DB_DIR/$target_db" && rm "$DB_DIR/${target_db}.gpg"
+            target_suffix=""
+        fi
+
+        if [ -f "$DB_DIR/bookmarks.db$target_suffix" ]; then
+            echo "Error: Cannot rename target database. File bookmarks.db$target_suffix already exists."
+            return 1
+        fi
+        if ! mv "$DB_DIR/$target_db$target_suffix" "$DB_DIR/bookmarks.db$target_suffix"; then
+            echo "Error: Failed to rename target database."
+            return 1
+        fi
+        if [ "$IS_SWITCH_STARTUP" -eq 0 ] && [ "$target_db" != "rashp.db" ]; then
+            #echo "Database '$target_db' loaded successfully."
+        fi
+    }
+
+    finalize_switch() {
+        local target_db="$1"
         echo "$target_db" > "$CURRENT_DB_FILE"
         set_browser_mode
     }
 
-    # Call the switch_db function with the provided argument
+    rollback_changes() {
+        local renamed_current="$1"
+        local renamed_target="$2"
+        local current_db="$3"
+        local current_suffix="$4"
+        local target_db="$5"
+        local target_suffix="$6"
+
+        if [ $renamed_current -eq 1 ]; then
+            mv "$DB_DIR/$current_db$current_suffix" "$DB_DIR/bookmarks.db$current_suffix"
+        fi
+        if [ $renamed_target -eq 1 ]; then
+            mv "$DB_DIR/bookmarks.db$target_suffix" "$DB_DIR/$target_db$target_suffix"
+        fi
+        echo "Changes rolled back due to an error."
+    }
+
+    # Main logic
+    if [[ "$@" == *"--enc"* ]]; then
+        encrypt_flag="--enc"
+    fi
+
+    if [[ "$current_db" == "rashp.db" ]]; then
+        encrypt_flag="--enc"
+    fi
+
+    [ -f "$CURRENT_DB_FILE" ] || echo "rash.db" > "$CURRENT_DB_FILE"
+
     if [ "$1" = "current" ]; then
         get_current_db_path
     else
