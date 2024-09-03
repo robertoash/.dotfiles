@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import subprocess
 import sys
@@ -56,34 +57,39 @@ def print_help():
         """
         Usage:
 
-          ./package_requirements.py -s <filename> | --save <filename>
+          ./package_requirements.py -s|--save <filename>
             To save the current list of packages to a file.
 
-          ./package_requirements.py -r <filename> | --restore <filename> | --reinstall <filename>
+          ./package_requirements.py -r|--restore|--reinstall <filename>
             To reinstall packages from a file.
 
-          If no filename is provided, 'all_packages.txt' will be used as a file name and it
-          will be saved to the path set by XDG_CONFIG_HOME. If XDG_CONFIG_HOME is not set,
-          the file will be saved to '~/.config/'.
+          If no filename is provided, 'all_packages.txt' will be used as a file name
+          and it will be saved to the path set by XDG_CONFIG_HOME. If XDG_CONFIG_HOME
+          is not set, the file will be saved to '~/.config/'.
+
+          If the --reinstall flag is used, the packages will be reinstalled from
+          the contents of the file.
 
         Options:
           -s, --save        Save the current list of packages to a file.
           -r, --restore     Reinstall packages from a file (alias: --reinstall).
           --help            Show this help message and exit.
-    """
+        """
     )
     print(help_text)
 
 
 def is_valid_path(path):
-    # Additional logic can be added here to validate path further
+    # Expand user and ~
+    path = os.path.expanduser(path)
+    # Check if path exists
     return os.path.exists(path) or not os.path.isabs(path)
 
 
 if __name__ == "__main__":
     args = sys.argv[1:]
 
-    if "--help" in args:
+    if "--help" in args or "-h" in args:
         print_help()
         sys.exit(1)
 
@@ -96,28 +102,36 @@ if __name__ == "__main__":
     }
     action = None
     filename = None
+    make_backup = False
 
-    for arg in args:
-        if arg.startswith("-") and len(arg) == 2 or arg in action_map:
-            action = action_map.get(arg, None)
+    for i, arg in enumerate(args):
+        if arg in action_map:
+            action = action_map[arg]
+            if i + 1 < len(args) and not args[i + 1].startswith("-"):
+                filename = args[i + 1]
         elif is_valid_path(arg):
             filename = arg
-        elif arg in action_map:
-            action = action_map[arg]
 
     if action is None:
-        print_help()
-        sys.exit(1)
+        action = "save"
 
     if filename is None:
         filename = os.path.join(
             os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
             "all_packages.txt",
         )
+        make_backup = True
 
     if action == "save":
+        bkup_dir = "/media/sda1/local_bkups/pkgs"
+
         save_packages(filename)
         print(f"Packages saved to {filename}")
+        if make_backup:
+            current_date = datetime.datetime.now().strftime("%Y%m%d")
+            backup_filename = f"{bkup_dir}/all_packages_{current_date}.txt"
+            subprocess.run(["cp", filename, backup_filename])
+            print(f"Backup saved to {backup_filename}")
     elif action == "restore":
         reinstall_packages(filename)
         print(f"Packages reinstalled from {filename}")
