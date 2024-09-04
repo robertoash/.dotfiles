@@ -121,7 +121,7 @@ networkmanager-openconnect 1.2.10-2///pacman
 networkmanager-openvpn 1.12.0-1///pacman
 nfs-utils 2.7.1-1///pacman
 nilfs-utils 2.2.11-1///pacman
-nodejs 22.7.0-1///pacman
+nodejs 22.8.0-1///pacman
 noto-fonts 1:24.9.1-1///pacman
 noto-fonts-cjk 20230817-2///pacman
 noto-fonts-emoji 1:2.042-1///pacman
@@ -216,14 +216,14 @@ xorg-xinit 1.4.2-2///pacman
 xorg-xinput 1.6.4-2///pacman
 xorg-xkill 1.0.6-2///pacman
 xorg-xrandr 1.5.2-2///pacman
-xterm 393-1///pacman
+xterm 394-1///pacman
 yay 12.3.5-1///pacman
 yt-dlp 2024.08.06-1///pacman
 zsh 5.9-5///pacman
 alacritty-git 1:0.14.0.2296.gcb3a79db-1///yay
 aquamarine-git 0.3.1_r176.g9312aa2-1///yay
 arkenfox-user.js 128.0-1///yay
-brave-bin 1:1.69.160-1///yay
+brave-bin 1:1.69.162-1///yay
 brother-dcp-l2530dw 4.0.0-1///yay
 buku 4.9-2///yay
 bukubrow-bin 5.4.0-1///yay
@@ -239,7 +239,7 @@ hyprpaper-git 0.7.1.r1.g91e17e1-1///yay
 insync-thunar 3.7.9.50368-1///yay
 jellyfin-media-player-git r1814.86e8b42-1///yay
 mullvad-browser-bin 13.5.2-1///yay
-mullvad-vpn 2024.4-2///yay
+mullvad-vpn 2024.5-1///yay
 otf-futura-renner 1-2///yay
 rofi-lbonn-wayland-git 1.7.5.wayland3.r3.g47ae31eb-1///yay
 slack-desktop 4.39.95-1///yay
@@ -247,6 +247,7 @@ speedtest++ 1.15.r72.b743996-1///yay
 spotify 1:1.2.42.290-1///yay
 sublime-text-4 4.4180-1///yay
 ticktick 6.0.0-1///yay
+vaults 0.7.1-1///yay
 zellij-git 0.40.1.r34.g5b3a9b5-1///yay
 zen-browser-avx2-bin 1.0.0.a.34-2///yay
 homeassistant-cli 0.9.6///pipx
