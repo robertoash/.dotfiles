@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import fcntl
 import os
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 
@@ -14,6 +16,24 @@ class BukuDBSwitcher:
         self.is_switch_startup = True
         self.original_browser = os.environ.get("BROWSER", "zen-browser")
         os.environ["ORIGINAL_BROWSER"] = self.original_browser
+        # Create a temporary lock file path
+        self.lock_file_path = Path(tempfile.gettempdir()) / "switch_buku.lock"
+        self.lock_file = None
+
+    def acquire_lock(self):
+        self.lock_file = open(self.lock_file_path, "w")
+        try:
+            fcntl.flock(self.lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            # Print error if launched manually and not via .zshrc
+            if not self.is_switch_startup:
+                print("Another instance is running. Exiting.")
+            sys.exit(1)
+
+    def release_lock(self):
+        if self.lock_file:
+            fcntl.flock(self.lock_file, fcntl.LOCK_UN)
+            self.lock_file.close()
 
     def set_browser_mode(self):
         os.environ["BROWSER"] = str(
@@ -70,8 +90,6 @@ class BukuDBSwitcher:
         if self.check_startup_scenario(target_db, current_db):
             return
 
-        self.simulate_rashp_error(target_db)
-
         if target_db.name == "bookmarks.db":
             print("Error: target_db cannot be bookmarks.db")
             return
@@ -89,6 +107,8 @@ class BukuDBSwitcher:
                 True, False, current_db, current_suffix, target_db, target_suffix
             )
             return
+
+        self.simulate_rashp_error(target_db)
 
         self.finalize_switch(target_db)
 
@@ -233,23 +253,27 @@ class BukuDBSwitcher:
         )
 
     def run(self, target_db=None, encrypt_flag=False, is_switch_startup=True):
-        if not self.current_db_file.exists():
-            self.current_db_file.write_text("rash.db")
+        self.acquire_lock()
+        try:
+            if not self.current_db_file.exists():
+                self.current_db_file.write_text("rash.db")
 
-        current_db = self.get_current_db()
+            current_db = self.get_current_db()
 
-        if current_db == "rashp.db":
-            encrypt_flag = True
+            if current_db == "rashp.db":
+                encrypt_flag = True
 
-        # Set the startup state
-        self.is_switch_startup = is_switch_startup
+            # Set the startup state
+            self.is_switch_startup = is_switch_startup
 
-        if target_db == "current":
-            self.get_current_db_path()
-        else:
-            self.switch_db(target_db, encrypt_flag)
+            if target_db == "current":
+                self.get_current_db_path()
+            else:
+                self.switch_db(target_db, encrypt_flag)
 
-        self.is_switch_startup = False
+            self.is_switch_startup = False
+        finally:
+            self.release_lock()
 
 
 if __name__ == "__main__":

@@ -49,6 +49,7 @@ alias bko="bk_o" # Buku with fzf
 alias bk_c="switch_buku_db current"
 alias bk_r="switch_buku_db rash"
 alias bk_p="switch_buku_db rashp"
+alias bk_s="switch_buku_db"
 # Exa
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
 alias lll="ll -l -a"
