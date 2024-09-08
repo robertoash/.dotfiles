@@ -8,6 +8,9 @@
 ## Sudo
 alias sudo="sudo "
 
+## Scripts
+alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
+
 ## Backup aliases
 alias bkup_packages="~/.config/scripts/backup/bkup_packages.py"
 alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
