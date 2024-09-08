@@ -62,7 +62,7 @@ def get_state():
     try:
         result = (
             subprocess.check_output(
-                "/home/rash/.local/bin/hass-cli state get input_boolean.rob_in_office "
+                "/home/rash/.local/bin/hass-cli state get binary_sensor.rob_in_office "
                 "| awk -F '  +' 'NR==2 {print $3}'",
                 shell=True,
             )
