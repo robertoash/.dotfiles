@@ -326,11 +326,11 @@ window#waybar.hidden {
 }
 
 
-#custom-in_office_idle.idle-blue {
+#custom-in_office_idle.icon-blue {
   color: @blue;
 }
-#custom-tibber_text.idle-grey {
-  color: @text;
+#custom-in_office_idle.icon-red {
+  color: @red;
 }
 
 

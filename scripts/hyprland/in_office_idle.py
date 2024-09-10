@@ -91,14 +91,19 @@ def stop_hypridle():
         logging.error(f"Error stopping hypridle: {e}")
 
 
-def start_hypridle():
+def start_hypridle(error=False):
+    if error:
+        config_file = os.path.expanduser("~/.config/hypr/hypridle.conf")
+    else:
+        config_file = os.path.expanduser("~/.config/hypr/hypridle_immediate.conf")
+
     try:
         logging.info("Starting hypridle")
         subprocess.Popen(
             [
                 "hypridle",
                 "-c",
-                os.path.expanduser("~/.config/hypr/hypridle_immediate.conf"),
+                config_file,
             ]
         )
     except Exception as e:
@@ -115,7 +120,7 @@ def main():
 
     while True:
         state = get_state()
-        output = {"text": "󰀒", "tooltip": "Error fetching state", "class": "idle-grey"}
+        output = {"text": "", "tooltip": "Error fetching state"}
 
         if state:
             if state == "on" and is_unlocked():
@@ -123,12 +128,15 @@ def main():
                     stop_hypridle()
             else:
                 if not is_hypridle_running():
-                    start_hypridle()
+                    start_hypridle(error=False)
+
             output = {
                 "text": "󰀈" if state == "on" else "󰀒",
                 "tooltip": f"Presence idle_inhibit is {state}",
-                "class": "idle-blue" if state == "on" else "idle-grey",
+                "class": "icon-blue" if state == "on" else "icon-red",
             }
+        else:
+            start_hypridle(error=True)
 
         if last_output != output:
             with open(output_file, "w") as f:
