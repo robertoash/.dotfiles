@@ -18,9 +18,15 @@ export PATH="$PATH:/home/rash/.local/bin"
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
 
 # Pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+#export PYENV_ROOT="$HOME/.pyenv"
+#[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+#eval "$(pyenv init -)"
+
+# ASDF
+. /opt/asdf-vm/asdf.sh
+
+# Hook direnv
+eval "$(direnv hook zsh)"
 
 
 # #################################
@@ -123,8 +129,6 @@ LFCD="/home/rash/.config/lf/lfcd.sh"
 if [ -f "$LFCD" ]; then
     source "$LFCD"
 fi
-# Hook direnv
-eval "$(direnv hook zsh)"
 # SGPT shell integration
 _sgpt_zsh() {
 if [[ -n "$BUFFER" ]]; then
