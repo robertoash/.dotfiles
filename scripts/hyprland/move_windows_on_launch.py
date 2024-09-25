@@ -19,8 +19,8 @@ workspace_assignments = [
     {"identifier": "perplexity.ai", "workspace": 2, "make_master": False},
     {"identifier": "chatgpt.com", "workspace": 3, "make_master": False},
     {"identifier": "obsidian", "workspace": 4, "make_master": True},
-    {"identifier": "personal (Workspace)", "workspace": 12, "make_master": True},
-    {"identifier": "dotfiles (Workspace)", "workspace": 12, "make_master": True},
+    {"identifier": "personal (Workspace)", "workspace": 13, "make_master": True},
+    {"identifier": "dotfiles (Workspace)", "workspace": 13, "make_master": True},
 ]
 
 
