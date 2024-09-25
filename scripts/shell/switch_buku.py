@@ -14,7 +14,7 @@ class BukuDBSwitcher:
         self.backup_dir = self.db_dir / "bkups"
         self.current_db_file = self.db_dir / "current_db.txt"
         self.is_switch_startup = True
-        self.original_browser = os.environ.get("BROWSER", "zen-browser")
+        self.original_browser = os.environ.get("BROWSER", "brave")
         os.environ["ORIGINAL_BROWSER"] = self.original_browser
         # Create a temporary lock file path
         self.lock_file_path = Path(tempfile.gettempdir()) / "switch_buku.lock"
