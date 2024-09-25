@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 import time
-
+from datetime import datetime
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
@@ -83,14 +83,6 @@ def is_hypridle_running():
         return False
 
 
-def stop_hypridle():
-    try:
-        logging.info("Stopping hypridle")
-        subprocess.check_call(["pkill", "hypridle"])
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error stopping hypridle: {e}")
-
-
 def start_hypridle(error=False):
     if error:
         config_file = os.path.expanduser("~/.config/hypr/hypridle.conf")
@@ -114,6 +106,9 @@ def main():
     output_file = "/tmp/in_office_idle_output.json"
     interval = 2  # Interval in seconds
     last_output = None
+    prev_state = None
+
+
 
     logging.info("Loading environment variables")
     load_environment_variables()
@@ -122,23 +117,34 @@ def main():
         state = get_state()
         output = {"text": "", "tooltip": "Error fetching state"}
 
+        current_hour = datetime.now().hour
+        working_hours = (5 <= current_hour < 19)
+
         if state:
-            if state == "on" and is_unlocked():
-                if is_hypridle_running():
-                    stop_hypridle()
-            else:
-                if not is_hypridle_running():
-                    start_hypridle(error=False)
+            if state == "on" and prev_state == "off":
+                if working_hours:
+                    # dpms on
+                    subprocess.check_output("hyprctl dispatch dpms on", shell=True)
+            elif state == "off" and prev_state == "on":
+                if is_unlocked():
+                    # Lock the screen in the background
+                    subprocess.Popen(["hyprlock", "-q"])
+                    time.sleep(1)
+                # Turn off the screen
+                subprocess.run(["hyprctl", "dispatch", "dpms off"], check=True)
 
             output = {
                 "text": "󰀈" if state == "on" else "󰀒",
                 "tooltip": f"Presence idle_inhibit is {state}",
                 "class": "icon-blue" if state == "on" else "icon-red",
             }
-        else:
-            start_hypridle(error=True)
 
-        if last_output != output:
+            prev_state = state
+        else:
+            if not is_hypridle_running():
+                start_hypridle(error=True)
+
+        if output != last_output:
             with open(output_file, "w") as f:
                 json.dump(output, f)
             logging.info(f"Output: {output}")
