@@ -55,6 +55,14 @@
 !zellij/**/*
 !zsh/**/*
 
+# Include the systemd and systemd/user directory structure but exclude all files by default
+!systemd/
+!systemd/user/
+systemd/user/*
+
+# Explicitly include only the webcam-status.service file
+!systemd/user/webcam-status.service
+
 # ... but not these.
 .env
 .python-version
