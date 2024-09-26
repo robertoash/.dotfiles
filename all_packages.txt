@@ -79,6 +79,7 @@ hdparm 9.65-2///pacman
 hwdetect 2024.07.29.0933-1///pacman
 hwinfo 23.2-2///pacman
 inetutils 2.5-1///pacman
+inotify-tools 4.23.9.0-2///pacman
 intel-ucode 20240910-1///pacman
 inxi 3.3.36.1-1///pacman
 iptables-nft 1:1.8.10-2///pacman
