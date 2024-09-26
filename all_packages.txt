@@ -100,6 +100,7 @@ logrotate 3.22.0-1///pacman
 lsb-release 2.0.r53.a86f885-2///pacman
 lsscsi 0.32-2///pacman
 lvm2 2.03.26-1///pacman
+lxappearance 0.6.3-5///pacman
 man-db 2.13.0-1///pacman
 man-pages 6.9.1-1///pacman
 mdadm 4.3-2///pacman
@@ -172,7 +173,7 @@ sysfsutils 2.1.1-2///pacman
 system-config-printer 1.5.18-4///pacman
 systemd-sysvcompat 256.6-1///pacman
 tailscale 1.74.1-1///pacman
-telegram-desktop 5.5.5-1///pacman
+telegram-desktop 5.5.5-2///pacman
 texinfo 7.1.1-1///pacman
 thefuck 3.32-9///pacman
 thunar 4.18.11-2///pacman
@@ -194,7 +195,7 @@ upower 1.90.6-1///pacman
 usb_modeswitch 2.6.1-4///pacman
 usbutils 017-1///pacman
 vi 1:070224-6///pacman
-vlc 3.0.21-4///pacman
+vlc 3.0.21-6///pacman
 waybar 0.11.0-3///pacman
 welcome 24.8.1-1///pacman
 wev 1.0.0-13///pacman
@@ -232,9 +233,9 @@ brave-bin 1:1.70.119-1///yay
 brother-dcp-l2530dw 4.0.0-1///yay
 buku 4.9-2///yay
 bukubrow-bin 5.4.0-1///yay
-catppuccin-gtk-theme-mocha 1.0.3-1///yay
 code-insiders-bin 1.94.0_1726466857-1///yay
-cursor-bin 0.41.2-1///yay
+colloid-catppuccin-gtk-theme-git 2024.06.18.r35.gd269edf-1///yay
+cursor-bin 0.41.3-1///yay
 greetd-tuigreet-git 0.9.1.r0.g86bf7bb-0///yay
 hypridle-git 0.1.2.r0.g7cff4581-1///yay
 hyprkeys 1.0.3-1///yay
