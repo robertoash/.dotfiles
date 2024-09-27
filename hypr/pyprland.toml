@@ -1,0 +1,19 @@
+[pyprland]
+plugins = [
+    "magnify",
+    "toggle_special",
+    "scratchpads"
+]
+
+[scratchpads.blueman]
+animation = "fromTop"
+command = "blueman-manager"
+class = "blueman"
+size = "30% 30%"
+position = "500px 500px"
+max_size = "850px 720px"
+margin = 50
+lazy = true
+allow_special_workspaces = true
+preserve_aspect = true
+unfocus = "hide"
