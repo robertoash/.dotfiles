@@ -61,7 +61,7 @@
 systemd/user/*
 
 # Explicitly include only the webcam-status.service file
-!systemd/user/webcam-status.service
+!systemd/user/linux-webcam-status.service
 
 # ... but not these.
 .env
