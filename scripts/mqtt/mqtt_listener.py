@@ -23,7 +23,7 @@ logging_utils.configure_logging()
 logging.getLogger().setLevel(logging.INFO)
 
 # MQTT connection parameters
-clientname = "linux_mini_mqtt_reports"
+clientname = "linux_mini_mqtt_listener"
 broker = "10.20.10.100"
 connectport = 1883
 keepalive = 60
@@ -38,13 +38,9 @@ client.will_set(
 )
 
 # Mapping of files to topics
-file_to_topic = {
-    "/tmp/mqtt/linux_mini_status": "scripts/linux_mini/status",
-    "/tmp/mqtt/linux_webcam_status": "scripts/linux_webcam/status",
+topic_to_file = {
+    "homeassistant/input_boolean.rob_in_office/status": "/tmp/mqtt/in_office_status",
 }
-
-# Store previous contents
-previous_contents = {}
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
@@ -53,6 +49,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=0, retain=True
         )
+        subscribe_to_topics()
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
 
@@ -64,21 +61,26 @@ def on_disconnect(client, userdata, rc, properties=None):
     logging.info(f"Disconnected for reason {rc}")
 
 
-def publish_file_contents():
-    for file_path, topic in file_to_topic.items():
-        try:
-            with open(file_path, "r") as file:
-                content = file.read().strip()
-                if content != previous_contents.get(file_path):
-                    client.publish(topic, payload=content, qos=0, retain=True)
-                    logging.info(
-                        f"Published new content of {file_path} to topic {topic}"
-                    )
-                    previous_contents[file_path] = content
-        except FileNotFoundError:
-            logging.error(f"File not found: {file_path}")
-        except IOError as e:
-            logging.error(f"Error reading file {file_path}: {e}")
+def subscribe_to_topics():
+    for topic in topic_to_file.keys():
+        client.subscribe(topic)
+
+
+def on_message(client, userdata, message):
+    topic = message.topic
+    payload = message.payload.decode()
+    file_path = topic_to_file.get(topic)
+    if file_path:
+        # Check dir and create if not exists
+        dir_path = os.path.dirname(file_path)
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
+        write_status_file(file_path, payload)
+
+
+def write_status_file(file_path, payload):
+    with open(file_path, "w") as file:
+        file.write(payload)
 
 
 if __name__ == "__main__":
@@ -88,13 +90,13 @@ if __name__ == "__main__":
 
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
+    client.on_message = on_message
 
     # Start the MQTT client loop in a non-blocking way
     client.loop_start()
 
     try:
         while True:
-            publish_file_contents()
             time.sleep(1)
     except KeyboardInterrupt:
         logging.info("Script interrupted by user")
