@@ -581,7 +581,7 @@
     },
 
     "custom/in_office_idle": {
-        "exec": "cat /tmp/in_office_idle_output.json",
+        "exec": "cat /tmp/waybar/in_office_idle_output.json",
         "return-type": "json",
         "interval" : 1,
         "tooltip": true
