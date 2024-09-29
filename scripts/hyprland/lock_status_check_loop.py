@@ -11,13 +11,7 @@ import time
 while True:
     with open("/tmp/mqtt/in_office_status", "r") as f:
         if f.read().strip() == "off":
-            if (
-                not subprocess.run(
-                    ["pgrep", "-x", "hyprlock"], capture_output=True
-                ).returncode
-                == 0
-            ):
-                subprocess.Popen(["hyprlock", "-q"])
+            subprocess.run(["loginctl", "lock-session"])
             break
     time.sleep(1)
 
