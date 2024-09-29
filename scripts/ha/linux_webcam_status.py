@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -22,14 +23,15 @@ from _utils import logging_utils
 logging_utils.configure_logging()
 logging.getLogger().setLevel(logging.INFO)
 
-DEVICE_FILE = "/dev/video0"
-STATUS_FILE = "/tmp/linux_webcam_status"
-LAST_STATE = "inactive"  # Track the last state to avoid duplicate writes
+device_file_path = "/dev/video0"
+last_state = "inactive"  # Track the last state to avoid duplicate writes
+
+status_file_path = "/tmp/mqtt/linux_webcam_status"
 
 
 def is_webcam_in_use():
     try:
-        subprocess.check_output(["lsof", DEVICE_FILE], stderr=subprocess.DEVNULL)
+        subprocess.check_output(["lsof", device_file_path], stderr=subprocess.DEVNULL)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Error: {e}")
@@ -37,34 +39,35 @@ def is_webcam_in_use():
 
 
 def update_status_file(state):
-    with open(STATUS_FILE, "w") as f:
+    os.makedirs(os.path.dirname(status_file_path), exist_ok=True)
+    with open(status_file_path, "w") as f:
         f.write(state)
-    logging.info(f"Success: {STATUS_FILE} updated - Webcam is {state}")
+    logging.info(f"Success: {status_file_path} updated - Webcam is {state}")
 
 
 def main():
-    global LAST_STATE
+    global last_state
 
     while True:
         try:
             # Wait for webcam to become active
-            subprocess.run(["inotifywait", "-e", "open", DEVICE_FILE], check=True)
+            subprocess.run(["inotifywait", "-e", "open", device_file_path], check=True)
 
             # When inotifywait detects an open event, check if the webcam is actually in use
-            if is_webcam_in_use() and LAST_STATE == "inactive":
+            if is_webcam_in_use() and last_state == "inactive":
                 logging.info("Webcam is active")
                 update_status_file("active")
-                LAST_STATE = "active"
+                last_state = "active"
 
             # Start polling every 2 seconds to detect when the webcam becomes inactive
             while is_webcam_in_use():
                 time.sleep(2)
 
             # Once polling detects the webcam is inactive
-            if LAST_STATE == "active":
+            if last_state == "active":
                 logging.info("Webcam is inactive")
                 update_status_file("inactive")
-                LAST_STATE = "inactive"
+                last_state = "inactive"
         except subprocess.CalledProcessError as e:
             logging.error(f"Error: {e}")
 
