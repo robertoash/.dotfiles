@@ -11,7 +11,7 @@ source /home/rash/.config/zsh/.zsh_path
 
 eval "$(direnv export bash)"
 
-# Use absolute path to python and the script, and log any errors
-python /home/rash/.config/scripts/mqtt/mqtt_reports.py
+python /home/rash/.config/scripts/mqtt/mqtt_reports.py &
+python /home/rash/.config/scripts/mqtt/mqtt_listener.py &
 
 
