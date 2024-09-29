@@ -2,10 +2,6 @@
 import os
 import subprocess
 
-# Define directories for icons and scripts
-# iDIR = os.path.expanduser("~/.config/swaync/icons")
-# sDIR = os.path.expanduser("~/.config/hypr/UserScripts")
-
 
 def get_volume():
     # Retrieve the current volume percentage
@@ -24,22 +20,8 @@ def get_volume():
         return f"{volume}%"
 
 
-# def get_icon():
-#     current = get_volume()
-#     if current == "Muted":
-#         return f"{iDIR}/volume-mute.png"
-#     volume = int(current.replace("%", ""))
-#     if volume <= 30:
-#         return f"{iDIR}/volume-low.png"
-#     elif volume <= 60:
-#         return f"{iDIR}/volume-mid.png"
-#     else:
-#         return f"{iDIR}/volume-high.png"
-
-
 def notify_user():
     volume = get_volume()
-    # icon = get_icon()
     if volume == "Muted":
         subprocess.run(
             [
@@ -49,8 +31,6 @@ def notify_user():
                 "string:x-canonical-private-synchronous:volume_notif",
                 "-u",
                 "low",
-                # "-i",
-                # icon,
                 "Volume: Muted",
             ]
         )
@@ -65,12 +45,9 @@ def notify_user():
                 "string:x-canonical-private-synchronous:volume_notif",
                 "-u",
                 "low",
-                # "-i",
-                # icon,
                 f"Volume: {volume}",
             ]
         )
-        # subprocess.run([f"{sDIR}/Sounds.sh", "--volume"])
 
 
 def inc_volume():
@@ -103,8 +80,6 @@ def toggle_mute():
                 "-e",
                 "-u",
                 "low",
-                # "-i",
-                # f"{iDIR}/volume-mute.png",
                 "Volume Switched OFF",
             ]
         )
@@ -116,8 +91,6 @@ def toggle_mute():
                 "-e",
                 "-u",
                 "low",
-                # "-i",
-                # get_icon(),
                 "Volume Switched ON",
             ]
         )
