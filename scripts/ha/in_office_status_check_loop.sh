@@ -1,10 +1,15 @@
 #!/bin/bash
 
+# This script is launched by hypridle when inactivity timeout is reached.
+# The config file is here:
+# /home/rash/.config/hypr/hypridle.conf
+
 # Step 1: Check lock condition repeatedly
 while true; do
     if [[ $(cat /tmp/in_office_pure_status) == "off" ]]; then
-        echo "$(date): Locking screen" >> "$LOGFILE"
-        hyprlock -q &
+        if ! pgrep -x "hyprlock" > /dev/null; then
+            hyprlock -q &
+        fi
         break
     fi
     sleep 1
