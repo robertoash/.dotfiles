@@ -7,26 +7,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
 fi
 
 
-# #################################
-# # Path setting
-# #################################
 
-# Pipx path
-export PATH="$PATH:/home/rash/.local/bin"
-
-# Add stuff to python path
-export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
-
-# Pyenv
-#export PYENV_ROOT="$HOME/.pyenv"
-#[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-#eval "$(pyenv init -)"
-
-# ASDF
-. /opt/asdf-vm/asdf.sh
-
-# Hook direnv
-eval "$(direnv hook zsh)"
 
 
 # #################################
@@ -72,6 +53,8 @@ zstyle ':completion:*' menu select
 # # Sourcing
 # #################################
 
+# Path setting
+source ~/.config/zsh/.zsh_path
 # Aliases
 source ~/.config/zsh/.zsh_aliases
 # Theme
