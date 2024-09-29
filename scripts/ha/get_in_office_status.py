@@ -55,7 +55,7 @@ def get_state():
 def main():
     output_file = "/tmp/in_office_idle_output.json"
     pure_status_file = "/tmp/in_office_pure_status"
-    interval = 2  # Interval in seconds
+    interval = 1  # Interval in seconds
     last_output = None
 
     logging.info("Loading environment variables")
