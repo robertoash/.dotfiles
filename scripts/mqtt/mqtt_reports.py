@@ -6,6 +6,8 @@ import sys
 import time
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
+from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
 
 """
 This script is launched by Hyprland on login
@@ -43,7 +45,6 @@ file_to_topic = {
     "/tmp/mqtt/linux_webcam_status": "scripts/linux_webcam/status",
 }
 
-# Store previous contents
 previous_contents = {}
 
 
@@ -64,8 +65,9 @@ def on_disconnect(client, userdata, rc, properties=None):
     logging.info(f"Disconnected for reason {rc}")
 
 
-def publish_file_contents():
-    for file_path, topic in file_to_topic.items():
+def publish_file_contents(file_path):
+    topic = file_to_topic.get(file_path)
+    if topic:
         try:
             with open(file_path, "r") as file:
                 content = file.read().strip()
@@ -81,23 +83,38 @@ def publish_file_contents():
             logging.error(f"Error reading file {file_path}: {e}")
 
 
+class FileChangeHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if event.src_path in file_to_topic:
+            logging.info(f"Detected change in {event.src_path}")
+            publish_file_contents(event.src_path)
+
+
 if __name__ == "__main__":
-
-    # Connect to MQTT Broker
+    # Connect to MQTT broker
     client.connect(broker, connectport, keepalive)
-
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
-
-    # Start the MQTT client loop in a non-blocking way
     client.loop_start()
+
+    # Watch for changes in the directories of the files
+    event_handler = FileChangeHandler()
+    observer = Observer()
+    for file_path in file_to_topic.keys():
+        dir_path = os.path.dirname(file_path)
+        observer.schedule(event_handler, path=dir_path, recursive=False)
+
+    observer.start()
+    logging.info("Watchdog now waiting for file changes...")
 
     try:
         while True:
-            publish_file_contents()
-            time.sleep(1)
+            time.sleep(float("inf"))
     except KeyboardInterrupt:
         logging.info("Script interrupted by user")
     finally:
+        observer.stop()
+        observer.join()
         client.loop_stop()
         client.disconnect()
+        logging.info("MQTT Reports Service stopped.")
