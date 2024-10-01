@@ -2,8 +2,8 @@
 
 import logging
 import os
+import signal
 import sys
-import time
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
 from watchdog.events import FileSystemEventHandler
@@ -45,6 +45,7 @@ file_to_topic = {
     "/tmp/mqtt/linux_webcam_status": "scripts/linux_webcam/status",
 }
 
+# Store previous contents
 previous_contents = {}
 
 
@@ -83,6 +84,7 @@ def publish_file_contents(file_path):
             logging.error(f"Error reading file {file_path}: {e}")
 
 
+# Event handler for file changes
 class FileChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path in file_to_topic:
@@ -90,31 +92,47 @@ class FileChangeHandler(FileSystemEventHandler):
             publish_file_contents(event.src_path)
 
 
+# Graceful shutdown of services
+def stop_services(observer, client):
+    logging.info("Shutting down services...")
+    observer.stop()
+    observer.join()
+    client.loop_stop()
+    client.disconnect()
+    logging.info("MQTT Reports Service stopped.")
+
+
 if __name__ == "__main__":
-    # Connect to MQTT broker
+    logging.info("Starting MQTT Reports Service")
+
+    # Connect to the MQTT broker
     client.connect(broker, connectport, keepalive)
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
     client.loop_start()
 
-    # Watch for changes in the directories of the files
+    # Setup watchdog observer
     event_handler = FileChangeHandler()
     observer = Observer()
+
     for file_path in file_to_topic.keys():
         dir_path = os.path.dirname(file_path)
         observer.schedule(event_handler, path=dir_path, recursive=False)
+        logging.info(f"Watchdog setup and monitoring directory: {dir_path}")
 
     observer.start()
-    logging.info("Watchdog now waiting for file changes...")
+    logging.info("Watchdog is now waiting for file changes...")
+
+    # Setup signal handler for graceful shutdown
+    def signal_handler(sig, frame):
+        stop_services(observer, client)
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        while True:
-            time.sleep(float("inf"))
-    except KeyboardInterrupt:
-        logging.info("Script interrupted by user")
-    finally:
-        observer.stop()
-        observer.join()
-        client.loop_stop()
-        client.disconnect()
-        logging.info("MQTT Reports Service stopped.")
+        # Keep the main thread running indefinitely, allowing the observer and MQTT to run
+        signal.pause()  # Blocks until a signal is received
+    except Exception as e:
+        logging.error(f"Error occurred: {e}")
+        stop_services(observer, client)
