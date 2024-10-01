@@ -34,7 +34,7 @@ client.username_pw_set(
     username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
 )
 client.will_set(
-    "devices/" + clientname + "/status", payload="offline", qos=0, retain=True
+    "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
 )
 
 # Mapping of files to topics
@@ -51,7 +51,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
         logging.info("Connected OK")
         client.publish(
-            "devices/" + clientname + "/status", payload="online", qos=0, retain=True
+            "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
@@ -59,7 +59,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 def on_disconnect(client, userdata, rc, properties=None):
     client.publish(
-        "devices/" + clientname + "/status", payload="offline", qos=0, retain=True
+        "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
     logging.info(f"Disconnected for reason {rc}")
 
@@ -70,7 +70,7 @@ def publish_file_contents():
             with open(file_path, "r") as file:
                 content = file.read().strip()
                 if content != previous_contents.get(file_path):
-                    client.publish(topic, payload=content, qos=0, retain=True)
+                    client.publish(topic, payload=content, qos=1, retain=True)
                     logging.info(
                         f"Published new content of {file_path} to topic {topic}"
                     )
