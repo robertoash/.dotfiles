@@ -17,11 +17,26 @@ from _utils import logging_utils
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Update Linux Mini status.")
-parser.add_argument(
-    "state", choices=["--active", "--inactive"], help="Set the state of Linux Mini"
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument(
+    "--active",
+    action="store_const",
+    const="active",
+    dest="state",
+    help="Set the state of Linux Mini to active",
+)
+group.add_argument(
+    "--inactive",
+    action="store_const",
+    const="inactive",
+    dest="state",
+    help="Set the state of Linux Mini to inactive",
 )
 parser.add_argument("--debug", action="store_true", help="Enable debug logging")
 args = parser.parse_args()
+
+if args.state is None:
+    parser.error("One of --active or --inactive is required")
 
 # Configure logging
 logging_utils.configure_logging()
@@ -41,5 +56,4 @@ def update_status(state):
 
 
 if __name__ == "__main__":
-    state = "active" if args.state == "--active" else "inactive"
-    update_status(state)
+    update_status(args.state)
