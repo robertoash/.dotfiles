@@ -34,24 +34,24 @@ b_zen() {
         shift
         case $1 in
           https://*|http://*)
-            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app="$1"
+            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="$1"
             echo "Opening $1"
             return
             ;;
           *)
-            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app="https://$1"
+            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://$1"
             echo "Opening https://$1"
             return
             ;;
         esac
         ;;
       [0-9]*)
-        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url "$1")
+        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
         echo "Opening Buku index $1"
         return
         ;;
       *)
-        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url "$1")
+        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
         echo "Opening Buku first match for string '$1'"
         return
         ;;
