@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import logging
 import os
@@ -14,17 +15,27 @@ import pytz
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(
+    description="Fetch and display Tibber price information."
+)
+parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+args = parser.parse_args()
+
 # Configure logging
 logging_utils.configure_logging()
-logging.getLogger().setLevel(logging.INFO)
+if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+else:
+    logging.getLogger().setLevel(logging.ERROR)
+
+# Your Tibber token must be set as an environment variable 'TIBBER_TOKEN'.
+TIBBER_TOKEN = os.environ["TIBBER_TOKEN"]
 
 
 def fetch_prices():
 
     price_leeway = 0.12  # Percentage of the price range to consider for margin
-
-    # Your Tibber token must be set as an environment variable 'TIBBER_TOKEN'.
-    TIBBER_TOKEN = os.environ["TIBBER_TOKEN"]
 
     command = [
         "curl",
@@ -134,7 +145,7 @@ def main():
     last_text_output = None
     last_icon_output = None
 
-    logging.info("Script started.")
+    logging.debug("Script started.")
 
     while True:
         current_time = datetime.now(pytz.timezone("Europe/Stockholm"))
@@ -165,13 +176,13 @@ def main():
         if text_output != last_text_output:
             with open(text_output_file, "w") as f:
                 json.dump(text_output, f)
-            logging.info(f"Output: {text_output}")
+            logging.debug(f"Output: {text_output}")
             last_text_output = text_output
 
         if icon_output != last_icon_output:
             with open(icon_output_file, "w") as f:
                 json.dump(icon_output, f)
-            logging.info(f"Output: {icon_output}")
+            logging.debug(f"Output: {icon_output}")
             last_icon_output = icon_output
 
         # Sleep until the start of the next hour
