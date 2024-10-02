@@ -8,12 +8,16 @@ plugins = [
 [scratchpads.blueman]
 animation = "fromTop"
 command = "blueman-manager"
-class = "blueman"
-size = "30% 30%"
-position = "500px 500px"
-max_size = "850px 720px"
-margin = 50
+class = "blueman-manager"
+#position = "0% 0%"
+#margin = 10
 lazy = true
 allow_special_workspaces = true
 preserve_aspect = true
 unfocus = "hide"
+
+[scratchpads.blueman.monitor.DP-1]
+size = "25% 25%"
+
+[scratchpads.blueman.monitor.DP-3]
+size = "33% 20%"
