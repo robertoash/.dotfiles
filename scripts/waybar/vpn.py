@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import argparse
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -10,12 +12,22 @@ import requests
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="VPN status script for Waybar")
+parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+args = parser.parse_args()
+
 # Configure logging
 logging_utils.configure_logging()
-logging.getLogger().setLevel(logging.INFO)
+if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+else:
+    logging.getLogger().setLevel(logging.ERROR)
 
 MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
+
+output_file = "/tmp/waybar/vpn_status_output.json"
 
 
 def get_mullvad_status():
@@ -41,37 +53,41 @@ def get_external_ip():
     return "unavailable"
 
 
-def vpn_is_up(mullvad_status):
-    return "Connected" in mullvad_status
+def write_to_file(output):
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    with open(output_file, "w") as f:
+        f.write(output)
 
 
-try:
-    mullvad_status = get_mullvad_status()
-    extern_ip = get_external_ip()
+error_message = None
 
-    if "Error:" in mullvad_status:
-        output = f'{{"text": "?", "tooltip": "{mullvad_status}", "class": "vpn-error"}}'
-        print(output)
-        logging.error(f"Error getting Mullvad status: {mullvad_status}")
-    elif vpn_is_up(mullvad_status):
-        output = f'{{"text": "󰕥", "tooltip": "connected. ip is {extern_ip}", "class": "vpn-connected"}}'
-        print(output)
-        # Log every 10th second
-        current_time = int(time.time())
-        if current_time % 10 == 0:
-            logging.info(output)
-    else:
-        output = f'{{"text": "", "tooltip": "disconnected. ip is {extern_ip}", "class": "vpn-disconnected"}}'
-        print(output)
-        # Log every 10th second
-        current_time = int(time.time())
-        if current_time % 10 == 0:
-            logging.info(output)
-except Exception as e:
-    output = (
-        f'{{"text": "!", "tooltip": "Script error: {str(e)}", "class": "vpn-error"}}'
-    )
-    print(output)
-    logging.error(output)
+while True:
+    try:
+        mullvad_status = get_mullvad_status()
+        extern_ip = get_external_ip()
 
-sys.stdout.flush()
+        if "Error:" not in mullvad_status:
+            if "Connected" in mullvad_status:
+                output = f'{{"text": "󰕥", "tooltip": "connected. ip is {extern_ip}", "class": "vpn-connected"}}'
+            else:
+                output = f'{{"text": "", "tooltip": "disconnected. ip is {extern_ip}", "class": "vpn-disconnected"}}'
+        else:
+            output = (
+                f'{{"text": "?", "tooltip": "{mullvad_status}", "class": "vpn-error"}}'
+            )
+            error_message = f"Error getting Mullvad status: {mullvad_status}"
+        time.sleep(1)
+
+    except Exception as e:
+        output = f'{{"text": "!", "tooltip": "Script error: {str(e)}", "class": "vpn-error"}}'
+        error_message = f"Script error: {str(e)}"
+
+    write_to_file(output)
+
+    # Log every 10th second
+    current_time = int(time.time())
+    if current_time % 10 == 0:
+        if error_message is None:
+            logging.debug(output)
+        else:
+            logging.error(error_message)
