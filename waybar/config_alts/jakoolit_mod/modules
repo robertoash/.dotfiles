@@ -611,10 +611,10 @@
 
 
     "custom/vpn": {
-        "exec": "~/.config/scripts/waybar/vpn.py",
-        "interval": 2,
+        "exec": "cat /tmp/waybar/vpn_status",
+        "interval": 1,
         "return-type": "json",
-        "on-click": "~/.config/scripts/waybar/mullvad_toggle.py",
+        "on-click": "python3 ~/.config/scripts/waybar/mullvad_toggle.py",
         "on-click-right": "sh -c 'notify-send -t 5000 \"$(mullvad status)\"'"
       },
 
