@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import os
 import sys
 import time
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
+
+# Add the custom script path to PYTHONPATH
+sys.path.append("/home/rash/.config/scripts")
+from _utils import logging_utils
 
 """
 This script is launched by Hyprland on login
@@ -14,13 +19,17 @@ The launch config is here:
   /home/rash/.config/hypr/launch.conf
 """
 
-# Add the custom script path to PYTHONPATH
-sys.path.append("/home/rash/.config/scripts")
-from _utils import logging_utils
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="MQTT Listener for Linux")
+parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+args = parser.parse_args()
 
 # Configure logging
 logging_utils.configure_logging()
-logging.getLogger().setLevel(logging.INFO)
+if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+else:
+    logging.getLogger().setLevel(logging.ERROR)
 
 # MQTT connection parameters
 clientname = "linux_mini_mqtt_listener"
@@ -45,7 +54,7 @@ topic_to_file = {
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
-        logging.info("Connected OK")
+        logging.debug("Connected OK")
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
@@ -58,7 +67,7 @@ def on_disconnect(client, userdata, rc, properties=None):
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
-    logging.info(f"Disconnected for reason {rc}")
+    logging.debug(f"Disconnected for reason {rc}")
 
 
 def subscribe_to_topics():
@@ -99,7 +108,7 @@ if __name__ == "__main__":
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        logging.info("Script interrupted by user")
+        logging.debug("Script interrupted by user")
     finally:
         client.loop_stop()
         client.disconnect()

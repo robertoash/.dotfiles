@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import os
 import signal
@@ -20,9 +21,17 @@ The launch config is here:
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="MQTT Reports for Linux")
+parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+args = parser.parse_args()
+
 # Configure logging
 logging_utils.configure_logging()
-logging.getLogger().setLevel(logging.INFO)
+if args.debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+else:
+    logging.getLogger().setLevel(logging.ERROR)
 
 # MQTT connection parameters
 clientname = "linux_mini_mqtt_reports"
@@ -51,7 +60,7 @@ previous_contents = {}
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
-        logging.info("Connected OK")
+        logging.debug("Connected OK")
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
@@ -63,7 +72,7 @@ def on_disconnect(client, userdata, rc, properties=None):
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
-    logging.info(f"Disconnected for reason {rc}")
+    logging.debug(f"Disconnected for reason {rc}")
 
 
 def publish_file_contents(file_path):
@@ -74,7 +83,7 @@ def publish_file_contents(file_path):
                 content = file.read().strip()
                 if content != previous_contents.get(file_path):
                     client.publish(topic, payload=content, qos=1, retain=True)
-                    logging.info(
+                    logging.debug(
                         f"Published new content of {file_path} to topic {topic}"
                     )
                     previous_contents[file_path] = content
@@ -88,22 +97,22 @@ def publish_file_contents(file_path):
 class FileChangeHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path in file_to_topic:
-            logging.info(f"Detected change in {event.src_path}")
+            logging.debug(f"Detected change in {event.src_path}")
             publish_file_contents(event.src_path)
 
 
 # Graceful shutdown of services
 def stop_services(observer, client):
-    logging.info("Shutting down services...")
+    logging.debug("Shutting down services...")
     observer.stop()
     observer.join()
     client.loop_stop()
     client.disconnect()
-    logging.info("MQTT Reports Service stopped.")
+    logging.debug("MQTT Reports Service stopped.")
 
 
 if __name__ == "__main__":
-    logging.info("Starting MQTT Reports Service")
+    logging.debug("Starting MQTT Reports Service")
 
     # Connect to the MQTT broker
     client.connect(broker, connectport, keepalive)
@@ -118,10 +127,10 @@ if __name__ == "__main__":
     for file_path in file_to_topic.keys():
         dir_path = os.path.dirname(file_path)
         observer.schedule(event_handler, path=dir_path, recursive=False)
-        logging.info(f"Watchdog setup and monitoring directory: {dir_path}")
+        logging.debug(f"Watchdog setup and monitoring directory: {dir_path}")
 
     observer.start()
-    logging.info("Watchdog is now waiting for file changes...")
+    logging.debug("Watchdog is now waiting for file changes...")
 
     # Setup signal handler for graceful shutdown
     def signal_handler(sig, frame):

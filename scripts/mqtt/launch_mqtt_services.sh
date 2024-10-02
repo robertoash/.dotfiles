@@ -11,7 +11,14 @@ source /home/rash/.config/zsh/.zsh_path
 
 eval "$(direnv export bash)"
 
-python /home/rash/.config/scripts/mqtt/mqtt_reports.py &
-python /home/rash/.config/scripts/mqtt/mqtt_listener.py &
+# Check if --debug argument is provided
+if [[ "$1" == "--debug" ]]; then
+    debug_arg="--debug"
+else
+    debug_arg=""
+fi
+
+python3 /home/rash/.config/scripts/mqtt/mqtt_reports.py $debug_arg &
+python3 /home/rash/.config/scripts/mqtt/mqtt_listener.py $debug_arg &
 
 
