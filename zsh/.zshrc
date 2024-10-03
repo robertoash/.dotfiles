@@ -77,7 +77,7 @@ source ~/.config/broot/launcher/bash/br
 # # Keybindings
 # #################################
 
-source ~/.config/zsh/keybinds.zsh
+source ~/.config/zsh/zsh_keybinds.zsh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -s '^o' 'lfcd\n'

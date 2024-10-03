@@ -3,6 +3,11 @@ bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey "^[[3~" delete-char
 
+# Alt + LeftArrow -> backward-word
+bindkey "^[[1;3D" backward-word
+# Alt + RightArrow -> forward-word
+bindkey "^[[1;3C" forward-word
+
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
     echoti smkx

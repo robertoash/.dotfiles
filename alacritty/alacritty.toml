@@ -58,7 +58,9 @@ bindings = [
   { key = "Enter", mods = "Super|Shift", action = "SpawnNewInstance"},
   { key = "Space", mods = "Shift|Control", action = "ToggleViMode"},
   { key = "Home", mods = "None", chars = "\u001bOH" },
-  { key = "End", mods = "None", chars = "\u001bOF" }
+  { key = "End", mods = "None", chars = "\u001bOF" },
+  { key = "Left",  mods = "Alt", chars = "\u001b[1;3D" },
+  { key = "Right", mods = "Alt", chars = "\u001b[1;3C" }
 ]
 
 ### Reference
