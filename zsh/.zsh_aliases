@@ -10,8 +10,9 @@ alias sudo="sudo "
 
 ## Shell
 alias cd="z"
-alias zsh_reload="source ~/.config/zsh/.zshrc"
 alias reset="reset && neofetch"
+alias zsh_reload="grep -v 'neofetch' ~/.config/zsh/.zshrc | zsh"
+alias rr="grep -v 'neofetch' ~/.config/zsh/.zshrc | zsh && reset"
 
 ## Scripts
 alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
