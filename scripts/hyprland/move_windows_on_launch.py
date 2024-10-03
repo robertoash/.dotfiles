@@ -17,7 +17,7 @@ DELAY = 5
 workspace_assignments = [
     {"identifier": "Zen Browser", "workspace": 11, "make_master": True},
     {"identifier": "perplexity.ai", "workspace": 2, "make_master": False},
-    {"identifier": "chatgpt.com", "workspace": 3, "make_master": False},
+    {"identifier": "chatgpt.com", "workspace": 3, "make_master": True},
     {"identifier": "obsidian", "workspace": 4, "make_master": True},
     {"identifier": "personal (Workspace)", "workspace": 13, "make_master": True},
     {"identifier": "dotfiles (Workspace)", "workspace": 13, "make_master": True},
