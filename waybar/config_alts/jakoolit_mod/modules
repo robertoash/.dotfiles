@@ -611,7 +611,7 @@
 
 
     "custom/vpn": {
-        "exec": "cat /tmp/waybar/vpn_status",
+        "exec": "cat /tmp/waybar/vpn_status_output.json",
         "interval": 1,
         "return-type": "json",
         "on-click": "python3 ~/.config/scripts/waybar/mullvad_toggle.py",
