@@ -85,6 +85,9 @@ alias monitor_keys_filtered="wev -f wl_pointer:motion -F wl_pointer:enter -F wl_
 alias monitor_keys_full="wev"
 # Fzf
 alias fzf='set_fzf_alias; fzf'
+# Yt-dlp
+alias yt="yt-dlp"
+alias yt_best="yt-dlp -f best"
 # Mullvad
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
@@ -94,8 +97,6 @@ alias mega="mega-cmd"
 # SVTText
 alias svttext="svttext -colors -interactive"
 alias svtt="svt-text"
-# Vault
-alias vault="~/.config/scripts/backup/vault.py"
 # Zellij
 alias zj="zsh -l -c 'zellij attach --index 0 || zellij'"
 #Other
