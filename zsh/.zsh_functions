@@ -7,3 +7,4 @@ source ~/.config/zsh/zsh_functions/fzf.zsh
 source ~/.config/zsh/zsh_functions/brave.zsh
 source ~/.config/zsh/zsh_functions/buku.zsh
 source ~/.config/zsh/zsh_functions/switch_buku.zsh
+source ~/.config/zsh/zsh_functions/video.zsh
