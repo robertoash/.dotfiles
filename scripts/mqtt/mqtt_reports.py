@@ -12,7 +12,7 @@ from watchdog.observers import Observer
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
-from _utils import logging_utils
+from _utils import logging_utils  # noqa: E402
 
 """
 This script is launched by a systemd service.
