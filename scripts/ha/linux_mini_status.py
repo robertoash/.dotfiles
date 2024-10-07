@@ -10,45 +10,52 @@ import argparse
 import logging
 import os
 import sys
+from datetime import datetime
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="Update Linux Mini status.")
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument(
-    "--active",
-    action="store_const",
-    const="active",
-    dest="state",
-    help="Set the state of Linux Mini to active",
-)
-group.add_argument(
-    "--inactive",
-    action="store_const",
-    const="inactive",
-    dest="state",
-    help="Set the state of Linux Mini to inactive",
-)
-parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-args = parser.parse_args()
 
-if args.state is None:
-    parser.error("One of --active or --inactive is required")
+def parse_args():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Update Linux Mini status.")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--active",
+        action="store_const",
+        const="active",
+        dest="state",
+        help="Set the state of Linux Mini to active",
+    )
+    group.add_argument(
+        "--inactive",
+        action="store_const",
+        const="inactive",
+        dest="state",
+        help="Set the state of Linux Mini to inactive",
+    )
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
 
-# Configure logging
-logging_utils.configure_logging()
-if args.debug:
-    logging.getLogger().setLevel(logging.DEBUG)
-else:
-    logging.getLogger().setLevel(logging.ERROR)
+    if args.state is None:
+        parser.error("One of --active or --inactive is required")
 
-status_file_path = "/tmp/mqtt/linux_mini_status"
+    return args
+
+
+def configure_logging(debug):
+    logging_utils.configure_logging()
+    if debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.ERROR)
 
 
 def update_status(state):
+
+    status_file_path = "/tmp/mqtt/linux_mini_status"
+
     os.makedirs(os.path.dirname(status_file_path), exist_ok=True)
     with open(status_file_path, "w") as f:
         f.write(state)
@@ -56,4 +63,6 @@ def update_status(state):
 
 
 if __name__ == "__main__":
+    args = parse_args()
+    configure_logging(args.debug)
     update_status(args.state)

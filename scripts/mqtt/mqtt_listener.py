@@ -13,43 +13,55 @@ sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
 """
-This script is launched by Hyprland on login
-via launch_mqtt_services.sh script.
-The launch config is here:
-  /home/rash/.config/hypr/launch.conf
+This script is launched by a systemd service.
+The service file is here:
+  /home/rash/.config/systemd/user/mqtt_listener.service
+
+Status can be checked with:
+  systemctl --user status mqtt_listener.service
 """
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="MQTT Listener for Linux")
-parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-args = parser.parse_args()
-
-# Configure logging
-logging_utils.configure_logging()
-if args.debug:
-    logging.getLogger().setLevel(logging.DEBUG)
-else:
-    logging.getLogger().setLevel(logging.ERROR)
+# Mapping of files to topics
+topic_to_file = {
+    "homeassistant/input_boolean.rob_in_office/status": "/tmp/mqtt/in_office_status",
+}
 
 # MQTT connection parameters
 clientname = "linux_mini_mqtt_listener"
 broker = "10.20.10.100"
 connectport = 1883
 keepalive = 60
-client = mqtt.Client(
-    client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
-)
-client.username_pw_set(
-    username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
-)
-client.will_set(
-    "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
-)
 
-# Mapping of files to topics
-topic_to_file = {
-    "homeassistant/input_boolean.rob_in_office/status": "/tmp/mqtt/in_office_status",
-}
+
+def arg_parser():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="MQTT Listener for Linux")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+    return args
+
+
+def configure_logging(args):
+    # Configure logging
+    logging_utils.configure_logging()
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
+
+
+def set_mqtt_client():
+
+    client = mqtt.Client(
+        client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
+    )
+    client.username_pw_set(
+        username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
+    )
+    client.will_set(
+        "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
+    )
+    return client
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
@@ -93,6 +105,11 @@ def write_status_file(file_path, payload):
 
 
 if __name__ == "__main__":
+    args = arg_parser()
+
+    configure_logging(args)
+
+    client = set_mqtt_client()
 
     # Connect to MQTT Broker
     client.connect(broker, connectport, keepalive)
@@ -109,6 +126,9 @@ if __name__ == "__main__":
             time.sleep(1)
     except KeyboardInterrupt:
         logging.debug("Script interrupted by user")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}", exc_info=True)
+        sys.exit(1)
     finally:
         client.loop_stop()
         client.disconnect()

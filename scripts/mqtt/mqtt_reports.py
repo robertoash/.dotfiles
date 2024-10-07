@@ -10,43 +10,18 @@ import paho.mqtt.client as mqtt  # pip install paho-mqtt
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
-"""
-This script is launched by Hyprland on login
-via launch_mqtt_services.sh script.
-The launch config is here:
-  /home/rash/.config/hypr/launch.conf
-"""
-
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="MQTT Reports for Linux")
-parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-args = parser.parse_args()
+"""
+This script is launched by a systemd service.
+The service file is here:
+  /home/rash/.config/systemd/user/mqtt_reports.service
 
-# Configure logging
-logging_utils.configure_logging()
-if args.debug:
-    logging.getLogger().setLevel(logging.DEBUG)
-else:
-    logging.getLogger().setLevel(logging.ERROR)
-
-# MQTT connection parameters
-clientname = "linux_mini_mqtt_reports"
-broker = "10.20.10.100"
-connectport = 1883
-keepalive = 60
-client = mqtt.Client(
-    client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
-)
-client.username_pw_set(
-    username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
-)
-client.will_set(
-    "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
-)
+Status can be checked with:
+  systemctl --user status mqtt_reports.service
+"""
 
 # Mapping of files to topics
 file_to_topic = {
@@ -57,6 +32,39 @@ file_to_topic = {
 # Store previous contents
 previous_contents = {}
 
+# MQTT connection parameters
+clientname = "linux_mini_mqtt_reports"
+broker = "10.20.10.100"
+connectport = 1883
+keepalive = 60
+
+
+def arg_parser():
+    parser = argparse.ArgumentParser(description="MQTT Reports for Linux")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    return parser.parse_args()
+
+
+def configure_logging(args):
+    logging_utils.configure_logging()
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
+
+
+def set_mqtt_client():
+    client = mqtt.Client(
+        client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
+    )
+    client.username_pw_set(
+        username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
+    )
+    client.will_set(
+        "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
+    )
+    return client
+
 
 def on_connect(client, userdata, flags, rc, properties=None):
     if rc == 0:
@@ -64,27 +72,32 @@ def on_connect(client, userdata, flags, rc, properties=None):
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
+        for file_path in file_to_topic.keys():
+            publish_file_contents(client, file_path)
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
-def on_disconnect(client, userdata, rc, properties=None):
+def on_disconnect(client, userdata, rc):
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
-    logging.debug(f"Disconnected for reason {rc}")
+    if rc != 0:
+        logging.warning(f"Unexpected disconnection with return code {rc}. Retrying...")
+    else:
+        logging.info("Client disconnected successfully.")
 
 
-def publish_file_contents(file_path):
+def publish_file_contents(client, file_path):
     topic = file_to_topic.get(file_path)
     if topic:
         try:
             with open(file_path, "r") as file:
                 content = file.read().strip()
                 if content != previous_contents.get(file_path):
-                    client.publish(topic, payload=content, qos=1, retain=True)
+                    result = client.publish(topic, payload=content, qos=1, retain=True)
                     logging.debug(
-                        f"Published new content of {file_path} to topic {topic}"
+                        f"Published to {topic}: {content}, MQTT result: {result.rc}"
                     )
                     previous_contents[file_path] = content
         except FileNotFoundError:
@@ -93,35 +106,18 @@ def publish_file_contents(file_path):
             logging.error(f"Error reading file {file_path}: {e}")
 
 
-# Event handler for file changes
 class FileChangeHandler(FileSystemEventHandler):
+    def __init__(self, client):
+        self.client = client
+
     def on_modified(self, event):
         if event.src_path in file_to_topic:
             logging.debug(f"Detected change in {event.src_path}")
-            publish_file_contents(event.src_path)
+            publish_file_contents(self.client, event.src_path)
 
 
-# Graceful shutdown of services
-def stop_services(observer, client):
-    logging.debug("Shutting down services...")
-    observer.stop()
-    observer.join()
-    client.loop_stop()
-    client.disconnect()
-    logging.debug("MQTT Reports Service stopped.")
-
-
-if __name__ == "__main__":
-    logging.debug("Starting MQTT Reports Service")
-
-    # Connect to the MQTT broker
-    client.connect(broker, connectport, keepalive)
-    client.on_connect = on_connect
-    client.on_disconnect = on_disconnect
-    client.loop_start()
-
-    # Setup watchdog observer
-    event_handler = FileChangeHandler()
+def setup_watchdog(client):
+    event_handler = FileChangeHandler(client)
     observer = Observer()
 
     for file_path in file_to_topic.keys():
@@ -131,8 +127,34 @@ if __name__ == "__main__":
 
     observer.start()
     logging.debug("Watchdog is now waiting for file changes...")
+    return observer
 
-    # Setup signal handler for graceful shutdown
+
+def stop_services(observer, client):
+    logging.debug("Shutting down services...")
+    observer.stop()
+    observer.join()
+    client.loop_stop()
+    client.disconnect()
+    logging.debug("MQTT Reports Service stopped.")
+
+
+def main():
+    args = arg_parser()
+    configure_logging(args)
+
+    logging.debug("Starting MQTT Reports Service")
+
+    client = set_mqtt_client()
+    client.on_connect = on_connect
+    client.on_disconnect = on_disconnect
+
+    client.connect(broker, connectport, keepalive)
+    client.reconnect_delay_set(min_delay=1, max_delay=120)
+    client.loop_start()
+
+    observer = setup_watchdog(client)
+
     def signal_handler(sig, frame):
         stop_services(observer, client)
 
@@ -140,8 +162,11 @@ if __name__ == "__main__":
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        # Keep the main thread running indefinitely, allowing the observer and MQTT to run
-        signal.pause()  # Blocks until a signal is received
+        signal.pause()
     except Exception as e:
         logging.error(f"Error occurred: {e}")
         stop_services(observer, client)
+
+
+if __name__ == "__main__":
+    main()

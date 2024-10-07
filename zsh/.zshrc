@@ -52,6 +52,8 @@ zstyle ':completion:*' menu select
 
 # Path setting
 source ~/.config/zsh/.zsh_path
+# Hooks
+source ~/.config/zsh/.zsh_hooks
 # Aliases
 source ~/.config/zsh/.zsh_aliases
 # Theme
