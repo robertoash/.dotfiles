@@ -13,6 +13,9 @@ stp_history() {
   # and exit early if it is set.
   export RESH_HISTORY_DISABLED=1
 
+  # Redirect _Z_DATA to /dev/null to prevent z from creating a new .z file
+  export _Z_DATA=/dev/null
+
   echo 'History recording stopped.'
 }
 
@@ -24,6 +27,9 @@ strt_history() {
 
   # Unset the environment variable
   unset RESH_HISTORY_DISABLED
+
+  # Set _Z_DATA to enable z to update its database again
+  export _Z_DATA=~/.config/z/.z
 
   echo 'History recording started.'
 }
