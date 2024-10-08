@@ -11,7 +11,7 @@ alias sudo="sudo "
 ## Shell
 alias reset="reset && neofetch"
 alias zsh_reload="source ~/.config/zsh/.zshrc"
-alias rr="alacritty & disown && exit"
+alias rr="rr_f"
 alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
 
 ## Scripts
