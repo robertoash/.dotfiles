@@ -95,6 +95,3 @@ in_ws() {
   # Move the most recently focused window to the specified workspace
   hyprctl dispatch movetoworkspace $workspace_number
 }
-
-
-
