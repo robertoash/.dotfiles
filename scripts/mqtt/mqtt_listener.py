@@ -70,7 +70,7 @@ def on_connect(client, userdata, flags, rc, properties=None):
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
-        subscribe_to_topics()
+        subscribe_to_topics(client)
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
 
@@ -109,7 +109,7 @@ def on_disconnect(client, userdata, rc, *args, properties=None):
         client.reconnect()
 
 
-def subscribe_to_topics():
+def subscribe_to_topics(client):
     for topic in topic_to_file.keys():
         client.subscribe(topic, qos=1)
 
