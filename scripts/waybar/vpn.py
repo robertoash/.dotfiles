@@ -10,7 +10,7 @@ import requests
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
-from _utils import logging_utils
+from _utils import logging_utils  # noqa: E402
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="VPN status script for Waybar")
@@ -68,9 +68,9 @@ while True:
 
         if "Error:" not in mullvad_status:
             if "Connected" in mullvad_status:
-                output = f'{{"text": "󰕥", "tooltip": "connected. ip is {extern_ip}", "class": "vpn-connected"}}'
+                output = f'{{"text": "󰕥", "tooltip": "connected. ip is {extern_ip}", "class": "vpn-connected"}}'  # noqa: E501
             else:
-                output = f'{{"text": "", "tooltip": "disconnected. ip is {extern_ip}", "class": "vpn-disconnected"}}'
+                output = f'{{"text": "", "tooltip": "disconnected. ip is {extern_ip}", "class": "vpn-disconnected"}}'  # noqa: E501
         else:
             output = (
                 f'{{"text": "?", "tooltip": "{mullvad_status}", "class": "vpn-error"}}'
