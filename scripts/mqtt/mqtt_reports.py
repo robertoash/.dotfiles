@@ -78,14 +78,38 @@ def on_connect(client, userdata, flags, rc, properties=None):
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
-def on_disconnect(client, userdata, rc):
+def on_disconnect(client, userdata, rc, *args, properties=None):
+    # Log the additional arguments
+    logging.debug(
+        f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
+    )
+
+    # Check if rc is an instance of DisconnectFlags and provide a more user-friendly message
+    if isinstance(rc, mqtt.DisconnectFlags):
+        if rc.is_disconnect_packet_from_server:
+            logging.debug("Disconnected: Server might be down.")
+        else:
+            logging.debug("Disconnected: Client initiated or other reason.")
+    else:
+        logging.debug(f"Disconnected for reason {rc}")
+
+    # Iterate over args and check types to ensure correct handling
+    for arg in args:
+        if isinstance(arg, mqtt.ReasonCode):
+            logging.debug(f"Reason code for disconnection: {arg}")
+        elif isinstance(arg, mqtt.Properties):  # Corrected to 'mqtt.Properties'
+            logging.debug(f"Disconnection properties: {arg}")
+        else:
+            logging.debug(f"Unknown argument in on_disconnect: {arg}")
+
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
-    if rc != 0:
-        logging.warning(f"Unexpected disconnection with return code {rc}. Retrying...")
-    else:
-        logging.info("Client disconnected successfully.")
+
+    # Attempt to reconnect
+    if rc != 0:  # unexpected disconnect
+        logging.debug("Attempting to reconnect to MQTT broker...")
+        client.reconnect()
 
 
 def publish_file_contents(client, file_path):
@@ -150,10 +174,12 @@ def main():
     client.on_disconnect = on_disconnect
 
     client.connect(broker, connectport, keepalive)
-    client.reconnect_delay_set(min_delay=1, max_delay=120)
     client.loop_start()
 
     observer = setup_watchdog(client)
+
+    client.reconnect_delay_set(min_delay=1, max_delay=120)
+    client.enable_logger()
 
     def signal_handler(sig, frame):
         stop_services(observer, client)

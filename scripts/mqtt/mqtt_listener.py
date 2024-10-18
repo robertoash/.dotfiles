@@ -75,11 +75,38 @@ def on_connect(client, userdata, flags, rc, properties=None):
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
-def on_disconnect(client, userdata, rc, properties=None):
+def on_disconnect(client, userdata, rc, *args, properties=None):
+    # Log the additional arguments
+    logging.debug(
+        f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
+    )
+
+    # Check if rc is an instance of DisconnectFlags and provide a more user-friendly message
+    if isinstance(rc, mqtt.DisconnectFlags):
+        if rc.is_disconnect_packet_from_server:
+            logging.debug("Disconnected: Server might be down.")
+        else:
+            logging.debug("Disconnected: Client initiated or other reason.")
+    else:
+        logging.debug(f"Disconnected for reason {rc}")
+
+    # Iterate over args and check types to ensure correct handling
+    for arg in args:
+        if isinstance(arg, mqtt.ReasonCode):
+            logging.debug(f"Reason code for disconnection: {arg}")
+        elif isinstance(arg, mqtt.Properties):  # Corrected to 'mqtt.Properties'
+            logging.debug(f"Disconnection properties: {arg}")
+        else:
+            logging.debug(f"Unknown argument in on_disconnect: {arg}")
+
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
-    logging.debug(f"Disconnected for reason {rc}")
+
+    # Attempt to reconnect
+    if rc != 0:  # unexpected disconnect
+        logging.debug("Attempting to reconnect to MQTT broker...")
+        client.reconnect()
 
 
 def subscribe_to_topics():
@@ -104,7 +131,7 @@ def write_status_file(file_path, payload):
         file.write(payload)
 
 
-if __name__ == "__main__":
+def main():
     args = arg_parser()
 
     configure_logging(args)
@@ -117,6 +144,10 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
     client.on_message = on_message
+
+    # Set reconnect delay and enable logging
+    client.reconnect_delay_set(min_delay=1, max_delay=120)
+    client.enable_logger()
 
     # Start the MQTT client loop in a non-blocking way
     client.loop_start()
@@ -132,3 +163,7 @@ if __name__ == "__main__":
     finally:
         client.loop_stop()
         client.disconnect()
+
+
+if __name__ == "__main__":
+    main()
