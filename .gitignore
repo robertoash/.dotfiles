@@ -11,6 +11,7 @@
 # ...and these directories...
 !alacritty/
 !dunst/
+!espanso/
 !foot/
 !fzf-tab/
 !hypr/
@@ -35,6 +36,7 @@
 # ...as well as any subfolders in them and their contents...
 !alacritty/**/*
 !dunst/**/*
+!espanso/**/*
 !foot/**/*
 !fzf-tab/**/*
 !hypr/**/*
@@ -74,6 +76,7 @@ scripts/backup/vault.py
 scripts/_logs/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
+espanso/match/secrets.yml
 .direnv/
 venv/
 zsh/.oda.zsh
