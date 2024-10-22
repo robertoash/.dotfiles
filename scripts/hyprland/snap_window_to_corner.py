@@ -4,6 +4,7 @@ import subprocess
 import sys
 
 
+# Utility functions
 def run_command(command):
     try:
         return subprocess.check_output(
@@ -44,8 +45,8 @@ def move_window_to_corner(corner):
         run_command(f"hyprctl dispatch movewindow {direction}")
 
 
+# Main logic
 if __name__ == "__main__":
-    skip_cursor = "--lower-right" in sys.argv
     window_info = get_active_window_info()
 
     if window_info:
@@ -53,29 +54,38 @@ if __name__ == "__main__":
         if not window_info.get("floating"):
             sys.exit("Window is not floating. Exiting without snapping.")
 
-        was_pinned = "pinned" in window_info and window_info["pinned"]
-        if was_pinned:
-            run_command("hyprctl dispatch pin")
+        # Get window geometry and cursor position
+        geometry = get_window_geometry(window_info)
+        click_x, click_y = get_cursor_position()
+        window_center_x = geometry["x"] + geometry["width"] // 2
+        window_center_y = geometry["y"] + geometry["height"] // 2
 
-        if skip_cursor:
-            corner = ["d", "r"]  # Snap to lower right corner
+        # Determine the boundary for corners (you can adjust this threshold)
+        corner_threshold = 50  # Distance from corner to snap
+
+        # Check if click is in the corner areas
+        if (
+            abs(click_x - geometry["x"]) < corner_threshold
+            and abs(click_y - geometry["y"]) < corner_threshold
+        ):
+            corner = ["u", "l"]
+        elif (
+            abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
+            and abs(click_y - geometry["y"]) < corner_threshold
+        ):
+            corner = ["u", "r"]
+        elif (
+            abs(click_x - geometry["x"]) < corner_threshold
+            and abs(click_y - (geometry["y"] + geometry["height"])) < corner_threshold
+        ):
+            corner = ["d", "l"]
+        elif (
+            abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
+            and abs(click_y - (geometry["y"] + geometry["height"])) < corner_threshold
+        ):
+            corner = ["d", "r"]
         else:
-            click_x, click_y = get_cursor_position()
-            geometry = get_window_geometry(window_info)
-            window_center_x = geometry["x"] + geometry["width"] // 2
-            window_center_y = geometry["y"] + geometry["height"] // 2
+            sys.exit(0)
 
-            # Determine closest corner of the window based on the click position
-            if click_x < window_center_x and click_y < window_center_y:
-                corner = ["u", "l"]
-            elif click_x >= window_center_x and click_y < window_center_y:
-                corner = ["u", "r"]
-            elif click_x < window_center_x and click_y >= window_center_y:
-                corner = ["d", "l"]
-            else:
-                corner = ["d", "r"]
-
+        # Snap to the determined corner
         move_window_to_corner(corner)
-
-        if was_pinned:
-            run_command("hyprctl dispatch pin")
