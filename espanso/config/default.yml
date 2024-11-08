@@ -20,6 +20,8 @@
 # You can also disable the toggle key completely with
 # toggle_key: OFF
 
+search_shortcut: CTRL+SHIFT+SPACE
+
 # --- Injection Backend
 
 # Espanso supports multiple ways of injecting text into applications. Each of
