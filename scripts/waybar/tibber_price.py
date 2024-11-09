@@ -73,7 +73,10 @@ def fetch_prices():
 
     # Find the current hour index
     current_time = datetime.now(pytz.timezone("Europe/Stockholm"))
-    current_hour = current_time.strftime("%Y-%m-%dT%H:00:00.000+02:00")
+    # Get timezone offset dynamically to handle DST
+    tz_offset = current_time.strftime("%z")  # Format: +0200 or +0100
+    tz_offset = f"{tz_offset[:3]}:{tz_offset[3:]}"  # Convert to +02:00 or +01:00 format
+    current_hour = current_time.strftime(f"%Y-%m-%dT%H:00:00.000{tz_offset}")
 
     # Append tomorrow's prices to today's prices if available
     combined_prices = today_prices + tomorrow_prices
@@ -114,6 +117,7 @@ def fetch_prices():
             None,
             None,
             None,
+            None,
             "Error: Current hour's index is out of bounds or not found.",
         )
 
@@ -144,6 +148,7 @@ def main():
     icon_output_file = "/tmp/tibber_price_icon_output.json"
     last_text_output = None
     last_icon_output = None
+    error_cooldown = 120  # 2 minutes cooldown after error
 
     logging.debug("Script started.")
 
@@ -160,6 +165,11 @@ def main():
 
         if error:
             logging.error(error)
+            logging.info(
+                f"Cooling down for {error_cooldown} seconds before retrying..."
+            )
+            time.sleep(error_cooldown)
+            # Skip rest of loop and try again from start
             continue
 
         text_output = {
