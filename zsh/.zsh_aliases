@@ -32,6 +32,7 @@ alias start_history="strt_history"
 
 ## Zen websites
 alias z_disney="b_zen --web https://disneyplus.se"
+alias z_ha="b_zen --web https://ha.rashlab.net"
 alias z_svt="b_zen --web https://svtplay.se"
 alias z_netflix="b_zen --web https://netflix.com"
 alias z_max="b_zen --web https://max.com"
