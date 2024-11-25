@@ -18,8 +18,8 @@ floating = active_window.get("floating")
 monitor = active_window.get("monitor")
 
 if monitor == 1:
-    new_width = "1012"
-    new_height = "572"
+    new_width = "900"
+    new_height = "500"
 else:
     new_width = "1280"
     new_height = "720"
