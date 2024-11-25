@@ -18,11 +18,11 @@ floating = active_window.get("floating")
 monitor = active_window.get("monitor")
 
 if monitor == 1:
-    new_width = "704"
-    new_height = "396"
+    new_width = "1012"
+    new_height = "572"
 else:
-    new_width = "853"
-    new_height = "480"
+    new_width = "1280"
+    new_height = "720"
 
 if floating:
     # Float the window and resize
@@ -31,4 +31,3 @@ else:
     # Float the window and resize
     run_command("hyprctl dispatch togglefloating")
     run_command(f"hyprctl dispatch resizeactive exact {new_width} {new_height}")
-    run_command("~/.config/scripts/hyprland/snap_window_to_corner.py --lower-right")
