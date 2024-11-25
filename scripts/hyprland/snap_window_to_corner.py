@@ -49,6 +49,11 @@ def move_window_to_corner(corner):
 if __name__ == "__main__":
     window_info = get_active_window_info()
 
+    if sys.argv[1] == "--lower-right":
+        corner = ["d", "r"]
+        move_window_to_corner(corner)
+        sys.exit(0)
+
     if window_info:
         # Check if the window is floating
         if not window_info.get("floating"):

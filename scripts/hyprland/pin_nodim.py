@@ -28,3 +28,4 @@ else:
     # Pin the window and set nodim property
     run_command("hyprctl dispatch pin")
     run_command(f"hyprctl setprop address:{window_id} nodim 1")
+    run_command("~/.config/scripts/hyprland/snap_window_to_corner.py --lower-right")
