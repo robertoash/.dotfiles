@@ -4,6 +4,7 @@
 # Except for these files...
 !.gitignore
 !all_packages.txt
+!mimeapps.list
 !/README.md
 !rofimoji.rc
 !helpers.rc
