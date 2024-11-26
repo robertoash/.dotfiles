@@ -123,8 +123,10 @@ def main():
                     make_window_master(window_address, assignment["workspace"])
                 break  # Move to the next window after assigning the current one
 
-    # Switch back to the first workspace
+    # Switch back to the first workspace on the right monitor
     subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
+    # Switch to the first workspace on the left monitor
+    subprocess.run(["hyprctl", "dispatch", "workspace", "11"], check=True)
 
 
 if __name__ == "__main__":
