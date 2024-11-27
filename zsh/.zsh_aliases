@@ -89,6 +89,7 @@ alias fzf='set_fzf_alias; fzf'
 # Yt-dlp
 alias yt="yt-dlp"
 alias yt_best="yt-dlp -f best"
+alias yt_download="/usr/bin/yt-dlp -f bestvideo+bestaudio/best --external-downloader axel --external-downloader-args '-n 8'"
 # Mullvad
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
