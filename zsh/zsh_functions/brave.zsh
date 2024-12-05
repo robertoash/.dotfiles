@@ -58,3 +58,8 @@ b_zen() {
     esac
   fi
 }
+
+no_paywall() {
+  echo "Opening https://www.removepaywall.com/search?url=$1 on Brave"
+  brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://www.removepaywall.com/search?url=$1"
+}
