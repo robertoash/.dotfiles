@@ -42,6 +42,9 @@ alias z_gpt="b_zen --web https://chatgpt.com/"
 alias zen="b_zen"
 
 ## App aliases
+# Home Assistant
+alias mqtt_service_status="systemctl --user status mqtt_reports.service mqtt_listener.service"
+alias mqtt_service_restart="systemctl --user restart mqtt_reports.service & systemctl --user restart mqtt_listener.service"
 # Neovim
 alias nv="nvim"
 # Buku
