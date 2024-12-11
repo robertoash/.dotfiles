@@ -56,19 +56,36 @@ llf() {
 
 # Shortcut to find a file anywhere by name
 ff() {
+    if [[ "$1" == "--help" ]]; then
+        echo "Usage: ff [search_term]"
+        echo "Search for files containing search_term in their name and open selected files"
+        echo ""
+        echo "Options:"
+        echo "  --help    Show this help message"
+        return 0
+    fi
+
     local selections
     if sudo -v; then
+        # Build find exclusion patterns from ignore.conf
+        local exclude_patterns=()
+        while IFS= read -r pattern; do
+            [[ -z "$pattern" ]] && continue  # Skip empty lines
+            exclude_patterns+=("-path" "$pattern" "-prune" "-o")
+        done < "${XDG_CONFIG_HOME}/search/ignore.conf"
+
+        # Build find inclusion patterns from include.conf
+        local include_patterns=()
+        while IFS= read -r pattern; do
+            [[ -z "$pattern" ]] && continue  # Skip empty lines
+            include_patterns+=("-o" "-path" "$pattern")
+        done < "${XDG_CONFIG_HOME}/search/include.conf"
+
         # Start find and pipe its output directly to fzf
-        selections=$(sudo find / -path "*/.snapshots" -prune -o -iname "*$1*" -print 2>/dev/null | \
-            command fzf --tac --multi --preview 'bat --color=always {}' \
+        selections=$(sudo find / "(" "${exclude_patterns[@]}" "-false" ")" "${include_patterns[@]}" "-o" "-iname" "*$1*" "-print" 2>/dev/null | \
+            command fzf --multi --preview 'bat --color=always {}' \
             --preview-window '~3' \
-            --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa' &)
-
-        # Get the PID of the find command
-        find_pid=$!
-
-        # Kill the find process if it's still running
-        trap 'kill $find_pid 2>/dev/null' EXIT
+            --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa')
 
         if [ -n "$selections" ]; then
             echo "$selections" | while IFS= read -r file; do
