@@ -8,6 +8,7 @@
 !/README.md
 !rofimoji.rc
 !helpers.rc
+!taskrc
 
 # ...and these directories...
 !alacritty/
@@ -27,6 +28,7 @@
 !swappy/
 !swayidle/
 !swaylock/
+!task/
 !thefuck/
 !vim/
 !waybar/

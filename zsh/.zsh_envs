@@ -13,6 +13,9 @@ export YARN_RC_FILENAME=~/.config/yarn/.yarnrc
 export FZF_CONFIG_DEFAULT="fzf --preview 'bat --color=always {}' --preview-window '~3' --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa'"
 export FZF_CONFIG_NO_PREVIEW="fzf --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa'"
 export FZF_PREVIEW=true
+# Taskwarrior
+export TASKRC="$HOME/.config/task/taskrc"
+export TASKDATA="$HOME/.config/task/.task"
 # Others
 export FZF_DEFAULT_COMMAND='find . \! \( -type d -path ./.git -prune \) \! -type d \! -name '\''*.tags'\'' -printf '\''%P\n'\'
 
