@@ -10,7 +10,7 @@ base 3-2///pacman
 base-devel 1-2///pacman
 bash-completion 2.15.0-1///pacman
 bat 0.24.0-2///pacman
-bind 9.20.3-2///pacman
+bind 9.20.4-1///pacman
 blueman 2.4.3-1///pacman
 bluez 5.79-1///pacman
 bluez-utils 5.79-1///pacman
@@ -56,7 +56,7 @@ eos-update-notifier 24.7.1-1///pacman
 ethtool 1:6.9-1///pacman
 exfatprogs 1.2.6-1///pacman
 expect 5.45.4-5///pacman
-eza 0.20.11-1///pacman
+eza 0.20.12-1///pacman
 f2fs-tools 1.16.0-3///pacman
 fd 10.2.0-1///pacman
 feh 3.10.3-1///pacman
@@ -105,7 +105,7 @@ libva-intel-driver 2.4.1-3///pacman
 libva-utils 2.22.0-1///pacman
 libwnck3 43.1-1///pacman
 linux 6.12.4.arch1-1///pacman
-linux-firmware 20241111.b5885ec5-1///pacman
+linux-firmware 20241210.b00a7f7e-1///pacman
 linux-headers 6.12.4.arch1-1///pacman
 logrotate 3.22.0-1///pacman
 lsb-release 2.0.r53.a86f885-2///pacman
@@ -187,6 +187,7 @@ sysfsutils 2.1.1-2///pacman
 system-config-printer 1.5.18-4///pacman
 systemd-sysvcompat 256.9-1///pacman
 tailscale 1.78.1-1///pacman
+task 3.2.0-2///pacman
 telegram-desktop 5.9.0-1///pacman
 texinfo 7.1.1-1///pacman
 thefuck 3.32-10///pacman
@@ -244,7 +245,7 @@ alacritty-git 1:0.15.0.2387.g8731d157-1///yay
 aquamarine-git 0.5.0_r237.g9fc2d8e-1///yay
 arkenfox-user.js 128.0-1///yay
 asdf-vm 0.14.1-1///yay
-brave-bin 1:1.73.97-1///yay
+brave-bin 1:1.73.101-1///yay
 brother-dcp-l2530dw 4.0.0-1///yay
 buku 4.9-2///yay
 bukubrow-bin 5.4.0-1///yay
@@ -257,7 +258,7 @@ hunspell-sv 1:2.42-2///yay
 hypnotix 4.8-1///yay
 hypridle-git 0.1.5.r1.g9f23e70b-1///yay
 hyprkeys 1.0.3-1///yay
-hyprland-git 0.45.0.r96.4d05677e-1///yay
+hyprland-git 0.45.0.r101.cef5e6dd-1///yay
 hyprlock-git 0.5.0.r18.g8010b81e-1///yay
 hyprpaper-git 0.7.1.r11.ga3ceb20-1///yay
 insync-thunar 3.7.9.50368-1///yay
