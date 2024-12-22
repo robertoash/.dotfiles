@@ -1,8 +1,8 @@
 # Defaults
-export EDITOR="nano"
+export EDITOR="helix"
 export TERMINAL="alacritty"
 export BROWSER="brave --profile-directory=Default %s"
-export VISUAL="nano"
+export VISUAL="helix"
 # File locations
 export _Z_DATA=~/.config/z/.z
 export XDG_CONFIG_HOME="$HOME/.config"
