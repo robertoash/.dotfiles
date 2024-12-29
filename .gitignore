@@ -16,6 +16,7 @@
 !espanso/
 !foot/
 !fzf-tab/
+!helix/
 !hypr/
 !lf/
 !mc/
@@ -42,6 +43,7 @@
 !espanso/**/*
 !foot/**/*
 !fzf-tab/**/*
+!helix/**/*
 !hypr/**/*
 !lf/**/*
 !mc/**/*
