@@ -12,6 +12,8 @@
 
 # ...and these directories...
 !alacritty/
+!bat/
+!btop/
 !dunst/
 !espanso/
 !foot/
@@ -34,11 +36,14 @@
 !vim/
 !waybar/
 !xfce4/
+!zathura/
 !zellij/
 !zsh/
 
 # ...as well as any subfolders in them and their contents...
 !alacritty/**/*
+!bat/**/*
+!btop/**/*
 !dunst/**/*
 !espanso/**/*
 !foot/**/*
@@ -59,6 +64,7 @@
 !thefuck/**/*
 !vim/**/*
 !waybar/**/*
+!zathura/**/*
 !zellij/**/*
 !zsh/**/*
 
@@ -77,6 +83,7 @@ systemd/user/*
 .zsh_history
 __pycache__
 .zcompdump
+btop.log
 scripts/_logs/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
