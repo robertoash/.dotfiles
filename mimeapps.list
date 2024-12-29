@@ -21,4 +21,4 @@ image/png=feh.desktop;
 application/msword=libreoffice-writer.desktop;
 application/x-abiword=libreoffice-writer.desktop;
 application/vnd.oasis.opendocument.text=libreoffice-writer.desktop;
-application/x-zerosize=mpv.desktop;
+application/x-zerosize=sublime_text.desktop;mpv.desktop;
