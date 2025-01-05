@@ -5,6 +5,7 @@ import logging
 import os
 import signal
 import sys
+import time
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
 from watchdog.events import FileSystemEventHandler
@@ -79,7 +80,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 
 def on_disconnect(client, userdata, rc, *args, properties=None):
-    # Log the additional arguments
     logging.debug(
         f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
     )
@@ -106,10 +106,10 @@ def on_disconnect(client, userdata, rc, *args, properties=None):
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
 
-    # Attempt to reconnect
-    if rc != 0:  # unexpected disconnect
-        logging.debug("Attempting to reconnect to MQTT broker...")
-        client.reconnect()
+    if rc != 0:
+        logging.debug(
+            "Unexpected disconnection. The client will attempt to reconnect automatically."
+        )
 
 
 def publish_file_contents(client, file_path):
@@ -173,24 +173,28 @@ def main():
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
 
-    client.connect(broker, connectport, keepalive)
-    client.loop_start()
-
-    observer = setup_watchdog(client)
-
-    client.reconnect_delay_set(min_delay=1, max_delay=120)
+    # Configure reconnect delay and enable logging
+    client.reconnect_delay_set(min_delay=30, max_delay=3600)
     client.enable_logger()
 
-    def signal_handler(sig, frame):
-        stop_services(observer, client)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-
     try:
+        # Initial connection
+        client.connect(broker, connectport, keepalive)
+        client.loop_start()
+
+        observer = setup_watchdog(client)
+
+        def signal_handler(sig, frame):
+            stop_services(observer, client)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+
         signal.pause()
+
     except Exception as e:
-        logging.error(f"Error occurred: {e}")
+        logging.error(f"Error occurred: {e}", exc_info=True)
+    finally:
         stop_services(observer, client)
 
 

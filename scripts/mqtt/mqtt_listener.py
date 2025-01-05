@@ -51,7 +51,6 @@ def configure_logging(args):
 
 
 def set_mqtt_client():
-
     client = mqtt.Client(
         client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
     )
@@ -76,7 +75,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 
 def on_disconnect(client, userdata, rc, *args, properties=None):
-    # Log the additional arguments
     logging.debug(
         f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
     )
@@ -103,10 +101,10 @@ def on_disconnect(client, userdata, rc, *args, properties=None):
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
 
-    # Attempt to reconnect
-    if rc != 0:  # unexpected disconnect
-        logging.debug("Attempting to reconnect to MQTT broker...")
-        client.reconnect()
+    if rc != 0:
+        logging.debug(
+            "Unexpected disconnection. The client will attempt to reconnect automatically."
+        )
 
 
 def subscribe_to_topics(client):
@@ -138,21 +136,21 @@ def main():
 
     client = set_mqtt_client()
 
-    # Connect to MQTT Broker
-    client.connect(broker, connectport, keepalive)
-
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
     client.on_message = on_message
 
-    # Set reconnect delay and enable logging
-    client.reconnect_delay_set(min_delay=1, max_delay=120)
+    # Configure reconnect delay and enable logging
+    client.reconnect_delay_set(min_delay=30, max_delay=3600)
     client.enable_logger()
 
-    # Start the MQTT client loop in a non-blocking way
-    client.loop_start()
-
     try:
+        # Initial connection
+        client.connect(broker, connectport, keepalive)
+
+        # Start the MQTT client loop in a non-blocking way
+        client.loop_start()
+
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
