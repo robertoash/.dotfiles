@@ -5,10 +5,10 @@ import os
 import subprocess
 import sys
 import time
+import json
 
 import requests
 
-# Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils  # noqa: E402
 
@@ -28,66 +28,119 @@ MAX_RETRIES = 3
 RETRY_DELAY = 2  # seconds
 
 output_file = "/tmp/waybar/vpn_status_output.json"
+poll_interval = 1  # seconds
 
 
 def get_mullvad_status():
     try:
         return subprocess.check_output(["mullvad", "status"], text=True)
     except subprocess.CalledProcessError as e:
-        return f"Error: {e}"
+        logging.error(f"Error executing 'mullvad status': {e}")
+        return None
     except FileNotFoundError:
-        return "Error: mullvad command not found"
+        logging.error("Mullvad command not found")
+        return None
 
 
 def get_external_ip():
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            return requests.get("http://api.ipify.org/?format=text").text.strip()
+            return requests.get(
+                "http://api.ipify.org/?format=text", timeout=5
+            ).text.strip()
         except requests.RequestException as e:
             retries += 1
             logging.warning(
                 f"Failed to get external IP (attempt {retries}/{MAX_RETRIES}): {e}"
             )
             time.sleep(RETRY_DELAY)
+    logging.error("Unable to fetch external IP after retries")
     return "unavailable"
 
 
-def write_to_file(output):
+def write_to_file(output_data):
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
     with open(output_file, "w") as f:
-        f.write(output)
+        json.dump(output_data, f)
 
 
-error_message = None
+def parse_mullvad_status(status):
+    if "Connected" in status:
+        return "connected"
+    elif "Disconnecting" in status:
+        return "disconnecting"
+    elif "Connecting" in status:
+        return "connecting"
+    elif "Disconnected" in status:
+        return "disconnected"
+    return "error"
 
-while True:
-    try:
-        mullvad_status = get_mullvad_status()
-        extern_ip = get_external_ip()
 
-        if "Error:" not in mullvad_status:
-            if "Connected" in mullvad_status:
-                output = f'{{"text": "󰕥", "tooltip": "connected. ip is {extern_ip}", "class": "vpn-connected"}}'  # noqa: E501
+def main():
+    last_status = None
+
+    while True:
+        try:
+            mullvad_status = get_mullvad_status()
+            if mullvad_status is None:
+                output = {
+                    "text": "?",
+                    "tooltip": "Error getting Mullvad status",
+                    "class": "vpn-error",
+                }
             else:
-                output = f'{{"text": "", "tooltip": "disconnected. ip is {extern_ip}", "class": "vpn-disconnected"}}'  # noqa: E501
-        else:
-            output = (
-                f'{{"text": "?", "tooltip": "{mullvad_status}", "class": "vpn-error"}}'
-            )
-            error_message = f"Error getting Mullvad status: {mullvad_status}"
-        time.sleep(1)
+                connection_status = parse_mullvad_status(mullvad_status)
+                extern_ip = get_external_ip()
 
-    except Exception as e:
-        output = f'{{"text": "!", "tooltip": "Script error: {str(e)}", "class": "vpn-error"}}'
-        error_message = f"Script error: {str(e)}"
+                if connection_status == "connected":
+                    output = {
+                        "text": "󰕥",
+                        "tooltip": f"Connected. IP is {extern_ip}",
+                        "class": "vpn-connected",
+                    }
+                elif connection_status == "connecting":
+                    output = {
+                        "text": "󰇘",
+                        "tooltip": "Connecting to VPN...",
+                        "class": "vpn-disconnected",
+                    }
+                elif connection_status == "disconnecting":
+                    output = {
+                        "text": "󰗼",
+                        "tooltip": "Disconnecting from VPN...",
+                        "class": "vpn-disconnected",
+                    }
+                elif connection_status == "disconnected":
+                    output = {
+                        "text": "",
+                        "tooltip": f"Disconnected. IP is {extern_ip}",
+                        "class": "vpn-disconnected",
+                    }
+                else:
+                    output = {
+                        "text": "?",
+                        "tooltip": "Unknown Mullvad status",
+                        "class": "vpn-error",
+                    }
 
-    write_to_file(output)
+            # Update file only if status has changed
+            if output != last_status:
+                write_to_file(output)
+                last_status = output
 
-    # Log every 10th second
-    current_time = int(time.time())
-    if current_time % 10 == 0:
-        if error_message is None:
-            logging.debug(output)
-        else:
-            logging.error(error_message)
+            time.sleep(poll_interval)
+
+        except Exception as e:
+            logging.exception("Unhandled error in main loop")
+            error_output = {
+                "text": "!",
+                "tooltip": f"Script error: {str(e)}",
+                "class": "vpn-error",
+            }
+            write_to_file(error_output)
+            time.sleep(poll_interval)
+
+
+if __name__ == "__main__":
+    main()
