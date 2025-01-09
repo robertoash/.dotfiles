@@ -7,29 +7,13 @@ import time
 # Delay in seconds to wait before moving windows
 DELAY = 5
 
-# Workspace assignments for windows
-# Format:
-# {
-#     "identifier": "title or class of window",
-#     "workspace": workspace_number,
-#     "make_master": True/False
-# }
-
-# workspace_assignments = [
-#     {"identifier": "Zen Browser", "workspace": 11, "make_master": True},
-#     {"identifier": "perplexity.ai", "workspace": 2, "make_master": False},
-#     {"identifier": "chatgpt.com", "workspace": 3, "make_master": True},
-#     {"identifier": "obsidian", "workspace": 4, "make_master": True},
-#     {"identifier": "personal (Workspace)", "workspace": 13, "make_master": True},
-#     {"identifier": "dotfiles (Workspace)", "workspace": 13, "make_master": True},
-# ]
-
 workspace_assignments = [
-    {"identifier": "chatgpt.com", "workspace": 12, "make_master": False},
-    {"identifier": "perplexity.ai", "workspace": 11, "make_master": False},
-    {"identifier": "obsidian", "workspace": 13, "make_master": True},
-    {"identifier": "dotfiles (Workspace)", "workspace": 3, "make_master": True},
-    {"identifier": "personal (Workspace)", "workspace": 4, "make_master": True},
+    {"identifier": "chatgpt.com", "workspace": 11, "make_master": False},
+    {"identifier": "obsidian", "workspace": 12, "make_master": True},
+    {"identifier": "perplexity.ai", "workspace": 13, "make_master": False},
+    {"identifier": "cursor-url-handler", "workspace": 3, "make_master": True},
+    {"identifier": "dotfiles (Workspace)", "workspace": 4, "make_master": True},
+    {"identifier": "personal (Workspace)", "workspace": 5, "make_master": True},
 ]
 
 
