@@ -1,6 +1,8 @@
 # Defaults
 export EDITOR="helix"
 export TERMINAL="alacritty"
+export COLORTERM="truecolor"
+export TERM="xterm-256color"
 export BROWSER="brave --profile-directory=Default %s"
 export VISUAL="helix"
 # File locations
