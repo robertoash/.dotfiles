@@ -2,7 +2,7 @@
 x-scheme-handler/https=brave-browser.desktop
 x-scheme-handler/http=brave-browser.desktop
 text/html=brave-browser.desktop
-text/plain=sublime_text.desktop
+text/plain=Helix.desktop
 x-scheme-handler/about=brave-browser.desktop
 x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/mailto=brave-browser.desktop
@@ -11,10 +11,12 @@ x-scheme-handler/tonsite=org.telegram.desktop.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/msword=libreoffice-writer.desktop
 application/x-zerosize=mpv.desktop
+image/jpeg=feh.desktop
+video/mp4=mpv.desktop
 
 [Added Associations]
-text/plain=sublime_text.desktop;nvim.desktop;
-image/jpeg=swappy.desktop;feh.desktop;
+text/plain=Helix.desktop; sublime_text.desktop;
+image/jpeg=feh.desktop;swappy.desktop;
 video/mp4=mpv.desktop;vlc.desktop;
 x-scheme-handler/tonsite=org.telegram.desktop.desktop;
 image/png=feh.desktop;
