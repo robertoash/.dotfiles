@@ -26,6 +26,7 @@
 !ncdu/
 !nvim/
 !onagre/
+!qutebrowser/
 !rofi/
 !scripts/
 !swappy/
@@ -73,8 +74,9 @@
 !systemd/user/
 systemd/user/*
 
-# Explicitly include only the webcam-status.service file
+# Explicitly include
 !systemd/user/linux-webcam-status.service
+!qutebrowser/config.py
 
 # ... but not these.
 .env
