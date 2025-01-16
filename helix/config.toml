@@ -1,3 +1,23 @@
 
 theme = "catppuccin-mocha"
 
+
+[editor.gutters]
+layout = ["diff", "diagnostics", "line-numbers", "spacer"]
+
+[editor.gutters.line-numbers]
+min-width = 2
+
+[editor.file-picker]
+hidden = false
+ignore = true
+git-ignore = false
+parents = true
+
+[editor.auto-pairs]
+'(' = ')'
+'{' = '}'
+'[' = ']'
+'"' = '"'
+"'" = "'"
+'<' = '>'
