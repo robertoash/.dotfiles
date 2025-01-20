@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import subprocess
+import time
 
 # Path to the image
 image_path = "/home/rash/pictures/cheatsheets/vim_cheatsheet.png"
@@ -16,27 +17,28 @@ def toggle_image():
             try:
                 os.kill(pid, 0)  # Check if the process is running
                 os.kill(pid, 9)  # Kill it
+                os.waitpid(pid, 0)
                 os.remove(pid_file)
                 return
             except OSError:
                 os.remove(pid_file)
+    else:
+        # Open the image with feh in a floating window mode
+        process = subprocess.Popen(
+            [
+                "feh",
+                "--fullscreen",
+                "--auto-zoom",
+                "--min-zoom",
+                "125",
+                "--title",
+                "quicklook_vim_cheatsheet",
+                image_path,
+            ]
+        )
 
-    # Open the image with feh in a floating window mode
-    process = subprocess.Popen(
-        [
-            "feh",
-            "--fullscreen",
-            "--auto-zoom",
-            "--zoom",
-            "125",
-            "--title",
-            "quicklook_vim_cheatsheet",
-            image_path,
-        ]
-    )
-
-    with open(pid_file, "w") as f:
-        f.write(str(process.pid))
+        with open(pid_file, "w") as f:
+            f.write(str(process.pid))
 
 
 if __name__ == "__main__":
