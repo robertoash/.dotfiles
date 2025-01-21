@@ -49,48 +49,51 @@ def move_window_to_corner(corner):
 if __name__ == "__main__":
     window_info = get_active_window_info()
 
-    if sys.argv[1] == "--lower-right":
-        corner = ["d", "r"]
-        move_window_to_corner(corner)
-        sys.exit(0)
-
-    if window_info:
-        # Check if the window is floating
-        if not window_info.get("floating"):
-            sys.exit("Window is not floating. Exiting without snapping.")
-
-        # Get window geometry and cursor position
-        geometry = get_window_geometry(window_info)
-        click_x, click_y = get_cursor_position()
-        window_center_x = geometry["x"] + geometry["width"] // 2
-        window_center_y = geometry["y"] + geometry["height"] // 2
-
-        # Determine the boundary for corners (you can adjust this threshold)
-        corner_threshold = 50  # Distance from corner to snap
-
-        # Check if click is in the corner areas
-        if (
-            abs(click_x - geometry["x"]) < corner_threshold
-            and abs(click_y - geometry["y"]) < corner_threshold
-        ):
-            corner = ["u", "l"]
-        elif (
-            abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
-            and abs(click_y - geometry["y"]) < corner_threshold
-        ):
-            corner = ["u", "r"]
-        elif (
-            abs(click_x - geometry["x"]) < corner_threshold
-            and abs(click_y - (geometry["y"] + geometry["height"])) < corner_threshold
-        ):
-            corner = ["d", "l"]
-        elif (
-            abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
-            and abs(click_y - (geometry["y"] + geometry["height"])) < corner_threshold
-        ):
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "--lower-right":
             corner = ["d", "r"]
-        else:
+            move_window_to_corner(corner)
             sys.exit(0)
+    else:
+        if window_info:
+            # Check if the window is floating
+            if not window_info.get("floating"):
+                sys.exit("Window is not floating. Exiting without snapping.")
 
-        # Snap to the determined corner
-        move_window_to_corner(corner)
+            # Get window geometry and cursor position
+            geometry = get_window_geometry(window_info)
+            click_x, click_y = get_cursor_position()
+            window_center_x = geometry["x"] + geometry["width"] // 2
+            window_center_y = geometry["y"] + geometry["height"] // 2
+
+            # Determine the boundary for corners (you can adjust this threshold)
+            corner_threshold = 50  # Distance from corner to snap
+
+            # Check if click is in the corner areas
+            if (
+                abs(click_x - geometry["x"]) < corner_threshold
+                and abs(click_y - geometry["y"]) < corner_threshold
+            ):
+                corner = ["u", "l"]
+            elif (
+                abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
+                and abs(click_y - geometry["y"]) < corner_threshold
+            ):
+                corner = ["u", "r"]
+            elif (
+                abs(click_x - geometry["x"]) < corner_threshold
+                and abs(click_y - (geometry["y"] + geometry["height"]))
+                < corner_threshold
+            ):
+                corner = ["d", "l"]
+            elif (
+                abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
+                and abs(click_y - (geometry["y"] + geometry["height"]))
+                < corner_threshold
+            ):
+                corner = ["d", "r"]
+            else:
+                sys.exit(0)
+
+            # Snap to the determined corner
+            move_window_to_corner(corner)
