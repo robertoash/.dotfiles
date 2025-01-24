@@ -3,10 +3,10 @@ import os
 import subprocess
 
 # Path to the image
-image_path = "/home/rash/pictures/cheatsheets/vim_cheatsheet.png"
+image_path = "/home/rash/pictures/cheatsheets/hx_cheatsheet.png"
 
 # PID file to track the feh process
-pid_file = "/tmp/quicklook_vim_cheatsheet.pid"
+pid_file = "/tmp/quicklook_hx_cheatsheet.pid"
 
 
 def toggle_image():
@@ -16,22 +16,22 @@ def toggle_image():
             try:
                 os.kill(pid, 0)  # Check if the process is running
                 os.kill(pid, 9)  # Kill it
-                os.waitpid(pid, 0)
-                os.remove(pid_file)
+                os.waitpid(pid, 0)  # Wait for the process to terminate
+                os.remove(pid_file)  # Remove PID file after killing the process
                 return
             except OSError:
-                os.remove(pid_file)
+                os.remove(pid_file)  # Remove PID file if the process is not running
     else:
-        # Open the image with feh in a floating window mode
+        # If the process is not running, start it
         process = subprocess.Popen(
             [
                 "feh",
                 "--fullscreen",
                 "--auto-zoom",
                 "--min-zoom",
-                "125",
+                "50",
                 "--title",
-                "quicklook_vim_cheatsheet",
+                "quicklook_hx_cheatsheet",
                 image_path,
             ]
         )
