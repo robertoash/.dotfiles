@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import subprocess
-import time
 
 # Path to the image
 image_path = "/home/rash/pictures/cheatsheets/qutebrowser_cheatsheet.png"
