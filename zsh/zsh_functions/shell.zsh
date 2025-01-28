@@ -56,46 +56,48 @@ llf() {
 
 # Shortcut to find a file anywhere by name
 ff() {
-    if [[ "$1" == "--help" ]]; then
-        echo "Usage: ff [search_term]"
-        echo "Search for files containing search_term in their name and open selected files"
-        echo ""
-        echo "Options:"
-        echo "  --help    Show this help message"
-        return 0
-    fi
+  # Define the path to your custom exclude patterns file
+  local exclude_file="$HOME/.config/fd/.fdignore"
 
-    local selections
-    if sudo -v; then
-        # Build find exclusion patterns from ignore.conf
-        local exclude_patterns=()
-        while IFS= read -r pattern; do
-            [[ -z "$pattern" ]] && continue  # Skip empty lines
-            exclude_patterns+=("-path" "$pattern" "-prune" "-o")
-        done < "${XDG_CONFIG_HOME}/search/ignore.conf"
+  # Check if the exclude file exists
+  if [[ -f "$exclude_file" ]]; then
+    # Read each line (pattern) from the exclude file into an array
+    local excludes=()
+    while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+      # Skip empty lines and comments
+      [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
+      excludes+=(--exclude "$pattern")
+    done < "$exclude_file"
+  fi
 
-        # Build find inclusion patterns from include.conf
-        local include_patterns=()
-        while IFS= read -r pattern; do
-            [[ -z "$pattern" ]] && continue  # Skip empty lines
-            include_patterns+=("-o" "-path" "$pattern")
-        done < "${XDG_CONFIG_HOME}/search/include.conf"
+  # Check if a search query was provided
+  local query="$1"
 
-        # Start find and pipe its output directly to fzf
-        selections=$(sudo find / "(" "${exclude_patterns[@]}" "-false" ")" "${include_patterns[@]}" "-o" "-iname" "*$1*" "-print" 2>/dev/null | \
-            command fzf --multi --preview 'bat --color=always {}' \
-            --preview-window '~3' \
-            --color 'fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa')
+  # Use fd to list all files and directories, excluding specified patterns
+  # Pipe the results to fzf for fuzzy selection
+  local selection
+  if [[ -n "$query" ]]; then
+    selection=$(fd -H --type f --type d "${excludes[@]}" "$query" 2>/dev/null | \
+      fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
+  else
+    selection=$(fd --type f --type d "${excludes[@]}" 2>/dev/null | \
+      fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
+  fi
 
-        if [ -n "$selections" ]; then
-            echo "$selections" | while IFS= read -r file; do
-                xdg-open "$file" &
-            done
-        fi
-    else
-        echo "Sudo authentication failed. Unable to search system-wide."
-    fi
+  # If no selection was made, exit the function
+  [[ -z "$selection" ]] && return
+
+  # Determine if the selected item is a directory
+  if [[ -d "$selection" ]]; then
+    # Change to the selected directory
+    cd "$selection" || return
+  else
+    # Open the selected file with xdg-open
+    xdg-open "$selection"
+  fi
 }
+
+
 
 # Launch apps in a specific workspace
 in_ws() {
