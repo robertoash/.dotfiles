@@ -9,6 +9,7 @@ DELAY = 5
 
 workspace_assignments = [
     {"identifier": "chatgpt.com", "workspace": 11, "make_master": False},
+    {"identifier": "abacus.ai", "workspace": 11, "make_master": False},
     {"identifier": "obsidian", "workspace": 12, "make_master": True},
     {"identifier": "perplexity.ai", "workspace": 13, "make_master": False},
     {"identifier": "cursor-url-handler", "workspace": 3, "make_master": True},
