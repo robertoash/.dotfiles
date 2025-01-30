@@ -1,6 +1,8 @@
 
 theme = "catppuccin-mocha"
 
+[editor]
+bufferline = "multiple"
 
 [editor.gutters]
 layout = ["diff", "diagnostics", "line-numbers", "spacer"]
