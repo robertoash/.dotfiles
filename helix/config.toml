@@ -3,6 +3,7 @@ theme = "catppuccin-mocha"
 
 [editor]
 bufferline = "multiple"
+clipboard-provider = "wayland"
 
 [editor.gutters]
 layout = ["diff", "diagnostics", "line-numbers", "spacer"]
