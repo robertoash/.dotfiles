@@ -13,8 +13,7 @@ workspace_assignments = [
     {"identifier": "obsidian", "workspace": 12, "make_master": True},
     {"identifier": "perplexity.ai", "workspace": 13, "make_master": False},
     {"identifier": "cursor-url-handler", "workspace": 3, "make_master": True},
-    {"identifier": "dotfiles (Workspace)", "workspace": 4, "make_master": True},
-    {"identifier": "personal (Workspace)", "workspace": 5, "make_master": True},
+    {"identifier": "helix", "workspace": 4, "make_master": True},
 ]
 
 
