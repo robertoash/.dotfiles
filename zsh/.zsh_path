@@ -5,5 +5,8 @@
 # Pipx path
 export PATH="$PATH:/home/rash/.local/bin"
 
+# Asdf path
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
 # Add stuff to python path
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"

@@ -1,5 +1,2 @@
-# ASDF
-. /opt/asdf-vm/asdf.sh
-
 # Hook direnv
 eval "$(direnv hook zsh)"

@@ -42,9 +42,9 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt inc_append_history_time
 setopt share_history
-autoload -U compinit; compinit
 zstyle ':completion:*' menu select
-
+fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completions to fpath
+autoload -Uz compinit && compinit # initialise completions with ZSH's compinit
 
 # #################################
 # # Sourcing
