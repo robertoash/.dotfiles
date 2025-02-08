@@ -102,8 +102,9 @@ alias mst="mullvad status"
 # Mega
 alias mega="mega-cmd"
 # SVTText
-alias svttext="svttext -colors -interactive"
-alias svtt="svt-text"
+alias svttext="svttext -colors"
+alias svtt="svttext"
+alias svtti="svtt -interactive"
 
 #Other
 alias define="camb"
