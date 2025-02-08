@@ -272,6 +272,7 @@ rofi-lbonn-wayland-git 1.7.8.wayland1.r1.g03a3a58d-1///yay
 slack-desktop 4.41.105-1///yay
 speedtest++ 1.15.r72.b743996-1///yay
 spotify 1:1.2.53.440-1///yay
+svttext-git 13.e076ce0-1///yay
 ticktick 6.0.21-1///yay
 urban-cli-bin 0.2.3-2///yay
 vaults 0.7.1-1///yay
@@ -281,5 +282,4 @@ cambridge 3.13.9///pipx
 homeassistant-cli 0.9.6///pipx
 notesh 0.8.0///pipx
 shell-gpt 1.4.4///pipx
-svt-text 0.2.1///pipx
 yt-dlp 2025.1.26///pipx
