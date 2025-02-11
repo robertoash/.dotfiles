@@ -24,3 +24,6 @@ parents = true
 '"' = '"'
 "'" = "'"
 '<' = '>'
+
+[keys.normal]
+"*" = ["search_selection", "search_next"]
