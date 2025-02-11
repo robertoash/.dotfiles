@@ -11,6 +11,7 @@ lock_file = "/tmp/secrets_script.lock"
 secrets_files = [
     "/home/rash/.secrets/.hass-cli_conf",
     "/home/rash/.secrets/.tibber_token",
+    "/home/rash/.secrets/.sp_secrets"
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
