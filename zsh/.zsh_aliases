@@ -94,7 +94,8 @@ alias fzf='set_fzf_alias; fzf'
 # Yt-dlp
 alias yt="yt-dlp"
 alias yt_best="yt-dlp -f best"
-alias yt_d="/usr/bin/yt-dlp -f bestvideo+bestaudio/best --external-downloader axel --external-downloader-args '-n 8'"
+alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --external-downloader axel --external-downloader-args '-n 8'"
+alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 8 --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS" 
 # Mullvad
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
