@@ -54,50 +54,59 @@ llf() {
     fi
 }
 
-# Shortcut to find a file anywhere by name
-ff() {
-  # Define the path to your custom exclude patterns file
+# Search for files only
+fff() {
   local exclude_file="$HOME/.config/fd/.fdignore"
-
-  # Check if the exclude file exists
+  local excludes=()
+  
   if [[ -f "$exclude_file" ]]; then
-    # Read each line (pattern) from the exclude file into an array
-    local excludes=()
     while IFS= read -r pattern || [[ -n "$pattern" ]]; do
-      # Skip empty lines and comments
       [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
       excludes+=(--exclude "$pattern")
     done < "$exclude_file"
   fi
 
-  # Check if a search query was provided
   local query="$1"
 
-  # Use fd to list all files and directories, excluding specified patterns
-  # Pipe the results to fzf for fuzzy selection
   local selection
   if [[ -n "$query" ]]; then
-    selection=$(fd -H --type f --type d "${excludes[@]}" "$query" ~ 2>/dev/null | \
+    selection=$(fd -H --type f "${excludes[@]}" "$query" ~ 2>/dev/null | \
       fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
   else
-    selection=$(fd --type f --type d "${excludes[@]}" ~ 2>/dev/null | \
+    selection=$(fd --type f "${excludes[@]}" ~ 2>/dev/null | \
       fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
   fi
 
-  # If no selection was made, exit the function
   [[ -z "$selection" ]] && return
-
-  # Determine if the selected item is a directory
-  if [[ -d "$selection" ]]; then
-    # Change to the selected directory
-    cd "$selection" || return
-  else
-    # Open the selected file with xdg-open
-    xdg-open "$selection"
-  fi
+  xdg-open "$selection"
 }
 
+# Search for directories only
+ffd() {
+  local exclude_file="$HOME/.config/fd/.fdignore"
+  local excludes=()
+  
+  if [[ -f "$exclude_file" ]]; then
+    while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+      [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
+      excludes+=(--exclude "$pattern")
+    done < "$exclude_file"
+  fi
 
+  local query="$1"
+
+  local selection
+  if [[ -n "$query" ]]; then
+    selection=$(fd -H --type d "${excludes[@]}" "$query" ~ 2>/dev/null | \
+      fzf --height 40% --reverse)
+  else
+    selection=$(fd --type d "${excludes[@]}" ~ 2>/dev/null | \
+      fzf --height 40% --reverse)
+  fi
+
+  [[ -z "$selection" ]] && return
+  cd "$selection" || return
+}
 
 # Launch apps in a specific workspace
 in_ws() {
