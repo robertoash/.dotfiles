@@ -77,10 +77,10 @@ ff() {
   # Pipe the results to fzf for fuzzy selection
   local selection
   if [[ -n "$query" ]]; then
-    selection=$(fd -H --type f --type d "${excludes[@]}" "$query" 2>/dev/null | \
+    selection=$(fd -H --type f --type d "${excludes[@]}" "$query" ~ 2>/dev/null | \
       fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
   else
-    selection=$(fd --type f --type d "${excludes[@]}" 2>/dev/null | \
+    selection=$(fd --type f --type d "${excludes[@]}" ~ 2>/dev/null | \
       fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
   fi
 
