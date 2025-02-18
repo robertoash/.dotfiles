@@ -4,6 +4,39 @@ theme = "catppuccin-mocha"
 [editor]
 bufferline = "multiple"
 clipboard-provider = "wayland"
+line-number = "relative"
+mouse = false
+rulers = [80, 120]
+true-color = true
+auto-completion = true
+cursorline = true
+
+[editor.cursor-shape]
+insert = "bar"       # Thin vertical line in insert mode
+normal = "block"     # Block cursor in normal mode
+select = "underline" # Underline cursor in select mode
+
+[editor.indent-guides]
+render = true
+character = "┆"  # Character used for indentation guides
+skip-levels = 1  # Skip rendering for the first level
+
+[editor.statusline]
+left = ["mode", "spinner", "file-name"]
+center = ["file-type", "separator", "version-control"]
+right = ["position", "position-percentage", "total-line-numbers"]
+separator = "│"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.lsp]
+display-messages = true
+auto-signature-help = true
+
+#[[editor.whitespace.render]]
+#mode = "all"  # Show spaces, tabs, and newlines
+#except = ["markdown"]
 
 [editor.gutters]
 layout = ["diff", "diagnostics", "line-numbers", "spacer"]
@@ -16,6 +49,11 @@ hidden = false
 ignore = true
 git-ignore = false
 parents = true
+follow-symlinks = true
+
+[editor.search]
+smart-case = true  # Case-insensitive search unless uppercase is used
+wrap-around = true # Wrap around when searching past the end
 
 [editor.auto-pairs]
 '(' = ')'
@@ -27,3 +65,6 @@ parents = true
 
 [keys.normal]
 "*" = ["search_selection", "search_next"]
+Y = ":clipboard-yank" # Yank to system clipboard
+V = ":clipboard-paste-after" # Paste from system clipboard
+

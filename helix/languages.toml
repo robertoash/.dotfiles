@@ -1,0 +1,7 @@
+[[language]]
+name = "python"
+scope = "source.python"
+file-types = ["py"]
+language-servers = ["ruff", "jedi-language-server"]
+auto-format = true
+
