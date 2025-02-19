@@ -82,6 +82,8 @@ systemd/user/*
 
 # Explicitly include
 !systemd/user/linux-webcam-status.service
+!systemd/user/mqtt_listener.service
+!systemd/user/mqtt_reports.service
 !qutebrowser/config.py
 
 # ... but not these.
