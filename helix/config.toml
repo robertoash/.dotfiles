@@ -73,3 +73,13 @@ wrap-around = true # Wrap around when searching past the end
 Y = ":clipboard-yank" # Yank to system clipboard
 V = ":clipboard-paste-after" # Paste from system clipboard
 
+# Splitting windows
+"C-S-v" = ":vsplit"       # Vertical split
+"C-S-s" = ":hsplit"       # Horizontal split
+
+# Navigating between windows
+"C-S-h" = "jump_view_left"         # Move focus left
+"C-S-j" = "jump_view_down"         # Move focus down
+"C-S-k" = "jump_view_up"           # Move focus up
+"C-S-l" = "jump_view_right"        # Move focus right
+

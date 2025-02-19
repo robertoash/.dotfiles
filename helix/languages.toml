@@ -12,4 +12,4 @@ args = ["server"]
 
 [language-server.ruff.config.settings]
 lineLength = 88  # Set the maximum line length to 88
-# You can add more settings here as needed
+
