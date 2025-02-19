@@ -16,6 +16,7 @@
 !btop/
 !dunst/
 !espanso/
+!flake/
 !foot/
 !fzf-tab/
 !helix/
@@ -29,6 +30,7 @@
 !onagre/
 !qutebrowser/
 !rofi/
+!ruff/
 !scripts/
 !swappy/
 !swayidle/
@@ -49,6 +51,7 @@
 !dunst/**/*
 !espanso/**/*
 !foot/**/*
+!flake/**/*
 !fzf-tab/**/*
 !helix/**/*
 !hypr/**/*
@@ -60,6 +63,7 @@
 !nvim/**/*
 !onagre/**/*
 !rofi/**/*
+!ruff/**/*
 !scripts/**/*
 !swappy/**/*
 !swayidle/**/*
