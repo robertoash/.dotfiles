@@ -43,13 +43,6 @@ alias z_gpt="b_zen --web https://chatgpt.com/"
 alias zen="b_zen"
 
 ## App aliases
-# Home Assistant
-alias mqtt_service_status="systemctl --user status mqtt_reports.service mqtt_listener.service"
-alias mqtt_service_stop="systemctl --user stop mqtt_reports.service mqtt_listener.service"
-alias mqtt_service_start="systemctl --user start mqtt_reports.service mqtt_listener.service"
-alias mqtt_service_restart="systemctl --user restart mqtt_reports.service & systemctl --user restart mqtt_listener.service"
-# Neovim
-alias nv="nvim"
 # Buku
 alias bk="buku --suggest"
 alias bkl="bk -p" # Buku list
@@ -90,10 +83,10 @@ alias monitor_key_presses="stdbuf -oL wev | grep --line-buffered 'sym'"
 alias monitor_mouse_presses="wev -f wl_pointer:button"
 alias monitor_keys_filtered="wev -f wl_pointer:motion -F wl_pointer:enter -F wl_pointer:leave -F wl_keyboard:enter -F wl_keyboard:leave -F wl_pointer:frame -F xdg_surface -F wl_data_offer -F wl_data_device -F xdg_toplevel"
 alias monitor_keys_full="wev"
+alias xeyes="xprop"
 # Fzf
 alias fzf='set_fzf_alias; fzf'
 # Yt-dlp
-alias yt="yt-dlp"
 alias yt_best="yt-dlp -f best"
 alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --external-downloader axel --external-downloader-args '-n 8'"
 alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 8 --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS" 
@@ -114,6 +107,5 @@ alias code="code-insiders"
 alias nnn="nnn -Hc"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias hyprland="Hyprland"
-alias xeyes="xprop"
 alias yay_total="yay -Syu --devel"
 alias zathura="zathura --fork --config-dir ~/.config/zathura"

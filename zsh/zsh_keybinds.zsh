@@ -2,6 +2,9 @@
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey "^[[3~" delete-char
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey '^R' fzf_history_widget
 
 # Alt + LeftArrow -> backward-word
 bindkey "^[[1;3D" backward-word
@@ -19,8 +22,26 @@ if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   zle -N zle-line-finish
 fi
 
+# Live history suggestions below the prompt
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+
+fzf_history_widget() {
+    disable_fzf_preview
+    local selected
+    selected=$(history -n 1 | tac | awk '!seen[$0]++' | fzf --height=40 --reverse --no-sort --border --color='fg:#cdd6f4,fg+:#cdd6f4,bg:#1e1e2e,preview-bg:#1e1e2e,border:#89b4fa' --query "$LBUFFER")
+    if [[ -n $selected ]]; then
+        LBUFFER=$selected
+    fi
+    zle reset-prompt
+    restore_fzf_preview
+}
+
+# Bind fzf-powered history search to arrow keys
+zle -N fzf_history_widget
+
 # Use emacs key bindings
-bindkey -e
+# bindkey -e
 
 # [Home] - Go to beginning of line
 if [[ -n "${terminfo[khome]}" ]]; then

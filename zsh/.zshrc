@@ -77,10 +77,6 @@ source ~/.config/broot/launcher/bash/br
 # #################################
 
 source ~/.config/zsh/zsh_keybinds.zsh
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-bindkey -s '^o' 'lfcd\n'
-
 
 # #################################
 # # Miscellaneous Configurations
@@ -90,6 +86,8 @@ bindkey -s '^o' 'lfcd\n'
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 # Suggestion Strategy
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
 # FZF Tab Config
 source ~/.config/fzf-tab/fzf-tab.zsh
 
@@ -102,15 +100,8 @@ source ~/.config/fzf-tab/fzf-tab.zsh
 neofetch
 # Thefuck
 eval $(thefuck --alias fuck)
-# Resh
-[[ -f ~/.resh/shellrc ]] && source ~/.resh/shellrc
 # Hass cli
 eval "$(_HASS_CLI_COMPLETE=source_zsh hass-cli)"
-# LF (set cwd on exit)
-LFCD="/home/rash/.config/lf/lfcd.sh"
-if [ -f "$LFCD" ]; then
-    source "$LFCD"
-fi
 # SGPT shell integration
 _sgpt_zsh() {
 if [[ -n "$BUFFER" ]]; then
