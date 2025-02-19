@@ -16,6 +16,7 @@
 !btop/
 !dunst/
 !espanso/
+!fd/
 !flake/
 !foot/
 !fzf-tab/
@@ -51,6 +52,7 @@
 !dunst/**/*
 !espanso/**/*
 !foot/**/*
+!fd/**/*
 !flake/**/*
 !fzf-tab/**/*
 !helix/**/*
