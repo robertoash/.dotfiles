@@ -4,4 +4,12 @@ scope = "source.python"
 file-types = ["py"]
 language-servers = ["ruff", "jedi-language-server"]
 auto-format = true
+formatter = { command = "sh", args = ["-c", "black --quiet - | isort -"] }
 
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.ruff.config.settings]
+lineLength = 88  # Set the maximum line length to 88
+# You can add more settings here as needed

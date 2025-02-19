@@ -10,6 +10,7 @@ rulers = [80, 120]
 true-color = true
 auto-completion = true
 cursorline = true
+end-of-line-diagnostics = "error"
 
 [editor.cursor-shape]
 insert = "bar"       # Thin vertical line in insert mode
@@ -29,6 +30,10 @@ separator = "│"
 mode.normal = "NORMAL"
 mode.insert = "INSERT"
 mode.select = "SELECT"
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
+other-lines = "disable"
 
 [editor.lsp]
 display-messages = true
