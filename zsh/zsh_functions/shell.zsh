@@ -2,7 +2,7 @@
 fff() {
   local exclude_file="$HOME/.config/fd/.fdignore"
   local excludes=()
-  
+
   if [[ -f "$exclude_file" ]]; then
     while IFS= read -r pattern || [[ -n "$pattern" ]]; do
       [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
@@ -10,16 +10,23 @@ fff() {
     done < "$exclude_file"
   fi
 
-  local query="$1"
+  local search_pattern=""
+  local search_path="$HOME"  # Default to searching in home directory
+
+  if [[ $# -eq 2 ]]; then
+    search_pattern="$1"
+    search_path="$2"
+  elif [[ $# -eq 1 ]]; then
+    if [[ "$1" == "." ]]; then
+      search_path="."
+    else
+      search_pattern="$1"
+    fi
+  fi
 
   local selection
-  if [[ -n "$query" ]]; then
-    selection=$(fd -H --type f "${excludes[@]}" "$query" ~ 2>/dev/null | \
-      fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
-  else
-    selection=$(fd --type f "${excludes[@]}" ~ 2>/dev/null | \
-      fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
-  fi
+  selection=$(fd -H --type f --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
+    fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
 
   [[ -z "$selection" ]] && return
   xdg-open "$selection"
@@ -29,7 +36,7 @@ fff() {
 ffd() {
   local exclude_file="$HOME/.config/fd/.fdignore"
   local excludes=()
-  
+
   if [[ -f "$exclude_file" ]]; then
     while IFS= read -r pattern || [[ -n "$pattern" ]]; do
       [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
@@ -37,16 +44,23 @@ ffd() {
     done < "$exclude_file"
   fi
 
-  local query="$1"
+  local search_pattern=""
+  local search_path="$HOME"  # Default to searching in home directory
+
+  if [[ $# -eq 2 ]]; then
+    search_pattern="$1"
+    search_path="$2"
+  elif [[ $# -eq 1 ]]; then
+    if [[ "$1" == "." ]]; then
+      search_path="."
+    else
+      search_pattern="$1"
+    fi
+  fi
 
   local selection
-  if [[ -n "$query" ]]; then
-    selection=$(fd -H --type d "${excludes[@]}" "$query" ~ 2>/dev/null | \
-      fzf --height 40% --reverse)
-  else
-    selection=$(fd --type d "${excludes[@]}" ~ 2>/dev/null | \
-      fzf --height 40% --reverse)
-  fi
+  selection=$(fd -H --type d --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
+    fzf --height 40% --reverse --preview 'eza -1 --color=always {}')
 
   [[ -z "$selection" ]] && return
   cd "$selection" || return
