@@ -42,14 +42,18 @@ fzf_url() {
     if [ -n "$first_match" ]; then
         local index=$(echo "$first_match" | awk 'NR==1 {print $1}')
         local url=$(buku --format 1 -p "$index" | awk '{print $2}')
+        echo "$url" | wl-copy
         echo "$url"
+        echo "Copied to clipboard"
     fi
 }
 
 extract_url_from_index() {
     local index=$1
     local url=$(buku --format 1 -p "$index" | awk '{print $2}')
+    echo "$url" | wl-copy
     echo "$url"
+    echo "Copied to clipboard"
 }
 
 extract_url_from_string() {
@@ -58,11 +62,13 @@ extract_url_from_string() {
     if [ -n "$first_match" ]; then
         local index=$(echo "$first_match" | awk 'NR==1 {print $1}')
         local url=$(buku --format 1 -p "$index" | awk '{print $2}')
+        echo "$url" | wl-copy
         echo "$url"
+        echo "Copied to clipboard"
     fi
 }
 
-# Main function
+# Main bk_o function
 bk_o() {
     if [ -z "$1" ]; then
         fzf_multi_open
