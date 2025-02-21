@@ -85,9 +85,10 @@ source ~/.config/zsh/zsh_keybinds.zsh
 # Auto Notify
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 # Suggestion Strategy
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_STRATEGY=(completion history)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
+ 
 # FZF Tab Config
 source ~/.config/fzf-tab/fzf-tab.zsh
 
@@ -114,3 +115,9 @@ fi
 }
 zle -N _sgpt_zsh
 bindkey ^l _sgpt_zsh
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'; fi
