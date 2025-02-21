@@ -205,3 +205,10 @@ c.url.start_pages = "https://search.brave.com"
 # image inversion": qutebrowser default settings.
 # Type: Bool
 c.colors.webpage.darkmode.enabled = True
+
+# Increase UI font size
+c.fonts.default_size = "14pt"
+c.fonts.statusbar = "14pt"
+c.fonts.hints = "14pt"
+c.fonts.messages.info = "14pt"
+c.zoom.default = "125%"
