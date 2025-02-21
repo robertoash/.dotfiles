@@ -8,23 +8,12 @@ draw_bold_text_with_bright_colors = true
 TERM = "xterm-256color"
 
 [font]
-size = 12
-
-    [font.bold]
-    family = "JetBrainsMono NF"
-    style = "Bold"
-
-    [font.bold_italic]
-    family = "JetBrainsMono NF"
-    style = "Bold Italic"
-
-    [font.italic]
-    family = "JetBrainsMono NF"
-    style = "Italic"
-
-    [font.normal]
-    family = "JetBrainsMono NF"
-    style = "Regular"
+normal = { family = "JetBrainsMono NF", style = "Regular" }
+bold = { family = "JetBrainsMono NF", style = "Bold" }
+italic = { family = "JetBrainsMono NF", style = "Italic" }
+bold_italic = { family = "JetBrainsMono NF", style = "Bold Italic" }
+size = 14.0
+offset = { x = 0, y = -3 }  # Adjust x and y values as needed
 
 [mouse]
 hide_when_typing = true  # Default: false
@@ -150,3 +139,4 @@ bindings = [
   #- { key: NumpadAdd,      mods: Control,                         action: IncreaseFontSize }
   #- { key: Minus,          mods: Control,                         action: DecreaseFontSize }
   #- { key: NumpadSubtract, mods: Control,                         action: DecreaseFontSize }
+
