@@ -97,7 +97,6 @@ __pycache__
 .zcompdump
 btop.log
 scripts/_logs/
-lazygit/state.yml
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
 espanso/match/secrets.yml
