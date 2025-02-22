@@ -37,14 +37,9 @@ opacity = 0.6
     general = "Alacritty"
     instance = "Alacritty"
 
-    [window.padding]
-    x = 10
-    y = 10
-
 [keyboard]
 bindings = [
-  { key = "Enter", mods = "Super|Shift", action = "SpawnNewInstance"},
-  { key = "Space", mods = "Shift|Control", action = "ToggleViMode"},
+  { key = "p", mods = "Shift|Control", action = "ToggleViMode"},
   { key = "Home", mods = "None", chars = "\u001bOH" },
   { key = "End", mods = "None", chars = "\u001bOF" },
   { key = "Left",  mods = "Alt", chars = "\u001b[1;3D" },
