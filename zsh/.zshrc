@@ -97,8 +97,6 @@ source ~/.config/fzf-tab/fzf-tab.zsh
 # # App Specific Commands
 # #################################
 
-# Neofetch
-neofetch
 # Thefuck
 eval $(thefuck --alias fuck)
 # Hass cli
@@ -121,3 +119,24 @@ if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then . '/home/rash/
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'; fi
+
+### Yazi Stuff
+# Use y to change cwd on yazi exit
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+# Detect if shell is being launched from inside yazi
+if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
+    export IN_YAZI=1
+fi
+
+# Launch neofetch only in interactive shells and not within yazi
+if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
+    neofetch
+fi
