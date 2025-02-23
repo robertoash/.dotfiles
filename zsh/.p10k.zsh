@@ -32,6 +32,7 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     os_icon                 # os identifier
+    yazi                    # yazi drop-to-shell prompt
     dir                     # current directory
     vcs                     # git status
     # prompt_char           # prompt symbol
@@ -1706,7 +1707,7 @@
   # really need it.
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
-  # If p10k is already loaded, reload configuration.
+  source "$ZDOTDIR/plugins/yazi_prompt/.yazi_p10k.zsh" # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
   (( ! $+functions[p10k] )) || p10k reload
 }
