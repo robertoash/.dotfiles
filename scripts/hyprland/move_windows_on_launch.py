@@ -5,7 +5,7 @@ import subprocess
 import time
 
 # Delay in seconds to wait before moving windows
-DELAY = 7
+DELAY = 5
 
 workspace_assignments = [
     {"identifier": "qutebrowser", "workspace": 1, "make_master": True},
@@ -109,12 +109,14 @@ def make_window_master(window_address, workspace, windows):
 
         # Switch to the workspace to ensure the next command affects the correct workspace
         subprocess.run(["hyprctl", "dispatch", "workspace", f"{workspace}"], check=True)
+        # Wait for the workspace to be switched
+        time.sleep(0.5)
         # Focus the right window
         subprocess.run(
             ["hyprctl", "dispatch", "focuswindow", f"address:{window_address}"],
             check=True,
         )
-        time.sleep(0.5)
+        time.sleep(0.3)
         # Make the window the master
         subprocess.run(
             ["hyprctl", "dispatch", "layoutmsg", "swapwithmaster auto"], check=True
