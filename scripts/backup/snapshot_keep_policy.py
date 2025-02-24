@@ -12,7 +12,7 @@ logging_utils.configure_logging()
 snapshot_dir = "/home/rash/.local/.snapshots"
 daily_keep = 6
 weekly_keep = 3
-monthly_keep = 3
+monthly_keep = 1
 
 # Get current date
 today = datetime.datetime.now()
