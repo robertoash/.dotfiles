@@ -5,7 +5,7 @@ import subprocess
 import time
 
 # Delay in seconds to wait before moving windows
-DELAY = 5
+DELAY = 7
 
 workspace_assignments = [
     {"identifier": "qutebrowser", "workspace": 1, "make_master": True},
