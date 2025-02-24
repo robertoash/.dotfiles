@@ -1,71 +1,96 @@
 # Search for files only
 fff() {
-  local exclude_file="$HOME/.config/fd/.fdignore"
-  local excludes=()
+    local exclude_file="$HOME/.config/fd/.fdignore"
+    local excludes=()
 
-  if [[ -f "$exclude_file" ]]; then
-    while IFS= read -r pattern || [[ -n "$pattern" ]]; do
-      [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
-      excludes+=(--exclude "$pattern")
-    done < "$exclude_file"
-  fi
-
-  local search_pattern=""
-  local search_path="$HOME"  # Default to searching in home directory
-
-  if [[ $# -eq 2 ]]; then
-    search_pattern="$1"
-    search_path="$2"
-  elif [[ $# -eq 1 ]]; then
-    if [[ "$1" == "." ]]; then
-      search_path="."
-    else
-      search_pattern="$1"
+    if [[ -f "$exclude_file" ]]; then
+        while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+            [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
+            excludes+=(--exclude "$pattern")
+        done < "$exclude_file"
     fi
-  fi
 
-  local selection
-  selection=$(fd -H --type f --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
-    fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
+    local search_pattern=""
+    local search_path="$HOME"  # Default search path
 
-  [[ -z "$selection" ]] && return
-  xdg-open "$selection"
+    # Handle help flag
+    if [[ "$1" == "--help" ]]; then
+        echo "Usage: fff [search_pattern] [search_path]"
+        echo "Searches for files interactively using fzf."
+        return
+    fi
+
+    # Handle arguments (any order)
+    for arg in "$@"; do
+        if [[ -d "$arg" ]]; then
+            search_path="$arg"
+        else
+            search_pattern="$arg"
+        fi
+    done
+
+    local selection
+    selection=$(fd -H --type f --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
+        fzf --height 40% --reverse --preview 'bat --style=numbers --color=always {} || cat {}')
+
+    if [[ -z "$selection" ]]; then
+        echo "No file selected." >&2
+        return 1
+    fi
+
+    xdg-open "$selection" || {
+        echo "Failed to open $selection" >&2
+        return 1
+    }
 }
 
 # Search for directories only
 ffd() {
-  local exclude_file="$HOME/.config/fd/.fdignore"
-  local excludes=()
+    local exclude_file="$HOME/.config/fd/.fdignore"
+    local excludes=()
 
-  if [[ -f "$exclude_file" ]]; then
-    while IFS= read -r pattern || [[ -n "$pattern" ]]; do
-      [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
-      excludes+=(--exclude "$pattern")
-    done < "$exclude_file"
-  fi
-
-  local search_pattern=""
-  local search_path="$HOME"  # Default to searching in home directory
-
-  if [[ $# -eq 2 ]]; then
-    search_pattern="$1"
-    search_path="$2"
-  elif [[ $# -eq 1 ]]; then
-    if [[ "$1" == "." ]]; then
-      search_path="."
-    else
-      search_pattern="$1"
+    if [[ -f "$exclude_file" ]]; then
+        while IFS= read -r pattern || [[ -n "$pattern" ]]; do
+            [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
+            excludes+=(--exclude "$pattern")
+        done < "$exclude_file"
     fi
-  fi
 
-  local selection
-  selection=$(fd -H --type d --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
-    fzf --height 40% --reverse --preview 'eza -1 --color=always {}')
+    local search_pattern=""
+    local search_path="$HOME"  # Default search path
 
-  [[ -z "$selection" ]] && return
-  cd "$selection" || return
+    # Handle help flag
+    if [[ "$1" == "--help" ]]; then
+        echo "Usage: ffd [search_pattern] [search_path]"
+        echo "Searches for directories interactively using fzf."
+        return
+    fi
+
+    # Handle arguments (any order)
+    for arg in "$@"; do
+        if [[ -d "$arg" ]]; then
+            search_path="$arg"
+        else
+            search_pattern="$arg"
+        fi
+    done
+
+    local selection
+    selection=$(fd -H --type d --follow "${excludes[@]}" "$search_pattern" "$search_path" 2>/dev/null | \
+        fzf --height 40% --reverse --preview 'eza -1 --color=always {}')
+
+    if [[ -z "$selection" ]]; then
+        echo "No directory selected." >&2
+        return 1
+    fi
+
+    cd "$selection" || {
+        echo "Failed to change directory to $selection" >&2
+        return 1
+    }
 }
 
+# Snake case all files in a dir
 snake_case_all() {
   # Check if a directory argument is provided
   if [[ -z "$1" ]]; then
