@@ -27,10 +27,6 @@ alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.c
 alias bkup_buku="bash ~/.config/scripts/backup/run_buku_bkup.sh"
 alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
 
-# History aliases
-alias stop_history="stp_history"
-alias start_history="strt_history"
-
 ## Zen websites
 alias z_disney="b_zen --web https://disneyplus.se"
 alias z_ha="b_zen --web https://ha.rashlab.net"
