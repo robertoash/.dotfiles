@@ -96,6 +96,7 @@ systemd/user/*
 __pycache__
 .zcompdump
 btop.log
+lazygit/state.yml
 scripts/_logs/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
