@@ -63,7 +63,6 @@ source ~/.config/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh
 source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.config/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
-source ~/.config/zsh/plugins/zsh-z/zsh-z.plugin.zsh
 # Functions
 source ~/.config/zsh/.zsh_functions
 # Broot
@@ -135,6 +134,10 @@ function y() {
 if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
     export IN_YAZI=1
 fi
+
+# Enable zoxide (z dir jump)
+source ~/.config/zoxide/.zsh_zoxide
+eval "$(zoxide init zsh)"
 
 # Launch neofetch only in interactive shells and not within yazi
 if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
