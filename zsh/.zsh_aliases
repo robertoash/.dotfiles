@@ -96,6 +96,8 @@ alias mega="mega-cmd"
 alias svttext="svttext -colors"
 alias svtt="svttext"
 alias svtti="svtt -interactive"
+# Zoxide
+alias zq="zoxide query"
 
 #Other
 alias define="camb"
