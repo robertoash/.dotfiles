@@ -84,7 +84,7 @@ source ~/.config/zsh/zsh_keybinds.zsh
 # Auto Notify
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 # Suggestion Strategy
-ZSH_AUTOSUGGEST_STRATEGY=(completion history)
+ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd history)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
  
