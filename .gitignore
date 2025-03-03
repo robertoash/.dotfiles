@@ -98,6 +98,7 @@ __pycache__
 btop.log
 lazygit/state.yml
 scripts/_logs/
+scripts/secrets/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
 espanso/match/secrets.yml
@@ -105,3 +106,4 @@ espanso/match/secrets.yml
 venv/
 zsh/.oda.zsh
 zsh/.zshrc.save
+zsh/.zsh_secrets
