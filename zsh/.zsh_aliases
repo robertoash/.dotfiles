@@ -56,6 +56,7 @@ alias bksp="bk -s" # Buku search (prompt)
 alias bkd="bk -d" # Buku delete
 alias bkw="bk -w --tag ''" # Buku write
 alias bko="bk_o" # Buku with fzf
+alias bke="bk -w"
 # Buku functions
 alias bk_c="switch_buku_db current"
 alias bk_r="switch_buku_db rash"
