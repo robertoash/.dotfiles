@@ -20,7 +20,7 @@
 # You can also disable the toggle key completely with
 # toggle_key: OFF
 
-search_shortcut: CTRL+SHIFT+SPACE
+search_shortcut: CTRL+INSERT
 toggle_key: OFF
 
 # --- Injection Backend
@@ -29,7 +29,7 @@ toggle_key: OFF
 # them has its quirks, therefore you may want to change it if you are having problems.
 # By default, espanso uses the "Auto" backend which should work well in most cases,
 # but you may want to try the "Clipboard" or "Inject" backend in case of issues.
-backend: Clipboard
+backend: clipboard
 
 # --- Auto-restart
 
