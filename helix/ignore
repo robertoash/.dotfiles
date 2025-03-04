@@ -11,6 +11,7 @@
 .ipython/
 .jupyter/
 .keras/
+.kodi/
 .librewolf/
 .local/
 .megaCmd/
@@ -24,6 +25,7 @@
 .server_bkups/
 .steam/
 .snapshots/
+.TVLite/
 .vscode-insiders/
 .vscode/
 .vscode/
@@ -46,6 +48,7 @@ obsidian/vault/.obsidian/
 .config/MQTT-Explorer/
 .config/Mullvad VPN/
 .config/Slack/
+.config/discord/
 .config/gcloud/
 .config/go/
 .config/libreoffice/
