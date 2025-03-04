@@ -94,6 +94,20 @@ def get_window_addresses():
 def is_window_master(window_address, workspace):
     """Check if the given window is already the master window."""
     try:
+        master_window = get_master_window_address(workspace)
+        if not master_window:
+            return False
+
+        return master_window == window_address
+
+    except Exception as e:
+        print(f"Error validating master window: {e}")
+        return False
+
+
+def get_master_window_address(workspace):
+    """Get the address of the master window for a given workspace."""
+    try:
         clients_in_workspace = json.loads(
             subprocess.check_output(["hyprctl", "clients", "-j"], text=True)
         )
@@ -115,7 +129,7 @@ def is_window_master(window_address, workspace):
             ),
         )
 
-        return master_window.get("address") == window_address
+        return master_window.get("address")
 
     except Exception as e:
         print(f"Error checking master window: {e}")
@@ -170,9 +184,23 @@ def main():
         for app in apps:
             launch_and_manage(workspace, app["name"], app["command"], app["is_master"])
 
-    # Switch back to default workspaces
+    # Switch back to default workspace in DP-2
     subprocess.run(["hyprctl", "dispatch", "workspace", "11"], check=True)
+    # Move focus to master window
+    master_address = get_master_window_address("11")
+    subprocess.run(
+        ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"], check=True
+    )
+
+    time.sleep(0.5)
+
+    # Switch back to default workspace in DP-1
     subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
+    master_address = get_master_window_address("1")
+    # Move focus to master window
+    subprocess.run(
+        ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"], check=True
+    )
 
 
 if __name__ == "__main__":
