@@ -171,8 +171,8 @@ def main():
             launch_and_manage(workspace, app["name"], app["command"], app["is_master"])
 
     # Switch back to default workspaces
-    subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
     subprocess.run(["hyprctl", "dispatch", "workspace", "11"], check=True)
+    subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
 
 
 if __name__ == "__main__":
