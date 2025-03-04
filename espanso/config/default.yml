@@ -21,6 +21,7 @@
 # toggle_key: OFF
 
 search_shortcut: CTRL+SHIFT+SPACE
+toggle_key: OFF
 
 # --- Injection Backend
 
