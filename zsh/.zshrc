@@ -139,6 +139,11 @@ fi
 source ~/.config/zoxide/.zsh_zoxide
 eval "$(zoxide init zsh)"
 
+# Activate walk file manager
+function lk {
+  cd "$(walk --icons --with-border "$@")"
+}
+
 # Launch neofetch only in interactive shells and not within yazi
 if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
     neofetch
