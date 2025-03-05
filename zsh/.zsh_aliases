@@ -2,6 +2,11 @@
 # # Aliases
 # #################################
 
+# Fasd aliases
+alias h='f -e hx' # quick opening files with vim
+alias m='f -e mpv' # quick opening files with mplayer
+alias o='a -e xdg-open' # quick opening files with xdg-open
+
 ## Shell aliases
 [ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
 
