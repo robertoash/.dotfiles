@@ -50,7 +50,20 @@ if __name__ == "__main__":
     window_info = get_active_window_info()
 
     if len(sys.argv) > 1:
-        if sys.argv[1] == "--lower-right":
+        if sys.argv[1] == "--lower-left":
+            corner = ["d", "l"]
+            move_window_to_corner(corner)
+            sys.exit(0)
+        elif sys.argv[1] == "--upper-right":
+            corner = ["u", "r"]
+            move_window_to_corner(corner)
+            sys.exit(0)
+        elif sys.argv[1] == "--upper-left":
+            corner = ["u", "l"]
+            move_window_to_corner(corner)
+            sys.exit(0)
+        # default case: sys.argv[1] == "--lower-right":
+        else:
             corner = ["d", "r"]
             move_window_to_corner(corner)
             sys.exit(0)
