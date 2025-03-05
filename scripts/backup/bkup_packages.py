@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import datetime
 import os
 import subprocess
 import sys
@@ -8,48 +7,45 @@ from textwrap import dedent
 
 SEPARATOR = "///"
 
+MANAGERS = {
+    "pacman": {
+        "retrieve": ["sh", "-c", "pacman -Qe | awk '{print $1}'"],
+        "restore": lambda pkg: ["sudo", "pacman", "-S", "--noconfirm", pkg],
+    },
+    "yay": {
+        "retrieve": ["sh", "-c", "pacman -Qme | awk '{print $1}'"],
+        "restore": lambda pkg: ["yay", "-S", "--noconfirm", pkg],
+    },
+    "pipx": {
+        "retrieve": ["sh", "-c", "pipx list --short | awk '{print $1}'"],
+        "restore": lambda pkg: ["pipx", "install", pkg],
+    },
+    "snap": {
+        "retrieve": ["sh", "-c", "snap list | awk 'NR>1 {print $1}'"],
+        "restore": lambda pkg: ["sudo", "snap", "install", pkg],
+    },
+}
 
-def save_packages(filename, SEPARATOR="///"):
-    # Get all explicitly installed packages
-    all_explicit_packages = (
-        subprocess.check_output(["pacman", "-Qe"]).decode().splitlines()
-    )
-    all_explicit_packages.sort()
 
-    # Get explicitly installed AUR packages
-    aur_packages = subprocess.check_output(["pacman", "-Qme"]).decode().splitlines()
-    aur_packages.sort()
-
-    # Determine explicitly installed pacman packages by excluding AUR packages
-    pacman_packages = sorted(set(all_explicit_packages) - set(aur_packages))
-
+def save_packages(filename):
     with open(filename, "w") as f:
-        # Save Pacman packages
-        for package in pacman_packages:
-            f.write(f"{package}{SEPARATOR}pacman\n")
-
-        # Save AUR packages
-        for package in aur_packages:
-            f.write(f"{package}{SEPARATOR}yay\n")
-
-        # Get and save Pipx packages
-        pipx_packages = (
-            subprocess.check_output(["pipx", "list", "--short"]).decode().splitlines()
-        )
-        for package in pipx_packages:
-            f.write(f"{package}{SEPARATOR}pipx\n")
+        for manager, commands in MANAGERS.items():
+            try:
+                packages = (
+                    subprocess.check_output(commands["retrieve"]).decode().splitlines()
+                )
+                for package in packages:
+                    f.write(f"{package}{SEPARATOR}{manager}\n")
+            except subprocess.CalledProcessError:
+                print(f"Warning: Failed to retrieve packages for {manager}")
 
 
 def reinstall_packages(filename):
     with open(filename) as f:
         for line in f:
             package, manager = line.strip().split(SEPARATOR)
-            if manager == "pacman":
-                subprocess.run(["sudo", "pacman", "-S", "--noconfirm", package])
-            elif manager == "yay":
-                subprocess.run(["yay", "-S", "--noconfirm", package])
-            elif manager == "pipx":
-                subprocess.run(["pipx", "install", package])
+            if manager in MANAGERS:
+                subprocess.run(MANAGERS[manager]["restore"](package))
 
 
 def print_help():
@@ -80,10 +76,7 @@ def print_help():
 
 
 def is_valid_path(path):
-    # Expand user and ~
-    path = os.path.expanduser(path)
-    # Check if path exists
-    return os.path.exists(path) or not os.path.isabs(path)
+    return os.path.exists(os.path.expanduser(path)) or not os.path.isabs(path)
 
 
 if __name__ == "__main__":
@@ -100,9 +93,7 @@ if __name__ == "__main__":
         "--restore": "restore",
         "--reinstall": "restore",
     }
-    action = None
-    filename = None
-    make_backup = False
+    action, filename = None, None
 
     for i, arg in enumerate(args):
         if arg in action_map:
@@ -120,18 +111,10 @@ if __name__ == "__main__":
             os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
             "all_packages.txt",
         )
-        make_backup = True
 
     if action == "save":
-        bkup_dir = "/media/sda1/local_bkups/pkgs"
-
         save_packages(filename)
         print(f"Packages saved to {filename}")
-        if make_backup:
-            current_date = datetime.datetime.now().strftime("%Y%m%d")
-            backup_filename = f"{bkup_dir}/all_packages_{current_date}.txt"
-            subprocess.run(["cp", filename, backup_filename])
-            print(f"Backup saved to {backup_filename}")
     elif action == "restore":
         reinstall_packages(filename)
         print(f"Packages reinstalled from {filename}")
