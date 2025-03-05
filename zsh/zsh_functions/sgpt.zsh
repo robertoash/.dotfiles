@@ -1,4 +1,15 @@
 # Shell-GPT functions
+
+qs() {
+  local input="$*"
+  sgpt -s "$input"
+}
+
+qx() {
+  local input="$*"
+  sgpt -d "$input"
+}
+
 sgpt() {
     case "$1" in
         commit)
