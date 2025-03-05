@@ -47,6 +47,13 @@ fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completio
 autoload -Uz compinit && compinit # initialise completions with ZSH's compinit
 
 # #################################
+# # Autocompletion priority
+# #################################
+
+# Activate fasd (easy file and dir jump)
+eval "$(fasd --init auto)"
+
+# #################################
 # # Sourcing
 # #################################
 
@@ -134,10 +141,6 @@ function y() {
 if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
     export IN_YAZI=1
 fi
-
-# Enable zoxide (z dir jump)
-source ~/.config/zoxide/.zsh_zoxide
-eval "$(zoxide init zsh)"
 
 # Activate walk file manager
 function lk {
