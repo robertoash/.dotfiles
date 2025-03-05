@@ -2,9 +2,15 @@
 name = "python"
 scope = "source.python"
 file-types = ["py"]
+shebangs = ["python", "python3"]
 language-servers = ["pylsp", "ruff"]
 auto-format = true
 formatter = { command = "sh", args = ["-c", "black --quiet - | isort -"] }
+
+[[language]]
+name = "bash"
+file-types = ["sh", "bash", "zsh", { glob = ".zsh_aliases" }, { glob = ".zsh_envs" }]
+shebangs = ["sh", "bash", "dash", "zsh"]
 
 [language-server.pylsp]
 command = "pylsp"
