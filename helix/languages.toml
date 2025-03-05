@@ -9,7 +9,7 @@ formatter = { command = "sh", args = ["-c", "black --quiet - | isort -"] }
 
 [[language]]
 name = "bash"
-file-types = ["sh", "bash", "zsh", { glob = ".zsh_aliases" }, { glob = ".zsh_envs" }]
+file-types = ["sh", "bash", "zsh", { glob = ".zsh_aliases" }, { glob = ".zsh_envs" }, { glob = ".zshrc" }]
 shebangs = ["sh", "bash", "dash", "zsh"]
 
 [language-server.pylsp]
