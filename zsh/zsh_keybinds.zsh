@@ -1,4 +1,5 @@
 
+## Navigation
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey "^[[3~" delete-char
@@ -11,6 +12,7 @@ bindkey "^[[1;3D" backward-word
 # Alt + RightArrow -> forward-word
 bindkey "^[[1;3C" forward-word
 
+
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
     echoti smkx
@@ -22,7 +24,8 @@ if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   zle -N zle-line-finish
 fi
 
-# Live history suggestions below the prompt
+
+## Live history suggestions below the prompt
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 
@@ -37,11 +40,8 @@ fzf_history_widget() {
     restore_fzf_preview
 }
 
-# Bind fzf-powered history search to arrow keys
+## Bind fzf-powered history search to arrow keys
 zle -N fzf_history_widget
-
-# Use emacs key bindings
-# bindkey -e
 
 # [Home] - Go to beginning of line
 if [[ -n "${terminfo[khome]}" ]]; then
