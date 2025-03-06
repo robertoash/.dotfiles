@@ -30,6 +30,7 @@ source ~/.config/zsh/.zsh_envs
 
 unsetopt menu_complete
 unsetopt flowcontrol
+setopt glob_dots
 setopt prompt_subst
 setopt always_to_end
 setopt append_history
@@ -42,9 +43,15 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt inc_append_history_time
 setopt share_history
+# Enable menu selection for completions
 zstyle ':completion:*' menu select
 fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completions to fpath
 autoload -Uz compinit && compinit # initialise completions with ZSH's compinit
+
+# Deactivate hx command completions
+compdef -d hx
+# Use fasd for hx command completions
+zstyle ':completion:*:*:hx:*' command 'fasd --complete'
 
 # #################################
 # # Autocompletion priority
@@ -125,17 +132,6 @@ if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then . '/home/rash/
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'; fi
-
-### Yazi Stuff
-# Use y to change cwd on yazi exit
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
 
 # Detect if shell is being launched from inside yazi
 if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
