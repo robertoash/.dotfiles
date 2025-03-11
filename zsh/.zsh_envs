@@ -25,6 +25,8 @@ export TASKDATA="$HOME/.config/task/.task"
 export WALK_REMOVE_CMD=trash
 export WALK_MAIN_COLOR="#1e1e2e"
 export WALK_STATUS_BAR="Size() + ' ' + Mode()"
+# Docker
+export DOCKER_BUILDKIT=1
 
 # Others
 export FZF_DEFAULT_COMMAND='find . \! \( -type d -path ./.git -prune \) \! -type d \! -name '\''*.tags'\'' -printf '\''%P\n'\'
