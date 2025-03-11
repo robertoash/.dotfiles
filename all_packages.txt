@@ -44,6 +44,7 @@ dmidecode///pacman
 dmraid///pacman
 dnsmasq///pacman
 docker///pacman
+docker-buildx///pacman
 docker-compose///pacman
 dosfstools///pacman
 downgrade///pacman
@@ -155,6 +156,7 @@ mullvad-vpn///pacman
 nano///pacman
 nano-syntax-highlighting///pacman
 ncdu///pacman
+nemo///pacman
 neofetch///pacman
 netctl///pacman
 networkmanager///pacman
