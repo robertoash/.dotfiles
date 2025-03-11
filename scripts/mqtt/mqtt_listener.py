@@ -141,25 +141,20 @@ def main():
     client.on_message = on_message
 
     # Configure reconnect delay and enable logging
-    client.reconnect_delay_set(min_delay=30, max_delay=3600)
+    client.reconnect_delay_set(min_delay=30, max_delay=600)
     client.enable_logger()
 
     try:
         # Initial connection
         client.connect(broker, connectport, keepalive)
 
-        # Start the MQTT client loop in a non-blocking way
-        client.loop_start()
-
-        while True:
-            time.sleep(1)
+        # Run the MQTT loop forever, handling reconnections internally
+        client.loop_forever()
     except KeyboardInterrupt:
         logging.debug("Script interrupted by user")
     except Exception as e:
         logging.error(f"An error occurred: {e}", exc_info=True)
-        sys.exit(1)
     finally:
-        client.loop_stop()
         client.disconnect()
 
 
