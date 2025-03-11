@@ -8,7 +8,10 @@ import time
 WAYLAND_ARGS = (
     "--new-window --enable-features=UseOzonePlatform --ozone-platform=wayland"
 )
-CURSOR_WORKSPACE = "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/Dev_cloud/cursor/dotfiles.code-workspace"
+CURSOR_WORKSPACE = (
+    "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
+    "Dev_cloud/cursor/dotfiles.code-workspace"
+)
 
 # Define applications with name placeholders
 APPS = {
@@ -33,7 +36,11 @@ APPS = {
     ],
     "3": [
         {"name": "helix", "command": "foot --app-id {name} -e hx", "is_master": True},
-        {"name": "hx_terminal", "command": "foot --app-id {name}", "is_master": False},
+        {
+            "name": "hx_terminal",
+            "command": "foot --app-id {name} -D /home/rash/.config",
+            "is_master": False,
+        },
     ],
     "4": [
         {
@@ -43,7 +50,7 @@ APPS = {
         },
         {
             "name": "cursor_terminal",
-            "command": "foot --app-id {name}",
+            "command": "foot --app-id {name} -D /home/rash/.config",
             "is_master": False,
         },
     ],
@@ -51,14 +58,20 @@ APPS = {
         {"name": "gpt_terminal", "command": "foot --app-id {name}", "is_master": True},
         {
             "name": "gpt_zen",
-            "command": f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' --app=https://chatgpt.com/",
+            "command": (
+                f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' "
+                "--app=https://chatgpt.com/"
+            ),
             "is_master": False,
         },
     ],
     "12": [
         {
             "name": "obsidian",
-            "command": "OBSIDIAN_USE_WAYLAND=1 obsidian -enable-features=UseOzonePlatform -ozone-platform=wayland",
+            "command": (
+                "OBSIDIAN_USE_WAYLAND=1 obsidian -enable-features=UseOzonePlatform "
+                "-ozone-platform=wayland"
+            ),
             "is_master": True,
         },
         {
@@ -75,7 +88,10 @@ APPS = {
         },
         {
             "name": "perplexity_zen",
-            "command": f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' --app=https://perplexity.ai",
+            "command": (
+                f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' "
+                "--app=https://perplexity.ai"
+            ),
             "is_master": False,
         },
     ],
