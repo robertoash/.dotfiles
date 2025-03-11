@@ -174,28 +174,37 @@ def main():
     client.on_disconnect = on_disconnect
 
     # Configure reconnect delay and enable logging
-    client.reconnect_delay_set(min_delay=30, max_delay=3600)
+    client.reconnect_delay_set(min_delay=30, max_delay=600)
     client.enable_logger()
+
+    observer = None  # Initialize to None for safety
 
     try:
         # Initial connection
         client.connect(broker, connectport, keepalive)
+
+        # Start MQTT loop in background
         client.loop_start()
 
+        # Setup file monitoring
         observer = setup_watchdog(client)
 
+        # Graceful shutdown on SIGINT/SIGTERM
         def signal_handler(sig, frame):
             stop_services(observer, client)
+            sys.exit(0)
 
         signal.signal(signal.SIGINT, signal_handler)
         signal.signal(signal.SIGTERM, signal_handler)
 
+        # Keep the main thread alive
         signal.pause()
 
     except Exception as e:
         logging.error(f"Error occurred: {e}", exc_info=True)
     finally:
-        stop_services(observer, client)
+        if observer:
+            stop_services(observer, client)
 
 
 if __name__ == "__main__":
