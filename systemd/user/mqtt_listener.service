@@ -3,7 +3,6 @@ Description=MQTT Listener Service
 After=network.target
 
 [Service]
-# Point to your bash script for mqtt_listener
 ExecStart=/bin/bash -c '/home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_listener'
 Restart=always
 RestartSec=5
