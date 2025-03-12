@@ -24,6 +24,10 @@ MANAGERS = {
         "retrieve": ["sh", "-c", "snap list | awk 'NR>1 {print $1}'"],
         "restore": lambda pkg: ["sudo", "snap", "install", pkg],
     },
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application"],
+        "restore": lambda pkg: ["flatpak", "install", "--noninteractive", pkg],
+    },
 }
 
 
@@ -43,9 +47,15 @@ def save_packages(filename):
 def reinstall_packages(filename):
     with open(filename) as f:
         for line in f:
-            package, manager = line.strip().split(SEPARATOR)
+            parts = line.strip().split(SEPARATOR)
+            if len(parts) != 2:
+                print(f"Warning: Invalid line in {filename}: {line.strip()}")
+                continue
+            package, manager = parts
             if manager in MANAGERS:
-                subprocess.run(MANAGERS[manager]["restore"](package))
+                result = subprocess.run(MANAGERS[manager]["restore"](package))
+                if result.returncode != 0:
+                    print(f"Failed to install {package} via {manager}")
 
 
 def print_help():
