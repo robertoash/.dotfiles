@@ -1,3 +1,4 @@
+source ~/.config/zsh/zsh_functions/backup.zsh
 source ~/.config/zsh/zsh_functions/brave.zsh
 source ~/.config/zsh/zsh_functions/buku.zsh
 source ~/.config/zsh/zsh_functions/dcli.zsh

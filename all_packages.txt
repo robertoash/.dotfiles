@@ -78,6 +78,7 @@ fd///pacman
 feh///pacman
 ffmpegthumbnailer///pacman
 firewalld///pacman
+flatpak///pacman
 foot///pacman
 fsarchiver///pacman
 fx///pacman
@@ -87,6 +88,7 @@ github-cli///pacman
 glances///pacman
 gnome-keyring///pacman
 gnome-tweaks///pacman
+gocryptfs///pacman
 greetd///pacman
 greetd-tuigreet-git///pacman
 grim///pacman
@@ -262,7 +264,6 @@ upower///pacman
 urban-cli-bin///pacman
 usb_modeswitch///pacman
 usbutils///pacman
-vaults///pacman
 vi///pacman
 vlc///pacman
 vscode-json-languageserver///pacman
@@ -345,7 +346,6 @@ termux-language-server///yay
 ticktick///yay
 tv-lite///yay
 urban-cli-bin///yay
-vaults///yay
 walk///yay
 wdisplays///yay
 wl-color-picker///yay
@@ -366,3 +366,5 @@ gnome-42-2204///snap
 gtk-common-themes///snap
 iptv-smarters-expert///snap
 snapd///snap
+com.github.tchx84.Flatseal///flatpak
+io.github.mpobaschnig.Vaults///flatpak
