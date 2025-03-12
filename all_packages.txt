@@ -198,6 +198,7 @@ python-packaging///pacman
 python-pipx///pacman
 python-pyqt5///pacman
 python-pytz///pacman
+qbittorrent///pacman
 qutebrowser-git///pacman
 rebuild-detector///pacman
 reflector///pacman
