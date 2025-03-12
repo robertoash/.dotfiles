@@ -7,6 +7,7 @@ alsa-utils///pacman
 ansible-language-server///pacman
 aquamarine-git///pacman
 asdf-vm///pacman
+atool///pacman
 axel///pacman
 b43-fwcutter///pacman
 baobab///pacman
@@ -77,6 +78,7 @@ fasd-git///pacman
 fd///pacman
 feh///pacman
 ffmpegthumbnailer///pacman
+file-roller///pacman
 firewalld///pacman
 flatpak///pacman
 foot///pacman
@@ -158,7 +160,6 @@ mullvad-vpn///pacman
 nano///pacman
 nano-syntax-highlighting///pacman
 ncdu///pacman
-nemo///pacman
 neofetch///pacman
 netctl///pacman
 networkmanager///pacman
