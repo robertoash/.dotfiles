@@ -16,6 +16,10 @@ source ~/.config/zsh/.zsh_secrets
 ## Sudo
 alias sudo="sudo "
 
+## Custom shutdown
+alias reboot="~/.config/scripts/hyprland/custom_shutdown.py --reboot"
+alias poweroff="~/.config/scripts/hyprland/custom_shutdown.py --poweroff"
+
 ## Shell
 alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
 alias reset="reset && neofetch"
