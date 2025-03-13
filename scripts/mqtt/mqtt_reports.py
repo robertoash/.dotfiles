@@ -3,9 +3,8 @@
 import argparse
 import logging
 import os
-import signal
 import sys
-import time
+import threading
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
 from watchdog.events import FileSystemEventHandler
@@ -81,7 +80,8 @@ def on_connect(client, userdata, flags, rc, properties=None):
 
 def on_disconnect(client, userdata, rc, *args, properties=None):
     logging.debug(
-        f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
+        f"on_disconnect called with client={client}, userdata={userdata}, "
+        f"rc={rc}, args={args}, properties={properties}"
     )
 
     # Check if rc is an instance of DisconnectFlags and provide a more user-friendly message
@@ -154,15 +154,12 @@ def setup_watchdog(client):
     return observer
 
 
-def stop_services(observer, client):
-    logging.debug("Shutting down services...")
-    observer.stop()
-    observer.join()
-    client.loop_stop()
-    client.disconnect()
-    logging.debug("MQTT Reports Service stopped.")
+def run_file_monitor(client):
+    observer = setup_watchdog(client)
+    observer.join()  # Block and watch forever
 
 
+# ----- Main Function -----
 def main():
     args = arg_parser()
     configure_logging(args)
@@ -173,38 +170,30 @@ def main():
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
 
-    # Configure reconnect delay and enable logging
+    # Configure reconnect delay and enable logger
     client.reconnect_delay_set(min_delay=30, max_delay=600)
     client.enable_logger()
 
-    observer = None  # Initialize to None for safety
-
     try:
-        # Initial connection
+        # Initial connection (if broker offline, it will retry within loop_forever)
         client.connect(broker, connectport, keepalive)
 
-        # Start MQTT loop in background
-        client.loop_start()
+        # Start watchdog in a separate thread
+        watchdog_thread = threading.Thread(
+            target=run_file_monitor, args=(client,), daemon=True
+        )
+        watchdog_thread.start()
+        logging.debug("Watchdog thread started.")
 
-        # Setup file monitoring
-        observer = setup_watchdog(client)
-
-        # Graceful shutdown on SIGINT/SIGTERM
-        def signal_handler(sig, frame):
-            stop_services(observer, client)
-            sys.exit(0)
-
-        signal.signal(signal.SIGINT, signal_handler)
-        signal.signal(signal.SIGTERM, signal_handler)
-
-        # Keep the main thread alive
-        signal.pause()
+        # Start MQTT loop (this will block and auto-reconnect as needed)
+        client.loop_forever()
 
     except Exception as e:
         logging.error(f"Error occurred: {e}", exc_info=True)
     finally:
-        if observer:
-            stop_services(observer, client)
+        logging.debug("Stopping MQTT client...")
+        client.disconnect()
+        logging.debug("MQTT client stopped.")
 
 
 if __name__ == "__main__":
