@@ -182,6 +182,7 @@ os-prober///pacman
 otf-futura-renner///pacman
 pacman-contrib///pacman
 pavucontrol///pacman
+pcmanfm///pacman
 perl///pacman
 pipewire-alsa///pacman
 pipewire-jack///pacman
@@ -199,7 +200,6 @@ python-packaging///pacman
 python-pipx///pacman
 python-pyqt5///pacman
 python-pytz///pacman
-qbittorrent///pacman
 qutebrowser-git///pacman
 rebuild-detector///pacman
 reflector///pacman
