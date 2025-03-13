@@ -95,8 +95,8 @@ alias xeyes="xprop"
 alias fzf='set_fzf_alias; fzf'
 # Yt-dlp
 alias yt_best="yt-dlp -f best"
-alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --add-metadata --external-downloader axel --external-downloader-args '-n 16'"
-alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 16 --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS"
+alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16'"
+alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 16 --no-abort-on-error --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS"
 # Mullvad
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
