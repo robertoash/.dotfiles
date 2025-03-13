@@ -155,3 +155,18 @@ snake_case_all() {
     fi
   done
 }
+
+empty_file() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: empty_file /path/to/file"
+    return 1
+  fi
+
+  if [[ -f "$1" ]]; then
+    : > "$1"
+    echo "Emptied: $1"
+  else
+    echo "File does not exist: $1"
+    return 1
+  fi
+}
