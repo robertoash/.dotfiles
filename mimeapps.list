@@ -29,7 +29,7 @@ x-scheme-handler/tonsite=org.telegram.desktop.desktop
 x-scheme-handler/unknown=brave-browser.desktop
 x-scheme-handler/webcal=brave-browser.desktop
 inode/directory=Thunar.desktop
-application/x-gnome-saved-search=Thunar.desktop
+application/x-gnome-saved-search=pcmanfm.desktop
 
 [Added Associations]
 application/javascript=Helix.desktop;
