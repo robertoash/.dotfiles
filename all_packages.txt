@@ -115,7 +115,6 @@ hyprlock-git///pacman
 hyprpaper-git///pacman
 inetutils///pacman
 inotify-tools///pacman
-insync-thunar///pacman
 intel-media-driver///pacman
 intel-ucode///pacman
 inxi///pacman
@@ -167,7 +166,6 @@ networkmanager-openconnect///pacman
 networkmanager-openvpn///pacman
 nfs-utils///pacman
 nilfs-utils///pacman
-nnn-git///pacman
 noto-fonts///pacman
 noto-fonts-cjk///pacman
 noto-fonts-emoji///pacman
@@ -195,11 +193,14 @@ pv///pacman
 pyprland-git///pacman
 python///pacman
 python-capng///pacman
+python-dnspython///pacman
 python-dotenv///pacman
 python-packaging///pacman
 python-pipx///pacman
 python-pyqt5///pacman
 python-pytz///pacman
+python-setuptools///pacman
+qt5-wayland///pacman
 qutebrowser-git///pacman
 rebuild-detector///pacman
 reflector///pacman
@@ -242,8 +243,6 @@ telegram-desktop///pacman
 termux-language-server///pacman
 texinfo///pacman
 thefuck///pacman
-thunar///pacman
-thunar-archive-plugin///pacman
 ticktick///pacman
 tinyxxd///pacman
 tk///pacman
@@ -325,14 +324,12 @@ hyprkeys///yay
 hyprland-git///yay
 hyprlock-git///yay
 hyprpaper-git///yay
-insync-thunar///yay
 jellyfin-media-player-git///yay
 kodi-addon-pvr-iptvsimple///yay
 markdown-oxide-git///yay
 marksman-git///yay
 mullvad-browser-bin///yay
 mullvad-vpn///yay
-nnn-git///yay
 otf-futura-renner///yay
 pyprland-git///yay
 qutebrowser-git///yay
