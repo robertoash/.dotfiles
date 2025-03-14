@@ -31,6 +31,8 @@ calc///pacman
 cantarell-fonts///pacman
 cloudflared///pacman
 code-insiders-bin///pacman
+coin-or-clp///pacman
+coin-or-mp///pacman
 colloid-catppuccin-gtk-theme-git///pacman
 cronie///pacman
 cryptsetup///pacman
@@ -86,6 +88,7 @@ fsarchiver///pacman
 fx///pacman
 fzf///pacman
 ghostscript///pacman
+gimp///pacman
 github-cli///pacman
 glances///pacman
 gnome-keyring///pacman
@@ -111,6 +114,8 @@ hwinfo///pacman
 hypridle-git///pacman
 hyprkeys///pacman
 hyprland-git///pacman
+hyprland-protocols-git///pacman
+hyprland-qtutils-git///pacman
 hyprlock-git///pacman
 hyprpaper-git///pacman
 inetutils///pacman
@@ -127,10 +132,18 @@ kodi///pacman
 kodi-addon-pvr-iptvsimple///pacman
 lazygit///pacman
 less///pacman
+lib32-libunwind///pacman
+lib32-libxkbcommon///pacman
 libdvdcss///pacman
+libfido2///pacman
+libgepub///pacman
 libgsf///pacman
+libid3tag///pacman
+libnma///pacman
+libnma-gtk4///pacman
 libopenraw///pacman
 libreoffice-fresh///pacman
+libspng///pacman
 libva-intel-driver///pacman
 libva-utils///pacman
 libwnck3///pacman
@@ -182,6 +195,7 @@ pacman-contrib///pacman
 pavucontrol///pacman
 pcmanfm///pacman
 perl///pacman
+pinentry-bemenu///pacman
 pipewire-alsa///pacman
 pipewire-jack///pacman
 pipewire-pulse///pacman
@@ -201,6 +215,8 @@ python-pyqt5///pacman
 python-pytz///pacman
 python-setuptools///pacman
 qt5-wayland///pacman
+qt6-multimedia///pacman
+qt6-quick3d///pacman
 qutebrowser-git///pacman
 rebuild-detector///pacman
 reflector///pacman
@@ -283,6 +299,7 @@ wl-clipboard///pacman
 wl-color-picker///pacman
 wpa_supplicant///pacman
 wtype///pacman
+xcb-imdkit///pacman
 xdg-desktop-portal-hyprland-git///pacman
 xdg-desktop-portal-wlr///pacman
 xdg-user-dirs///pacman
@@ -322,6 +339,8 @@ hunspell-sv///yay
 hypridle-git///yay
 hyprkeys///yay
 hyprland-git///yay
+hyprland-protocols-git///yay
+hyprland-qtutils-git///yay
 hyprlock-git///yay
 hyprpaper-git///yay
 jellyfin-media-player-git///yay
