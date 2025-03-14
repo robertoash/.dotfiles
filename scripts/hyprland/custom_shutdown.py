@@ -20,8 +20,8 @@ def terminate_apps():
 
 
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in ["logout", "reboot", "poweroff"]:
-        print("Usage: custom_shutdown.py {logout|reboot|poweroff}")
+    if len(sys.argv) != 2 or sys.argv[1] not in ["--logout", "--reboot", "--poweroff"]:
+        print("Usage: custom_shutdown.py {--logout|--reboot|--poweroff}")
         sys.exit(1)
 
     action = sys.argv[1]
