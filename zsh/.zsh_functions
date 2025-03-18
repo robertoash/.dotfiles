@@ -3,6 +3,7 @@ source ~/.config/zsh/zsh_functions/brave.zsh
 source ~/.config/zsh/zsh_functions/buku.zsh
 source ~/.config/zsh/zsh_functions/dcli.zsh
 source ~/.config/zsh/zsh_functions/fzf.zsh
+source ~/.config/zsh/zsh_functions/pkgs.zsh
 source ~/.config/zsh/zsh_functions/sgpt.zsh
 source ~/.config/zsh/zsh_functions/shell.zsh
 source ~/.config/zsh/zsh_functions/shell_helper.zsh
