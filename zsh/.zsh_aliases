@@ -27,6 +27,10 @@ alias rr='clear && exec zsh'
 alias ff="fff"
 alias zsh_reload="source ~/.config/zsh/.zshrc"
 
+## Packages
+alias yay_total="yay -Syu --devel"
+alias yay_update="yayupdate"
+
 ## Scripts
 alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
 
@@ -117,6 +121,5 @@ alias nnn="nnn -Hc"
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias hyprland="Hyprland"
 alias jless="fx"
-alias yay_total="yay -Syu --devel"
 alias yz="yazi"
 alias zathura="zathura --fork --config-dir ~/.config/zathura"
