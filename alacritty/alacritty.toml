@@ -32,10 +32,15 @@ program = "/bin/zsh"
 
 [window]
 opacity = 0.6
+dynamic_padding = true
 
     [window.class]
     general = "Alacritty"
     instance = "Alacritty"
+
+    [window.padding]
+    x = 10
+    y = 20
 
 [keyboard]
 bindings = [
