@@ -8,7 +8,11 @@ import time
 WAYLAND_ARGS = (
     "--new-window --enable-features=UseOzonePlatform --ozone-platform=wayland"
 )
-CURSOR_WORKSPACE = (
+CURSOR_PROJECT_WORKSPACE = (
+    "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
+    "Dev_cloud/cursor/dotfiles.code-workspace"
+)
+CURSOR_CONFIG_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
     "Dev_cloud/cursor/dotfiles.code-workspace"
 )
@@ -35,7 +39,11 @@ APPS = {
         },
     ],
     "3": [
-        {"name": "helix", "command": "foot --app-id {name} -e hx", "is_master": True},
+        {
+            "name": "helix",
+            "command": "foot --app-id {name} -e hx",
+            "is_master": True,
+        },
         {
             "name": "hx_terminal",
             "command": "foot --app-id {name} -D /home/rash/.config",
@@ -45,23 +53,39 @@ APPS = {
     "4": [
         {
             "name": "cursor",
-            "command": f"cursor {WAYLAND_ARGS} --file-uri {CURSOR_WORKSPACE}",
+            "command": f"cursor {WAYLAND_ARGS} --file-uri {CURSOR_PROJECT_WORKSPACE}",
             "is_master": True,
         },
         {
-            "name": "cursor_terminal",
+            "name": "cursor_project_terminal",
+            "command": "foot --app-id {name} -D /home/rash/.config",
+            "is_master": False,
+        },
+    ],
+    "5": [
+        {
+            "name": "cursor",
+            "command": f"cursor {WAYLAND_ARGS} --file-uri {CURSOR_CONFIG_WORKSPACE}",
+            "is_master": True,
+        },
+        {
+            "name": "cursor_config_terminal",
             "command": "foot --app-id {name} -D /home/rash/.config",
             "is_master": False,
         },
     ],
     "11": [
-        {"name": "gpt_terminal", "command": "foot --app-id {name}", "is_master": True},
         {
             "name": "gpt_zen",
             "command": (
                 f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' "
                 "--app=https://chatgpt.com/"
             ),
+            "is_master": True,
+        },
+        {
+            "name": "gpt_terminal",
+            "command": "foot --app-id {name} -e hx",
             "is_master": False,
         },
     ],
