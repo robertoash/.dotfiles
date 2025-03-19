@@ -1,76 +1,82 @@
 #!/usr/bin/env python3
-
 import json
+import os
 import subprocess
 import time
 
+vars = {
+    "CONFIG_DIR": os.environ.get("DOTFILES_DIR", "/home/rash/.config"),
+    "CURRENT_PROJECT_DIR": os.environ.get(
+        "CURRENT_PROJECT_DIR", "/home/rash/dev/projects/head_tracker"
+    ),
+}
+
 # Define common arguments
-WAYLAND_ARGS = (
-    "--new-window --enable-features=UseOzonePlatform --ozone-platform=wayland"
-)
+WAYLAND_ARGS = "--enable-features=UseOzonePlatform --ozone-platform=wayland"
 CURSOR_PROJECT_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
-    "Dev_cloud/cursor/dotfiles.code-workspace"
+    "Dev_cloud/cursor/head_tracker.code-workspace"
 )
 CURSOR_CONFIG_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
     "Dev_cloud/cursor/dotfiles.code-workspace"
 )
+NEW_WINDOW_ARGS = f"--new-window {WAYLAND_ARGS}"
 
 # Define applications with name placeholders
 APPS = {
     "1": [
         {
             "name": "brave_personal",
-            "command": f"brave {WAYLAND_ARGS} --profile-directory='Default'",
+            "command": f"brave {NEW_WINDOW_ARGS} --profile-directory='Default'",
             "is_master": True,
         },
         {
             "name": "brave_terminal",
-            "command": "foot --app-id {name}",
+            "command": "foot --app-id ___name___",
             "is_master": False,
         },
     ],
     "2": [
         {
             "name": "brave_jobhunt",
-            "command": f"brave {WAYLAND_ARGS} --profile-directory='Profile 1'",
+            "command": f"brave {NEW_WINDOW_ARGS} --profile-directory='Profile 1'",
             "is_master": True,
         },
     ],
     "3": [
         {
             "name": "helix",
-            "command": "foot --app-id {name} -e hx",
+            "command": "foot --app-id ___name___ -e hx",
             "is_master": True,
         },
         {
             "name": "hx_terminal",
-            "command": "foot --app-id {name} -D /home/rash/.config",
+            "command": f"foot --app-id ___name___ -D {vars['CONFIG_DIR']}",
             "is_master": False,
         },
     ],
     "4": [
         {
             "name": "cursor",
-            "command": f"cursor {WAYLAND_ARGS} --file-uri {CURSOR_PROJECT_WORKSPACE}",
+            "command": f"cursor {NEW_WINDOW_ARGS} --file-uri {CURSOR_PROJECT_WORKSPACE}",
             "is_master": True,
         },
         {
             "name": "cursor_project_terminal",
-            "command": "foot --app-id {name} -D /home/rash/.config",
+            "command": f"foot --app-id ___name___ -D {vars['CURRENT_PROJECT_DIR']}",
             "is_master": False,
         },
     ],
     "5": [
         {
             "name": "cursor",
-            "command": f"cursor {WAYLAND_ARGS} --file-uri {CURSOR_CONFIG_WORKSPACE}",
+            "command": f"cursor {NEW_WINDOW_ARGS} --file-uri {CURSOR_CONFIG_WORKSPACE}",
             "is_master": True,
         },
         {
             "name": "cursor_config_terminal",
-            "command": "foot --app-id {name} -D /home/rash/.config",
+            "command": f"foot --app-id ___name___ -D {vars['CONFIG_DIR']}",
             "is_master": False,
         },
     ],
@@ -78,42 +84,39 @@ APPS = {
         {
             "name": "gpt_zen",
             "command": (
-                f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' "
+                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
                 "--app=https://chatgpt.com/"
             ),
             "is_master": True,
         },
         {
             "name": "gpt_terminal",
-            "command": "foot --app-id {name} -e hx",
+            "command": "foot --app-id ___name___",
             "is_master": False,
         },
     ],
     "12": [
         {
             "name": "obsidian",
-            "command": (
-                "OBSIDIAN_USE_WAYLAND=1 obsidian -enable-features=UseOzonePlatform "
-                "-ozone-platform=wayland"
-            ),
+            "command": f"OBSIDIAN_USE_WAYLAND=1 obsidian {WAYLAND_ARGS}",
             "is_master": True,
         },
         {
             "name": "obsidian_terminal",
-            "command": "foot --app-id {name}",
+            "command": "foot --app-id ___name___",
             "is_master": False,
         },
     ],
     "13": [
         {
             "name": "perplexity_terminal",
-            "command": "foot --app-id {name}",
+            "command": "foot --app-id ___name___",
             "is_master": True,
         },
         {
             "name": "perplexity_zen",
             "command": (
-                f"brave {WAYLAND_ARGS} --profile-directory='AppProfile' "
+                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
                 "--app=https://perplexity.ai"
             ),
             "is_master": False,
@@ -197,14 +200,15 @@ def launch_and_manage(workspace, name, command, is_master):
 
     existing_windows = get_window_addresses()
 
-    # Replace `{name}` with the actual name
-    command = command.format(name=name)
+    # Replace `___name___` with the actual name
+    command = command.replace("___name___", name)
 
     print(f"Launching: {command}")
     subprocess.Popen(command, shell=True)
 
     # Wait specifically for this window
     address = wait_for_window(existing_windows)
+    # time.sleep(0.2)
     if not address:
         return  # Skip if window did not appear
 
