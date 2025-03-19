@@ -46,20 +46,6 @@ APPS = {
     ],
     "3": [
         {
-            "name": "helix",
-            "command": "alacritty --app-id ___name___ -e hx",
-            "is_master": True,
-        },
-        {
-            "name": "hx_terminal",
-            "command": (
-                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
-            ),
-            "is_master": False,
-        },
-    ],
-    "4": [
-        {
             "name": "cursor",
             "command": (
                 f"cursor {NEW_WINDOW_ARGS} " f"--file-uri {CURSOR_PROJECT_WORKSPACE}"
@@ -75,7 +61,7 @@ APPS = {
             "is_master": False,
         },
     ],
-    "5": [
+    "4": [
         {
             "name": "cursor",
             "command": f"cursor {NEW_WINDOW_ARGS} --file-uri {CURSOR_CONFIG_WORKSPACE}",
@@ -83,6 +69,20 @@ APPS = {
         },
         {
             "name": "config_terminal",
+            "command": (
+                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
+            ),
+            "is_master": False,
+        },
+    ],
+    "5": [
+        {
+            "name": "helix",
+            "command": "alacritty --title ___name___ -e hx",
+            "is_master": True,
+        },
+        {
+            "name": "hx_terminal",
             "command": (
                 f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
             ),
