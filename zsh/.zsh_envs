@@ -1,14 +1,13 @@
 # Defaults
 export EDITOR="hx"
 export IDE="cursor"
-export TERMINAL="foot"
+export TERMINAL="alacritty"
 export COLORTERM="truecolor"
 export TERM="xterm-256color"
 export BROWSER="brave --profile-directory=Default %s"
 export BROWSER_CLEAN="brave"
 export NOTE_EDITOR="obsidian"
 export VISUAL="hx"
-export NNN_USE_EDITOR=0
 
 export CURRENT_PROJECT_DIR="/home/rash/dev/projects/head_tracker"
 export DOTFILES_DIR="/home/rash/.config"

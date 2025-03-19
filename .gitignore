@@ -107,3 +107,4 @@ venv/
 zsh/.oda.zsh
 zsh/.zshrc.save
 zsh/.zsh_secrets
+zsh/*.*tmp*

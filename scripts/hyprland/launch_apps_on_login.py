@@ -33,7 +33,7 @@ APPS = {
         },
         {
             "name": "brave_terminal",
-            "command": "foot --app-id ___name___",
+            "command": "alacritty --title ___name___",
             "is_master": False,
         },
     ],
@@ -47,24 +47,31 @@ APPS = {
     "3": [
         {
             "name": "helix",
-            "command": "foot --app-id ___name___ -e hx",
+            "command": "alacritty --app-id ___name___ -e hx",
             "is_master": True,
         },
         {
             "name": "hx_terminal",
-            "command": f"foot --app-id ___name___ -D {vars['CONFIG_DIR']}",
+            "command": (
+                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
+            ),
             "is_master": False,
         },
     ],
     "4": [
         {
             "name": "cursor",
-            "command": f"cursor {NEW_WINDOW_ARGS} --file-uri {CURSOR_PROJECT_WORKSPACE}",
+            "command": (
+                f"cursor {NEW_WINDOW_ARGS} " f"--file-uri {CURSOR_PROJECT_WORKSPACE}"
+            ),
             "is_master": True,
         },
         {
-            "name": "cursor_project_terminal",
-            "command": f"foot --app-id ___name___ -D {vars['CURRENT_PROJECT_DIR']}",
+            "name": "project_terminal",
+            "command": (
+                f"alacritty --title ___name___ "
+                f"--working-directory {vars['CURRENT_PROJECT_DIR']}"
+            ),
             "is_master": False,
         },
     ],
@@ -75,8 +82,10 @@ APPS = {
             "is_master": True,
         },
         {
-            "name": "cursor_config_terminal",
-            "command": f"foot --app-id ___name___ -D {vars['CONFIG_DIR']}",
+            "name": "config_terminal",
+            "command": (
+                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
+            ),
             "is_master": False,
         },
     ],
@@ -91,7 +100,7 @@ APPS = {
         },
         {
             "name": "gpt_terminal",
-            "command": "foot --app-id ___name___",
+            "command": "alacritty --title ___name___",
             "is_master": False,
         },
     ],
@@ -103,14 +112,14 @@ APPS = {
         },
         {
             "name": "obsidian_terminal",
-            "command": "foot --app-id ___name___",
+            "command": "alacritty --title ___name___",
             "is_master": False,
         },
     ],
     "13": [
         {
             "name": "perplexity_terminal",
-            "command": "foot --app-id ___name___",
+            "command": "alacritty --title ___name___",
             "is_master": True,
         },
         {
