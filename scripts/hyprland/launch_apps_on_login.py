@@ -106,6 +106,21 @@ APPS = {
     ],
     "12": [
         {
+            "name": "dax_zen",
+            "command": (
+                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
+                "--app=https://chatgpt.com/g/g-67dd21949aa48191b626d79f72dc6e95-head-tracker-daxss"
+            ),
+            "is_master": True,
+        },
+        {
+            "name": "dax_terminal",
+            "command": "alacritty --title ___name___",
+            "is_master": False,
+        },
+    ],
+    "13": [
+        {
             "name": "obsidian",
             "command": f"OBSIDIAN_USE_WAYLAND=1 obsidian {WAYLAND_ARGS}",
             "is_master": True,
@@ -116,7 +131,7 @@ APPS = {
             "is_master": False,
         },
     ],
-    "13": [
+    "14": [
         {
             "name": "perplexity_terminal",
             "command": "alacritty --title ___name___",
