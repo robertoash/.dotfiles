@@ -1,33 +1,42 @@
 yayupdate() {
-    output=$(mktemp)
-    yay -Syu --devel --noconfirm | tee "$output"
+    # Store initial package list
+    before=$(mktemp)
+    yay -Qm > "$before"
 
-    echo -e "\n=== Updated Packages ==="
+    # Run the update
+    yay -Syu --devel --noconfirm
 
-    # Extract all package update sections and concatenate
-    packages=$(grep -A 1000 "Package (" "$output" | grep -E '^[a-zA-Z0-9_.+-]+ [0-9]' | column -t)
+    # Store final package list
+    after=$(mktemp)
+    yay -Qm > "$after"
 
-    if [[ -z "$packages" ]]; then
-        echo "No packages were updated."
+    # Create frame
+    width=80
+    echo -e "\n$(printf '#%.0s' $(seq 1 $width))"
+
+    # Compare and show differences
+    if ! diff -q "$before" "$after" > /dev/null; then
+        title="=== Updated Packages ==="
+        padding=$(( (width - ${#title}) / 2 ))
+        printf "%*s%s\n" $padding "" "$title"
+        echo
+        updated_packages=$(diff "$before" "$after" | grep '^>' | sed 's/^> //' | cut -d' ' -f1)
+
+        # Show each updated package and its dependencies
+        while IFS= read -r package; do
+            echo "  $package:"
+            pactree -l 1 "$package" | sed 's/^/  /'
+        done <<< "$updated_packages"
     else
-        echo "$packages"
-
-        # Extract Net Upgrade Size and sum it up
-        total_size=$(grep -E "Net Upgrade Size:" "$output" | awk '{print $NF, $(NF-1)}' | tr ',' '.' | awk '
-        {
-            if ($2 == "MiB") sum+=$1;
-            else if ($2 == "GiB") sum+=$1*1024;
-        }
-        END {printf "%.2f MiB\n", sum}')
-
-        echo -e "\nTotal Net Upgrade Size: $total_size"
+        title="No updates available."
+        padding=$(( (width - ${#title}) / 2 ))
+        printf "%*s%s\n" $padding "" "$title"
     fi
 
-    # Dynamically find and list all failed installations
-    if grep -q "Failed to install the following packages" "$output"; then
-        echo -e "\n⚠️  Installation Errors Detected: ⚠️"
-        awk '/Failed to install the following packages/,0' "$output" | tail -n +2
-    fi
+    # Close frame
+    echo
+    echo "$(printf '#%.0s' $(seq 1 $width))"
 
-    rm "$output"
+    # Cleanup
+    rm "$before" "$after"
 }
