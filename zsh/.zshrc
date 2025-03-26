@@ -1,4 +1,3 @@
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.config/zsh/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -78,7 +77,9 @@ source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.config/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.config/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 # Functions
-source ~/.config/zsh/.zsh_functions
+for f in ~/.config/zsh/zsh_functions/*.zsh; do
+    source "$f"
+done
 # Broot
 source ~/.config/broot/launcher/bash/br
 # Prompt Customization & Utilities
@@ -101,7 +102,7 @@ AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd history)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
- 
+
 # FZF Tab Config
 source ~/.config/fzf-tab/fzf-tab.zsh
 
