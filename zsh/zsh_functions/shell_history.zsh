@@ -1,5 +1,9 @@
-# Set up a trap to ensure start_history runs on shell exit
+# Set up traps to ensure cleanup on any exit
 trap 'start_history' EXIT
+trap 'start_history' HUP
+trap 'start_history' INT
+trap 'start_history' QUIT
+trap 'start_history' TERM
 
 stop_history() {
     # Store original paths
@@ -9,7 +13,8 @@ stop_history() {
     local hist_dir
     hist_dir="$(dirname "$_HISTFILE_ORIG")"
 
-    export HISTFILE="$hist_dir/.zsh_history_tmp_$$"
+    # Create a unique temporary history file for this terminal
+    export HISTFILE="$hist_dir/.zsh_history_tmp_${PPID}_$$"
     touch "$HISTFILE"
 
     # Stop fasd history
@@ -23,9 +28,9 @@ start_history() {
     local main_histfile="${_HISTFILE_ORIG:-$HOME/.config/zsh/.zsh_history}"
     local tmp_histfile="$HISTFILE"
 
-    # Only delete if HISTFILE is a temporary file (to avoid deleting real history)
-    if [[ "$HISTFILE" != "$main_histfile" && -f "$tmp_histfile" ]]; then
-        rm -f "$tmp_histfile"
+    # Clean up this terminal's temporary history file
+    if [[ -n "$tmp_histfile" && "$tmp_histfile" != "$main_histfile" ]]; then
+        rm -f "$tmp_histfile" 2>/dev/null
     fi
 
     export HISTFILE="$main_histfile"  # Restore original history
