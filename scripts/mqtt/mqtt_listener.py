@@ -31,6 +31,10 @@ broker = "10.20.10.100"
 connectport = 1883
 keepalive = 60
 
+# Broker status monitoring
+BROKER_STATUS_TOPIC = "homeassistant/status"  # Home Assistant's broker status topic
+broker_online = False
+
 
 def arg_parser():
     # Parse command-line arguments
@@ -63,47 +67,57 @@ def set_mqtt_client():
 
 
 def on_connect(client, userdata, flags, rc, properties=None):
+    global broker_online
     if rc == 0:
         logging.debug("Connected OK")
+        broker_online = True
         client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
+        # Subscribe to broker status
+        client.subscribe(BROKER_STATUS_TOPIC, qos=1)
         subscribe_to_topics(client)
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
 def on_disconnect(client, userdata, rc, *args, properties=None):
+    global broker_online
     logging.debug(
-        f"on_disconnect called with client={client}, userdata={userdata}, rc={rc}, args={args}, properties={properties}"
+        f"on_disconnect called with client={client}, userdata={userdata}, "
+        f"rc={rc}, args={args}, properties={properties}"
     )
 
     # Check if rc is an instance of DisconnectFlags and provide a more user-friendly message
     if isinstance(rc, mqtt.DisconnectFlags):
         if rc.is_disconnect_packet_from_server:
-            logging.debug("Disconnected: Server might be down.")
+            logging.error("Disconnected: Server might be down.")
+            broker_online = False
         else:
-            logging.debug("Disconnected: Client initiated or other reason.")
+            logging.error("Disconnected: Client initiated or other reason.")
     else:
-        logging.debug(f"Disconnected for reason {rc}")
+        logging.error(f"Disconnected for reason {rc}")
 
     # Iterate over args and check types to ensure correct handling
     for arg in args:
         if isinstance(arg, mqtt.ReasonCode):
-            logging.debug(f"Reason code for disconnection: {arg}")
-        elif isinstance(arg, mqtt.Properties):  # Corrected to 'mqtt.Properties'
-            logging.debug(f"Disconnection properties: {arg}")
+            logging.error(f"Reason code for disconnection: {arg}")
+        elif isinstance(arg, mqtt.Properties):
+            logging.error(f"Disconnection properties: {arg}")
         else:
-            logging.debug(f"Unknown argument in on_disconnect: {arg}")
+            logging.error(f"Unknown argument in on_disconnect: {arg}")
 
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
 
-    if rc != 0:
-        logging.debug(
-            "Unexpected disconnection. The client will attempt to reconnect automatically."
-        )
+    # Force reconnection attempt
+    try:
+        client.reconnect()
+        logging.info("Attempting to reconnect...")
+    except Exception as e:
+        logging.error(f"Failed to reconnect: {e}")
+        sys.exit(1)  # Let systemd restart us
 
 
 def subscribe_to_topics(client):
@@ -112,15 +126,27 @@ def subscribe_to_topics(client):
 
 
 def on_message(client, userdata, message):
+    global broker_online
     topic = message.topic
     payload = message.payload.decode()
-    file_path = topic_to_file.get(topic)
-    if file_path:
-        # Check dir and create if not exists
-        dir_path = os.path.dirname(file_path)
-        if not os.path.exists(dir_path):
-            os.makedirs(dir_path)
-        write_status_file(file_path, payload)
+
+    if topic == BROKER_STATUS_TOPIC:
+        broker_online = payload == "online"
+        if broker_online:
+            logging.info("Home Assistant broker is back online, attempting to reconnect...")
+            try:
+                client.reconnect()
+            except Exception as e:
+                logging.error(f"Failed to reconnect after broker came online: {e}")
+    else:
+        # Handle regular messages
+        file_path = topic_to_file.get(topic)
+        if file_path:
+            # Check dir and create if not exists
+            dir_path = os.path.dirname(file_path)
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+            write_status_file(file_path, payload)
 
 
 def write_status_file(file_path, payload):
@@ -140,7 +166,7 @@ def main():
     client.on_message = on_message
 
     # Configure reconnect delay and enable logging
-    client.reconnect_delay_set(min_delay=30, max_delay=600)
+    client.reconnect_delay_set(min_delay=1, max_delay=300)  # 5-minute max delay
     client.enable_logger()
 
     try:
@@ -153,6 +179,7 @@ def main():
         logging.debug("Script interrupted by user")
     except Exception as e:
         logging.error(f"An error occurred: {e}", exc_info=True)
+        sys.exit(1)  # Exit with error code to trigger systemd restart
     finally:
         client.disconnect()
 
