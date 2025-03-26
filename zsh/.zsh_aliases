@@ -2,7 +2,65 @@
 # # Aliases
 # #################################
 
-# Fasd aliases
+# Core System
+## Secrets
+source ~/.config/zsh/.zsh_secrets
+## Shell & Environment
+alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
+alias reset="reset && neofetch"
+alias rr='clear && exec zsh'
+alias sudo="sudo "
+alias zsh_reload="source ~/.config/zsh/.zshrc"
+
+## System Power
+alias poweroff="~/.config/scripts/hyprland/custom_shutdown.py --poweroff"
+alias reboot="~/.config/scripts/hyprland/custom_shutdown.py --reboot"
+
+## Package Management
+alias yay_total="yay -Syu --devel"
+alias yay_update="yayupdate"
+
+# Applications
+## Backup Tools
+alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
+alias bkup_buku="bash ~/.config/scripts/backup/run_buku_bkup.sh"
+alias bkup_oldhp="bash ~/.config/scripts/backup/run_oldhp_bkup.sh"
+alias bkup_packages="~/.config/scripts/backup/bkup_packages.py"
+alias bkup_proxmox="bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
+alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
+alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
+
+## Buku Bookmarks
+alias bk="buku --suggest"
+alias bka="bk -w" # Buku add (interactive)
+alias bkd="bk -d" # Buku delete
+alias bke="bk -w"
+alias bkl="bk -p" # Buku list
+alias bkll="bk -l" # Buku lock
+alias bklu="bk -k" # Buku unlock
+alias bko="bk_o" # Buku with fzf
+alias bks="bk --np -s" # Buku search (no prompt)
+alias bksp="bk -s" # Buku search (prompt)
+alias bkw="bk -w --tag ''" # Buku write
+
+### Buku Database Functions
+alias bk_c="switch_buku_db current"
+alias bk_p="switch_buku_db rashp"
+alias bk_r="switch_buku_db rash"
+alias bk_s="switch_buku_db"
+
+## Docker
+alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
+alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
+
+## Exa File Listing
+alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
+alias lll="ll -l -a"
+alias llr="exa --color=always --icons --git -HahlTR"
+alias llrl="llr -L"
+alias lls="lll -s size"
+
+## Fasd Quick Access
 alias h='f -e hx' # quick opening files with helix
 alias m='f -e mpv' # quick opening files with mpv
 alias o='a -e xdg-open' # quick opening files with xdg-open
@@ -16,119 +74,62 @@ alias o='a -e xdg-open' # quick opening files with xdg-open
 # alias z='fasd_cd -d'     # cd, same functionality as j in autojump
 # alias zz='fasd_cd -d -i' # cd with interactive selection
 
-## Shell aliases
-[ -f "${XDG_CONFIG_HOME}/shell/aliases" ] && source "${XDG_CONFIG_HOME}/shell/aliases"
-
-## Secret aliases
-source ~/.config/zsh/.zsh_secrets
-
-## Sudo
-alias sudo="sudo "
-
-## Custom shutdown
-alias reboot="~/.config/scripts/hyprland/custom_shutdown.py --reboot"
-alias poweroff="~/.config/scripts/hyprland/custom_shutdown.py --poweroff"
-
-## Shell
-alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
-alias reset="reset && neofetch"
-alias rr='clear && exec zsh'
+## File Management
 alias ff="fff"
-alias zsh_reload="source ~/.config/zsh/.zshrc"
+alias nnn="nnn -Hc"
+alias yz="yazi"
 
-## Packages
-alias yay_total="yay -Syu --devel"
-alias yay_update="yayupdate"
-
-## Scripts
-alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
-
-## Backup aliases
-alias bkup_packages="~/.config/scripts/backup/bkup_packages.py"
-alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
-alias bkup_oldhp="bash ~/.config/scripts/backup/run_oldhp_bkup.sh"
-alias bkup_proxmox="bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
-alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
-alias bkup_buku="bash ~/.config/scripts/backup/run_buku_bkup.sh"
-alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
-
-## MPV stuff
-alias cnn="~/scripts/secrets/launch_iptv.py --cnn"
-
-## Zen websites
-alias z_disney="b_zen --web https://disneyplus.se"
-alias z_ha="b_zen --web https://ha.rashlab.net"
-alias z_svt="b_zen --web https://svtplay.se"
-alias z_netflix="b_zen --web https://netflix.com"
-alias z_max="b_zen --web https://max.com"
-alias z_yt="b_zen --web https://youtube.com"
-alias z_ppx="b_zen --web https://perplexity.ai"
-alias z_gpt="b_zen --web https://chatgpt.com/"
-alias zen="b_zen"
-
-## App aliases
-# Buku
-alias bk="buku --suggest"
-alias bkl="bk -p" # Buku list
-alias bka="bk -w" # Buku add (interactive)
-alias bkll="bk -l" # Buku lock
-alias bklu="bk -k" # Buku unlock
-alias bks="bk --np -s" # Buku search (no prompt)
-alias bksp="bk -s" # Buku search (prompt)
-alias bkd="bk -d" # Buku delete
-alias bkw="bk -w --tag ''" # Buku write
-alias bko="bk_o" # Buku with fzf
-alias bke="bk -w"
-# Buku functions
-alias bk_c="switch_buku_db current"
-alias bk_r="switch_buku_db rash"
-alias bk_p="switch_buku_db rashp"
-alias bk_s="switch_buku_db"
-# Exa
-alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
-alias lll="ll -l -a"
-alias lls="lll -s size"
-alias llr="exa --color=always --icons --git -HahlTR"
-alias llrl="llr -L"
-# Notesh
-alias note="notesh -f ~/notes/quick.json"
-# Docker Scripts
-alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
-alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
-# Lazygit
+## Git Tools
+alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias lg="lazygit"
-# Monitor
-alias monitor_windows="xprop"
+
+## Media
+alias cnn="~/scripts/secrets/launch_iptv.py --cnn"
+alias zathura="zathura --fork --config-dir ~/.config/zathura"
+
+## Monitoring
 alias monitor_key_presses="stdbuf -oL wev | grep --line-buffered 'sym'"
-alias monitor_mouse_presses="wev -f wl_pointer:button"
 alias monitor_keys_filtered="wev -f wl_pointer:motion -F wl_pointer:enter -F wl_pointer:leave -F wl_keyboard:enter -F wl_keyboard:leave -F wl_pointer:frame -F xdg_surface -F wl_data_offer -F wl_data_device -F xdg_toplevel"
 alias monitor_keys_full="wev"
-alias xeyes="xprop"
-# Fzf
-alias fzf='set_fzf_alias; fzf'
-# Yt-dlp
-alias yt_best="yt-dlp -f best"
-alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16'"
-alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 16 --no-abort-on-error --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS"
-# Mullvad
+alias monitor_mouse_presses="wev -f wl_pointer:button"
+alias monitor_windows="xprop"
+
+## Mullvad VPN
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
 alias mst="mullvad status"
-# Mega
-alias mega="mega-cmd"
-# SVTText
-alias svttext="svttext -colors"
+
+## Notes & Text
+alias define="camb"
+alias note="notesh -f ~/notes/quick.json"
 alias svtt="svttext"
 alias svtti="svtt -interactive"
-# Zoxide
-alias zq="zoxide query"
+alias svttext="svttext -colors"
 
-#Other
-alias define="camb"
+## System Tools
 alias code="code-insiders"
-alias nnn="nnn -Hc"
-alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
+alias fzf='set_fzf_alias; fzf'
 alias hyprland="Hyprland"
 alias jless="fx"
-alias yz="yazi"
-alias zathura="zathura --fork --config-dir ~/.config/zathura"
+alias mega="mega-cmd"
+alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
+alias xeyes="xprop"
+
+## Video Download
+alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 16 --no-abort-on-error --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username $SP_USER --password $SP_PASS"
+alias yt_best="yt-dlp -f best"
+alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16'"
+
+## Web Browsing (Zen Mode)
+alias zen="b_zen"
+alias z_disney="b_zen --web https://disneyplus.se"
+alias z_gpt="b_zen --web https://chatgpt.com/"
+alias z_ha="b_zen --web https://ha.rashlab.net"
+alias z_max="b_zen --web https://max.com"
+alias z_netflix="b_zen --web https://netflix.com"
+alias z_ppx="b_zen --web https://perplexity.ai"
+alias z_svt="b_zen --web https://svtplay.se"
+alias z_yt="b_zen --web https://youtube.com"
+
+## Zoxide
+alias zq="zoxide query"
