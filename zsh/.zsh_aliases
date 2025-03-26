@@ -75,8 +75,6 @@ alias o='a -e xdg-open' # quick opening files with xdg-open
 # alias zz='fasd_cd -d -i' # cd with interactive selection
 
 ## File Management
-alias ff="fff"
-alias nnn="nnn -Hc"
 alias yz="yazi"
 
 ## Git Tools

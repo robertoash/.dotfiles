@@ -67,4 +67,4 @@ obsidian/vault/.obsidian/
 **/__pycache__/**
 **/venv/**
 .boto
-subprocess
+./subprocess
