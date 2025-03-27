@@ -1,5 +1,5 @@
 
-theme = "catppuccin-mocha"
+theme = "nord"
 
 [editor]
 bufferline = "multiple"
