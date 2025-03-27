@@ -9,10 +9,10 @@ export BROWSER_CLEAN="brave"
 export NOTE_EDITOR="obsidian"
 export VISUAL="hx"
 
-export CURRENT_PROJECT_DIR="/home/rash/dev/projects/head_tracker"
 # GTK
 export GTK_THEME=Colloid-Dark-Nord
 
+export CURRENT_PROJECT_DIR="/home/rash/dev/apps"
 export DOTFILES_DIR="/home/rash/.config"
 
 # File locations
