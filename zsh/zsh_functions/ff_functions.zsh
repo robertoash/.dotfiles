@@ -105,7 +105,11 @@ EOL
     [[ -d "$selection" ]] && type="dir"
 
     local action
-    action=$(command /usr/bin/fzf --prompt="Select action for $type: " --height=30% --reverse <<< $'open\nedit\ncopy\nyazi\npcmanfm\ncancel')
+    if [[ "$type" == "dir" ]]; then
+        action=$(command /usr/bin/fzf --prompt="Select action for directory: " --height=30% --reverse <<< $'cd\nyazi\npcmanfm\nedit\ncopy-path\ncancel')
+    else
+        action=$(command /usr/bin/fzf --prompt="Select action for file: " --height=30% --reverse <<< $'open\nedit\ncopy-path\nyazi\npcmanfm\ncancel')
+    fi
 
     if [[ "$action" == "cancel" || -z "$action" ]]; then
         echo "No action selected." >&2
@@ -125,13 +129,29 @@ perform_ff_action() {
     case "$mode" in
         open) xdg-open "$target" ;;
         edit) hx "$target" ;;
-        copy) echo -n "$target" | wl-copy ;;
+        copy-path)
+            if [[ -d "$target" ]]; then
+                # For directories, copy the path with a trailing slash to indicate it's a directory
+                echo -n "${target%/}/" | wl-copy
+            else
+                # For files, copy the full path
+                echo -n "$target" | wl-copy
+            fi
+            ;;
         yazi) yazi "$target" ;;
         pcmanfm)
             if [[ -d "$target" ]]; then
                 pcmanfm "$target"
             else
                 pcmanfm --select "$target"
+            fi
+            ;;
+        cd)
+            if [[ -d "$target" ]]; then
+                cd "$target"
+            else
+                echo "❌ Error: Cannot cd into a file" >&2
+                return 1
             fi
             ;;
         *) echo "Unknown action: $mode" >&2; return 1 ;;
