@@ -7,15 +7,15 @@ import time
 vars = {
     "CONFIG_DIR": os.environ.get("DOTFILES_DIR", "/home/rash/.config"),
     "CURRENT_PROJECT_DIR": os.environ.get(
-        "CURRENT_PROJECT_DIR", "/home/rash/dev/projects/head_tracker"
+        "CURRENT_PROJECT_DIR", "/home/rash/dev/apps/"
     ),
 }
 
 # Define common arguments
 WAYLAND_ARGS = "--enable-features=UseOzonePlatform --ozone-platform=wayland"
-CURSOR_PROJECT_WORKSPACE = (
+CURSOR_CURRENT_PROJECT_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
-    "Dev_cloud/cursor/head_tracker.code-workspace"
+    "Dev_cloud/cursor/apps.code-workspace"
 )
 CURSOR_CONFIG_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
@@ -46,14 +46,15 @@ APPS = {
     ],
     "3": [
         {
-            "name": "cursor",
+            "name": "cursor_dev",
             "command": (
-                f"cursor {NEW_WINDOW_ARGS} " f"--file-uri {CURSOR_PROJECT_WORKSPACE}"
+                f"cursor {NEW_WINDOW_ARGS} "
+                f"--file-uri {CURSOR_CURRENT_PROJECT_WORKSPACE}"
             ),
             "is_master": True,
         },
         {
-            "name": "project_terminal",
+            "name": "dev_terminal",
             "command": (
                 f"alacritty --title ___name___ "
                 f"--working-directory {vars['CURRENT_PROJECT_DIR']}"
@@ -106,21 +107,6 @@ APPS = {
     ],
     "12": [
         {
-            "name": "dax_zen",
-            "command": (
-                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
-                "--app=https://chatgpt.com/g/g-67dd21949aa48191b626d79f72dc6e95-head-tracker-daxss"
-            ),
-            "is_master": True,
-        },
-        {
-            "name": "dax_terminal",
-            "command": "alacritty --title ___name___",
-            "is_master": False,
-        },
-    ],
-    "13": [
-        {
             "name": "obsidian",
             "command": f"OBSIDIAN_USE_WAYLAND=1 obsidian {WAYLAND_ARGS}",
             "is_master": True,
@@ -131,7 +117,7 @@ APPS = {
             "is_master": False,
         },
     ],
-    "14": [
+    "13": [
         {
             "name": "perplexity_terminal",
             "command": "alacritty --title ___name___",
