@@ -6,6 +6,12 @@ trap 'start_history' QUIT
 trap 'start_history' TERM
 
 stop_history() {
+    # If history is already stopped (we have a temporary file), ignore the call
+    if [[ -n "$_HISTFILE_ORIG" ]]; then
+        echo "History already stopped"
+        return 0
+    fi
+
     # Store original paths
     export _HISTFILE_ORIG="${HISTFILE:-$HOME/.config/zsh/.zsh_history}"
 
@@ -24,6 +30,12 @@ stop_history() {
 }
 
 start_history() {
+    # If history is already started (no temporary file), ignore the call
+    if [[ -z "$_HISTFILE_ORIG" ]]; then
+        echo "History already started"
+        return 0
+    fi
+
     # Retrieve original values
     local main_histfile="${_HISTFILE_ORIG:-$HOME/.config/zsh/.zsh_history}"
     local tmp_histfile="$HISTFILE"
@@ -34,6 +46,10 @@ start_history() {
     fi
 
     export HISTFILE="$main_histfile"  # Restore original history
+
+    # Clear the in-memory history and reload from main history file
+    fc -P
+    fc -p "$main_histfile"
 
     # Unset temporary variables since they are no longer needed
     unset _HISTFILE_ORIG
