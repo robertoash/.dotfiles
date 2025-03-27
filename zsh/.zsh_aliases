@@ -104,6 +104,9 @@ alias svtt="svttext"
 alias svtti="svtt -interactive"
 alias svttext="svttext -colors"
 
+## Scripts
+alias cgrid="python3 ~/.config/scripts/shell/color_grid.py"
+
 ## System Tools
 alias code="code-insiders"
 alias fzf='set_fzf_alias; fzf'
