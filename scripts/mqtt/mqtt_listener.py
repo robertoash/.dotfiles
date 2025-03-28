@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import sys
+import time
 
 import paho.mqtt.client as mqtt  # pip install paho-mqtt
 
@@ -35,6 +36,10 @@ keepalive = 60
 BROKER_STATUS_TOPIC = "homeassistant/status"  # Home Assistant's broker status topic
 broker_online = False
 
+# Reconnection control
+reconnecting = False
+RECONNECT_DELAY = 5  # seconds between reconnection attempts
+
 
 def arg_parser():
     # Parse command-line arguments
@@ -54,6 +59,7 @@ def configure_logging(args):
 
 
 def set_mqtt_client():
+    logging.debug("Creating MQTT client...")
     client = mqtt.Client(
         client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
     )
@@ -63,19 +69,63 @@ def set_mqtt_client():
     client.will_set(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
+    logging.info("MQTT client created successfully")
     return client
 
 
+def safe_reconnect(client):
+    global reconnecting
+    if reconnecting:
+        logging.debug("Reconnection already in progress, skipping...")
+        return
+    reconnecting = True
+    try:
+        logging.info("Attempting to reconnect...")
+        client.reconnect()
+        logging.debug(
+            f"Waiting {RECONNECT_DELAY} seconds for connection to establish..."
+        )
+        time.sleep(RECONNECT_DELAY)
+        logging.info("Reconnection attempt completed")
+    except Exception as e:
+        logging.error(f"Failed to reconnect: {e}", exc_info=True)
+        sys.exit(1)
+    finally:
+        reconnecting = False
+        logging.debug("Reconnection state reset")
+
+
 def on_connect(client, userdata, flags, rc, properties=None):
-    global broker_online
+    global broker_online, reconnecting
+    logging.debug(
+        f"on_connect called with rc={rc}, flags={flags}, properties={properties}"
+    )
     if rc == 0:
-        logging.debug("Connected OK")
+        logging.info("Connected OK to MQTT broker")
         broker_online = True
-        client.publish(
+        reconnecting = False
+
+        logging.debug("Publishing online status...")
+        status_result = client.publish(
             "devices/" + clientname + "/status", payload="online", qos=1, retain=True
         )
-        # Subscribe to broker status
-        client.subscribe(BROKER_STATUS_TOPIC, qos=1)
+        if status_result.rc != mqtt.MQTT_ERR_SUCCESS:
+            logging.warning(
+                f"Failed to publish online status: {mqtt.error_string(status_result.rc)}"
+            )
+        else:
+            logging.debug(f"Online status publish result: {status_result.rc}")
+
+        logging.debug("Subscribing to broker status...")
+        sub_result = client.subscribe(BROKER_STATUS_TOPIC, qos=1)
+        if sub_result[0] != mqtt.MQTT_ERR_SUCCESS:
+            logging.warning(
+                f"Failed to subscribe to {BROKER_STATUS_TOPIC}: {mqtt.error_string(sub_result[0])}"
+            )
+        else:
+            logging.debug(f"Subscription result: {sub_result}")
+
+        logging.debug("Subscribing to topics...")
         subscribe_to_topics(client)
     else:
         logging.error(f'Connection failed. Returned code "{rc}"')
@@ -88,65 +138,81 @@ def on_disconnect(client, userdata, rc, *args, properties=None):
         f"rc={rc}, args={args}, properties={properties}"
     )
 
-    # Check if rc is an instance of DisconnectFlags and provide a more user-friendly message
     if isinstance(rc, mqtt.DisconnectFlags):
         if rc.is_disconnect_packet_from_server:
-            logging.error("Disconnected: Server might be down.")
+            logging.warning("Disconnected: Server might be down.")
             broker_online = False
         else:
-            logging.error("Disconnected: Client initiated or other reason.")
+            logging.warning("Disconnected: Client initiated or other reason.")
     else:
-        logging.error(f"Disconnected for reason {rc}")
+        logging.warning(f"Disconnected for reason {rc}")
 
-    # Iterate over args and check types to ensure correct handling
     for arg in args:
         if isinstance(arg, mqtt.ReasonCode):
-            logging.error(f"Reason code for disconnection: {arg}")
+            logging.warning(f"Reason code for disconnection: {arg}")
         elif isinstance(arg, mqtt.Properties):
-            logging.error(f"Disconnection properties: {arg}")
+            logging.debug(f"Disconnection properties: {arg}")
         else:
-            logging.error(f"Unknown argument in on_disconnect: {arg}")
+            logging.warning(f"Unknown argument in on_disconnect: {arg}")
 
+    logging.debug("Publishing offline status...")
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
     )
 
-    # Force reconnection attempt
-    try:
-        client.reconnect()
-        logging.info("Attempting to reconnect...")
-    except Exception as e:
-        logging.error(f"Failed to reconnect: {e}")
-        sys.exit(1)  # Let systemd restart us
+    logging.info("Initiating safe reconnect...")
+    safe_reconnect(client)
 
 
 def subscribe_to_topics(client):
     for topic in topic_to_file.keys():
-        client.subscribe(topic, qos=1)
+        logging.debug(f"Subscribing to topic: {topic}")
+        sub_result = client.subscribe(topic, qos=1)
+        if sub_result[0] != mqtt.MQTT_ERR_SUCCESS:
+            logging.warning(
+                f"Failed to subscribe to {topic}: {mqtt.error_string(sub_result[0])}"
+            )
+        else:
+            logging.debug(f"Subscription result for {topic}: {sub_result}")
 
 
 def on_message(client, userdata, message):
     global broker_online
     topic = message.topic
     payload = message.payload.decode()
+    logging.debug(f"Received message on topic {topic}: {payload}")
 
     if topic == BROKER_STATUS_TOPIC:
-        broker_online = payload == "online"
-        if broker_online:
-            logging.info("Home Assistant broker is back online, attempting to reconnect...")
-            try:
-                client.reconnect()
-            except Exception as e:
-                logging.error(f"Failed to reconnect after broker came online: {e}")
+        if payload == "offline" and client.is_connected():
+            logging.warning(
+                "Received offline status while connected, updating broker status"
+            )
+            broker_online = False
+            if not reconnecting:
+                logging.info(
+                    "Home Assistant broker is offline, attempting to reconnect..."
+                )
+                safe_reconnect(client)
+        elif payload == "online":
+            logging.info("Received online status from broker")
+            broker_online = True
     else:
-        # Handle regular messages
         file_path = topic_to_file.get(topic)
         if file_path:
-            # Check dir and create if not exists
-            dir_path = os.path.dirname(file_path)
-            if not os.path.exists(dir_path):
-                os.makedirs(dir_path)
-            write_status_file(file_path, payload)
+            logging.debug(f"Processing message for file: {file_path}")
+            try:
+                dir_path = os.path.dirname(file_path)
+                if not os.path.exists(dir_path):
+                    logging.debug(f"Creating directory: {dir_path}")
+                    os.makedirs(dir_path)
+                write_status_file(file_path, payload)
+                logging.debug(f"Successfully wrote to file: {file_path}")
+            except IOError as e:
+                logging.warning(f"Failed to write to file {file_path}: {e}")
+            except Exception as e:
+                logging.error(f"Unexpected error writing to file: {e}", exc_info=True)
+        else:
+            logging.debug(f"No file mapping found for topic: {topic}")
 
 
 def write_status_file(file_path, payload):
@@ -156,32 +222,34 @@ def write_status_file(file_path, payload):
 
 def main():
     args = arg_parser()
-
     configure_logging(args)
+    logging.info("Starting MQTT Listener Service")
 
     client = set_mqtt_client()
-
     client.on_connect = on_connect
     client.on_disconnect = on_disconnect
     client.on_message = on_message
 
-    # Configure reconnect delay and enable logging
-    client.reconnect_delay_set(min_delay=1, max_delay=300)  # 5-minute max delay
+    logging.debug("Configuring reconnect delay...")
+    client.reconnect_delay_set(min_delay=1, max_delay=300)
+    logging.debug("Enabling MQTT logger...")
     client.enable_logger()
 
     try:
-        # Initial connection
+        logging.debug(f"Connecting to MQTT broker at {broker}:{connectport}...")
         client.connect(broker, connectport, keepalive)
+        logging.debug("Initial connection established")
 
-        # Run the MQTT loop forever, handling reconnections internally
+        logging.debug("Starting MQTT loop...")
         client.loop_forever()
     except KeyboardInterrupt:
-        logging.debug("Script interrupted by user")
+        logging.info("MQTT Listener Service interrupted by user")
     except Exception as e:
-        logging.error(f"An error occurred: {e}", exc_info=True)
-        sys.exit(1)  # Exit with error code to trigger systemd restart
+        logging.error(f"Unhandled error occurred: {e}", exc_info=True)
     finally:
+        logging.debug("Shutting down MQTT client...")
         client.disconnect()
+        logging.debug("MQTT client shutdown complete")
 
 
 if __name__ == "__main__":
