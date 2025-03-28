@@ -1,17 +1,17 @@
 yayupdate() {
     # Store initial package list
     before=$(mktemp)
-    yay -Qm > "$before"
+    pacman -Q > "$before"
 
     # Run the update
     yay -Syu --devel --noconfirm
 
     # Store final package list
     after=$(mktemp)
-    yay -Qm > "$after"
+    pacman -Q > "$after"
 
     # Create frame
-    width=80
+    width=96
     echo -e "\n$(printf '#%.0s' $(seq 1 $width))"
 
     # Compare and show differences
@@ -20,12 +20,14 @@ yayupdate() {
         padding=$(( (width - ${#title}) / 2 ))
         printf "%*s%s\n" $padding "" "$title"
         echo
-        updated_packages=$(diff "$before" "$after" | grep '^>' | sed 's/^> //' | cut -d' ' -f1)
+        updated_packages=$(diff "$before" "$after" | grep '^>' | sed 's/^> //')
 
         # Show each updated package and its dependencies
         while IFS= read -r package; do
-            echo "  $package:"
-            pactree -l 1 "$package" | sed 's/^/  /'
+            pkg_name=$(echo "$package" | cut -d' ' -f1)
+            pkg_version=$(echo "$package" | cut -d' ' -f2)
+            echo "  $pkg_name ($pkg_version):"
+            pactree -l --optional=1 "$pkg_name" | sed 's/^/  /'
         done <<< "$updated_packages"
     else
         title="No updates available."
