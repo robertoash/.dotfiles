@@ -13,7 +13,6 @@
 # ...and these directories...
 !alacritty/
 !bat/
-!btop/
 !dunst/
 !espanso/
 !fd/
@@ -48,7 +47,6 @@
 # ...as well as any subfolders in them and their contents...
 !alacritty/**/*
 !bat/**/*
-!btop/**/*
 !dunst/**/*
 !espanso/**/*
 !foot/**/*
