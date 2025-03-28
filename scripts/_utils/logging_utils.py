@@ -3,6 +3,7 @@
 import inspect
 import logging
 import os
+import sys
 from logging.handlers import TimedRotatingFileHandler
 
 
@@ -32,21 +33,37 @@ def configure_logging():
     log_file = os.path.join(log_dir, f"{caller_filename_no_ext}.log")
 
     # Configure the logging module with TimedRotatingFileHandler
-    handler = TimedRotatingFileHandler(
+    file_handler = TimedRotatingFileHandler(
         log_file, when="midnight", interval=1, backupCount=log_limit
     )
-    handler.suffix = "%Y-%m-%d"
-    handler.setFormatter(
+    file_handler.suffix = "%Y-%m-%d"
+    file_handler.setFormatter(
         logging.Formatter(
-            "%(asctime)s - %(message)s",
+            "%(asctime)s [%(levelname)-7s] %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S",
+        )
+    )
+
+    # Add console handler for immediate feedback
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(
+        logging.Formatter(
+            "%(asctime)s [%(levelname)-7s] %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
     )
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
-    logger.addHandler(handler)
 
-    # To avoid adding multiple handlers if configure_logging is called multiple times
-    if not logger.hasHandlers():
-        logger.addHandler(handler)
+    # Remove any existing handlers
+    for handler in logger.handlers[:]:
+        logger.removeHandler(handler)
+
+    # Add our handlers
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    # Test logging
+    logger.info(f"Logging configured for {caller_filename_no_ext}")
+    logger.info(f"Log file: {log_file}")
