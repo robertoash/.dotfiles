@@ -61,6 +61,22 @@ def ensure_files_exist():
             with open(file_path, "r") as f:
                 content = f.read().strip()
                 logging.info(f"Existing file {file_path} contains: '{content}'")
+
+        # Ensure file has valid content
+        with open(file_path, "r") as f:
+            content = f.read().strip()
+            if "webcam" in file_path and (
+                not content or content not in ["active", "inactive"]
+            ):
+                content = "inactive"
+            elif "mini" in file_path and (
+                not content or content not in ["active", "inactive"]
+            ):
+                content = "inactive"
+        with open(file_path, "w") as f:
+            f.write(content)
+        logging.info(f"Initialized empty file {file_path} with content: '{content}'")
+
         os.chmod(file_path, 0o644)  # Ensure proper permissions
 
 
@@ -192,9 +208,9 @@ def on_message(client, userdata, message):
     logging.debug(f"Received message on topic {topic}: {payload}")
 
     if topic == BROKER_STATUS_TOPIC:
-        if payload == "offline" and client.is_connected():
+        if payload == "offline" and client.is_connected() and broker_online:
             logging.warning(
-                "Received offline status while connected, updating broker status"
+                "Broker status changed to offline, updating status and attempting to reconnect"
             )
             broker_online = False
             if not reconnecting:
@@ -202,8 +218,8 @@ def on_message(client, userdata, message):
                     "Home Assistant broker is offline, attempting to reconnect..."
                 )
                 safe_reconnect(client)
-        elif payload == "online":
-            logging.info("Received online status from broker")
+        elif payload == "online" and not broker_online:
+            logging.info("Broker status changed to online")
             broker_online = True
 
 
