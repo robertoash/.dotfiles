@@ -37,8 +37,6 @@ code-insiders-bin///pacman
 coin-or-clp///pacman
 coin-or-mp///pacman
 colloid-catppuccin-gtk-theme-git///pacman
-colloid-nord-gtk-theme-git///pacman
-colloid-nord-icon-theme-git///pacman
 cronie///pacman
 cryptsetup///pacman
 cups///pacman
@@ -271,6 +269,7 @@ ticktick///pacman
 tinyxxd///pacman
 tk///pacman
 tldr///pacman
+tokyonight-gtk-theme-git///pacman
 torbrowser-launcher///pacman
 traceroute///pacman
 transmission-gtk///pacman
