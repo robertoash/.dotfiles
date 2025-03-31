@@ -1,5 +1,5 @@
 [general]
-import = ["/home/rash/.config/alacritty/themes/nord.toml"]
+import = ["/home/rash/.config/alacritty/themes/tokyo_night_enhanced.toml"]
 
 [colors]
 draw_bold_text_with_bright_colors = true
@@ -35,7 +35,7 @@ save_to_clipboard = true
 program = "/bin/zsh"
 
 [window]
-opacity = 1.0
+opacity = 0.4
 dynamic_padding = true
 
     [window.class]
