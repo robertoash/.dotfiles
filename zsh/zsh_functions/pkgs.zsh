@@ -20,15 +20,9 @@ yayupdate() {
         padding=$(( (width - ${#title}) / 2 ))
         printf "%*s%s\n" $padding "" "$title"
         echo
-        updated_packages=$(diff "$before" "$after" | grep '^>' | sed 's/^> //')
-
-        # Show each updated package and its dependencies
-        while IFS= read -r package; do
-            pkg_name=$(echo "$package" | cut -d' ' -f1)
-            pkg_version=$(echo "$package" | cut -d' ' -f2)
-            echo "  $pkg_name ($pkg_version):"
-            pactree -l --optional=1 "$pkg_name" | sed 's/^/  /'
-        done <<< "$updated_packages"
+        diff "$before" "$after" | grep '^>' | sed 's/^> //' | while IFS= read -r package; do
+            echo "  $package"
+        done
     else
         title="No updates available."
         padding=$(( (width - ${#title}) / 2 ))
