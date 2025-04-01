@@ -1,6 +1,6 @@
 [colors.primary]
 background = "#08080b"
-foreground = "#b9bdcc"  # Lightened from #787c99
+foreground = "#ffffff"  # Lightened from #787c99
 
 [colors.cursor]
 cursor = "#b9bdcc"
