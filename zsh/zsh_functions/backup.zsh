@@ -9,9 +9,6 @@ update_packages() {
   echo "Updating pipx packages..."
   pipx upgrade-all
 
-  echo "Updating snap packages..."
-  sudo snap refresh
-
   echo "Updating flatpak packages..."
   flatpak update -y
 }
