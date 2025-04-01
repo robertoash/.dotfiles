@@ -46,9 +46,16 @@ STATE_MAP = {
 
 
 def write_to_file(data):
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    with open(output_file, "w") as f:
-        json.dump(data, f)
+    logging.debug(f"Attempting to write data to {output_file}")
+    try:
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        logging.debug("Directory created/verified")
+        with open(output_file, "w") as f:
+            json.dump(data, f)
+            logging.info(f"Successfully wrote data: {data}")
+    except Exception as e:
+        logging.error(f"Error writing to file: {e}")
+        raise
 
 
 def get_external_ip():
@@ -78,20 +85,14 @@ def build_output(state):
     else:
         tooltip += "..."
 
-    print(
-        json.dumps(
-            {
-                "text": base["text"],
-                "tooltip": tooltip,
-                "class": base["class"],
-            }
-        )
-    )
-    return {
+    output_data = {
         "text": base["text"],
         "tooltip": tooltip,
         "class": base["class"],
     }
+    logging.debug(f"Built output data: {output_data}")
+    print(json.dumps(output_data))
+    return output_data
 
 
 def monitor_logs():
@@ -119,6 +120,25 @@ def monitor_logs():
 
 def main():
     try:
+        # Get initial state
+        result = subprocess.run(
+            ["mullvad", "status"], capture_output=True, text=True, timeout=5
+        )
+        if result.returncode == 0:
+            state = "Connected" if "Connected" in result.stdout else "Disconnected"
+            logging.info(f"Initial VPN state: {state}")
+            output = build_output(state)
+            write_to_file(output)
+        else:
+            logging.error(f"Failed to get initial state: {result.stderr}")
+            write_to_file(
+                {
+                    "text": "!",
+                    "tooltip": "Failed to get VPN state",
+                    "class": "vpn-error",
+                }
+            )
+
         monitor_logs()
     except Exception as e:
         logging.exception("Error in log monitoring")
