@@ -20,10 +20,6 @@ MANAGERS = {
         "retrieve": ["sh", "-c", "pipx list --short | awk '{print $1}'"],
         "restore": lambda pkg: ["pipx", "install", pkg],
     },
-    "snap": {
-        "retrieve": ["sh", "-c", "snap list | awk 'NR>1 {print $1}'"],
-        "restore": lambda pkg: ["sudo", "snap", "install", pkg],
-    },
     "flatpak": {
         "retrieve": ["sh", "-c", "flatpak list --app --columns=application"],
         "restore": lambda pkg: ["flatpak", "install", "--noninteractive", pkg],

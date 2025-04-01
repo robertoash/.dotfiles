@@ -26,7 +26,6 @@ brother-dcp-l2530dw///pacman
 btop///pacman
 btrfs-progs///pacman
 buku-git///pacman
-bukubrow-bin///pacman
 calc///pacman
 cantarell-fonts///pacman
 chafa///pacman
@@ -191,6 +190,7 @@ nss-mdns///pacman
 ntfs-3g///pacman
 ntp///pacman
 obsidian///pacman
+open-tv-bin///pacman
 openssh///pacman
 os-prober///pacman
 otf-commit-mono-nerd///pacman
@@ -241,7 +241,6 @@ sg3_utils///pacman
 slack-desktop///pacman
 slurp///pacman
 smartmontools///pacman
-snapd///pacman
 sof-firmware///pacman
 solaar///pacman
 speedtest++///pacman
@@ -330,7 +329,6 @@ zsh///pacman
 alacritty-git///yay
 brother-dcp-l2530dw///yay
 buku-git///yay
-bukubrow-bin///yay
 code-insiders-bin///yay
 cursor-bin///yay
 espanso-wayland-git///yay
@@ -340,11 +338,11 @@ hunspell-sv///yay
 hyprkeys///yay
 markdown-oxide-git///yay
 marksman-git///yay
+open-tv-bin///yay
 otf-futura-renner///yay
 pyprland-git///yay
 reiserfsprogs///yay
 rofi-lbonn-wayland-git///yay
-snapd///yay
 sqls///yay
 svttext-git///yay
 termux-language-server///yay
@@ -361,10 +359,4 @@ python-lsp-server///pipx
 shell-gpt///pipx
 validate-pyproject///pipx
 yt-dlp///pipx
-bare///snap
-core22///snap
-gnome-42-2204///snap
-gtk-common-themes///snap
-iptv-smarters-expert///snap
-snapd///snap
 com.github.tchx84.Flatseal///flatpak
