@@ -125,7 +125,7 @@ info = "#0db9d7"
 hint = "#1abc9c"
 
 # 🌟 ENHANCED foreground colors
-fg = "#b9bdcc"              # was #c0caf5 — lighter, more readable on dark bg
+fg = "#ffffff"              # was #c0caf5 — lighter, more readable on dark bg
 fg-dark = "#aeb2c7"         # was #a9b1d6 — slightly brighter for dim elements
 fg-gutter = "#3b4261"       # unchanged
 fg-linenr = "#959bbb"       # was #737aa2 — improve line number readability
