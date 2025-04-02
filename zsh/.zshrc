@@ -112,7 +112,7 @@ source ~/.config/fzf-tab/fzf-tab.zsh
 # #################################
 
 # Thefuck
-eval $(thefuck --alias fuck)
+eval "$(thefuck --alias fuck)"
 # Hass cli
 eval "$(_HASS_CLI_COMPLETE=source_zsh hass-cli)"
 # SGPT shell integration
@@ -128,11 +128,16 @@ fi
 zle -N _sgpt_zsh
 bindkey ^l _sgpt_zsh
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/path.zsh.inc'; fi
+# Load Google Cloud SDK
+if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then
+    source '/home/rash/builds/google-cloud-sdk/path.zsh.inc'
+fi
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'; fi
+# Load Google Cloud SDK completion with proper initialization
+if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then
+    # Load Google Cloud SDK completion
+    source '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'
+fi
 
 # Detect if shell is being launched from inside yazi
 if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
