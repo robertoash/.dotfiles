@@ -4,10 +4,10 @@
 # Except for these files...
 !.gitignore
 !all_packages.txt
+!helpers.rc
 !mimeapps.list
 !/README.md
 !rofimoji.rc
-!helpers.rc
 !taskrc
 
 # ...and these directories...
@@ -16,11 +16,13 @@
 !dunst/
 !espanso/
 !fd/
+!fish/
 !flake/
 !foot/
 !fzf-tab/
 !helix/
 !hypr/
+!kitty/
 !lazygit/
 !lf/
 !mc/
@@ -49,12 +51,14 @@
 !bat/**/*
 !dunst/**/*
 !espanso/**/*
-!foot/**/*
 !fd/**/*
+!fish/**/*
 !flake/**/*
+!foot/**/*
 !fzf-tab/**/*
 !helix/**/*
 !hypr/**/*
+!kitty/**/*
 !lazygit/**/*
 !lf/**/*
 !mc/**/*
@@ -81,28 +85,28 @@
 systemd/user/*
 
 # Explicitly include
+!qutebrowser/config.py
 !systemd/user/linux-webcam-status.service
 !systemd/user/mqtt_listener.service
 !systemd/user/mqtt_reports.service
-!qutebrowser/config.py
 
 # ... but not these.
+.direnv/
 .env
 .envrc
 .python-version
+.zcompdump
 .zsh_history
 __pycache__
-.zcompdump
 btop.log
+espanso/match/secrets.yml
 lazygit/state.yml
 scripts/_logs/
 scripts/secrets/
+venv/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
-espanso/match/secrets.yml
-.direnv/
-venv/
 zsh/.oda.zsh
-zsh/.zshrc.save
 zsh/.zsh_secrets
+zsh/.zshrc.save
 zsh/*.*tmp*
