@@ -16,8 +16,6 @@ export CURRENT_PROJECT_DIR="/home/rash/dev/apps"
 export DOTFILES_DIR="/home/rash/.config"
 
 # File locations
-export _ZO_DATA_DIR=~/.config/zoxide/
-export _ZO_EXCLUDE_DIRS=""
 export XDG_CONFIG_HOME="$HOME/.config"
 export ZELLIJ_CONFIG_FILE=~/.config/zellij/config.kdl
 export GTK2_RC_FILES="$HOME/.config/gtk-2.0/gtkrc-2.0"

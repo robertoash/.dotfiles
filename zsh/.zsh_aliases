@@ -135,5 +135,3 @@ alias z_ppx="b_zen --web https://perplexity.ai"
 alias z_svt="b_zen --web https://svtplay.se"
 alias z_yt="b_zen --web https://youtube.com"
 
-## Zoxide
-alias zq="zoxide query"
