@@ -1,8 +1,31 @@
 #!/usr/bin/env python3
+import argparse
 import fcntl
+import logging
 import os
 import subprocess
 import sys
+
+# Add the custom script path to PYTHONPATH
+sys.path.append("/home/rash/.config/scripts")
+from _utils import logging_utils  # noqa: E402
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="Retrieve environment secrets.")
+parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+args = parser.parse_args()
+
+# Configure logging in quiet mode
+logging_utils.configure_logging(quiet=True)
+logger = logging.getLogger()
+
+# Override the console handler to use stderr instead of stdout
+for handler in logger.handlers:
+    if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
+        handler.stream = sys.stderr
+
+# Set log level based on debug flag
+logger.setLevel(logging.DEBUG if args.debug else logging.ERROR)
 
 # Lock file location
 lock_file = "/tmp/secrets_script.lock"
@@ -26,10 +49,10 @@ def conf_source(file):
                         key, value = line.strip().split("=", 1)
                         print(f'export {key}="{value.strip()}"')
         except Exception as e:
-            print(f"Error: Sourcing {file} failed. {e}", file=sys.stderr)
+            logging.error(f"Error: Sourcing {file} failed. {e}")
             return False
     else:
-        print(f"Error: {file} is empty or missing.", file=sys.stderr)
+        logging.error(f"Error: {file} is empty or missing.")
         return False
     return True
 
@@ -41,9 +64,7 @@ def conf_encrypt(file):
         # After successful encryption, delete the unencrypted file
         os.remove(file)  # This line deletes the original file after encryption
     except subprocess.CalledProcessError as e:
-        print(
-            f"Encryption failed for {file} with status {e.returncode}", file=sys.stderr
-        )
+        logging.error(f"Encryption failed for {file} with status {e.returncode}")
         return False
     return True
 
@@ -59,17 +80,13 @@ def conf_decrypt(file):
             with open(file, "w") as f:
                 f.write(decrypted_content)
         except subprocess.CalledProcessError as e:
-            print(
+            logging.error(
                 f"Error: Decryption failed for {encrypted_file} "
-                f"with status {e.returncode}.",
-                file=sys.stderr,
+                f"with status {e.returncode}."
             )
             return False
     else:
-        print(
-            f"Error: Encrypted file {encrypted_file} not found.",
-            file=sys.stderr,
-        )
+        logging.error(f"Error: Encrypted file {encrypted_file} not found.")
         return False
     return True
 
@@ -85,7 +102,7 @@ def main():
                 conf_source(file)
                 conf_encrypt(file)
             else:
-                print(f"Error: Neither {file} nor {file}.asc exists.", file=sys.stderr)
+                logging.error(f"Error: Neither {file} nor {file}.asc exists.")
 
 
 if __name__ == "__main__":

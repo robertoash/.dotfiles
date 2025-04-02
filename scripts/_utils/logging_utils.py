@@ -7,7 +7,7 @@ import sys
 from logging.handlers import TimedRotatingFileHandler
 
 
-def configure_logging():
+def configure_logging(quiet=False):
     base_scripts_dir = "~/.config/scripts"
     base_log_dir = "~/.config/scripts/_logs"
     log_limit = 30  # Number of log files to keep (one daily)
@@ -44,15 +44,6 @@ def configure_logging():
         )
     )
 
-    # Add console handler for immediate feedback
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(
-        logging.Formatter(
-            "%(asctime)s [%(levelname)-7s] %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-        )
-    )
-
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
@@ -60,9 +51,19 @@ def configure_logging():
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
-    # Add our handlers
+    # Add file handler
     logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+
+    # Add console handler only if not in quiet mode
+    if not quiet:
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s [%(levelname)-7s] %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
+        logger.addHandler(console_handler)
 
     # Test logging
     logger.info(f"Logging configured for {caller_filename_no_ext}")
