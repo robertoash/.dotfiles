@@ -14,7 +14,7 @@ SELECTED_ALIAS=$(awk '/^alias/ {
     gsub(/ +/, " ", output)
     print output
 }' ~/.config/zsh/.zsh_aliases | \
-rofi -theme catppuccin_mocha_single_column \
+rofi -theme ~/.config/rofi/current_theme_single_column.rasi \
 -dmenu -i -threads 0 -width 100 -p "zsh_aliases:")
 
 # If no file is selected, exit

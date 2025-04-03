@@ -78,7 +78,7 @@ function print_menu()
 function start()
 {
     # print_menu | rofi -dmenu -p "?=>"
-    print_menu | sort | rofi show run -dmenu -mesg ">>> launch rofi scripts" -i -p "select: "
+    print_menu | sort | rofi show run -dmenu -i -p "launch rofi script: "
 }
 
 # Run it
