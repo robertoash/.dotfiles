@@ -1,3 +1,4 @@
+@theme "~/.config/rofi/current_theme"
 configuration {
     display-drun: "Applications:";
     display-window: "Windows:";
@@ -6,5 +7,3 @@ configuration {
     steal-focus: true;
     hide-scrollbar: true;
 }
-
-@theme "catppuccin_mocha"

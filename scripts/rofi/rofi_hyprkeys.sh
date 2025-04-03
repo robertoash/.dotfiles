@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 hyprkeys -br -c ~/.config/hypr/keybinds.conf | \
-rofi -theme catppuccin_mocha_single_column \
+rofi -theme ~/.config/rofi/current_theme_single_column.rasi \
 -dmenu -i -threads 0 -width 100 -p "hyprkeys:"
