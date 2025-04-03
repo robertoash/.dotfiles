@@ -1,5 +1,7 @@
 [general]
-import = ["/home/rash/.config/alacritty/themes/tokyo_night_enhanced.toml"]
+import = [
+    "/home/rash/.config/alacritty/themes/tokyonight_deep.toml",
+]
 
 [colors]
 draw_bold_text_with_bright_colors = true
@@ -8,20 +10,34 @@ draw_bold_text_with_bright_colors = true
 TERM = "xterm-256color"
 
 [font]
-normal = { family = "GeistMono NFM", style = "Regular" }
-bold = { family = "GeistMono NFM", style = "Bold" }
-italic = { family = "GeistMono NFM", style = "Italic" }
-bold_italic = { family = "GeistMono NFM", style = "Bold Italic" }
 size = 14.0
-offset = { x = 0, y = 0 }  # Adjust x and y values as needed
+
+[font.normal]
+family = "GeistMono NFM"
+style = "Regular"
+
+[font.bold]
+family = "GeistMono NFM"
+style = "Bold"
+
+[font.italic]
+family = "GeistMono NFM"
+style = "Italic"
+
+[font.bold_italic]
+family = "GeistMono NFM"
+style = "Bold Italic"
+
+[font.offset]
+x = 0
+y = 0
 
 [cursor.style]
 shape = "Block"
 blinking = "On"
 
 [mouse]
-hide_when_typing = true  # Default: false
-# Example: bindings = [{ mouse = "Left", action = "Paste" }]
+hide_when_typing = true
 bindings = []
 
 [scrolling]
@@ -38,21 +54,21 @@ program = "/bin/zsh"
 opacity = 0.4
 dynamic_padding = true
 
-    [window.class]
-    general = "Alacritty"
-    instance = "Alacritty"
+[window.class]
+general = "Alacritty"
+instance = "Alacritty"
 
-    [window.padding]
-    x = 10
-    y = 20
+[window.padding]
+x = 10
+y = 20
 
 [keyboard]
 bindings = [
-  { key = "p", mods = "Shift|Control", action = "ToggleViMode"},
-  { key = "Home", mods = "None", chars = "\u001bOH" },
-  { key = "End", mods = "None", chars = "\u001bOF" },
-  { key = "Left",  mods = "Alt", chars = "\u001b[1;3D" },
-  { key = "Right", mods = "Alt", chars = "\u001b[1;3C" }
+    { key = "p", mods = "Shift|Control", action = "ToggleViMode" },
+    { key = "Home", mods = "None", chars = "\u001bOH" },
+    { key = "End", mods = "None", chars = "\u001bOF" },
+    { key = "Left", mods = "Alt", chars = "\u001b[1;3D" },
+    { key = "Right", mods = "Alt", chars = "\u001b[1;3C" },
 ]
 
 ### Reference
