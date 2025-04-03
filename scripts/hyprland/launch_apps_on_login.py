@@ -33,7 +33,7 @@ APPS = {
         },
         {
             "name": "brave_terminal",
-            "command": "alacritty --title ___name___",
+            "command": "kitty --title ___name___",
             "is_master": False,
         },
     ],
@@ -56,7 +56,7 @@ APPS = {
         {
             "name": "dev_terminal",
             "command": (
-                f"alacritty --title ___name___ "
+                f"kitty --title ___name___ "
                 f"--working-directory {vars['CURRENT_PROJECT_DIR']}"
             ),
             "is_master": False,
@@ -71,7 +71,7 @@ APPS = {
         {
             "name": "config_terminal",
             "command": (
-                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
+                f"kitty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
             ),
             "is_master": False,
         },
@@ -79,13 +79,13 @@ APPS = {
     "5": [
         {
             "name": "helix",
-            "command": "alacritty --title ___name___ -e hx",
+            "command": "kitty --title ___name___ -e hx",
             "is_master": True,
         },
         {
             "name": "hx_terminal",
             "command": (
-                f"alacritty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
+                f"kitty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
             ),
             "is_master": False,
         },
@@ -101,7 +101,7 @@ APPS = {
         },
         {
             "name": "gpt_terminal",
-            "command": "alacritty --title ___name___",
+            "command": "kitty --title ___name___",
             "is_master": False,
         },
     ],
@@ -113,14 +113,14 @@ APPS = {
         },
         {
             "name": "obsidian_terminal",
-            "command": "alacritty --title ___name___",
+            "command": "kitty --title ___name___",
             "is_master": False,
         },
     ],
     "13": [
         {
             "name": "perplexity_terminal",
-            "command": "alacritty --title ___name___",
+            "command": "kitty --title ___name___",
             "is_master": True,
         },
         {
