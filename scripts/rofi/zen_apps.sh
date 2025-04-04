@@ -7,7 +7,8 @@ choices="🧠 ChatGPT
 🎵 YouTube
 🧿 Overseerr
 🧬 GitHub
-📺 CNN"
+📺 CNN
+🧠 Claude"
 
 choice=$(echo "$choices" | rofi -dmenu -i -p "Launch App:")
 
@@ -32,5 +33,6 @@ case "$choice" in
   "🧿 Overseerr") launch "https://watchlist.rashlab.net" ;;
   "🧬 GitHub") launch "https://github.com" ;;
   "📺 CNN") trigger "cnn" ;;
+  "🧠 Claude") launch "https://claude.ai" ;;
   *) exit 1 ;;
 esac
