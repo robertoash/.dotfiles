@@ -1,5 +1,5 @@
+theme = "tokyonight_deep"
 
-theme = "tokyonight_enhanced"
 
 [editor]
 bufferline = "multiple"
@@ -11,6 +11,7 @@ true-color = true
 auto-completion = true
 cursorline = true
 end-of-line-diagnostics = "error"
+color-modes = true
 
 [editor.cursor-shape]
 insert = "bar"       # Thin vertical line in insert mode
