@@ -42,6 +42,7 @@ setopt hist_ignore_space
 setopt hist_verify
 setopt inc_append_history_time
 setopt share_history
+setopt NO_BEEP
 # Enable menu selection for completions
 zstyle ':completion:*' menu select
 fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completions to fpath
