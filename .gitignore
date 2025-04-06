@@ -19,6 +19,7 @@
 !fish/
 !flake/
 !foot/
+!fzf/
 !fzf-tab/
 !helix/
 !hypr/
@@ -56,6 +57,7 @@
 !fish/**/*
 !flake/**/*
 !foot/**/*
+!fzf/**/*
 !fzf-tab/**/*
 !helix/**/*
 !ignore/**/*
