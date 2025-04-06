@@ -4,7 +4,7 @@
 
 # Core System
 ## Secrets
-source ~/.config/zsh/.zsh_secrets
+source ~/.config/zsh/sources/.zsh_secrets
 ## Shell & Environment
 alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
 alias reset="reset && neofetch"
