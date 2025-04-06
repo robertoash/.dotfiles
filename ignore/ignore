@@ -1,0 +1,81 @@
+.asdf/
+.cache/
+.cargo/
+.cursor-tutor/
+.cursor/
+.direnv/
+.dotnet/
+.eclipse/
+.gnupg/
+.insightface/
+.ipython/
+.jupyter/
+.keras/
+.kodi/
+.librewolf/
+.local/
+.megaCmd/
+.mozilla/
+.mullvad/
+.npm/
+.nuget/
+.pki/
+.ruff_cache/
+.rustup/
+.server_bkups/
+.steam/
+.snapshots/
+.TVLite/
+.vscode-insiders/
+.vscode/
+.vscode/
+.yarn/
+builds/
+dev/forks/
+go/
+insync/j.roberto.ash@gmail.com/Dropbox/
+insync/j.roberto.ash@gmail.com/Google Drive/Stuff/
+insync/j.roberto.ash@gmail.com/Google Drive/Temp/
+insync/j.roberto.ash@gmail.com/Google Drive/Work/
+insync/j.roberto.ash@gmail.com/Google Drive/cv_old/
+insync/j.roberto.ash@gmail.com/Google Drive/job_search/
+obsidian/vault/.obsidian/
+
+.config/BraveSoftware/
+.config/Code - Insiders/
+.config/Cursor/
+.config/Insync/
+.config/MQTT-Explorer/
+.config/Mullvad VPN/
+.config/Slack/
+.config/discord/
+.config/gcloud/
+.config/go/
+.config/libreoffice/
+.config/obsidian/
+.config/pulse/
+.config/scripts/_logs/
+.config/spotify/
+.config/ticktick/
+.config/waybar/config_alts/jakoolit/
+.config/yay/
+.config/zsh/plugins/
+
+*.gdslides
+/go/
+**/direnv/**
+**/docker_data/**
+**/__pycache__/**
+**/venv/**
+.boto
+./subprocess
+/go/pkg/
+/.cache/
+/node_modules/
+/__pycache__/
+/.git/
+/build/
+/target/
+/venv/
+/*.egg-info
+*.pyc
