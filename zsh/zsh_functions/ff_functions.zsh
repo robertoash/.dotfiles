@@ -52,39 +52,12 @@ ff() {
     fi
 
     # Create a preview script with proper terminal handling
-    local preview_script
-    preview_script=$(mktemp)
-    cat > "$preview_script" << 'EOL'
-#!/usr/bin/env bash
-file="$1"
-width="${2:-$((COLUMNS/2))}"
-height="${3:-$((LINES/2))}"
-
-if [[ -d "$file" ]]; then
-    /usr/bin/eza --all --oneline --icons=always --color=always --group-directories-first "$file"
-elif /usr/bin/file --mime-type "$file" | /usr/bin/grep -q image/; then
-    /usr/bin/chafa --format symbols --size "${width}x${height}" --dither diffusion --dither-intensity 1.0 "$file"
-elif /usr/bin/file --mime-type "$file" | /usr/bin/grep -q video/; then
-    {
-        thumb_file=$(mktemp --suffix=.jpg)
-        /usr/bin/ffmpegthumbnailer -i "$file" -o "$thumb_file" -s 0 2>/dev/null
-        /usr/bin/chafa --format symbols --size "${width}x$((height/2))" --dither diffusion --dither-intensity 1.0 "$thumb_file"
-        rm -f "$thumb_file"
-        echo -e "\n=== Video Information ===\n"
-        /usr/bin/mediainfo --Inform="General;File: %FileName%.%FileExtension%\nSize: %FileSize/String%\nDuration: %Duration/String%\nFrame Rate: %FrameRate% fps" "$file"
-        /usr/bin/mediainfo --Inform="Video;Resolution: %Width%x%Height%" "$file"
-    }
-else
-    /usr/bin/bat --style=numbers --color=always --line-range :500 "$file" || /usr/bin/cat "$file"
-fi
-EOL
-    chmod +x "$preview_script"
 
     local selection
     selection=$(/usr/bin/fd -H --follow --ignore-file "$temp_ignore" "${fd_args[@]}" 2>/dev/null | \
         command /usr/bin/fzf --height 40% --reverse --ansi \
             --preview-window "right:50%" \
-            --preview "$preview_script {}" \
+            --preview '$HOME/.config/fzf/fzf_preview.sh {}' \
             --preview-window "~3")
 
     rm -f "$preview_script"
