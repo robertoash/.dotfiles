@@ -87,7 +87,7 @@ source ~/.config/broot/launcher/bash/br
 [[ ! -f ~/.config/zsh/sources/.p10k.zsh ]] || source ~/.config/zsh/sources/.p10k.zsh
 # Keybindings
 source ~/.config/zsh/sources/.zsh_keybinds.zsh
-# Fzf
+# Fzf defaults
 source ~/.config/zsh/sources/.zsh_fzf_config.zsh
 
 # #################################
