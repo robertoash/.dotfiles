@@ -228,9 +228,8 @@ def launch_and_manage(workspace, name, command, is_master):
     # If the window is supposed to be master and it's not already, swap it
     if is_master and not is_window_master(address, workspace):
         print(f"Swapping {address} to master in workspace {workspace}")
-        subprocess.run(
-            ["hyprctl", "dispatch", "layoutmsg", "swapwithmaster", f"address:{address}"]
-        )
+        subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{address}"])
+        subprocess.run(["hyprctl", "dispatch", "layoutmsg", "swapwithmaster"])
 
 
 def main():
