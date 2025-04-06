@@ -20,7 +20,7 @@ HISTFILE=~/.config/zsh/.zsh_history
 # # Environment Variables
 # #################################
 
-source ~/.config/zsh/.zsh_envs
+source ~/.config/zsh/sources/.zsh_envs
 
 
 # #################################
@@ -65,11 +65,11 @@ eval "$(fasd --init auto)"
 # #################################
 
 # Path setting
-source ~/.config/zsh/.zsh_path
+source ~/.config/zsh/sources/.zsh_path
 # Hooks
-source ~/.config/zsh/.zsh_hooks
+source ~/.config/zsh/sources/.zsh_hooks
 # Aliases
-source ~/.config/zsh/.zsh_aliases
+source ~/.config/zsh/sources/.zsh_aliases
 # Theme
 source ~/.config/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme
 # Plugins
@@ -84,14 +84,22 @@ done
 # Broot
 source ~/.config/broot/launcher/bash/br
 # Prompt Customization & Utilities
-[[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
-
+[[ ! -f ~/.config/zsh/sources/.p10k.zsh ]] || source ~/.config/zsh/sources/.p10k.zsh
+# Keybindings
+source ~/.config/zsh/sources/.zsh_keybinds.zsh
+# Fzf
+source ~/.config/zsh/sources/.zsh_fzf_config.zsh
 
 # #################################
-# # Keybindings
+# # Completion Overrides
 # #################################
 
-source ~/.config/zsh/zsh_keybinds.zsh
+# Git branch completion
+zstyle ':completion:*:git-checkout:*' sort false
+# Group support for descriptions
+zstyle ':completion:*:descriptions' format '[%d]'
+# Use LS_COLORS to style filenames
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # #################################
 # # Miscellaneous Configurations
@@ -103,9 +111,6 @@ AUTO_NOTIFY_IGNORE+=("lf" "hugo serve" "rofi")
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd history)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
-
-# FZF Tab Config
-source ~/.config/fzf-tab/fzf-tab.zsh
 
 
 # #################################
@@ -128,26 +133,22 @@ fi
 }
 zle -N _sgpt_zsh
 bindkey ^l _sgpt_zsh
-
 # Load Google Cloud SDK
 if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then
     source '/home/rash/builds/google-cloud-sdk/path.zsh.inc'
 fi
-
 # Load Google Cloud SDK completion with proper initialization
 if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then
     # Load Google Cloud SDK completion
     source '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'
 fi
-
 # Detect if shell is being launched from inside yazi
 if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
     export IN_YAZI=1
 fi
-
 # Activate walk file manager
 function lk {
-  cd "$(walk --icons --with-border "$@")"
+  cd "$(walk --icons --with-border --fuzzy "$@")"
 }
 
 # Launch neofetch only in interactive shells and not within yazi
