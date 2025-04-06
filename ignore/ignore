@@ -63,7 +63,11 @@ obsidian/vault/.obsidian/
 
 *.gdslides
 /go/
-**/direnv/**
+/.eclipse/
+/.rustup/
+/.nuget/
+/.steam/
+**/.direnv/**
 **/docker_data/**
 **/__pycache__/**
 **/venv/**
