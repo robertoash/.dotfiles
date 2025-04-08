@@ -32,6 +32,7 @@
 !ncdu/
 !nvim/
 !onagre/
+!palettes/
 !qutebrowser/
 !rofi/
 !ruff/
@@ -70,6 +71,7 @@
 !ncdu/**/*
 !nvim/**/*
 !onagre/**/*
+!palettes/**/*
 !rofi/**/*
 !ruff/**/*
 !scripts/**/*
