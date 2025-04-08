@@ -1,10 +1,13 @@
-
 ## Navigation
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
 bindkey "^[[3~" delete-char
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
+
+# Home and End keys
+bindkey '\eOH' beginning-of-line
+bindkey '\eOF' end-of-line
 
 # Fasd completion widgets
 bindkey '^X^A' fasd-complete    # C-x C-a to do fasd-complete (files and directories)
@@ -15,7 +18,6 @@ bindkey '^X^D' fasd-complete-d  # C-x C-d to do fasd-complete-d (only directorie
 bindkey "^[[1;3D" backward-word
 # Alt + RightArrow -> forward-word
 bindkey "^[[1;3C" forward-word
-
 
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
