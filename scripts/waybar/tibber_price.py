@@ -131,13 +131,13 @@ def fetch_prices():
     # Formatting the output
     current_price = current_price_info["total"]
     if current_price < (percentile_25 + margin):
-        price_class = "price-green"  # Cheap
+        price_class = "price-good"  # Cheap
     elif current_price > percentile_75:
-        price_class = "price-red"  # Expensive
+        price_class = "price-bad"  # Expensive
     else:
-        price_class = "price-yellow"  # Mid-range
+        price_class = "price-mid"  # Mid-range
 
-    icon_class = "icon-green" if not price_increases else "icon-red"
+    icon_class = "icon-good" if not price_increases else "icon-bad"
     arrow_icon = "" if price_increases else ""
 
     return current_price, arrow_icon, price_class, icon_class, next_3_hr_avg, None
