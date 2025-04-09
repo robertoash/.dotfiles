@@ -12,7 +12,7 @@
     padding: 0px;
 }
 
-@import "./config_alts/tokyonight_deep/tokyonight_deep_palette.css";
+@import "/home/rash/.config/waybar/config_alts/tokyonight_deep/tokyonight_deep_palette.css";
 
 window#waybar {
     transition-property: background-color;
