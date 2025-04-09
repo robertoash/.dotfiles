@@ -1,119 +1,149 @@
-// tokyonight_deep
-* {
-    bg-col: #010111;
-    bg-col-light: #1d1d2c;
-    border-col: #2a2a3a;
-    selected-col: #515c7e;
-    blue: #4f72a9;
-    pink: #f7768e;
-    purple:          #bb9af7;
-    fg-col: #ffffff;
-    fg-col-muted: #6e7584;
-    width:           40%;
-    font:            "GeistMono NF 13";
-    selected-bg-col: #1d1d2c;
-    selected-fg-col: #7dcfff;
-}
+/* tokyonight_deep */
 
-element-text,
-element-icon,
-mode-switcher {
-    background-color: inherit;
-    text-color:       inherit;
+* {
+    /* Palette */
+        accent: #8bffff;
+    background: #010111;
+    color0: #363b54;
+    color1: #f7768e;
+    color10: #00ffbb;
+    color11: #ffee00;
+    color12: #82aaff;
+    color13: #d5a6ff;
+    color14: #8bffff;
+    color15: #d0d6e3;
+    color16: #1d1d2c;
+    color17: #632e3c;
+    color18: #1a4760;
+    color19: #806b00;
+    color2: #41a6b5;
+    color20: #354977;
+    color21: #4a3e6b;
+    color22: #356177;
+    color23: #494d5e;
+    color24: #0b0c19;
+    color25: #31182b;
+    color26: #0d2136;
+    color27: #403600;
+    color28: #18204a;
+    color29: #251e4a;
+    color3: #e6c100;
+    color30: #19294c;
+    color31: #25263d;
+    color4: #7aa2f7;
+    color5: #bb9af7;
+    color6: #7dcfff;
+    color7: #b9bdcc;
+    color8: #454c6d;
+    color9: #ff5f8f;
+    cursor: #7dcfff;
+    foreground: #ffffff;
+    selection-background: #515c7e;
+    selection-foreground: #ffffff;
+
+    /* Non-color tokens */
+    width: 50%;
+    font: "GeistMono NF 13";
 }
 
 window {
-    border:           2px;
-    border-color:     @border-col;
-    background-color: @bg-col;
-    padding:          10px;
-    border-radius:    12px;
+    height: 360px;
+    border: 3px;
+    border-color: @background;
+    background-color: @background;
+    padding: 10px;
 }
 
 mainbox {
-    background-color: @bg-col;
-    padding: 0px 0px 20px 0px;
+    background-color: @background;
 }
 
 inputbar {
-    children:         [prompt, entry];
-    background-color: @bg-col;
-    border-radius:    5px;
-    padding:          2px;
+    children: [prompt, entry];
+    background-color: @background;
+    border-radius: 6px;
+    padding: 0px;
+    margin: 0px;
 }
 
 prompt {
-    background-color: @blue;
-    padding:          6px;
-    text-color:       @bg-col;
-    border-radius:    3px;
-    margin:           20px 0px 0px 20px;
+    background-color: @color0;
+    padding: 6px 10px;
+    text-color: @background;
+    border-radius: 5px;
+    margin: 0 5px 0 0;
 }
 
 textbox-prompt-colon {
-    expand:           false;
-    str:              ":";
+    expand: false;
+    str: ":";
 }
 
 entry {
-    padding:          6px;
-    margin:           20px 0px 0px 10px;
-    text-color:       @fg-col;
-    background-color: @bg-col;
+    padding: 6px;
+    margin: 0;
+    text-color: @foreground;
+    background-color: @background;
 }
 
 listview {
-    border:           0px 0px 0px;
-    padding:          6px 0px 0px;
-    margin:           10px 0px 0px 10px;
-    columns:          4;
-    lines:            8;
-    background-color: @bg-col;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    columns: 4;
+    lines: 5;
+    background-color: @background;
 }
 
 element {
-    padding:          5px;
-    background-color: @bg-col;
-    text-color:       @fg-col;
+    padding: 8px 10px;
+    border-radius: 4px;
+    background-color: @background;
+    text-color: @foreground;
 }
 
 element-icon {
-    size:             25px;
+    size: 25px;
 }
 
 element selected {
-    background-color: @selected-bg-col;
-    text-color:       @selected-fg-col;
+    background-color: @accent;
+    text-color: @background;
+}
+
+element-text, element-icon, mode-switcher {
+    background-color: inherit;
+    text-color: inherit;
 }
 
 mode-switcher {
-    spacing:          0;
+    spacing: 0;
 }
 
 button {
-    padding:          10px;
-    background-color: @bg-col-light;
-    text-color:       @fg-col-muted;
-    vertical-align:   0.5;
+    padding: 10px;
+    background-color: @background;
+    text-color: @color8;
+    vertical-align: 0.5;
     horizontal-align: 0.5;
+    border-radius: 5px;
 }
 
 button selected {
-    background-color: @bg-col;
-    text-color:       @blue;
+    background-color: @background;
+    text-color: @color4;
 }
 
 message {
-    background-color: @bg-col-light;
-    margin:           2px;
-    padding:          2px;
-    border-radius:    5px;
-    text-color:       @fg-col;
+    background-color: @background;
+    margin: 0px;
+    padding: 0px;
+    border-radius: 5px;
 }
 
 textbox {
-    padding:          6px;
-    margin:           20px 0px 0px 20px;
-    text-color:       @blue;
-    background-color: @bg-col-light;
+    padding: 6px;
+    margin: 20px 0px 0px 20px;
+    text-color: @color4;
+    background-color: @background;
 }

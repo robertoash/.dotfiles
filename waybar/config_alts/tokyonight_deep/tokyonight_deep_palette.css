@@ -1,12 +1,13 @@
-@define-color accent #7dcfff;
+/* Theme-it generated color palette */
+@define-color accent #8bffff;
 @define-color background #010111;
-@define-color color1 #944458;
-@define-color color10 #41a6b5;
-@define-color color11 #e0af68;
-@define-color color12 #7aa2f7;
-@define-color color13 #bb9af7;
+@define-color color1 #f7768e;
+@define-color color10 #00ffbb;
+@define-color color11 #ffee00;
+@define-color color12 #82aaff;
+@define-color color13 #d5a6ff;
 @define-color color16 #1d1d2c;
 @define-color color17 #632e3c;
-@define-color color8 #363b54;
-@define-color color9 #f7768e;
+@define-color color8 #454c6d;
+@define-color color9 #ff5f8f;
 @define-color foreground #ffffff;
