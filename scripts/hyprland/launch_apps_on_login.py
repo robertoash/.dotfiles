@@ -13,7 +13,6 @@ vars = {
 
 # Define common arguments
 WAYLAND_ARGS = "--enable-features=UseOzonePlatform --ozone-platform=wayland"
-OBSIDIAN_ARGS = f"--force-device-scale-factor=1.4 {WAYLAND_ARGS}"
 CURSOR_CURRENT_PROJECT_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
     "Dev_cloud/cursor/apps.code-workspace"
@@ -109,7 +108,7 @@ APPS = {
     "12": [
         {
             "name": "obsidian",
-            "command": f"OBSIDIAN_USE_WAYLAND=1 obsidian {OBSIDIAN_ARGS}",
+            "command": f"env OBSIDIAN_USE_WAYLAND=1 obsidian {WAYLAND_ARGS}",
             "is_master": True,
         },
         {
