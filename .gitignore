@@ -37,6 +37,7 @@
 !rofi/
 !ruff/
 !scripts/
+!starship/
 !swappy/
 !swayidle/
 !swaylock/
@@ -75,6 +76,7 @@
 !rofi/**/*
 !ruff/**/*
 !scripts/**/*
+!starship/**/*
 !swappy/**/*
 !swayidle/**/*
 !swaylock/**/*

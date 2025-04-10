@@ -37,5 +37,7 @@ export WALK_STATUS_BAR="Size() + ' ' + Mode()"
 # Docker
 export DOCKER_BUILDKIT=1
 
+# Starship config
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 # Secrets
 eval $(/home/rash/.config/scripts/shell/secure_env_secrets.py)

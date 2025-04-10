@@ -43,6 +43,11 @@ setopt hist_verify
 setopt inc_append_history_time
 setopt share_history
 setopt NO_BEEP
+
+# Enable right prompt (RPROMPT) support
+# for starship prompt
+setopt prompt_subst
+
 # Enable menu selection for completions
 zstyle ':completion:*' menu select
 fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completions to fpath
@@ -70,8 +75,6 @@ source ~/.config/zsh/sources/.zsh_path
 source ~/.config/zsh/sources/.zsh_hooks
 # Aliases
 source ~/.config/zsh/sources/.zsh_aliases
-# Theme
-source ~/.config/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme
 # Plugins
 source ~/.config/zsh/plugins/fzf-tab/fzf-tab.plugin.zsh
 source ~/.config/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
@@ -150,6 +153,9 @@ fi
 function lk {
   cd "$(walk --icons --with-border --fuzzy "$@")"
 }
+
+# Load Starship prompt
+eval "$(starship init zsh)"
 
 # Launch neofetch only in interactive shells and not within yazi
 if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
