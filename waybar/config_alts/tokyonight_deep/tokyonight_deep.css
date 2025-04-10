@@ -159,36 +159,31 @@ window#waybar.hidden {
 }
 
 #workspaces button {
-    color: @color8;
+    color: @color22;
     box-shadow: none;
     text-shadow: none;
-    padding: 0 4px;
+    padding: 3px 3px 5px 5px;
     border-radius: 9px;
-    animation: gradient_f 20s ease-in infinite;
-    transition: all 0.5s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
 #workspaces button:hover {
-    border-radius: 10px;
-    color: @color8;
-    background-color: @color16;
-    padding: 0 2px;
+    border-radius: 9px;
+    color: @color7;
+    background-color: @color4;
+    padding: 0 4px;
 }
 
 #workspaces button.persistent {
     color: @color17;
-    border-radius: 10px;
 }
 
 #workspaces button.active {
     color: @accent;
-    border-radius: 10px;
-    padding: 0 8px;
+    padding: 3px 5px 5px 5px;
 }
 
 #workspaces button.urgent {
     color: @color9;
-    border-radius: 0;
 }
 
 #taskbar button.active {
@@ -215,10 +210,17 @@ window#waybar.hidden {
 }
 
 #custom-light_dark,
-#network,
 #custom-speedtest,
-#custom-separator,
+#custom-separator {
+    color: @color12;
+}
+
 #window {
+    color: @color14;
+    opacity: 0.6;
+}
+
+#network {
     color: @color12;
 }
 

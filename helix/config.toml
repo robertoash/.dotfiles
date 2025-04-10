@@ -1,6 +1,5 @@
 theme = "tokyonight_deep"
 
-
 [editor]
 bufferline = "multiple"
 clipboard-provider = "wayland"

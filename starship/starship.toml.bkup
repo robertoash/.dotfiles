@@ -1,0 +1,225 @@
+# ~/.config/starship.toml
+# Injected by theme_it — uses centralized tokyonight_deep palette
+
+format = '''
+$os $directory $python $rust $nodejs $git_branch $git_status $fill $cmd_duration $status $username $hostname $virtualenv $direnv $time
+$character
+'''
+
+palette = "tokyonight_deep"
+add_newline = true
+
+[fill]
+symbol = ' '
+
+# ── Theme Palette ───────────────────────────────────────
+[palettes.tokyonight_deep]
+background = "#010111"
+foreground = "#ffffff"
+cursor = "#7dcfff"
+selection_foreground = "#ffffff"
+selection_background = "#515c7e"
+color0 = "#363b54"
+color1 = "#f7768e"
+color2 = "#41a6b5"
+color3 = "#e6c100"
+color4 = "#7aa2f7"
+color5 = "#bb9af7"
+color6 = "#7dcfff"
+color7 = "#b9bdcc"
+color8 = "#454c6d"
+color9 = "#ff5f8f"
+color10 = "#00ffbb"
+color11 = "#ffee00"
+color12 = "#82aaff"
+color13 = "#d5a6ff"
+color14 = "#8bffff"
+color15 = "#d0d6e3"
+color16 = "#1d1d2c"
+color17 = "#632e3c"
+color18 = "#1a4760"
+color19 = "#806b00"
+color20 = "#354977"
+color21 = "#4a3e6b"
+color22 = "#356177"
+color23 = "#494d5e"
+color24 = "#0b0c19"
+color25 = "#31182b"
+color26 = "#0d2136"
+color27 = "#403600"
+color28 = "#18204a"
+color29 = "#251e4a"
+color30 = "#19294c"
+color31 = "#25263d"
+accent = "#8bffff"
+
+# ── Directory ───────────────────────────────────────────
+[directory]
+read_only = " 󰌾"
+read_only_style = "fg:color9"
+style = "fg:accent"
+
+# ── Git ─────────────────────────────────────────────────
+[git_branch]
+format = '\[[$symbol$branch]($style)\]'
+style = "fg:color23"
+symbol = " "
+
+[git_commit]
+tag_symbol = ' '
+
+[git_status]
+format = '([\[$all_status$ahead_behind\]]($style))'
+
+# ── Python (includes virtualenv and asdf) ───────────────
+[python]
+disabled = false
+format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
+pyenv_version_name = true
+style = "fg:color7"
+symbol = " "
+
+# ── Direnv ──────────────────────────────────────────────
+[direnv]
+symbol = " "
+style = "fg:color5"
+format = '\[[$symbol]($style)\]'
+disabled = false
+
+[docker_context]
+symbol = " "
+format = '\[[$symbol$context]($style)\]'
+style = "fg:color1"
+disabled = false
+
+# ── Node.js (ASDF or nvm) ───────────────────────────────
+[nodejs]
+symbol = " "
+style = "fg:color8"
+format = '\[[$symbol($version)]($style)\]'
+disabled = true
+
+# ── OS ───────────────────────────────────────────────
+[os]
+format = '\[[$symbol]($style)\]'
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = " "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
+
+# ── Package ─────────────────────────────────────────────
+[package]
+format = '\[[$symbol$version]($style)\]'
+symbol = "󰏗 "
+
+# ── Python (includes virtualenv and asdf) ───────────────
+[python]
+disabled = false
+format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
+pyenv_version_name = true
+style = "fg:color7"
+symbol = " "
+
+# ── Rust (ASDF or rustup) ───────────────────────────────
+[rust]
+symbol = " "
+style = "fg:color28"
+format = '\[[$symbol($version)]($style)\]'
+disabled = true
+
+# ── Sudo ───────────────────────────────────────────────
+[sudo]
+format = '\[[as $symbol]($style)\]'
+style = "fg:color9"
+
+# ── Command Duration ────────────────────────────────────
+[cmd_duration]
+min_time = 500
+format = '\[[⏱ $duration]($style)\]'
+style = "fg:color3"
+
+# ── Prompt Character ────────────────────────────────────
+[character]
+success_symbol = "[❯](fg:accent)"
+error_symbol = "[❯](fg:color9)"
+
+# ── Status ───────────────────────────────────────────────
+[status]
+style = "fg:color9"
+format = '\[[✘ $status]($style)\]'
+
+# ── Username ─────────────────────────────────────────────
+[username]
+style_user = "fg:color3"
+style_root = "fg:color9"
+format = '\[[$user]($style)\]'
+disabled = false
+
+# ── Hostname ─────────────────────────────────────────────
+[hostname]
+ssh_symbol = " "
+style = "fg:color3"
+format = '\[[@$hostname]($style)\]'
+disabled = false
+
+# ── Time ───────────────────────────────────────────────
+[time]
+disabled = false
+time_format = "%R"
+format = '\[[$time]($style)\]'
+style = "fg:accent"
+
+# ── Custom ───────────────────────────────────────────────
+[gcloud]
+format = '\[[$symbol$account(@$domain)(\($region\))]($style)\]'
+disabled = false
+
+[custom.my_module_name]
+command = "echo 🌮"
+when = "true"
+style = "fg:color14"
+format = "[$output]($style) "
+
