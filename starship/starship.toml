@@ -2,7 +2,7 @@
 # Injected by theme_it — uses centralized tokyonight_deep palette
 
 format = '''
-$os $directory $python $rust $nodejs $git_branch $git_status $fill $cmd_duration $status $username $hostname $virtualenv $direnv $time
+$directory$python$rust$nodejs$git_branch$git_status$fill$cmd_duration$status$username$hostname$virtualenv$direnv$time
 $character
 '''
 
@@ -55,21 +55,27 @@ accent = "#8bffff"
 
 # ── Directory ───────────────────────────────────────────
 [directory]
+style = "fg:accent"
 read_only = " 󰌾"
 read_only_style = "fg:color9"
-style = "fg:accent"
+truncation_length = 3
+truncate_to_repo = false
+format = "[$path]($style)"
+home_symbol = "~"
 
 # ── Git ─────────────────────────────────────────────────
 [git_branch]
 format = '\[[$symbol$branch]($style)\]'
-style = "fg:color23"
+style = "fg:color13"
 symbol = " "
 
 [git_commit]
 tag_symbol = ' '
 
 [git_status]
-format = '([\[$all_status$ahead_behind\]]($style))'
+format = '\[[$all_status$ahead_behind]($style)\]'
+style = "fg:color13"
+
 
 # ── Python (includes virtualenv and asdf) ───────────────
 [python]
@@ -99,57 +105,6 @@ symbol = " "
 style = "fg:color8"
 format = '\[[$symbol($version)]($style)\]'
 disabled = true
-
-# ── OS ───────────────────────────────────────────────
-[os]
-format = '\[[$symbol]($style)\]'
-
-[os.symbols]
-Alpaquita = " "
-Alpine = " "
-AlmaLinux = " "
-Amazon = " "
-Android = " "
-Arch = " "
-Artix = " "
-CachyOS = " "
-CentOS = " "
-Debian = " "
-DragonFly = " "
-Emscripten = " "
-EndeavourOS = " "
-Fedora = " "
-FreeBSD = " "
-Garuda = "󰛓 "
-Gentoo = " "
-HardenedBSD = "󰞌 "
-Illumos = "󰈸 "
-Kali = " "
-Linux = " "
-Mabox = " "
-Macos = " "
-Manjaro = " "
-Mariner = " "
-MidnightBSD = " "
-Mint = " "
-NetBSD = " "
-NixOS = " "
-Nobara = " "
-OpenBSD = "󰈺 "
-openSUSE = " "
-OracleLinux = "󰌷 "
-Pop = " "
-Raspbian = " "
-Redhat = " "
-RedHatEnterprise = " "
-RockyLinux = " "
-Redox = "󰀘 "
-Solus = "󰠳 "
-SUSE = " "
-Ubuntu = " "
-Unknown = " "
-Void = " "
-Windows = "󰍲 "
 
 # ── Package ─────────────────────────────────────────────
 [package]
