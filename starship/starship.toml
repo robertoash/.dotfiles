@@ -2,7 +2,6 @@
 # Injected by theme_it — uses centralized tokyonight_deep palette
 
 format = """
-${custom.smart_cwd}\
 $python\
 $rust\
 $nodejs\
@@ -16,7 +15,7 @@ $hostname\
 $virtualenv\
 $direnv\
 $time
-$character
+${custom.smart_cwd}$character
 """
 
 palette = "tokyonight_deep"
