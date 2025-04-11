@@ -1,10 +1,23 @@
 # ~/.config/starship.toml
 # Injected by theme_it — uses centralized tokyonight_deep palette
 
-format = '''
-$directory$python$rust$nodejs$git_branch$git_status$fill$cmd_duration$status$username$hostname$virtualenv$direnv$time
+format = """
+${custom.smart_cwd}\
+$python\
+$rust\
+$nodejs\
+$git_branch\
+$git_status\
+$fill\
+$cmd_duration\
+$status\
+$username\
+$hostname\
+$virtualenv\
+$direnv\
+$time
 $character
-'''
+"""
 
 palette = "tokyonight_deep"
 add_newline = true
@@ -58,10 +71,11 @@ accent = "#8bffff"
 style = "fg:accent"
 read_only = " 󰌾"
 read_only_style = "fg:color9"
-truncation_length = 3
+truncation_length = 2
 truncate_to_repo = false
 format = "[$path]($style)"
 home_symbol = "~"
+disabled = true
 
 # ── Git ─────────────────────────────────────────────────
 [git_branch]
@@ -75,6 +89,58 @@ tag_symbol = ' '
 [git_status]
 format = '\[[$all_status$ahead_behind]($style)\]'
 style = "fg:color13"
+
+# ── OS ───────────────────────────────────────────────
+[os]
+disabled = true
+style = "bg:color_orange fg:color_fg0"
+
+[os.symbols]
+Alpaquita = " "
+Alpine = " "
+AlmaLinux = " "
+Amazon = " "
+Android = " "
+Arch = " "
+Artix = " "
+CachyOS = " "
+CentOS = " "
+Debian = " "
+DragonFly = " "
+Emscripten = " "
+EndeavourOS = " "
+Fedora = " "
+FreeBSD = " "
+Garuda = "󰛓 "
+Gentoo = " "
+HardenedBSD = "󰞌 "
+Illumos = "󰈸 "
+Kali = " "
+Linux = " "
+Mabox = " "
+Macos = " "
+Manjaro = " "
+Mariner = " "
+MidnightBSD = " "
+Mint = " "
+NetBSD = " "
+NixOS = " "
+Nobara = " "
+OpenBSD = "󰈺 "
+openSUSE = " "
+OracleLinux = "󰌷 "
+Pop = " "
+Raspbian = " "
+Redhat = " "
+RedHatEnterprise = " "
+RockyLinux = " "
+Redox = "󰀘 "
+Solus = "󰠳 "
+SUSE = " "
+Ubuntu = " "
+Unknown = " "
+Void = " "
+Windows = "󰍲 "
 
 
 # ── Python (includes virtualenv and asdf) ───────────────
@@ -117,6 +183,11 @@ symbol = " "
 style = "fg:color28"
 format = '\[[$symbol($version)]($style)\]'
 disabled = true
+
+# ── GCloud ─────────────────────────────────────────────
+[gcloud]
+format = '\[[$symbol$account(@$domain)(\($region\))]($style)\]'
+disabled = false
 
 # ── Sudo ───────────────────────────────────────────────
 [sudo]
@@ -161,13 +232,15 @@ format = '\[[$time]($style)\]'
 style = "fg:accent"
 
 # ── Custom ───────────────────────────────────────────────
-[gcloud]
-format = '\[[$symbol$account(@$domain)(\($region\))]($style)\]'
-disabled = false
-
-[custom.my_module_name]
-command = "echo 🌮"
+[custom.smart_cwd]
+command = "/home/rash/.config/scripts/starship/smart_path.py"
 when = "true"
-style = "fg:color14"
 format = "[$output]($style) "
+style = "fg:accent"
+
+#[custom.my_module_name]
+#command = "echo 🌮"
+#when = "true"
+#style = "fg:color14"
+#format = "[$output]($style) "
 
