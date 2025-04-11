@@ -6,6 +6,7 @@ alsa-plugins///pacman
 alsa-utils///pacman
 ansible-language-server///pacman
 aquamarine-git///pacman
+aria2///pacman
 asdf-vm///pacman
 atool///pacman
 axel///pacman
@@ -132,6 +133,7 @@ iwd///pacman
 jellyfin-media-player///pacman
 jfsutils///pacman
 jq///pacman
+kitty-git///pacman
 lazygit///pacman
 less///pacman
 lib32-libunwind///pacman
@@ -246,6 +248,7 @@ solaar///pacman
 speedtest++///pacman
 spotify///pacman
 sqls///pacman
+starship///pacman
 steam///pacman
 steam-native-runtime///pacman
 strace///pacman
@@ -287,6 +290,7 @@ urban-cli-bin///pacman
 usb_modeswitch///pacman
 usbutils///pacman
 vi///pacman
+vivaldi///pacman
 vlc///pacman
 vscode-json-languageserver///pacman
 walk///pacman
@@ -357,6 +361,7 @@ isort///pipx
 notesh///pipx
 python-lsp-server///pipx
 shell-gpt///pipx
+theme_it///pipx
 validate-pyproject///pipx
 yt-dlp///pipx
 com.github.tchx84.Flatseal///flatpak
