@@ -1,6 +1,5 @@
-
 # Theme
-include "/home/rash/.config/kitty/themes/tokyonight_deep.conf" # theme_it: injected at 2025-04-13 23:31:59
+include "/home/rash/.config/kitty/themes/tokyonight_deep.conf"
 
 # Shell
 shell                   /usr/bin/zsh

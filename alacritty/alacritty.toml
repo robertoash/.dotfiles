@@ -1,7 +1,5 @@
 [general]
-import = [
-    "/home/rash/.config/alacritty/themes/tokyonight_deep.toml",
-]
+import = ["/home/rash/.config/alacritty/themes/tokyonight_deep.toml"] # theme_it: injected at 2025-04-14 10:40:17 # theme_it: injected at 2025-04-14 10:39:02 # theme_it: injected at 2025-04-13 22:43:44 # theme_it: injected at 2025-04-13 22:00:04
 
 [colors]
 draw_bold_text_with_bright_colors = true

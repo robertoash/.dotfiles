@@ -1,5 +1,5 @@
-# ~/.config/starship.toml
-# Injected by theme_it — uses centralized tokyonight_deep palette
+# theme_it: tokyonight_deep
+# Injected at: 2025-04-13 23:32:45
 
 format = """
 $python\
@@ -26,21 +26,10 @@ symbol = ' '
 
 # ── Theme Palette ───────────────────────────────────────
 [palettes.tokyonight_deep]
+accent = "#8bffff"
 background = "#010111"
-foreground = "#ffffff"
-cursor = "#7dcfff"
-selection_foreground = "#ffffff"
-selection_background = "#515c7e"
 color0 = "#363b54"
 color1 = "#f7768e"
-color2 = "#41a6b5"
-color3 = "#e6c100"
-color4 = "#7aa2f7"
-color5 = "#bb9af7"
-color6 = "#7dcfff"
-color7 = "#b9bdcc"
-color8 = "#454c6d"
-color9 = "#ff5f8f"
 color10 = "#00ffbb"
 color11 = "#ffee00"
 color12 = "#82aaff"
@@ -51,6 +40,7 @@ color16 = "#1d1d2c"
 color17 = "#632e3c"
 color18 = "#1a4760"
 color19 = "#806b00"
+color2 = "#41a6b5"
 color20 = "#354977"
 color21 = "#4a3e6b"
 color22 = "#356177"
@@ -61,9 +51,19 @@ color26 = "#0d2136"
 color27 = "#403600"
 color28 = "#18204a"
 color29 = "#251e4a"
+color3 = "#e6c100"
 color30 = "#19294c"
 color31 = "#25263d"
-accent = "#8bffff"
+color4 = "#7aa2f7"
+color5 = "#bb9af7"
+color6 = "#7dcfff"
+color7 = "#b9bdcc"
+color8 = "#454c6d"
+color9 = "#ff5f8f"
+cursor = "#7dcfff"
+foreground = "#ffffff"
+selection_background = "#515c7e"
+selection_foreground = "#ffffff"
 
 # ── Directory ───────────────────────────────────────────
 [directory]
@@ -86,8 +86,19 @@ symbol = " "
 tag_symbol = ' '
 
 [git_status]
-format = '\[[$all_status$ahead_behind]($style)\]'
+format = '([\[$all_status$ahead_behind\]]($style))'
 style = "fg:color13"
+ignore_submodules = true
+modified = "${count}M"
+untracked = "${count}U"
+staged = "${count}󰐕"
+renamed = "${count}♻"
+deleted = "${count}D"
+stashed = "≡"
+ahead = "${count}⇡"
+behind = "${count}⇣"
+diverged = "⇕${ahead_count}⇡${behind_count}⇣"
+conflicted = "="
 
 # ── OS ───────────────────────────────────────────────
 [os]
