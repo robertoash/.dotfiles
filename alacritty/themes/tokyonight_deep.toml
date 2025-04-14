@@ -1,3 +1,6 @@
+# theme_it: tokyonight_deep
+# Injected at: 2025-04-14 10:40:17
+
 [colors.primary]
 background = "#010111"
 foreground = "#ffffff"
@@ -33,28 +36,28 @@ foreground = "#d0d6e3"
 background = "#0b0c19"
 
 [colors.selection]
-text = "CellForeground"
-background = "#515c7e"
+text = "#ffffff"
+background = "#4a3e6b"
 
 [colors.normal]
-black = "#363b54"
-red = "#f7768e"
-green = "#41a6b5"
-yellow = "#e6c100"
-blue = "#7aa2f7"
+black   = "#363b54"
+red     = "#f7768e"
+green   = "#41a6b5"
+yellow  = "#e6c100"
+blue    = "#7aa2f7"
 magenta = "#bb9af7"
-cyan = "#7dcfff"
-white = "#b9bdcc"
+cyan    = "#7dcfff"
+white   = "#b9bdcc"
 
 [colors.bright]
-black = "#454c6d"
-red = "#ff5f8f"
-green = "#00ffbb"
-yellow = "#ffee00"
-blue = "#82aaff"
+black   = "#454c6d"
+red     = "#ff5f8f"
+green   = "#00ffbb"
+yellow  = "#ffee00"
+blue    = "#82aaff"
 magenta = "#d5a6ff"
-cyan = "#8bffff"
-white = "#d0d6e3"
+cyan    = "#8bffff"
+white   = "#d0d6e3"
 
 [colors.indexed]
 16 = "#1d1d2c"
@@ -67,11 +70,11 @@ white = "#d0d6e3"
 23 = "#494d5e"
 
 [colors.dim]
-black = "#0b0c19"
-red = "#31182b"
-green = "#0d2136"
-yellow = "#403600"
-blue = "#18204a"
+black   = "#0b0c19"
+red     = "#31182b"
+green   = "#0d2136"
+yellow  = "#403600"
+blue    = "#18204a"
 magenta = "#251e4a"
-cyan = "#19294c"
-white = "#25263d"
+cyan    = "#19294c"
+white   = "#25263d"

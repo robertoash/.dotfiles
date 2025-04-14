@@ -1,4 +1,4 @@
-theme = "tokyonight_deep"
+theme = "tokyonight_deep" # theme_it: injected at 2025-04-13 22:39:58 # theme_it: injected at 2025-04-13 22:37:06 # theme_it: injected at 2025-04-13 22:30:55 # theme_it: injected at 2025-04-13 22:09:27
 
 [editor]
 bufferline = "multiple"
