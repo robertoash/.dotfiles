@@ -73,6 +73,8 @@ eval "$(fasd --init auto)"
 source ~/.config/zsh/sources/.zsh_path
 # Hooks
 source ~/.config/zsh/sources/.zsh_hooks
+# Fzf defaults
+source ~/.config/zsh/sources/.zsh_fzf_config.zsh
 # Aliases
 source ~/.config/zsh/sources/.zsh_aliases
 # Plugins
@@ -90,8 +92,6 @@ source ~/.config/broot/launcher/bash/br
 [[ ! -f ~/.config/zsh/sources/.p10k.zsh ]] || source ~/.config/zsh/sources/.p10k.zsh
 # Keybindings
 source ~/.config/zsh/sources/.zsh_keybinds.zsh
-# Fzf defaults
-source ~/.config/zsh/sources/.zsh_fzf_config.zsh
 
 # #################################
 # # Completion Overrides
