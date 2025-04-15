@@ -10,7 +10,6 @@ export NOTE_EDITOR="obsidian"
 export VISUAL="hx"
 
 # GTK
-export GTK_THEME=Colloid-Dark-Nord
 
 export CURRENT_PROJECT_DIR="/home/rash/dev/apps"
 export DOTFILES_DIR="/home/rash/.config"
