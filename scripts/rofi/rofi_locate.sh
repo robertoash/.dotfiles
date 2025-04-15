@@ -16,13 +16,13 @@ handle_action() {
 }
 
 # Locate files and select one using Rofi
-FILE=$(locate home media | rofi -theme ~/.config/rofi/current_theme_single_column.rasi -dmenu -p "Locate File")
+FILE=$(locate home media | rofi -theme ~/.config/rofi/current_theme_single_column.rasi -dmenu -theme-str 'entry { placeholder: "Locate File..."; }')
 
 # If no file is selected, exit
 [ -z "$FILE" ] && exit
 
 # Choose an action for the selected file
-ACTION=$(echo -e "open\ncopy_path\ncopy_file" | rofi -theme ~/.config/rofi/current_theme_single_column.rasi -dmenu -p "Action for $FILE")
+ACTION=$(echo -e "open\ncopy_path\ncopy_file" | rofi -theme ~/.config/rofi/current_theme_single_column.rasi -dmenu -theme-str 'entry { placeholder: "Action for $FILE..."; }')
 
 # If no action is selected, exit
 [ -z "$ACTION" ] && exit

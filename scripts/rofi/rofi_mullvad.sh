@@ -34,7 +34,7 @@ function print_menu() {
 
 # Show rofi
 function start() {
-    print_menu | rofi -dmenu -p "Mullvad: " -i
+    print_menu | rofi -dmenu -i -theme-str 'entry { placeholder: "Mullvad filter..."; }'
 }
 
 # Run it

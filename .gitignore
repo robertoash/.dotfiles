@@ -14,6 +14,7 @@
 !alacritty/
 !bat/
 !dunst/
+!environment.d/
 !espanso/
 !fd/
 !fish/
@@ -54,6 +55,7 @@
 !alacritty/**/*
 !bat/**/*
 !dunst/**/*
+!environment.d/**/*
 !espanso/**/*
 !fd/**/*
 !fish/**/*
@@ -118,3 +120,4 @@ zsh/.oda.zsh
 zsh/.zsh_secrets
 zsh/.zshrc.save
 zsh/*.*tmp*
+.secrets.conf

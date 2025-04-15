@@ -31,7 +31,7 @@ function print_menu() {
 
 # Show rofi
 function start() {
-    print_menu | rofi -dmenu -p "Shutdown: " -i
+    print_menu | rofi -dmenu -i -theme-str 'entry { placeholder: "Shutdown actions..."; }'
 }
 
 # Run it

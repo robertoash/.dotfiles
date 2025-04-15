@@ -103,7 +103,7 @@ process_calculation() {
 # Rofi loop
 while true; do
     # Display the history and capture new input from Rofi
-    input=$(cat "$calc_history_file" | rofi -dmenu -p "Enter calculation:")
+    input=$(cat "$calc_history_file" | rofi -dmenu -theme-str 'entry { placeholder: "Enter calculation..."; }')
 
     # Exit if Rofi is closed
     [[ $? -ne 0 ]] && exit
