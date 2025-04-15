@@ -233,6 +233,11 @@ def launch_and_manage(workspace, name, command, is_master):
 
 def main():
     """Launch all applications sequentially, ensuring correct workspace assignment."""
+
+    # Initial delay
+    time.sleep(0.5)
+
+    # Launch apps in order of workspace
     for workspace, apps in APPS.items():
         for app in apps:
             launch_and_manage(workspace, app["name"], app["command"], app["is_master"])
