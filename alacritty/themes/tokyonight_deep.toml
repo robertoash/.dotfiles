@@ -59,16 +59,6 @@ magenta = "#d5a6ff"
 cyan    = "#8bffff"
 white   = "#d0d6e3"
 
-[colors.indexed]
-16 = "#1d1d2c"
-17 = "#632e3c"
-18 = "#1a4760"
-19 = "#806b00"
-20 = "#354977"
-21 = "#4a3e6b"
-22 = "#356177"
-23 = "#494d5e"
-
 [colors.dim]
 black   = "#0b0c19"
 red     = "#31182b"
