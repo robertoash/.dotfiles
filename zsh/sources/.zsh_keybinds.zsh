@@ -21,6 +21,9 @@ bindkey "^[[1;3D" backward-word
 # Alt + RightArrow -> forward-word
 bindkey "^[[1;3C" forward-word
 
+# Delete until the previous slash or word boundary
+bindkey "^H" backward-kill-to-slash
+
 if (( ${+terminfo[smkx]} )) && (( ${+terminfo[rmkx]} )); then
   function zle-line-init() {
     echoti smkx
