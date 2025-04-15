@@ -10,7 +10,7 @@ choices="🧠 ChatGPT
 📺 CNN
 🧠 Claude"
 
-choice=$(echo "$choices" | rofi -dmenu -i -p "Launch App:")
+choice=$(echo "$choices" | rofi -dmenu -i -theme-str 'entry { placeholder: "Launch App..."; }')
 
 launch() {
   brave --new-window \

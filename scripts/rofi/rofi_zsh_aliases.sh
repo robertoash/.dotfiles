@@ -15,7 +15,7 @@ SELECTED_ALIAS=$(awk '/^alias/ {
     print output
 }' ~/.config/zsh/.zsh_aliases | \
 rofi -theme ~/.config/rofi/current_theme_single_column.rasi \
--dmenu -i -threads 0 -width 100 -p "zsh_aliases:")
+-dmenu -i -threads 0 -width 100 -theme-str 'entry { placeholder: "zsh_aliases filter..."; }')
 
 # If no file is selected, exit
 [ -z "$SELECTED_ALIAS" ] && exit
