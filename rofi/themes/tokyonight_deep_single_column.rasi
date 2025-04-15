@@ -2,7 +2,7 @@
 
 * {
     /* Palette */
-        accent: #8bffff;
+    accent: #8bffff;
     background: #010111;
     color0: #363b54;
     color1: #f7768e;
@@ -49,21 +49,50 @@
 window {
     height: 1000px;
     border: 3px;
-    border-color: @background;
+    border-color: @accent;
+    border-radius: 18px;
     background-color: @background;
     padding: 10px;
 }
 
 mainbox {
+    children: [inputbar, listview];
+    padding: 5px;
+    spacing: 10px;
     background-color: @background;
 }
 
 inputbar {
-    children: [prompt, entry];
+    children: [entry]; /* removed "prompt,"*/
     background-color: @background;
     border-radius: 6px;
+    padding: 10px;
+    margin: 0px;
+
+}
+
+entry {
+    expand: true;
+    width: 100%;
+    padding: 6px 0;
+    text-align: center;
+    vertical-align: 0.5;
+    margin: 0;
+    text-color: @accent;
+    background-color: @background;
+    placeholder-color: @color20;
+    placeholder: "Input...";
+}
+
+listview {
+    border: 0px;
     padding: 0px;
     margin: 0px;
+    columns: 1;
+    lines: 5;
+    background-color: @background;
+    dynamic: true;
+    scrollbar: false;
 }
 
 prompt {
@@ -77,22 +106,6 @@ prompt {
 textbox-prompt-colon {
     expand: false;
     str: ":";
-}
-
-entry {
-    padding: 6px;
-    margin: 0;
-    text-color: @foreground;
-    background-color: @background;
-}
-
-listview {
-    border: 0px;
-    padding: 0px;
-    margin: 0px;
-    columns: 1;
-    lines: 5;
-    background-color: @background;
 }
 
 element {
