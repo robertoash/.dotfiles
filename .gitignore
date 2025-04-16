@@ -89,18 +89,16 @@
 !zellij/**/*
 !zsh/**/*
 
-# Include the systemd and systemd/user directory structure but exclude all files by default
+# Include the systemd subdirectories but exclude all files by default
 !systemd/
 !systemd/user/
-systemd/user/*
+!systemd/user/_mqtt/*
+!systemd/user/_dunst/*
+!systemd/user/_waybar/*
 
 # Explicitly include
 !qutebrowser/config.py
-!systemd/user/linux-webcam-status.service
-!systemd/user/mqtt_listener.service
-!systemd/user/mqtt_reports.service
-!systemd/user/dunst-reload.service
-!systemd/user/dunst-reload.path
+!systemd/user/deploy_flat_modules.sh
 !systemd/user/espanso.service
 
 # ... but not these.
