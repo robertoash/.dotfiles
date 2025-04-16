@@ -13,6 +13,7 @@ vars = {
 
 # Define common arguments
 WAYLAND_ARGS = "--enable-features=UseOzonePlatform --ozone-platform=wayland"
+NEW_WINDOW_ARGS = f"--new-window {WAYLAND_ARGS}"
 CURSOR_CURRENT_PROJECT_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
     "Dev_cloud/cursor/apps.code-workspace"
@@ -21,26 +22,25 @@ CURSOR_CONFIG_WORKSPACE = (
     "/home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/"
     "Dev_cloud/cursor/dotfiles.code-workspace"
 )
-NEW_WINDOW_ARGS = f"--new-window {WAYLAND_ARGS}"
 
 # Define applications with name placeholders
 APPS = {
     "1": [
         {
-            "name": "brave_personal",
-            "command": f"brave {NEW_WINDOW_ARGS} --profile-directory='Default'",
+            "name": "browser_personal",
+            "command": "vivaldi",
             "is_master": True,
         },
         {
-            "name": "brave_terminal",
+            "name": "browser_terminal",
             "command": "kitty --title ___name___",
             "is_master": False,
         },
     ],
     "2": [
         {
-            "name": "brave_jobhunt",
-            "command": f"brave {NEW_WINDOW_ARGS} --profile-directory='Profile 1'",
+            "name": "browser_jobhunt",
+            "command": "vivaldi_jobhunt",
             "is_master": True,
         },
     ],
@@ -93,10 +93,7 @@ APPS = {
     "11": [
         {
             "name": "gpt_zen",
-            "command": (
-                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
-                "--app=https://chatgpt.com/"
-            ),
+            "command": "vivaldi_app --app=https://chatgpt.com/",
             "is_master": True,
         },
         {
@@ -125,10 +122,7 @@ APPS = {
         },
         {
             "name": "perplexity_zen",
-            "command": (
-                f"brave {NEW_WINDOW_ARGS} --profile-directory='AppProfile' "
-                "--app=https://perplexity.ai"
-            ),
+            "command": "vivaldi_app --app=https://perplexity.ai",
             "is_master": False,
         },
     ],

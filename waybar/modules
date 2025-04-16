@@ -280,9 +280,9 @@
         "offscreen-css" : true,
         "offscreen-css-text": "(inactive)",
         "rewrite": {
-            "Vivaldi-stable > (.*)": "  > $1",
+            "vivaldi-stable > (.*)": "  > $1",
             "code-insiders-url-handler > (.*) - (.*) \\(Workspace\\) - .*": "󰨞 > $1 - $2",
-            "Alacritty > (.*)": "alacritty > $1"
+            "Alacritty > (.*)": "alacritty > $1",
         }
     },
 

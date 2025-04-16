@@ -13,11 +13,7 @@ choices="🧠 ChatGPT
 choice=$(echo "$choices" | rofi -dmenu -i -theme-str 'entry { placeholder: "Launch App..."; }')
 
 launch() {
-  brave --new-window \
-    --enable-features=UseOzonePlatform \
-    --ozone-platform=wayland \
-    --profile-directory="AppProfile" \
-    --app="$1"
+  vivaldi_app --app="$1"
 }
 
 trigger() {
