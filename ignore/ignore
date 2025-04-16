@@ -57,6 +57,7 @@ obsidian/vault/.obsidian/
 .config/scripts/_logs/
 .config/spotify/
 .config/ticktick/
+.config/vivaldi/
 .config/waybar/config_alts/jakoolit/
 .config/yay/
 .config/zsh/plugins/
