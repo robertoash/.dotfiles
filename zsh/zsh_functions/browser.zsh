@@ -1,12 +1,12 @@
 b_zen() {
   if [ -z "$1" ]; then
-      brave --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url)
+      vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --app=$(bk_o --url)
       echo "Opening Buku Fuzzy Search"
   else
     case $1 in
       --help)
         echo "Usage: b_zen [OPTION] [INDEX/STRING/URL]"
-        echo "Open a URL or a Buku bookmark in Brave Browser Zen Mode."
+        echo "Open a URL or a Buku bookmark in vivaldi Browser Zen Mode."
         echo
         echo "Options:"
         echo "  --help    Display this help message."
@@ -18,7 +18,7 @@ b_zen() {
         echo "  - With a string: Fuzzy searches Buku bookmarks and opens the first match for the string in Zen Mode."
         echo
         echo "Usage with --web:"
-        echo "  - With a URL (http:// or https://): Opens the specified URL in Zen Brave."
+        echo "  - With a URL (http:// or https://): Opens the specified URL in Zen vivaldi."
         echo "  - With a string (not a URL): Treats the string as a URL, prefixes (https://) and opens it."
         echo
         echo "Examples:"
@@ -34,24 +34,24 @@ b_zen() {
         shift
         case $1 in
           https://*|http://*)
-            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="$1"
+            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="$1"
             echo "Opening $1"
             return
             ;;
           *)
-            brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://$1"
+            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://$1"
             echo "Opening https://$1"
             return
             ;;
         esac
         ;;
       [0-9]*)
-        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
+        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
         echo "Opening Buku index $1"
         return
         ;;
       *)
-        brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
+        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
         echo "Opening Buku first match for string '$1'"
         return
         ;;
@@ -60,6 +60,6 @@ b_zen() {
 }
 
 no_paywall() {
-  echo "Opening https://www.removepaywall.com/search?url=$1 on Brave"
-  brave --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://www.removepaywall.com/search?url=$1"
+  echo "Opening https://www.removepaywall.com/search?url=$1 on vivaldi"
+  vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://www.removepaywall.com/search?url=$1"
 }

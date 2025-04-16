@@ -37,12 +37,12 @@ def main():
             if current_db == "rashp.db":
                 subprocess.run(["mullvad-browser"] + sys.argv[1:])
             else:
-                original_browser = os.environ.get("ORIGINAL_BROWSER", "zen-browser")
+                original_browser = os.environ.get("ORIGINAL_BROWSER", "vivaldi")
                 subprocess.run([original_browser] + sys.argv[1:])
         else:
             open_local_file(sys.argv[1])
     else:
-        original_browser = os.environ.get("ORIGINAL_BROWSER", "zen-browser")
+        original_browser = os.environ.get("ORIGINAL_BROWSER", "vivaldi")
         subprocess.run([original_browser] + sys.argv[1:])
 
 

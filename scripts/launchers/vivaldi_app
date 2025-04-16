@@ -1,0 +1,8 @@
+# ~/.local/bin/vivaldi-app
+#!/bin/bash
+exec /usr/bin/vivaldi \
+  --ozone-platform=wayland \
+  --enable-features=UseOzonePlatform \
+  --profile-directory="app_profile" \
+  --new-window \
+  "$@"

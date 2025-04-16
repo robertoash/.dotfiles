@@ -5,7 +5,7 @@ import sys
 import time
 
 # List of apps to gracefully quit
-APPS_TO_QUIT = ["brave"]
+APPS_TO_QUIT = ["vivaldi"]
 
 # How long to wait (in seconds) for apps to close gracefully
 WAIT_SECONDS = 0.5
