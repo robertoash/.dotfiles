@@ -35,5 +35,10 @@ matches:
         type: shell
         params:
           cmd: "echo 'Hello from your shell'"
+  - trigger: ":linkedin"
+    replace: "https://www.linkedin.com/in/robertoash/"
+  - trigger: ":github"
+    replace: "https://github.com/robertoash"
+
 
   # And much more! For more information, visit the docs: https://espanso.org/docs/
