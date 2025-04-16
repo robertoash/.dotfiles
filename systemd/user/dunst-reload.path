@@ -1,8 +1,0 @@
-[Unit]
-Description=Watch dunst.config for changes
-
-[Path]
-PathChanged=/home/rash/.config/dunst/dunst.config
-
-[Install]
-WantedBy=default.target
