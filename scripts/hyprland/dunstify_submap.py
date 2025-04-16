@@ -10,14 +10,36 @@ indent_level = 1
 indent_size = 4
 
 
-def parse_submap(path: Path):
-    bind_line = re.compile(r"^bind\s*=\s*(.+?),\s*(.+?),\s*exec,.*?#\s*(\{.*\})$")
-    submap_meta_re = re.compile(r"^submap\s*=\s*.+?#\s*(\{.*\})$")
+def reset_submap():
+    subprocess.Popen(["hyprcrl", "dispatch", "submap", "reset"])
 
-    entries = []
-    meta = {}
+
+def validate_meta(meta):
     meta_required_keys = ["title", "replace_id", "urgency", "time"]
 
+    # Ensure required fields are present
+    missing = [k for k in meta_required_keys if k not in meta]
+    if missing:
+        subprocess.run(
+            [
+                "dunstify",
+                "-r",
+                "9999",
+                "-u",
+                "normal",
+                "-a",
+                "submap-parser",
+                "⚠️ Missing submap metadata",
+                f"Missing: {', '.join(missing)}",
+            ]
+        )
+        exit(1)
+    else:
+        print(f"Meta: {meta}") if DEBUG else None
+    return
+
+
+def extract_meta(path: Path, meta: dict):
     # Extract JSON metadata from submap line
     for line in path.read_text().splitlines():
         if line.strip().startswith("submap = "):
@@ -39,25 +61,25 @@ def parse_submap(path: Path):
                             f"{e.msg}",
                         ]
                     )
+                    print(f"Error: {e}") if DEBUG else None
                     exit(1)
 
-    # Ensure required fields are present
-    missing = [k for k in meta_required_keys if k not in meta]
-    if missing:
-        subprocess.run(
-            [
-                "dunstify",
-                "-r",
-                "9999",
-                "-u",
-                "normal",
-                "-a",
-                "submap-parser",
-                "⚠️ Missing submap metadata",
-                f"Missing: {', '.join(missing)}",
-            ]
-        )
-        exit(1)
+    # Compose meta title with optional icon
+    meta["title"] = (
+        f'{meta["icon"]} {meta["title"]}' if "icon" in meta else meta["title"]
+    )
+
+    # Add action to meta
+    meta["action"] = (
+        meta["action"] if "action" in meta else "submap-reset, Reset submap"
+    )
+
+    return meta
+
+
+def parse_submap_entries(path: Path, entries: list, meta: dict):
+    bind_line = re.compile(r"^bind\s*=\s*(.+?),\s*(.+?),\s*exec,.*?#\s*(\{.*\})$")
+    submap_meta_re = re.compile(r"^submap\s*=\s*.+?#\s*(\{.*\})$")
 
     with path.open() as f:
         for line in f:
@@ -91,10 +113,16 @@ def parse_submap(path: Path):
                     print(f"Error: {e}") if DEBUG else None
                     continue
 
-    # Compose meta title with optional icon
-    meta["title"] = (
-        f'{meta["icon"]} {meta["title"]}' if "icon" in meta else meta["title"]
-    )
+    return entries, meta
+
+
+def parse_submap(path: Path):
+    entries = []
+    meta = {}
+
+    meta = extract_meta(path, meta)
+    validate_meta(meta)
+    entries, meta = parse_submap_entries(path, entries, meta)
 
     return entries, meta
 
@@ -115,13 +143,18 @@ def launch_dunstify(entries, meta):
         meta["urgency"],
         "-t",
         str(meta["time"]),
+        "-A",
+        meta["action"],
     ]
     print(f"Command: {command}") if DEBUG else None
     try:
-        subprocess.run(command)
+        result = subprocess.run(command, capture_output=True, text=True, timeout=30)
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}") if DEBUG else None
         exit(1)
+
+    if result.stdout.strip() == "submap-reset":
+        reset_submap()
 
 
 if __name__ == "__main__":
