@@ -1,0 +1,6 @@
+[Unit]
+Description=Reload Dunst using custom config path
+
+[Service]
+Type=oneshot
+ExecStart=/home/rash/.config/scripts/hyprland/reload_dunst.sh
