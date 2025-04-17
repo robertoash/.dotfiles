@@ -1,0 +1,47 @@
+# tokyonight_deep - Centralized Color Palette
+
+background = "#010111"
+foreground = "#ffffff"
+cursor = "#7dcfff"
+selection_foreground = "#ffffff"
+selection_background = "#515c7e"
+
+# Base colors (previous bright colors)
+color0 = "#363b54"
+color1 = "#f7768e"
+color2 = "#41a6b5"
+color3 = "#e6c100"
+color4 = "#7aa2f7"
+color5 = "#bb9af7"
+color6 = "#7dcfff"
+color7 = "#b9bdcc"
+
+# Bright variants (new neon colors)
+color8  = "#454c6d"
+color9  = "#ff5f8f"
+color10 = "#00ffbb"
+color11 = "#ffee00"
+color12 = "#82aaff"
+color13 = "#d5a6ff"
+color14 = "#8bffff"
+color15 = "#d0d6e3"
+
+# Dark variants
+color16 = "#1d1d2c"
+color17 = "#632e3c"
+color18 = "#1a4760"
+color19 = "#806b00"
+color20 = "#354977"
+color21 = "#4a3e6b"
+color22 = "#356177"
+color23 = "#494d5e"
+
+# Really dark variants
+color24 = "#0b0c19"
+color25 = "#31182b"
+color26 = "#0d2136"
+color27 = "#403600"
+color28 = "#18204a"
+color29 = "#251e4a"
+color30 = "#19294c"
+color31 = "#25263d"
