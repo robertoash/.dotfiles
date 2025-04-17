@@ -5,7 +5,7 @@ import subprocess
 import sys
 from textwrap import dedent
 
-SEPARATOR = "///"
+SEPARATOR = "###"
 
 MANAGERS = {
     "pacman": {
@@ -23,6 +23,14 @@ MANAGERS = {
     "flatpak": {
         "retrieve": ["sh", "-c", "flatpak list --app --columns=application"],
         "restore": lambda pkg: ["flatpak", "install", "--noninteractive", pkg],
+    },
+    "ya": {
+        "retrieve": [
+            "sh",
+            "-c",
+            "ya pack -l | grep / | awk '{gsub(/\\s+\\([^)]+\\)/,\"\"); print}' | awk '{$1=$1};1'",
+        ],
+        "restore": lambda pkg: ["ya", "pack", "install", pkg],
     },
 }
 

@@ -1,43 +1,52 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
 import argparse
 import logging
-import os
 import subprocess
 import sys
+from pathlib import Path
 
 from _utils import logging_utils
 
 logging_utils.configure_logging()
 
 # Define the locations
-home_dir = os.path.expanduser("~")
-local_snapshot_dir = os.path.join(home_dir, ".local/.snapshots")
-external_drive_dir = "/mnt/.snapshots"
+home_dir = Path("/home/rash/")
+local_snapshot_dir = home_dir / ".local" / ".snapshots"
+external_drive_dir = Path("/mnt/.snapshots")
 
 
 def create_snapshot(snapshot_name):
-    # Create a read-only local snapshot
-    subprocess.run(
-        [
-            "sudo",
-            "btrfs",
-            "subvolume",
-            "snapshot",
-            "-r",
-            "/",
-            f"{local_snapshot_dir}/{snapshot_name}",
-        ],
-        check=True,
-    )
-    logging.info(
-        f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}"
-    )
-    print(f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}")
+    try:
+        # Create a read-only local snapshot
+        subprocess.run(
+            [
+                "sudo",
+                "btrfs",
+                "subvolume",
+                "snapshot",
+                "-r",
+                "/",
+                str(local_snapshot_dir.joinpath(snapshot_name)),
+            ],
+            check=True,
+        )
+        logging.info(
+            f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}"
+        )
+        print(f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error creating snapshot: {e}")
+        print(f"Error creating snapshot: {e}", file=sys.stderr)
+        sys.exit(1)
 
 
 def send_snapshot(snapshot_name):
     # Ensure the snapshot directory exists and is a Btrfs filesystem
-    if not os.path.isdir(f"{local_snapshot_dir}/{snapshot_name}"):
+    if (
+        not local_snapshot_dir.joinpath(snapshot_name).is_dir()
+        or not local_snapshot_dir.joinpath(snapshot_name).exists()
+    ):
         logging.error(
             f"Snapshot directory {local_snapshot_dir}/{snapshot_name} does not exist."
         )
@@ -46,7 +55,12 @@ def send_snapshot(snapshot_name):
         )
         return
 
-    send_command = ["sudo", "btrfs", "send", f"{local_snapshot_dir}/{snapshot_name}"]
+    send_command = [
+        "sudo",
+        "btrfs",
+        "send",
+        str(local_snapshot_dir.joinpath(snapshot_name)),
+    ]
     receive_command = ["sudo", "btrfs", "receive", external_drive_dir]
 
     # Open a subprocess for 'btrfs send'
@@ -63,7 +77,7 @@ def send_snapshot(snapshot_name):
 def receive_snapshot(snapshot_name):
     # Receive the snapshot from the external drive
     with subprocess.Popen(
-        ["sudo", "btrfs", "send", os.path.join(external_drive_dir, snapshot_name)],
+        ["sudo", "btrfs", "send", external_drive_dir.joinpath(snapshot_name)],
         stdout=subprocess.PIPE,
     ) as send_proc:
         subprocess.run(
