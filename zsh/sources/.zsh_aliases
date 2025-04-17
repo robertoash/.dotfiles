@@ -49,6 +49,13 @@ alias bk_p="switch_buku_db rashp"
 alias bk_r="switch_buku_db rash"
 alias bk_s="switch_buku_db"
 
+### SGPT
+alias gs="sgpt -s --no-interaction"
+alias gsi="sgpt -s --interaction"
+alias gd="sgpt -d"
+alias gtc="sgpt -c"
+
+
 ## Docker
 alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
 alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
