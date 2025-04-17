@@ -4,7 +4,7 @@ import subprocess
 import sys
 from time import sleep
 
-corner_threshold = 50  # px
+CORNER_THRESHOLD = 1  # px
 
 
 def run(cmd):
@@ -50,9 +50,10 @@ def main():
         print("❌ Only works with floating windows.")
         sys.exit(1)
 
-    window_width = win_info["size"][0]
-    window_height = win_info["size"][1]
-    monitor_index = win_info["monitor"]
+    window_width = win_info.get("size", [0, 0])[0]
+    window_height = win_info.get("size", [0, 0])[1]
+    monitor_index = win_info.get("monitor", None)
+    was_pinned = win_info.get("pinned", False)
 
     monitors = get_monitor_layout()
 
@@ -109,18 +110,25 @@ def main():
     )
 
     # Final position: bottom-right corner of target monitor
-    target_x = target_monitor["x"] + mon_logical_width - window_width - corner_threshold
+    target_x = target_monitor["x"] + mon_logical_width - window_width - CORNER_THRESHOLD
     target_y = (
-        target_monitor["y"] + mon_logical_height - window_height - corner_threshold
+        target_monitor["y"] + mon_logical_height - window_height - CORNER_THRESHOLD
     )
 
     run(f"hyprctl dispatch moveactive exact {target_x} {target_y}")
-    sleep(0.1)
-    run("hyprctl dispatch togglefloating")
-    sleep(0.1)
-    run("hyprctl dispatch togglefloating")
-    sleep(0.1)
-    run(f"hyprctl dispatch moveactive exact {target_x} {target_y}")
+    new_win_info = get_active_window_info()
+    new_monitor_index = new_win_info.get("monitor", None)
+    new_win_floating = new_win_info.get("floating", False)
+    sleep(0.3)
+    if new_monitor_index == monitor_index and new_win_floating:
+        run("hyprctl dispatch settiled")
+        run("hyprctl dispatch setfloating")
+        run(f"hyprctl dispatch moveactive exact {target_x} {target_y}")
+    new_win_info = get_active_window_info()
+    is_pinned = new_win_info.get("pinned", False)
+    print("🔄 Pinned:", was_pinned, "→", is_pinned)
+    if was_pinned != is_pinned:
+        run("hyprctl dispatch pin")
 
 
 if __name__ == "__main__":
