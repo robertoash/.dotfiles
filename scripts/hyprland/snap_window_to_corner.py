@@ -3,6 +3,8 @@ import json
 import subprocess
 import sys
 
+CORNER_THRESHOLD = 50  # px
+
 
 # Utility functions
 def run_command(command):
@@ -31,6 +33,14 @@ def get_active_window_info():
     return run_command_json("hyprctl activewindow -j") or {}
 
 
+def get_clients():
+    return run_command_json("hyprctl clients -j") or []
+
+
+def get_window_by_address(address):
+    return next((c for c in get_clients() if c["address"] == address), None)
+
+
 def get_window_geometry(window_info):
     return {
         "x": window_info["at"][0],
@@ -45,68 +55,69 @@ def move_window_to_corner(corner):
         run_command(f"hyprctl dispatch movewindow {direction}")
 
 
+def infer_corner():
+    geometry = get_window_geometry(window_info)
+    click_x, click_y = get_cursor_position()
+
+    if (
+        abs(click_x - geometry["x"]) < CORNER_THRESHOLD
+        and abs(click_y - geometry["y"]) < CORNER_THRESHOLD
+    ):
+        corner = ["u", "l"]
+    elif (
+        abs(click_x - (geometry["x"] + geometry["width"])) < CORNER_THRESHOLD
+        and abs(click_y - geometry["y"]) < CORNER_THRESHOLD
+    ):
+        corner = ["u", "r"]
+    elif (
+        abs(click_x - geometry["x"]) < CORNER_THRESHOLD
+        and abs(click_y - (geometry["y"] + geometry["height"])) < CORNER_THRESHOLD
+    ):
+        corner = ["d", "l"]
+    elif (
+        abs(click_x - (geometry["x"] + geometry["width"])) < CORNER_THRESHOLD
+        and abs(click_y - (geometry["y"] + geometry["height"])) < CORNER_THRESHOLD
+    ):
+        corner = ["d", "r"]
+    else:
+        sys.exit(0)
+
+    return corner
+
+
 # Main logic
 if __name__ == "__main__":
-    window_info = get_active_window_info()
+    args = sys.argv[1:]
+    forced_address = None
+    corner = None
 
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--lower-left":
-            corner = ["d", "l"]
-            move_window_to_corner(corner)
-            sys.exit(0)
-        elif sys.argv[1] == "--upper-right":
-            corner = ["u", "r"]
-            move_window_to_corner(corner)
-            sys.exit(0)
-        elif sys.argv[1] == "--upper-left":
-            corner = ["u", "l"]
-            move_window_to_corner(corner)
-            sys.exit(0)
-        # default case: sys.argv[1] == "--lower-right":
-        else:
-            corner = ["d", "r"]
-            move_window_to_corner(corner)
-            sys.exit(0)
+    for i, arg in enumerate(args):
+        if arg == "--address" and i + 1 < len(args):
+            forced_address = args[i + 1]
+        elif arg in ("--lower-right", "--lower-left", "--upper-right", "--upper-left"):
+            corner_map = {
+                "--lower-left": ["d", "l"],
+                "--upper-right": ["u", "r"],
+                "--upper-left": ["u", "l"],
+                "--lower-right": ["d", "r"],
+            }
+            corner = corner_map[arg]
+
+    window_info = (
+        get_window_by_address(forced_address)
+        if forced_address
+        else get_active_window_info()
+    )
+    if not window_info:
+        sys.exit("❌ Could not find target window.")
+
+    if not window_info.get("floating"):
+        sys.exit("🚫 Window is not floating. Exiting.")
+
+    # Corner via argument, or infer from cursor position
+    if corner:
+        move_window_to_corner(corner)
     else:
-        if window_info:
-            # Check if the window is floating
-            if not window_info.get("floating"):
-                sys.exit("Window is not floating. Exiting without snapping.")
+        corner = infer_corner()
 
-            # Get window geometry and cursor position
-            geometry = get_window_geometry(window_info)
-            click_x, click_y = get_cursor_position()
-            window_center_x = geometry["x"] + geometry["width"] // 2
-            window_center_y = geometry["y"] + geometry["height"] // 2
-
-            # Determine the boundary for corners (you can adjust this threshold)
-            corner_threshold = 50  # Distance from corner to snap
-
-            # Check if click is in the corner areas
-            if (
-                abs(click_x - geometry["x"]) < corner_threshold
-                and abs(click_y - geometry["y"]) < corner_threshold
-            ):
-                corner = ["u", "l"]
-            elif (
-                abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
-                and abs(click_y - geometry["y"]) < corner_threshold
-            ):
-                corner = ["u", "r"]
-            elif (
-                abs(click_x - geometry["x"]) < corner_threshold
-                and abs(click_y - (geometry["y"] + geometry["height"]))
-                < corner_threshold
-            ):
-                corner = ["d", "l"]
-            elif (
-                abs(click_x - (geometry["x"] + geometry["width"])) < corner_threshold
-                and abs(click_y - (geometry["y"] + geometry["height"]))
-                < corner_threshold
-            ):
-                corner = ["d", "r"]
-            else:
-                sys.exit(0)
-
-            # Snap to the determined corner
-            move_window_to_corner(corner)
+        move_window_to_corner(corner)
