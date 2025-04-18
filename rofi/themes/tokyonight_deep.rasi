@@ -46,61 +46,39 @@
     font: "GeistMono NF 13";
 }
 
+element-text, element-icon , mode-switcher {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
 window {
     height: 360px;
     border: 3px;
     border-color: @accent;
     border-radius: 18px;
     background-color: @background;
-    padding: 10px;
 }
 
 mainbox {
-    children: [inputbar, listview];
-    padding: 5px;
-    spacing: 10px;
+    padding: 0px;
+    spacing: 0px;
     background-color: @background;
 }
 
 inputbar {
-    children: [entry]; /* removed "prompt,"*/
+    children: [entry];
     background-color: @background;
-    border-radius: 6px;
-    padding: 10px;
-    margin: 0px;
-
-}
-
-entry {
-    expand: true;
-    width: 100%;
-    padding: 6px 0;
-    text-align: center;
-    vertical-align: 0.5;
-    margin: 0;
-    text-color: @accent;
-    background-color: @background;
-    placeholder-color: @color20;
-    placeholder: "Input...";
-}
-
-listview {
-    border: 0px;
-    padding: 0px;
-    margin: 0px;
-    columns: 4;
-    lines: 5;
-    background-color: @background;
-    dynamic: true;
-    scrollbar: false;
+    border-radius: 5px;
+    padding: 2px;
+    margin: 0px 0px 0px 10px;
 }
 
 prompt {
-    background-color: @color0;
-    padding: 6px 10px;
+    background-color: @color21;
     text-color: @background;
-    border-radius: 5px;
-    margin: 0 5px 0 0;
+    padding: 6px;
+    border-radius: 3px;
+    margin: 20px 0px 0px 20px;
 }
 
 textbox-prompt-colon {
@@ -108,11 +86,41 @@ textbox-prompt-colon {
     str: ":";
 }
 
+entry {
+    padding: 6px;
+    margin: 10px 0px 0px 10px;
+    text-color: @accent;
+    background-color: @background;
+    placeholder-color: @color20;
+    placeholder: "Input...";
+}
+
+/* This is what shows history in rofimoji */
+message {
+    background-color: @background;
+    margin: 0px 0px 0px 0px;
+    padding: 2px 20px 2px 0px;
+    border-radius: 5px;
+}
+
+listview {
+    border: 0px 0px 0px;
+    padding: 6px 0px 0px;
+    margin: 0px 20px 5px 20px;
+    columns: 4;
+    lines: 5;
+    background-color: @background;
+}
+
 element {
-    padding: 8px 10px;
-    border-radius: 4px;
     background-color: @background;
     text-color: @foreground;
+    border-radius: 5px;
+    padding: 10px 20px 10px 20px;
+}
+
+element-text {
+    font: "GeistMono NF 13";
 }
 
 element-icon {
@@ -122,11 +130,6 @@ element-icon {
 element selected {
     background-color: @accent;
     text-color: @background;
-}
-
-element-text, element-icon, mode-switcher {
-    background-color: inherit;
-    text-color: inherit;
 }
 
 mode-switcher {
@@ -139,7 +142,6 @@ button {
     text-color: @color8;
     vertical-align: 0.5;
     horizontal-align: 0.5;
-    border-radius: 5px;
 }
 
 button selected {
@@ -147,16 +149,30 @@ button selected {
     text-color: @color4;
 }
 
-message {
-    background-color: @background;
-    margin: 0px;
-    padding: 0px;
-    border-radius: 5px;
-}
-
 textbox {
     padding: 6px;
-    margin: 20px 0px 0px 20px;
+    margin: 0px 0px 0px 20px;
     text-color: @color4;
     background-color: @background;
 }
+
+/*
+Section | What it draws
+* | Sets global styles: font, colors, padding, etc.
+window | The entire Rofi window — border, background, padding
+mainbox | Vertical stack of all major sections (inputbar, message, list)
+inputbar | Container for the prompt + entry
+prompt | Optional label to the left/top of input (e.g. "Search:")
+entry | Where you type input
+textbox-prompt-colon | The little colon : that appears after prompt (can disable)
+message | Used for system messages or — in Rofimoji — "recently used" emojis
+textbox | General-purpose text block (Rofimoji sometimes uses this instead of message)
+listview | Container for the emoji grid or result list
+element | Each individual row/item (e.g., an emoji or app entry)
+element-icon | The emoji or icon part of an element
+element-text | The label/description next to an icon
+element selected | When the user is hovering or navigating to an item
+mode-switcher | Optional — shows tabs/modes if using multiple input modes
+button | Used for mode switcher or optional buttons (rare in Rofimoji)
+message, textbox | Can both be used for dynamic info blocks (e.g., emoji history)
+*/
