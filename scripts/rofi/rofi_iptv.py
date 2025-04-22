@@ -140,7 +140,7 @@ def handle_favorite_names(channels):
     for ch in channels:
         name = ch["name"]
         if ch.get("favorite", False):
-            display_name = f"⭐ FAVORITE - {name}"
+            display_name = f"⭐ FAV /// {name}"
         else:
             display_name = f"🔷 {name}"
         ch["display_name"] = display_name
@@ -471,15 +471,15 @@ def sync_json_to_upstream():
         return
 
     upstream_channels = load_channels(ALL_CH_SOURCE_JSON_PATH)
-    if ALL_CH_INPUT_JSON_PATH.exists():
-        local_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
+    if ALL_CH_OUTPUT_JSON_PATH.exists():
+        local_channels = load_channels(ALL_CH_OUTPUT_JSON_PATH)
     else:
         local_channels = []
 
     joined_channels = left_join_metadata(
         local_channels, upstream_channels, fields=["favorite", "logo_local"]
     )
-    save_json(ALL_CH_INPUT_JSON_PATH, joined_channels, backup=True)
+    save_json(ALL_CH_OUTPUT_JSON_PATH, joined_channels, backup=True)
     split_and_save_cat_jsons(joined_channels)
 
     for field in FIELDS_TO_LEFT_JOIN:
@@ -528,28 +528,6 @@ def safe_load_channels(path, category=None):
     if category:
         channels = [ch for ch in channels if ch.get("category") == category]
     return channels
-
-
-def rofi_select(channels):
-    logging.debug("[DEBUG] Opening Rofi menu")
-    menu = "\n".join(ch["display_name"] for ch in channels)
-    try:
-        selected = subprocess.run(
-            ["rofi", "-dmenu", "-i", "-p", "Select IPTV Channel"],
-            input=menu,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        display_name = selected.stdout.strip()
-        url = next(
-            (ch["url"] for ch in channels if ch["display_name"] == display_name), None
-        )
-        logging.debug(f"[DEBUG] User selected: {display_name}")
-        return url
-    except subprocess.CalledProcessError:
-        logging.debug("[DEBUG] User cancelled selection")
-        return None
 
 
 def handle_sync_json():
@@ -631,6 +609,49 @@ def launch_mpv(selected):
         subprocess.run(["dunstify", "⚠️ MPV Error", f"Failed to launch stream: {e}"])
 
 
+def rofi_select(channels):
+    logging.debug("[DEBUG] Opening Rofi menu with favorite toggle support")
+
+    menu = "\n".join(ch["display_name"] for ch in channels)
+
+    try:
+        result = subprocess.run(
+            [
+                "rofi",
+                "-dmenu",
+                "-i",
+                "-p",
+                "Select IPTV Channel",
+                "-kb-custom-10",
+                "Alt+0",
+            ],
+            input=menu,
+            capture_output=True,
+            text=True,
+        )
+
+        display_name = result.stdout.strip()
+        if not display_name:
+            logging.debug("[DEBUG] No selection made")
+            return None
+
+        print(result.returncode)
+
+        if result.returncode == 19:
+            logging.debug(f"[DEBUG] Favorite toggle requested: {display_name}")
+            return ("favorite", display_name)
+        elif result.returncode == 0:
+            logging.debug(f"[DEBUG] Channel selected: {display_name}")
+            return ("launch", display_name)
+        else:
+            logging.debug("[DEBUG] Rofi selection canceled")
+            return None
+
+    except subprocess.CalledProcessError as e:
+        logging.error(f"[ERROR] Rofi failed: {e}")
+        return None
+
+
 def handle_selected_channel(selected, sorted_and_favs):
     """Handle the selected channel by launching MPV and showing notifications."""
     logging.debug(f"[DEBUG] User selected: {selected}")
@@ -657,6 +678,13 @@ def handle_selected_channel(selected, sorted_and_favs):
     launch_mpv(selected)
 
     logging.debug("[DEBUG] MPV exited, script ending")
+
+
+def handle_favorite_toggle(selected_channel, sorted_and_favs):
+    toggle_favorite(selected_channel)
+    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
+    split_and_save_cat_jsons(sorted_and_favs)
+    notify("⭐ Favorite toggled", selected_channel["name"], timeout=2000)
 
 
 # ========== MAIN ==========
@@ -735,16 +763,32 @@ def main():
         sys.exit(0)
     logging.debug(f"[DEBUG] Category selected: {args.category}")
 
-    sorted_and_favs = filter_for_show(args.category)
+    while True:
+        sorted_and_favs = filter_for_show(args.category)
+        logging.debug("[DEBUG] Showing user menu")
+        selected = rofi_select(sorted_and_favs)
 
-    logging.debug("[DEBUG] Showing user menu")
-    selected = rofi_select(sorted_and_favs)
+        if not selected:
+            logging.debug("[DEBUG] No channel selected, exiting")
+            break
 
-    if selected:
-        handle_selected_channel(selected, sorted_and_favs)
-        sys.exit(0)
-    else:
-        logging.debug("[DEBUG] No channel selected, exiting")
+        action, selection = selected
+
+        selected_channel = next(
+            (ch for ch in sorted_and_favs if ch["display_name"] == selection), None
+        )
+
+        if not selected_channel:
+            logging.warning(f"[WARN] Selected display name not found: {selection}")
+            break
+
+        if action == "favorite":
+            handle_favorite_toggle(selected_channel, sorted_and_favs)
+            continue  # 🔁 Reopen menu after toggle
+
+        elif action == "launch":
+            handle_selected_channel(selected_channel["url"], sorted_and_favs)
+            break  # ✅ Launch ends session
 
 
 if __name__ == "__main__":
