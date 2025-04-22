@@ -10,3 +10,10 @@ export PATH="$ASDF_DATA_DIR/shims:$PATH"
 
 # Add stuff to python path
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
+
+# Add nodejs to path
+if command -v npm >/dev/null 2>&1; then
+  export NPM_PREFIX=$(npm config get prefix)
+  export PATH="$NPM_PREFIX/bin:$PATH"
+fi
+
