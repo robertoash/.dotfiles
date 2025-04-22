@@ -127,3 +127,4 @@ zsh/*.*tmp*
 _cache/
 theme_it/backups
 btop/btop.conf
+hypr/keybind_submaps/rofi_iptv.conf

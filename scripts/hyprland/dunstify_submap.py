@@ -99,13 +99,16 @@ def parse_submap_entries(path: Path, entries: list, meta: dict):
             match = bind_line.match(line)
             if match:
                 modifiers, key, metadata_json = match.groups()
-                combo = (
-                    f"{modifiers.strip()} + {key.strip()}"
-                    if modifiers.strip()
-                    else key.strip()
-                )
                 try:
                     bind_meta = json.loads(metadata_json)
+                    # Skip entries with visibility set to hide
+                    if bind_meta.get("visibility") == "hide":
+                        continue
+                    combo = (
+                        f"{modifiers.strip()} + {key.strip()}"
+                        if modifiers.strip()
+                        else key.strip()
+                    )
                     label = bind_meta.get("name", "Unknown")
                     icon = bind_meta.get("icon", "")
                     entries.append((combo, f"{icon} {label}".strip()))
