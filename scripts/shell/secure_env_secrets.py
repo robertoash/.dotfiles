@@ -36,6 +36,7 @@ secrets_files = [
     "/home/rash/.secrets/.tibber_token",
     "/home/rash/.secrets/.sp_secrets",
     "/home/rash/.secrets/.cjar_secrets",
+    "/home/rash/.secrets/.openai_api_key",
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
