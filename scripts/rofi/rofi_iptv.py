@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-import hashlib
 import json
 import logging
 import mimetypes
@@ -18,11 +17,18 @@ sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils  # noqa: E402
 
 # ========== CONFIG ==========
-M3U_PATH = Path("/media/sda1/server_bkups/iptv_server/nordic.m3u")
-FULL_CHANNELS_PATH = Path(
-    "/home/rash/.config/scripts/_cache/rofi/iptv/all_channels.json"
-)
-LOGO_CACHE_DIR = Path("/home/rash/.config/scripts/_cache/rofi/iptv/logos")
+ALL_CH_JSON_FILENAME = "all_channels.json"
+SOURCE_PATH = Path("/media/sda1/server_bkups/iptv_server/")
+TARGET_PATH = Path("/home/rash/.config/scripts/_cache/rofi/iptv/")
+INPUT_DIR = "input"
+OUTPUT_DIR = "output"
+LOGO_DIR = "logos"
+INPUT_TARGET_PATH = TARGET_PATH / INPUT_DIR
+OUTPUT_TARGET_PATH = TARGET_PATH / OUTPUT_DIR
+LOGO_CACHE_DIR = TARGET_PATH / LOGO_DIR
+ALL_CH_SOURCE_JSON_PATH = SOURCE_PATH / ALL_CH_JSON_FILENAME
+ALL_CH_INPUT_JSON_PATH = INPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
+ALL_CH_OUTPUT_JSON_PATH = OUTPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
 
 LOCK_PATH = LOGO_CACHE_DIR / ".logo_download.lock"
 STOP_PATH = LOGO_CACHE_DIR / ".logo_download.stop"  # Stop signal path
@@ -30,23 +36,15 @@ STOP_PATH = LOGO_CACHE_DIR / ".logo_download.stop"  # Stop signal path
 DOWNLOAD_CONNECTIONS_PER_SERVER = 3
 DOWNLOAD_CONNECTIONS_PER_FILE = 2
 
-GROUP_HANDLING = {
-    "TV": ["MOVIES", "SERIES", "ADULTS"],
-    "MOVIES": ["MOVIES"],
-    "SERIES": ["SERIES"],
-    "SPICY": ["ADULTS"],
-}
+ALL_CATS = ["tv", "movies", "series", "spicy", "all"]
+FIELDS_TO_LEFT_JOIN = ["favorite", "logo_local"]
+LOGO_DOWNLOAD_CATS = ["tv", "movies"]
+MOVIES_LOGO_FILTER = ["|en|"]
 
-NAME_TWEAKS = {
-    r"^SWE\| TV (\d{1,2})": r"SWE| TV\1",
-    r"^SWE\| SVT (\d{1,2})": r"SWE| SVT\1",
-    "- NO EVENT STREAMING -": "",
-    "SE:": "SWE|",
-}
 EXCLUDED_CHANNELS = [r"^### ### #"]
-NOTIFICATION_ID = "9999"
+NOTIFICATION_ID = "1718"
 
-FLAGS = {"refresh_channels": False, "refresh_logos": False, "dump_cache": False}
+FLAGS = {"force_logo_refresh": False}
 
 # ========== UTILS ==========
 
@@ -63,19 +61,6 @@ def slugify(text):
     return re.sub(r"[^\w\-]+", "_", text.lower()).strip("_")
 
 
-def is_excluded(name):
-    excluded = any(re.match(pattern, name) for pattern in EXCLUDED_CHANNELS)
-    if excluded:
-        logging.debug(f"[DEBUG] Channel excluded: {name}")
-    return excluded
-
-
-def apply_name_tweaks(name):
-    for pattern, replacement in NAME_TWEAKS.items():
-        name = re.sub(pattern, replacement, name)
-    return name
-
-
 def ensure_dirs(path):
     if not path.exists():
         logging.debug(f"[DEBUG] Creating directory: {path}")
@@ -85,30 +70,10 @@ def ensure_dirs(path):
             path.mkdir(parents=True, exist_ok=True)
 
 
-def strip_trailing_number(filename: str) -> str:
-    """Strips _1, _2, etc. from the end of a slugified name."""
-    return re.sub(r"(_\d+)?\.png$", ".png", filename)
-
-
-def guess_category(group, tvg_id=None, tvg_name=None):
-    TARGET_TVGS = ["se:", "dk:", "no:", "fi:", "it:", "se-", "swe|"]
-    group = (group or "").lower()
-    tvg_id = (tvg_id or "").lower()
-    tvg_name = (tvg_name or "").lower()
-
-    if not tvg_id:
-        if "ppv" in group or any(tvg_name.startswith(pfx) for pfx in TARGET_TVGS):
-            return "TV"
-        elif "adults" in group or "xx" in tvg_id or "xxx" in tvg_name:
-            return "SPICY"
-        elif "series" in group:
-            return "SERIES"
-        else:
-            return "MOVIES"
-    elif "adults" in group or "xx" in tvg_id or "xxx" in tvg_name:
-        return "SPICY"
-    else:
-        return "TV"
+def normalize_filename(name: str) -> str:
+    stem = Path(name).stem.lower()
+    # Remove any pattern like _123 or _123_
+    return re.sub(r"_\d+_?|_\d+$", "", stem).lower()
 
 
 def notify(title, message="", icon=None, progress=None, close=False, timeout=None):
@@ -135,12 +100,23 @@ def is_pid_alive(pid):
 
 def is_valid_local_logo(path):
     logging.debug(f"[DEBUG] Validating logo path: {path}")
-    return (
-        path
-        and Path(path).exists()
-        and mimetypes.guess_type(path)[0].startswith("image")
-        and Path(path).parent == LOGO_CACHE_DIR
-    )
+    if not path or not Path(path).exists():
+        return False
+
+    mimetype, _ = mimetypes.guess_type(str(path))
+    if mimetype and mimetype.startswith("image"):
+        return True
+
+    # Fallback: Accept image-looking files in the logo cache folder
+    if Path(path).parent == LOGO_CACHE_DIR and path.suffix.lower() in [
+        ".png",
+        ".jpg",
+        ".jpeg",
+    ]:
+        logging.debug(f"[DEBUG] Accepting {path} as fallback image")
+        return True
+
+    return False
 
 
 def save_json(path, data, backup=False):
@@ -153,28 +129,6 @@ def save_json(path, data, backup=False):
 
     with path.open("w") as f:
         json.dump(data, f, indent=2)
-
-
-def load_cached_channels(path):
-    logging.debug(f"[DEBUG] Loading channels from {path}")
-    if path.exists():
-        with path.open() as f:
-            data = json.load(f)
-            logging.debug(f"[DEBUG] Loaded {len(data)} channels from cache")
-            return data
-    logging.debug("[DEBUG] No cache found, returning empty list")
-    return []
-
-
-def generate_channel_id(channel: dict) -> str:
-    key_fields = [
-        (channel.get("name") or "").strip(),
-        (channel.get("group") or "").strip().upper(),
-        (channel.get("url") or "").strip(),
-        (channel.get("logo_url") or "").strip(),
-    ]
-    joined = "|".join(key_fields)
-    return hashlib.sha256(joined.encode("utf-8")).hexdigest()[:12]  # short but unique
 
 
 def sort_channels_for_display(channels):
@@ -193,6 +147,11 @@ def handle_favorite_names(channels):
     return channels
 
 
+"""
+####### TODO: Implement this ########
+"""
+
+
 def toggle_favorite(channel, enable=None):
     """Toggles or explicitly sets a channel's favorite status."""
     if enable is None:
@@ -204,97 +163,16 @@ def toggle_favorite(channel, enable=None):
 # ========== CORE LOGIC ==========
 
 
-def load_or_parse_channels():
-    logging.debug("[DEBUG] Starting channel load/parse")
-    m3u_mtime = M3U_PATH.stat().st_mtime
-    if FULL_CHANNELS_PATH.exists():
-        cache_mtime = FULL_CHANNELS_PATH.stat().st_mtime
-        if not FLAGS["refresh_channels"] and m3u_mtime <= cache_mtime:
-            logging.debug("[DEBUG] Using cached channels")
-            return load_cached_channels(FULL_CHANNELS_PATH)
-
-    logging.debug("[DEBUG] Parsing M3U file")
-    # Parse full m3u
-    parsed = parse_m3u(M3U_PATH)
-
-    # Generate channel_id hash
-    for ch in parsed:
-        key_fields = [
-            ch.get("name", "") or "",
-            ch.get("group", "") or "",
-            ch.get("url", "") or "",
-            ch.get("logo_url", "") or "",
-        ]
-        ch["channel_id"] = hashlib.sha256("".join(key_fields).encode()).hexdigest()
-
-    logging.debug(f"[DEBUG] Saving {len(parsed)} parsed channels")
-    save_json(FULL_CHANNELS_PATH, parsed, backup=True)
-
-    return parsed
-
-
-def parse_m3u(path):
-    logging.debug(f"[DEBUG] Starting M3U parse: {path}")
-    channels = []
-    with path.open(encoding="utf-8", errors="ignore") as f:
-        lines = [line.strip() for line in f if line.strip()]
-    i = 0
-    while i < len(lines) - 1:
-        if lines[i].startswith("#EXTINF:"):
-            meta, url = lines[i], lines[i + 1]
-            tvg_id = re.search(r'tvg-id="([^"]+)"', meta)
-            group = re.search(r'group-title="([^"]+)"', meta)
-            name = re.search(r'tvg-name="([^"]+)"', meta)
-            logo = re.search(r'tvg-logo="([^"]+)"', meta)
-            if group and name:
-                group, name, tvg_id = (
-                    group.group(1),
-                    name.group(1),
-                    tvg_id.group(1) if tvg_id else "",
-                )
-                if is_excluded(name):
-                    i += 2
-                    continue
-                name = apply_name_tweaks(name)
-                local_logo = str(LOGO_CACHE_DIR / f"{slugify(name)}.png")
-                channel = {
-                    "tvg_id": tvg_id,
-                    "name": name,
-                    "group": group,
-                    "category": guess_category(group, tvg_id, name),
-                    "url": url,
-                    "logo_url": logo.group(1) if logo else None,
-                    "logo_local": local_logo if Path(local_logo).exists() else None,
-                }
-                channel["channel_id"] = generate_channel_id(channel)
-                channels.append(channel)
-        i += 1
-    logging.info(f"[INFO] Parsed {len(channels)} channels from M3U")
-    return channels
-
-
-def filter_channels_by_category(channels, category):
-    logging.debug(f"[DEBUG] Filtering channels for category: {category}")
-    filtered = []
-
-    for ch in channels:
-        group = ch.get("group", "").upper()
-        if category == "TV":
-            # TV includes everything not matching other categories
-            if not any(
-                tag in group
-                for tag in GROUP_HANDLING["MOVIES"]
-                + GROUP_HANDLING["SERIES"]
-                + GROUP_HANDLING["SPICY"]
-            ):
-                filtered.append(ch)
-        else:
-            keywords = GROUP_HANDLING.get(category, [])
-            if any(tag in group for tag in keywords):
-                filtered.append(ch)
-
-    logging.debug(f"[DEBUG] Found {len(filtered)} channels in category {category}")
-    return filtered
+def load_channels(path):
+    logging.debug("[DEBUG] Starting channel load")
+    if path.exists():
+        logging.debug(f"[DEBUG] Loading channels from {path}")
+        with path.open() as f:
+            data = json.load(f)
+            logging.debug(f"[DEBUG] Loaded {len(data)} channels from cache")
+            return data
+    logging.debug("[DEBUG] No cache found, returning empty list")
+    return []
 
 
 def download_logos(channels, prev_channels):
@@ -318,7 +196,7 @@ def download_logos(channels, prev_channels):
     )
 
     existing_basenames = {
-        strip_trailing_number(f.name) for f in LOGO_CACHE_DIR.glob("*.png")
+        normalize_filename(f.name) for f in LOGO_CACHE_DIR.glob("*.png")
     }
 
     if LOCK_PATH.exists():
@@ -350,6 +228,20 @@ def download_logos(channels, prev_channels):
                 STOPPED = True
                 break
 
+            if ch["category"] not in LOGO_DOWNLOAD_CATS:
+                logging.debug(
+                    f"[DEBUG] Skipping {ch['name']} (not in {LOGO_DOWNLOAD_CATS})"
+                )
+                continue
+            if ch["category"] == "movies" and not any(
+                filter in ch["group"].lower() for filter in MOVIES_LOGO_FILTER
+            ):
+                logging.debug(
+                    f"[DEBUG] Skipping {ch['name']}: "
+                    f"Movie doesn't contain filters {MOVIES_LOGO_FILTER}"
+                )
+                continue
+
             name = ch["name"]
             logo_url = ch.get("logo_url")
             if not logo_url:
@@ -361,12 +253,12 @@ def download_logos(channels, prev_channels):
             filename = local_path.name
             unchanged = prev_logo_map.get(ch["channel_id"], "") == logo_url
 
-            if not FLAGS["refresh_logos"] and unchanged:
+            if not FLAGS["force_logo_refresh"] and unchanged:
                 logging.debug(f"[DEBUG] Skipping {name} (unchanged)")
                 skipped += 1
                 continue
-            basename = strip_trailing_number(filename)
-            if basename in existing_basenames:
+            basename = normalize_filename(filename)
+            if ch["category"] == "tv" and basename in existing_basenames:
                 logging.debug(
                     f"[DEBUG] Skipping {name} (basename '{basename}' already cached)"
                 )
@@ -420,7 +312,18 @@ def download_logos(channels, prev_channels):
     finally:
         end_time = time.time()
         if not STOPPED:
-            save_json(FULL_CHANNELS_PATH, channels, backup=False)
+            # ✅ Save updated full list with new logo_local values
+            save_json(ALL_CH_OUTPUT_JSON_PATH, channels, backup=False)
+
+            # ✅ Save tv/movies category slices (all, not filtered)
+            for cat in LOGO_DOWNLOAD_CATS:
+                save_json(
+                    OUTPUT_TARGET_PATH / f"{cat}_channels.json",
+                    [ch for ch in channels if ch.get("category") == cat],
+                    backup=False,
+                )
+
+            # Report on results
             if downloaded > 0:
                 notify(
                     "✅ Logos done",
@@ -435,8 +338,8 @@ def download_logos(channels, prev_channels):
                 f"[DEBUG] Logo download complete: {downloaded} dl "
                 f"({new} new, {refreshed} refreshed), {skipped} skip, {failed} fail"
             )
-            logging.debug("[DEBUG] Cleaning up unused logos")
-            cleanup_unused_logos()
+            # logging.debug("[DEBUG] Cleaning up unused logos")
+            # cleanup_unused_logos()
         else:
             logging.info("[INFO] Logo download was interrupted by stop signal")
             notify(
@@ -457,10 +360,30 @@ def trigger_logo_stop():
 
 
 def cleanup_unused_logos():
-    current_channels = load_cached_channels(FULL_CHANNELS_PATH)
-    referenced = {
-        Path(ch["logo_local"]).name for ch in current_channels if ch.get("logo_local")
-    }
+    all_referenced = set()
+
+    for cat in ALL_CATS:
+        path = OUTPUT_TARGET_PATH / f"{cat}_channels.json"
+        if not path.exists():
+            logging.debug(f"[DEBUG] Skipping {cat} (no cache found)")
+            continue
+
+        current_channels = load_channels(path)
+        referenced = {
+            Path(ch["logo_local"]).name
+            for ch in current_channels
+            if ch.get("logo_local")
+        }
+
+        logging.debug(f"[DEBUG] {cat}: {len(referenced)} logos referenced")
+        all_referenced.update(referenced)
+
+    # 🚨 Safety net: Avoid mass deletion if reference list is suspiciously small
+    if len(all_referenced) < 10:
+        logging.warning(
+            "⚠️ Too few referenced logos — cleanup aborted to avoid mass deletion."
+        )
+        return
 
     deleted = kept = skipped = 0
     for file in LOGO_CACHE_DIR.iterdir():
@@ -469,7 +392,7 @@ def cleanup_unused_logos():
 
         mime, _ = mimetypes.guess_type(str(file))
         if mime and mime.startswith("image"):
-            if file.name not in referenced:
+            if file.name not in all_referenced:
                 logging.debug(f"[DEBUG] Deleting unused image: {file}")
                 file.unlink()
                 deleted += 1
@@ -482,6 +405,129 @@ def cleanup_unused_logos():
     logging.info(
         f"[INFO] Cleanup complete: {deleted} deleted, {kept} kept, {skipped} skipped."
     )
+    logging.debug("[DEBUG] ✅ Cleanup complete.")
+
+
+def left_join_metadata(source_channels, target_channels, fields):
+    """
+    Performs a LEFT JOIN-style merge of metadata fields from source to target using channel_id.
+
+    For each channel in target_channels:
+    - If a channel with the same channel_id exists in source_channels,
+      copy specified fields (e.g., favorite, logo_local) if present.
+    - Fields in target will only be updated if found in the source.
+
+    Channels present only in source (but not in target) are ignored.
+    """
+    logging.debug(
+        f"[DEBUG] Starting LEFT JOIN of {len(source_channels)} → {len(target_channels)} channels"
+    )
+
+    meta_map = {
+        ch["channel_id"]: {f: ch.get(f) for f in fields}
+        for ch in source_channels
+        if "channel_id" in ch
+    }
+
+    matches = 0
+    for ch in target_channels:
+        meta = meta_map.get(ch.get("channel_id"))
+        if not meta:
+            continue
+        matches += 1
+        for field in fields:
+            if field in meta and meta[field] is not None:
+                ch[field] = meta[field]
+
+    logging.info(
+        f"[INFO] Metadata joined for {matches} out of {len(target_channels)} channels"
+    )
+
+    return target_channels
+
+
+def split_and_save_cat_jsons(channels_json):
+    """Splits JSON into multiple files based on category."""
+    for category in ALL_CATS:
+        if category == "all":
+            filtered_json = channels_json  # Don't filter — save everything
+        else:
+            filtered_json = [
+                channel for channel in channels_json if channel["category"] == category
+            ]
+        logging.debug(f"[DEBUG] Saving {category} channels: {len(filtered_json)}")
+        save_json(
+            OUTPUT_TARGET_PATH / f"{category}_channels.json",
+            filtered_json,
+            backup=True,
+        )
+
+
+def sync_json_to_upstream():
+    """Sync upstream JSON into local cache, preserving metadata fields."""
+    logging.debug("[DEBUG] Sync JSON triggered")
+    if not ALL_CH_SOURCE_JSON_PATH.exists():
+        logging.error(f"❌ Upstream JSON not found: {ALL_CH_SOURCE_JSON_PATH}")
+        return
+
+    upstream_channels = load_channels(ALL_CH_SOURCE_JSON_PATH)
+    if ALL_CH_INPUT_JSON_PATH.exists():
+        local_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
+    else:
+        local_channels = []
+
+    joined_channels = left_join_metadata(
+        local_channels, upstream_channels, fields=["favorite", "logo_local"]
+    )
+    save_json(ALL_CH_INPUT_JSON_PATH, joined_channels, backup=True)
+    split_and_save_cat_jsons(joined_channels)
+
+    for field in FIELDS_TO_LEFT_JOIN:
+        local_count = sum(1 for ch in local_channels if ch.get(field))
+        updated_count = sum(1 for ch in upstream_channels if ch.get(field))
+
+        if local_count > updated_count:
+            logging.warning(
+                f"[WARN] Metadata field `{field}` dropped from "
+                f"{local_count} to {updated_count} during left join"
+            )
+        elif local_count == updated_count:
+            if local_count == 0:
+                logging.info(
+                    f"[INFO] No records updated for `{field}` during left join"
+                )
+            else:
+                logging.info(
+                    f"[INFO] Metadata field `{field}` fully preserved ({local_count})"
+                )
+        else:
+            logging.info(
+                f"[INFO] Metadata field `{field}` expanded: {local_count} → {updated_count}"
+            )
+
+
+def filter_for_show(category):
+    relevant_json = OUTPUT_TARGET_PATH / f"{category}_channels.json"
+    logging.debug(f"[DEBUG] Cache path: {relevant_json}")
+
+    filtered_channels = safe_load_channels(relevant_json, category)
+
+    logging.debug(f"[DEBUG] Loaded {len(filtered_channels)} total channels")
+
+    sorted_channels = sort_channels_for_display(filtered_channels)
+
+    return handle_favorite_names(sorted_channels)
+
+
+def safe_load_channels(path, category=None):
+    """Load channels from path. Trigger sync if file is missing/empty."""
+    if not path.exists() or path.stat().st_size < 10:
+        logging.warning(f"[WARN] Channel cache missing or empty: {path}")
+        sync_json_to_upstream()  # Auto-fallback
+    channels = load_channels(path)
+    if category:
+        channels = [ch for ch in channels if ch.get("category") == category]
+    return channels
 
 
 def rofi_select(channels):
@@ -506,35 +552,135 @@ def rofi_select(channels):
         return None
 
 
+def handle_sync_json():
+    """Handle the --sync-json command line argument."""
+    if LOCK_PATH.exists():
+        try:
+            pid = int(LOCK_PATH.read_text())
+            if is_pid_alive(pid):
+                logging.warning(
+                    f"[WARN] Sync aborted: logo download in progress by PID {pid}"
+                )
+                sys.exit(1)
+            else:
+                logging.debug("[DEBUG] Removing stale logo lock")
+                LOCK_PATH.unlink()
+        except Exception as e:
+            logging.debug(f"[DEBUG] Failed to read logo lock: {e}")
+            LOCK_PATH.unlink()
+    sync_json_to_upstream()
+    logging.info(f"[INFO] Sync complete. Fresh cache saved to {ALL_CH_INPUT_JSON_PATH}")
+
+
+def handle_download_logos_only():
+    """Handle the --download-logos-only command line argument."""
+    logging.debug("[DEBUG] Download-logos-only mode activated")
+    if (
+        not ALL_CH_INPUT_JSON_PATH.exists()
+        or ALL_CH_INPUT_JSON_PATH.stat().st_size < 10
+    ):
+        logging.warning(
+            f"[WARN] No valid merged input found: {ALL_CH_INPUT_JSON_PATH}. Syncing..."
+        )
+        sync_json_to_upstream()
+
+    all_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
+    if not all_channels or not isinstance(all_channels, list):
+        logging.error("❌ Input sync failed or upstream JSON is invalid.")
+        sys.exit(1)
+
+    prev_path = ALL_CH_OUTPUT_JSON_PATH.with_name(
+        ALL_CH_OUTPUT_JSON_PATH.stem + "_prev.json"
+    )
+    if prev_path.exists():
+        all_channels_prev = load_channels(prev_path)
+    else:
+        logging.debug("[DEBUG] No previous channel cache found, using empty list")
+        all_channels_prev = []
+    left_join_metadata(all_channels_prev, all_channels, FIELDS_TO_LEFT_JOIN)
+    download_logos(all_channels, all_channels_prev)
+
+
+def launch_mpv(selected):
+    """Launch MPV with caching, retry, and background tolerance."""
+    logging.debug(f"[DEBUG] Launching MPV: {selected}")
+
+    try:
+        subprocess.Popen(
+            [
+                "mpv",
+                "--quiet",  # Suppress logs in terminal
+                "--force-window=immediate",  # Open window immediately, even before playback starts
+                "--cache=yes",  # Enable playback cache
+                "--cache-pause=no",  # Instant start
+                "--cache-secs=20",  # Buffer 20 seconds of media ahead
+                "--demuxer-max-bytes=100M",  # Allow demuxer to read up to 100MB into buffer
+                "--demuxer-max-back-bytes=1M",  # Up to 1MB back-buffering (helps with seeking)
+                "--network-timeout=60",  # Wait up to 60s on network stalls before aborting
+                "--stream-lavf-o=reconnect=1",  # Reconnect if the stream fails
+                "--stream-lavf-o=reconnect_streamed=1",  # Reconnect streamed formats
+                "--stream-lavf-o=reconnect_delay_max=5",  # Max 5s before retrying a reconnect
+                selected,
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        logging.debug("[DEBUG] MPV launched successfully")
+    except Exception as e:
+        logging.error(f"[ERROR] Failed to launch MPV: {e}")
+        subprocess.run(["dunstify", "⚠️ MPV Error", f"Failed to launch stream: {e}"])
+
+
+def handle_selected_channel(selected, sorted_and_favs):
+    """Handle the selected channel by launching MPV and showing notifications."""
+    logging.debug(f"[DEBUG] User selected: {selected}")
+    selected_entry = next((ch for ch in sorted_and_favs if ch["url"] == selected), None)
+    if selected_entry:
+        name = selected_entry["name"]
+        logo = selected_entry.get("logo_local")
+        if is_valid_local_logo(logo):
+            notify(
+                "Launching stream...",
+                f"🎬 {name}",
+                icon=logo,
+                timeout=4000,
+            )
+        else:
+            notify(
+                "Launching stream...",
+                f"🎬 {name}",
+                timeout=2000,
+            )
+
+    logging.debug("[DEBUG] Launching MPV with caching")
+
+    launch_mpv(selected)
+
+    logging.debug("[DEBUG] MPV exited, script ending")
+
+
 # ========== MAIN ==========
 
 
 def main():
-    global DUMP_CACHE, FORCE_LOGO_REFRESH, FORCE_CHANNEL_REFRESH
+    global FLAGS
 
     logging.debug("[DEBUG] Starting main()")
-
-    valid_categories = list(GROUP_HANDLING.keys())
 
     parser = argparse.ArgumentParser(
         description="Launch IPTV channels via Rofi with category filtering.",
     )
     parser.add_argument(
-        "--refresh-channels",
-        action="store_true",
-        help="Force re-parse of the M3U and update all category caches.",
-    )
-    parser.add_argument(
-        "--download-logos",
+        "--force-logo-refresh",
         action="store_true",
         help="Force re-download of all channel logos.",
     )
     parser.add_argument(
         "--category",
         type=str,
-        default="TV",
-        choices=valid_categories,
-        help="Channel category to show [default: TV].",
+        default="tv",
+        choices=ALL_CATS,
+        help="Channel category to show [default: tv].",
     )
     parser.add_argument(
         "--debug",
@@ -542,14 +688,14 @@ def main():
         help="Enable debug mode.",
     )
     parser.add_argument(
-        "--dump-cache",
-        action="store_true",
-        help="Dump the cache and start from scratch.",
-    )
-    parser.add_argument(
         "--download-logos-only",
         action="store_true",
         help="Only download logos and exit.",
+    )
+    parser.add_argument(
+        "--sync-json",
+        action="store_true",
+        help="Sync upstream JSON into local cache, preserving favorites and logo paths",
     )
     parser.add_argument(
         "--cleanup",
@@ -567,103 +713,35 @@ def main():
     configure_logging(args)
 
     logging.debug("[DEBUG] Debug mode enabled")
-    logging.debug(f"[DEBUG] M3U path: {M3U_PATH}")
-    logging.debug(f"[DEBUG] Cache path: {FULL_CHANNELS_PATH}")
     logging.debug(f"[DEBUG] Logo cache: {LOGO_CACHE_DIR}")
 
     if args.stop:
         trigger_logo_stop()
         sys.exit(0)
-    if args.dump_cache:
-        DUMP_CACHE = True
-        FORCE_LOGO_REFRESH = True
-        FORCE_CHANNEL_REFRESH = True
-        logging.debug("[DEBUG] Cache dump requested — forcing full refresh")
-    if args.refresh_channels:
-        FORCE_CHANNEL_REFRESH = True
-        logging.debug("[DEBUG] Forcing channel refresh")
-        logging.debug("[DEBUG] Forcing channel refresh")
-    if args.download_logos:
-        FORCE_LOGO_REFRESH = True
+    if args.force_logo_refresh:
+        FLAGS["force_logo_refresh"] = True
         logging.debug("[DEBUG] Forcing logo download")
+    if args.category not in ALL_CATS:
+        logging.error(f"[ERROR] Invalid category: {args.category}")
+        sys.exit(1)
+    if args.sync_json:
+        handle_sync_json()
+        sys.exit(0)
     if args.cleanup:
         cleanup_unused_logos()
         sys.exit(0)
     if args.download_logos_only:
-        logging.debug("[DEBUG] Download-logos-only mode activated")
-        all_channels = load_cached_channels(FULL_CHANNELS_PATH)
-        prev_path = FULL_CHANNELS_PATH.with_name(FULL_CHANNELS_PATH.stem + "_prev.json")
-        if prev_path.exists():
-            all_channels_prev = load_cached_channels(prev_path)
-        else:
-            logging.debug("[DEBUG] No previous channel cache found, using empty list")
-            all_channels_prev = []
-        download_logos(all_channels, all_channels_prev)
+        handle_download_logos_only()
         sys.exit(0)
-
     logging.debug(f"[DEBUG] Category selected: {args.category}")
 
-    all_channels = load_or_parse_channels()
-    logging.debug(f"[DEBUG] Loaded {len(all_channels)} total channels")
-
-    filtered = filter_channels_by_category(all_channels, args.category)
-    logging.debug(
-        f"[DEBUG] Filtered down to {len(filtered)} channels for category '{args.category}'"
-    )
-
-    # Start background logo download
-    cmd = ["python3", str(Path(__file__).resolve()), "--download-logos-only"]
-    logging.debug(f"[DEBUG] Launching background logo downloader: {cmd}")
-    subprocess.Popen(
-        cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        start_new_session=True,
-    )
-
-    sorted_channels = sort_channels_for_display(filtered)
-
-    sorted_and_favs = handle_favorite_names(sorted_channels)
+    sorted_and_favs = filter_for_show(args.category)
 
     logging.debug("[DEBUG] Showing user menu")
     selected = rofi_select(sorted_and_favs)
 
     if selected:
-        logging.debug(f"[DEBUG] User selected: {selected}")
-        selected_entry = next((ch for ch in filtered if ch["url"] == selected), None)
-        if selected_entry:
-            name = selected_entry["name"]
-            logo = selected_entry.get("logo_local")
-            if is_valid_local_logo(logo):
-                notify(
-                    "Launching stream...",
-                    f"🎬 {name}",
-                    icon=logo,
-                    timeout=4000,
-                )
-            else:
-                notify(
-                    "🎬 Launching stream...",
-                    f"🎬 {name}",
-                    timeout=2000,
-                )
-
-        logging.debug("[DEBUG] Launching MPV with caching")
-        subprocess.Popen(
-            [
-                "mpv",
-                "--cache=yes",
-                "--cache-secs=10",
-                "--demuxer-max-bytes=50M",
-                "--no-audio-display",
-                "--force-window=immediate",
-                selected,
-            ],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-        logging.debug("[DEBUG] MPV exited, script ending")
+        handle_selected_channel(selected, sorted_and_favs)
         sys.exit(0)
     else:
         logging.debug("[DEBUG] No channel selected, exiting")
