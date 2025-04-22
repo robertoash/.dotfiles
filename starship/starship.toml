@@ -15,7 +15,7 @@ $hostname\
 $virtualenv\
 $direnv\
 $time
-${custom.smart_cwd}$character
+${custom.smart_cwd}${custom.yazi}$character
 """
 
 palette = "tokyonight_deep"
@@ -247,6 +247,20 @@ command = "/home/rash/.config/scripts/starship/smart_path.py"
 when = "true"
 format = "[$output]($style) "
 style = "fg:accent"
+
+[custom.yazi]
+command = '''
+if [ "$YAZI_LEVEL" = "1" ]; then
+  echo "YAZI SHELL"
+elif [ -n "$YAZI_LEVEL" ]; then
+  echo "YAZI x$YAZI_LEVEL"
+fi
+'''
+when = "test -n \"$YAZI_LEVEL\""
+format = "[$symbol$output]($style) "
+symbol = "🧭 "
+style = "bold red"
+
 
 #[custom.my_module_name]
 #command = "echo 🌮"
