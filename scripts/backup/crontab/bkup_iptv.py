@@ -17,7 +17,7 @@ def bkup_iptv():
     remote_host = "dockerlab"
     remote_backup_dir = "/root/dev/docker_data/iptv_server/html/"
     local_backup_dir = "/media/sda1/server_bkups/iptv_server/"
-    extensions = ["m3u", "xml"]
+    extensions = ["m3u", "xml", "json"]
 
     # ✅ Build include args properly as a list
     include_args = ["--include=*/"] + [f"--include=*.{ext}" for ext in extensions]
