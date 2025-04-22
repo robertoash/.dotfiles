@@ -126,3 +126,4 @@ zsh/*.*tmp*
 .secrets.conf
 _cache/
 theme_it/backups
+btop/btop.conf
