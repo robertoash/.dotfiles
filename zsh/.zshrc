@@ -124,18 +124,6 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#89b4fa"
 eval "$(thefuck --alias fuck)"
 # Hass cli
 eval "$(_HASS_CLI_COMPLETE=source_zsh hass-cli)"
-# SGPT shell integration
-_sgpt_zsh() {
-if [[ -n "$BUFFER" ]]; then
-    _sgpt_prev_cmd=$BUFFER
-    BUFFER+="⌛"
-    zle -I && zle redisplay
-    BUFFER=$(sgpt --shell <<< "$_sgpt_prev_cmd" --no-interaction)
-    zle end-of-line
-fi
-}
-zle -N _sgpt_zsh
-bindkey ^l _sgpt_zsh
 # Load Google Cloud SDK
 if [ -f '/home/rash/builds/google-cloud-sdk/path.zsh.inc' ]; then
     source '/home/rash/builds/google-cloud-sdk/path.zsh.inc'
