@@ -16,7 +16,37 @@ def get_git_repo_name(path: Path) -> str | None:
             stderr=subprocess.DEVNULL,
             text=True,
         ).strip()
-        return Path(repo_root).name
+
+        try:
+            remote_url = subprocess.check_output(
+                ["git", "-C", str(path), "remote", "get-url", "origin"],
+                stderr=subprocess.DEVNULL,
+                text=True,
+            ).strip()
+
+            # Normalize: extract "author/repo" from SSH or HTTPS
+            if "github.com" in remote_url:
+                if remote_url.startswith("git@github.com:"):
+                    repo_path = remote_url.removeprefix("git@github.com:").removesuffix(
+                        ".git"
+                    )
+                elif remote_url.startswith("https://github.com/"):
+                    repo_path = remote_url.removeprefix(
+                        "https://github.com/"
+                    ).removesuffix(".git")
+                else:
+                    repo_path = remote_url  # fallback
+
+                author, repo = repo_path.split("/", 1)
+
+                if author == "robertoash":
+                    return f" {repo}"  # Leave dot if it's already in repo name
+                else:
+                    return f" {author}@{repo}"
+        except subprocess.CalledProcessError:
+            pass
+
+        return f" {Path(repo_root).name}"
     except subprocess.CalledProcessError:
         return None
 
@@ -39,7 +69,13 @@ def compress_path(
         return "/".join(parts)
 
     middle = get_git_repo_name(path_obj) or "…"
-    compressed = list(parts[:keep_first]) + [middle] + list(parts[-keep_last:])
+    compressed = (
+        list(parts[:keep_first])
+        + ["....."]
+        + [middle]
+        + ["....."]
+        + list(parts[-keep_last:])
+    )
     return "/".join(compressed)
 
 
