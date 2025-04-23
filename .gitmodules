@@ -13,9 +13,16 @@
 [submodule "zsh/plugins/zsh-syntax-highlighting"]
 	path = zsh/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting.git
-[submodule "zsh/plugins/zsh-z"]
-	path = zsh/plugins/zsh-z
-	url = https://github.com/agkozak/zsh-z.git
 [submodule "zsh/plugins/fzf-tab"]
 	path = zsh/plugins/fzf-tab
 	url = https://github.com/Aloxaf/fzf-tab
+[submodule "/home/rash/.config/xplr/plugins/icons"]
+	path = /home/rash/.config/xplr/plugins/icons
+	url = https://github.com/prncss-xyz/icons.xplr
+[submodule "/home/rash/.config/xplr/plugins/fzf"]
+	path = /home/rash/.config/xplr/plugins/fzf
+	url = https://github.com/sayanarijit/fzf.xplr
+[submodule "/home/rash/.config/xplr/plugins/zoxide"]
+	path = /home/rash/.config/xplr/plugins/zoxide
+	url = https://github.com/sayanarijit/zoxide.xplr
+
