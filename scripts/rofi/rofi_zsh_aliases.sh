@@ -10,10 +10,10 @@ SELECTED_ALIAS=$(awk '/^alias/ {
     gsub(/^ +| +$/, "", name)
     gsub(/^ +| +$/, "", command)
     gsub(/^ +| +$/, "", description)
-    output = sprintf("%s - %s [%s]", name, description, command)
+    output = sprintf("%s => %s [%s]", name, description, command)
     gsub(/ +/, " ", output)
     print output
-}' ~/.config/zsh/.zsh_aliases | \
+}' ~/.config/zsh/sources/.zsh_aliases | \
 rofi -theme ~/.config/rofi/current_theme_single_column.rasi \
 -dmenu -i -threads 0 -width 100 -theme-str 'entry { placeholder: "zsh_aliases filter..."; }')
 
