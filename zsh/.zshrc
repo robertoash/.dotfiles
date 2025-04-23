@@ -64,6 +64,8 @@ zstyle ':completion:*:*:hx:*' command 'fasd --complete'
 
 # Activate fasd (easy file and dir jump)
 eval "$(fasd --init auto)"
+unalias z 2>/dev/null # Reclaim z command
+unalias zz 2>/dev/null # Reclaim zz command
 
 # #################################
 # # Sourcing
@@ -133,18 +135,14 @@ if [ -f '/home/rash/builds/google-cloud-sdk/completion.zsh.inc' ]; then
     # Load Google Cloud SDK completion
     source '/home/rash/builds/google-cloud-sdk/completion.zsh.inc'
 fi
-# Detect if shell is being launched from inside yazi
-if [[ "$PPID" -eq "$(pgrep -o yazi)" ]]; then
-    export IN_YAZI=1
-fi
 # Activate walk file manager
 function lk {
   cd "$(walk --icons --with-border --fuzzy "$@")"
 }
-
+#zoxide
+eval "$(zoxide init zsh)"
 # Load Starship prompt
 eval "$(starship init zsh)"
-
 # Launch neofetch only in interactive shells and not within yazi
 if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
     neofetch
