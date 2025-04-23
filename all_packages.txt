@@ -84,7 +84,6 @@ fd###pacman
 feh###pacman
 ffmpegthumbnailer###pacman
 file-roller###pacman
-firewalld###pacman
 flatpak###pacman
 foot###pacman
 fsarchiver###pacman
@@ -97,6 +96,7 @@ github-cli###pacman
 glances###pacman
 gnome-keyring###pacman
 gnome-tweaks###pacman
+gnu-netcat###pacman
 gocryptfs###pacman
 greetd###pacman
 greetd-tuigreet-git###pacman
@@ -107,6 +107,7 @@ gst-plugin-pipewire###pacman
 gst-plugins-bad###pacman
 gst-plugins-ugly###pacman
 gvfs###pacman
+gvfs-smb###pacman
 haveged###pacman
 hdparm###pacman
 helix-git###pacman
@@ -239,6 +240,7 @@ rsync###pacman
 rtkit###pacman
 ruff###pacman
 s-nail###pacman
+samba###pacman
 seahorse###pacman
 sg3_utils###pacman
 slack-desktop###pacman
@@ -284,6 +286,7 @@ ttf-jetbrains-mono-nerd###pacman
 ttf-liberation###pacman
 ttf-opensans###pacman
 tumbler###pacman
+ufw###pacman
 unrar###pacman
 unzip###pacman
 upower###pacman
@@ -330,6 +333,7 @@ yazi-git###pacman
 zathura###pacman
 zathura-pdf-mupdf###pacman
 zip###pacman
+zoxide###pacman
 zsh###pacman
 alacritty-git###yay
 brother-dcp-l2530dw###yay
