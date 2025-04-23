@@ -1,5 +1,6 @@
 # tokyonight_deep - Centralized Color Palette
 
+accent = "#8bffff"
 background = "#010111"
 foreground = "#ffffff"
 cursor = "#7dcfff"
