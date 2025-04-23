@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import copy
 import json
 import logging
 import mimetypes
@@ -37,12 +38,31 @@ DOWNLOAD_CONNECTIONS_PER_SERVER = 3
 DOWNLOAD_CONNECTIONS_PER_FILE = 2
 
 ALL_CATS = ["tv", "movies", "series", "spicy", "all"]
-FIELDS_TO_LEFT_JOIN = ["favorite", "logo_local"]
+FIELDS_TO_LEFT_JOIN = ["favorite", "logo_local", "quickbind"]
 LOGO_DOWNLOAD_CATS = ["tv", "movies"]
 MOVIES_LOGO_FILTER = ["|en|"]
 
 EXCLUDED_CHANNELS = [r"^### ### #"]
 NOTIFICATION_ID = "1718"
+
+ROFI_CH_SORTING = {
+    "quickbind": 0,
+    "favorite": 1,
+    "name": [
+        {
+            "regex_patterns": 2,
+            "patterns_in_order": [
+                r"^SWE|",
+                r"^US|",
+                r"^SAL|",
+                r"^ESP|",
+            ],
+        },
+        {
+            "alphabetical": 3,
+        },
+    ],
+}
 
 FLAGS = {"force_logo_refresh": False}
 
@@ -88,7 +108,10 @@ def notify(title, message="", icon=None, progress=None, close=False, timeout=Non
         if progress is not None:
             cmd += ["-h", f"int:value:{progress}"]
         cmd += [title, message]
-    logging.debug(f"[DEBUG] Sending notification: {title} | {message}")
+    if message:
+        logging.debug(f"[DEBUG] Sending notification: {title} | {message}")
+    else:
+        logging.debug(f"[DEBUG] Sending notification: {title}")
     subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
@@ -131,15 +154,13 @@ def save_json(path, data, backup=False):
         json.dump(data, f, indent=2)
 
 
-def sort_channels_for_display(channels):
-    """Sorts channels with favorites at the top."""
-    return sorted(channels, key=lambda ch: not ch.get("favorite", False))
-
-
-def handle_favorite_names(channels):
+def handle_fav_names(channels):
     for ch in channels:
         name = ch["name"]
-        if ch.get("favorite", False):
+        if ch.get("quickbind"):
+            slot = ch["quickbind"]
+            display_name = f"⭐ [{slot}] FAV /// {name}"
+        elif ch.get("favorite", False):
             display_name = f"⭐ FAV /// {name}"
         else:
             display_name = f"🔷 {name}"
@@ -147,9 +168,38 @@ def handle_favorite_names(channels):
     return channels
 
 
-"""
-####### TODO: Implement this ########
-"""
+def sort_channels(channels):
+    def channel_sort_key(ch):
+        sort_key = []
+
+        # 1. Quickbind
+        if "quickbind" in ROFI_CH_SORTING:
+            sort_key.append(
+                ch.get("quickbind") if ch.get("quickbind") is not None else 9999
+            )
+
+        # 2. Favorite
+        if "favorite" in ROFI_CH_SORTING:
+            sort_key.append(0 if ch.get("favorite") else 1)
+
+        # 3. Name-based rules
+        if "name" in ROFI_CH_SORTING:
+            name = ch.get("name", "")
+            for rule in ROFI_CH_SORTING["name"]:
+                if "regex_patterns" in rule:
+                    patterns = rule["patterns_in_order"]
+                    for i, pattern in enumerate(patterns):
+                        if re.search(pattern, name):
+                            sort_key.append(i)
+                            break
+                    else:
+                        sort_key.append(len(patterns))
+                elif "alphabetical" in rule:
+                    sort_key.append(name.lower())
+
+        return tuple(sort_key)
+
+    return sorted(channels, key=channel_sort_key)
 
 
 def toggle_favorite(channel, enable=None):
@@ -213,13 +263,18 @@ def download_logos(channels, prev_channels):
             logging.debug(f"[DEBUG] Error reading lock file: {e}")
             LOCK_PATH.unlink()
 
+    # ✅ Force refresh if cache is completely empty (e.g., after nuke)
+    if not any(LOGO_CACHE_DIR.glob("*.png")):
+        logging.warning("[WARN] Logo cache is empty. Forcing refresh.")
+        FLAGS["force_logo_refresh"] = True
+
     try:
         # Ensure path before writing lock
         ensure_dirs(LOCK_PATH)
         LOCK_PATH.write_text(str(os.getpid()))
 
         total = len(channels)
-        downloaded = new = refreshed = skipped = failed = 0
+        downloaded = new = refreshed = skipped = failed = with_logo = 0
 
         for i, ch in enumerate(channels, 1):
             # Check for stop signal before continuing
@@ -259,8 +314,12 @@ def download_logos(channels, prev_channels):
                 continue
             basename = normalize_filename(filename)
             if ch["category"] == "tv" and basename in existing_basenames:
+                logo_path = LOGO_CACHE_DIR / f"{basename}.png"
+                ch["logo_local"] = str(logo_path)
+                with_logo += 1
                 logging.debug(
-                    f"[DEBUG] Skipping {name} (basename '{basename}' already cached)"
+                    f"[DEBUG] Skipping {name} (basename '{basename}' already cached) "
+                    f"→ assigned {logo_path.name}"
                 )
                 skipped += 1
                 continue
@@ -290,6 +349,7 @@ def download_logos(channels, prev_channels):
                         check=True,
                     )
                     ch["logo_local"] = str(local_path)
+                    with_logo += 1
                     existing_basenames.add(basename)
                     downloaded += 1
                     if was_present:
@@ -301,19 +361,20 @@ def download_logos(channels, prev_channels):
                     failed += 1
 
             progress = int((i / total) * 100)
-            if downloaded > 0:
-                notify(
-                    "Downloading logos...",
-                    f"{downloaded} dl ({new} new, {refreshed} refreshed), "
-                    f"{skipped} skipped, {failed} failed",
-                    progress=progress,
-                )
+            notify(
+                "Downloading logos...",
+                f"{downloaded} dl ({new} new, {refreshed} refreshed), "
+                f"{skipped} skipped, {failed} failed, {with_logo} with logo",
+                progress=progress,
+            )
 
     finally:
         end_time = time.time()
         if not STOPPED:
             # ✅ Save updated full list with new logo_local values
             save_json(ALL_CH_OUTPUT_JSON_PATH, channels, backup=False)
+            # ✅ Ensure the input for the next run has up-to-date metadata
+            save_json(ALL_CH_INPUT_JSON_PATH, channels, backup=False)
 
             # ✅ Save tv/movies category slices (all, not filtered)
             for cat in LOGO_DOWNLOAD_CATS:
@@ -336,16 +397,17 @@ def download_logos(channels, prev_channels):
             )
             logging.debug(
                 f"[DEBUG] Logo download complete: {downloaded} dl "
-                f"({new} new, {refreshed} refreshed), {skipped} skip, {failed} fail"
+                f"({new} new, {refreshed} refreshed), {skipped} skip, "
+                f"{failed} fail, {with_logo} with logo"
             )
-            # logging.debug("[DEBUG] Cleaning up unused logos")
-            # cleanup_unused_logos()
+            logging.debug("[DEBUG] Cleaning up unused logos")
+            cleanup_unused_logos()
         else:
             logging.info("[INFO] Logo download was interrupted by stop signal")
             notify(
                 "⚠️ Logo download stopped",
                 f"{downloaded} dl ({new} new, {refreshed} refreshed) | "
-                f"{skipped} skip | {failed} fail",
+                f"{skipped} skip | {failed} fail | {with_logo} with logo",
                 timeout=3000,
             )
 
@@ -393,13 +455,13 @@ def cleanup_unused_logos():
         mime, _ = mimetypes.guess_type(str(file))
         if mime and mime.startswith("image"):
             if file.name not in all_referenced:
-                logging.debug(f"[DEBUG] Deleting unused image: {file}")
+                # logging.debug(f"[DEBUG] Deleting unused image: {file}")
                 file.unlink()
                 deleted += 1
             else:
                 kept += 1
         else:
-            logging.debug(f"[DEBUG] Skipping non-image file: {file} ({mime})")
+            # logging.debug(f"[DEBUG] Skipping non-image file: {file} ({mime})")
             skipped += 1
 
     logging.info(
@@ -433,6 +495,9 @@ def left_join_metadata(source_channels, target_channels, fields):
     for ch in target_channels:
         meta = meta_map.get(ch.get("channel_id"))
         if not meta:
+            logging.debug(
+                f"[DEBUG] No match for channel: {ch['name']} ({ch['group']}) → metadata not merged"
+            )
             continue
         matches += 1
         for field in fields:
@@ -464,26 +529,31 @@ def split_and_save_cat_jsons(channels_json):
 
 
 def sync_json_to_upstream():
-    """Sync upstream JSON into local cache, preserving metadata fields."""
+    """Sync upstream JSON into local input, preserving metadata fields."""
     logging.debug("[DEBUG] Sync JSON triggered")
+
     if not ALL_CH_SOURCE_JSON_PATH.exists():
         logging.error(f"❌ Upstream JSON not found: {ALL_CH_SOURCE_JSON_PATH}")
         return
 
     upstream_channels = load_channels(ALL_CH_SOURCE_JSON_PATH)
-    if ALL_CH_OUTPUT_JSON_PATH.exists():
-        local_channels = load_channels(ALL_CH_OUTPUT_JSON_PATH)
+
+    # 🧠 Now we merge FROM INPUT (our last run), not _prev or output
+    if ALL_CH_INPUT_JSON_PATH.exists():
+        input_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
     else:
-        local_channels = []
+        input_channels = []
 
     joined_channels = left_join_metadata(
-        local_channels, upstream_channels, fields=["favorite", "logo_local"]
+        input_channels, upstream_channels, fields=FIELDS_TO_LEFT_JOIN
     )
-    save_json(ALL_CH_OUTPUT_JSON_PATH, joined_channels, backup=True)
+
+    # Save merged result back to input (since input is state now)
+    save_json(ALL_CH_INPUT_JSON_PATH, joined_channels, backup=True)
     split_and_save_cat_jsons(joined_channels)
 
     for field in FIELDS_TO_LEFT_JOIN:
-        local_count = sum(1 for ch in local_channels if ch.get(field))
+        local_count = sum(1 for ch in joined_channels if ch.get(field))
         updated_count = sum(1 for ch in upstream_channels if ch.get(field))
 
         if local_count > updated_count:
@@ -514,9 +584,9 @@ def filter_for_show(category):
 
     logging.debug(f"[DEBUG] Loaded {len(filtered_channels)} total channels")
 
-    sorted_channels = sort_channels_for_display(filtered_channels)
+    sorted_channels = sort_channels(filtered_channels)
 
-    return handle_favorite_names(sorted_channels)
+    return handle_fav_names(sorted_channels)
 
 
 def safe_load_channels(path, category=None):
@@ -551,8 +621,11 @@ def handle_sync_json():
 
 
 def handle_download_logos_only():
-    """Handle the --download-logos-only command line argument."""
+    """Handle the --download-logos-only argument.
+    Merges metadata into input, downloads logos, and promotes updated state.
+    """
     logging.debug("[DEBUG] Download-logos-only mode activated")
+
     if (
         not ALL_CH_INPUT_JSON_PATH.exists()
         or ALL_CH_INPUT_JSON_PATH.stat().st_size < 10
@@ -567,15 +640,12 @@ def handle_download_logos_only():
         logging.error("❌ Input sync failed or upstream JSON is invalid.")
         sys.exit(1)
 
-    prev_path = ALL_CH_OUTPUT_JSON_PATH.with_name(
-        ALL_CH_OUTPUT_JSON_PATH.stem + "_prev.json"
+    all_channels_prev = copy.deepcopy(all_channels)
+
+    all_channels = left_join_metadata(
+        all_channels_prev, all_channels, FIELDS_TO_LEFT_JOIN
     )
-    if prev_path.exists():
-        all_channels_prev = load_channels(prev_path)
-    else:
-        logging.debug("[DEBUG] No previous channel cache found, using empty list")
-        all_channels_prev = []
-    left_join_metadata(all_channels_prev, all_channels, FIELDS_TO_LEFT_JOIN)
+
     download_logos(all_channels, all_channels_prev)
 
 
@@ -610,45 +680,36 @@ def launch_mpv(selected):
 
 
 def rofi_select(channels):
-    logging.debug("[DEBUG] Opening Rofi menu with favorite toggle support")
-
+    logging.debug("[DEBUG] Opening Rofi menu with favorite toggle + quickbinds")
     menu = "\n".join(ch["display_name"] for ch in channels)
 
-    try:
-        result = subprocess.run(
-            [
-                "rofi",
-                "-dmenu",
-                "-i",
-                "-p",
-                "Select IPTV Channel",
-                "-kb-custom-10",
-                "Alt+0",
-            ],
-            input=menu,
-            capture_output=True,
-            text=True,
-        )
+    quickbinds = sorted(
+        [ch for ch in channels if "quickbind" in ch], key=lambda ch: ch["quickbind"]
+    )
+    kb_args = []
+    for i in range(len(quickbinds)):
+        kb_args += [f"-kb-custom-{i}", f"Alt+{i}"]
+    kb_args += ["-kb-custom-10", "Alt+0"]
 
-        display_name = result.stdout.strip()
-        if not display_name:
-            logging.debug("[DEBUG] No selection made")
-            return None
+    result = subprocess.run(
+        ["rofi", "-dmenu", "-i", "-p", "Select IPTV Channel"] + kb_args,
+        input=menu,
+        capture_output=True,
+        text=True,
+    )
 
-        print(result.returncode)
+    returncode = result.returncode
+    logging.debug(f"[DEBUG] Rofi return code: {returncode}")
+    stdout = result.stdout.strip()
 
-        if result.returncode == 19:
-            logging.debug(f"[DEBUG] Favorite toggle requested: {display_name}")
-            return ("favorite", display_name)
-        elif result.returncode == 0:
-            logging.debug(f"[DEBUG] Channel selected: {display_name}")
-            return ("launch", display_name)
-        else:
-            logging.debug("[DEBUG] Rofi selection canceled")
-            return None
-
-    except subprocess.CalledProcessError as e:
-        logging.error(f"[ERROR] Rofi failed: {e}")
+    if returncode == 18:  # Alt+0
+        return ("favorite", stdout)
+    elif 10 <= returncode <= 17:  # Alt+1 to Alt+9
+        slot = returncode - 9  # 10 → 1, 11 → 2, ..., 17 → 8, 18 was already handled
+        return ("quickbind", slot)
+    elif returncode == 0:
+        return ("launch", stdout)
+    else:
         return None
 
 
@@ -685,6 +746,82 @@ def handle_favorite_toggle(selected_channel, sorted_and_favs):
     save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
     split_and_save_cat_jsons(sorted_and_favs)
     notify("⭐ Favorite toggled", selected_channel["name"], timeout=2000)
+
+
+def handle_favorite_submenu(display_name, selected_channel, sorted_and_favs):
+    has_fav = selected_channel.get("favorite", False)
+    current_slot = selected_channel.get("quickbind")
+
+    instruction = (
+        "🧭 Select channel name to remove from favorites, "
+        "or a quickbind slot to assign/remove"
+    )
+    rofi_lines = [instruction, display_name]  # 🥇 Channel name now always second line
+
+    for i in range(1, 10):
+        if current_slot == i:
+            label = f"🛑 Remove from Quickbind Slot [{i}]"
+        else:
+            owner = next(
+                (ch for ch in sorted_and_favs if ch.get("quickbind") == i), None
+            )
+            if owner and owner != selected_channel:
+                label = f"🔁 Replace {owner['name']} on Quickbind Slot [{i}]"
+            elif current_slot:
+                label = f"🔁 Move to Quickbind Slot [{i}]"
+            else:
+                label = f"➕ Add to Quickbind Slot [{i}]"
+        rofi_lines.append(label)
+
+    submenu = subprocess.run(
+        ["rofi", "-dmenu", "-i", "-p", "Modify favorites"],
+        input="\n".join(rofi_lines),
+        capture_output=True,
+        text=True,
+    )
+
+    selection = submenu.stdout.strip()
+
+    if not selection or selection == instruction:
+        notify(
+            "❌ Invalid choice. Please select a channel or quickbind slot.",
+            timeout=2000,
+        )
+        return True
+
+    if selection == display_name:
+        if has_fav:
+            selected_channel.pop("favorite", None)
+            selected_channel.pop("quickbind", None)
+            notify("⭐ Favorite removed", selected_channel["name"], timeout=2000)
+            # 🧼 Resort entire list by name
+            sorted_and_favs.sort(key=lambda ch: ch["name"].lower())
+        else:
+            selected_channel["favorite"] = True
+            notify("⭐ Favorite added", selected_channel["name"], timeout=2000)
+
+    elif match := re.search(r"\[(\d)\]", selection):
+        slot = int(match.group(1))
+        if "Remove from Quickbind" in selection:
+            selected_channel.pop("quickbind", None)
+            notify(
+                f"🔓 Quickbind [{slot}] removed", selected_channel["name"], timeout=2000
+            )
+        else:
+            for ch in sorted_and_favs:
+                if ch.get("quickbind") == slot:
+                    ch.pop("quickbind")
+            selected_channel["quickbind"] = slot
+            selected_channel["favorite"] = True
+            notify(
+                f"⭐ Assigned to quickbind [{slot}]",
+                selected_channel["name"],
+                timeout=2000,
+            )
+
+    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
+    split_and_save_cat_jsons(sorted_and_favs)
+    return True
 
 
 # ========== MAIN ==========
@@ -765,6 +902,7 @@ def main():
 
     while True:
         sorted_and_favs = filter_for_show(args.category)
+
         logging.debug("[DEBUG] Showing user menu")
         selected = rofi_select(sorted_and_favs)
 
@@ -774,21 +912,36 @@ def main():
 
         action, selection = selected
 
+        logging.debug(f"[DEBUG] Selected action: {action}, selection: {selection}")
+
         selected_channel = next(
-            (ch for ch in sorted_and_favs if ch["display_name"] == selection), None
+            (
+                ch
+                for ch in sorted_and_favs
+                if str(ch.get("quickbind")) == str(selection)
+            ),
+            None,
         )
+
+        if action == "quickbind":
+            slot = selection
+            if selected_channel:
+                handle_selected_channel(selected_channel["url"], sorted_and_favs)
+            else:
+                notify(f"❌ No channel assigned to quickbind [{slot}]", timeout=2000)
+            break
 
         if not selected_channel:
             logging.warning(f"[WARN] Selected display name not found: {selection}")
             break
 
         if action == "favorite":
-            handle_favorite_toggle(selected_channel, sorted_and_favs)
-            continue  # 🔁 Reopen menu after toggle
+            if handle_favorite_submenu(selection, selected_channel, sorted_and_favs):
+                continue
 
         elif action == "launch":
             handle_selected_channel(selected_channel["url"], sorted_and_favs)
-            break  # ✅ Launch ends session
+            break
 
 
 if __name__ == "__main__":
