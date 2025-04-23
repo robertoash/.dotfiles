@@ -702,9 +702,9 @@ def rofi_select(channels):
     logging.debug(f"[DEBUG] Rofi return code: {returncode}")
     stdout = result.stdout.strip()
 
-    if returncode == 18:  # Alt+0
+    if returncode == 19:  # Alt+0
         return ("favorite", stdout)
-    elif 10 <= returncode <= 17:  # Alt+1 to Alt+9
+    elif 10 <= returncode <= 18:  # Alt+1 to Alt+9
         slot = returncode - 9  # 10 → 1, 11 → 2, ..., 17 → 8, 18 was already handled
         return ("quickbind", slot)
     elif returncode == 0:
@@ -752,10 +752,11 @@ def handle_favorite_submenu(display_name, selected_channel, sorted_and_favs):
     has_fav = selected_channel.get("favorite", False)
     current_slot = selected_channel.get("quickbind")
 
-    instruction = (
-        "🧭 Select channel name to remove from favorites, "
-        "or a quickbind slot to assign/remove"
-    )
+    if has_fav:
+        instruction = "🧭 Select to remove from favorites, or manage quickbind slot"
+    else:
+        instruction = "🧭 Select to add to favorites, or assign a quickbind slot"
+
     rofi_lines = [instruction, display_name]  # 🥇 Channel name now always second line
 
     for i in range(1, 10):
@@ -918,15 +919,18 @@ def main():
             (
                 ch
                 for ch in sorted_and_favs
-                if str(ch.get("quickbind")) == str(selection)
+                if ch.get("display_name") == selection or ch.get("name") == selection
             ),
             None,
         )
 
         if action == "quickbind":
-            slot = selection
-            if selected_channel:
-                handle_selected_channel(selected_channel["url"], sorted_and_favs)
+            slot = int(selection)
+            quickbound = next(
+                (ch for ch in sorted_and_favs if ch.get("quickbind") == slot), None
+            )
+            if quickbound:
+                handle_selected_channel(quickbound["url"], sorted_and_favs)
             else:
                 notify(f"❌ No channel assigned to quickbind [{slot}]", timeout=2000)
             break
