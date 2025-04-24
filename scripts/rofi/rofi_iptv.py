@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 import argparse
-import copy
 import json
 import logging
-import mimetypes
 import os
 import re
 import subprocess
 import sys
-import time
 from pathlib import Path
 
 import psutil
+from dotenv import load_dotenv
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
@@ -19,31 +17,34 @@ from _utils import logging_utils  # noqa: E402
 
 # ========== CONFIG ==========
 ALL_CH_JSON_FILENAME = "all_channels.json"
+
 SOURCE_PATH = Path("/media/sda1/server_bkups/iptv_server/")
-TARGET_PATH = Path("/home/rash/.config/scripts/_cache/rofi/iptv/")
-INPUT_DIR = "input"
-OUTPUT_DIR = "output"
-LOGO_DIR = "logos"
-INPUT_TARGET_PATH = TARGET_PATH / INPUT_DIR
-OUTPUT_TARGET_PATH = TARGET_PATH / OUTPUT_DIR
-LOGO_CACHE_DIR = TARGET_PATH / LOGO_DIR
 ALL_CH_SOURCE_JSON_PATH = SOURCE_PATH / ALL_CH_JSON_FILENAME
+
+TARGET_PATH = Path("/home/rash/.config/scripts/_cache/rofi/iptv/")
+
+INPUT_DIR = "input"
+INPUT_TARGET_PATH = TARGET_PATH / INPUT_DIR
 ALL_CH_INPUT_JSON_PATH = INPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
+
+OUTPUT_DIR = "output"
+OUTPUT_TARGET_PATH = TARGET_PATH / OUTPUT_DIR
 ALL_CH_OUTPUT_JSON_PATH = OUTPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
 
-LOCK_PATH = LOGO_CACHE_DIR / ".logo_download.lock"
-STOP_PATH = LOGO_CACHE_DIR / ".logo_download.stop"  # Stop signal path
-
-DOWNLOAD_CONNECTIONS_PER_SERVER = 3
-DOWNLOAD_CONNECTIONS_PER_FILE = 2
-
 ALL_CATS = ["tv", "movies", "series", "spicy", "all"]
-FIELDS_TO_LEFT_JOIN = ["favorite", "logo_local", "quickbind"]
-LOGO_DOWNLOAD_CATS = ["tv", "movies"]
-MOVIES_LOGO_FILTER = ["|en|"]
-
+FIELDS_TO_LEFT_JOIN = ["favorite", "quickbind"]
 EXCLUDED_CHANNELS = [r"^### ### #"]
 NOTIFICATION_ID = "1718"
+
+env_path = Path.home() / ".secrets" / "iptv.env"
+load_dotenv(dotenv_path=env_path)
+USER_TO_REPLACE = os.getenv("USER_TO_REPLACE", "")
+PASS_TO_REPLACE = os.getenv("PASS_TO_REPLACE", "")
+EXTRA_USERNAME = os.getenv("EXTRA_USERNAME", "")
+EXTRA_PASSWORD = os.getenv("EXTRA_PASSWORD", "")
+
+if not all([USER_TO_REPLACE, PASS_TO_REPLACE, EXTRA_USERNAME, EXTRA_PASSWORD]):
+    raise RuntimeError("❌ Missing credentials in .env file")
 
 ROFI_CH_SORTING = {
     "quickbind": 0,
@@ -63,8 +64,6 @@ ROFI_CH_SORTING = {
         },
     ],
 }
-
-FLAGS = {"force_logo_refresh": False}
 
 # ========== UTILS ==========
 
@@ -119,27 +118,6 @@ def is_pid_alive(pid):
     alive = psutil.pid_exists(pid)
     logging.debug(f"[DEBUG] Checking PID {pid}: {'alive' if alive else 'dead'}")
     return alive
-
-
-def is_valid_local_logo(path):
-    logging.debug(f"[DEBUG] Validating logo path: {path}")
-    if not path or not Path(path).exists():
-        return False
-
-    mimetype, _ = mimetypes.guess_type(str(path))
-    if mimetype and mimetype.startswith("image"):
-        return True
-
-    # Fallback: Accept image-looking files in the logo cache folder
-    if Path(path).parent == LOGO_CACHE_DIR and path.suffix.lower() in [
-        ".png",
-        ".jpg",
-        ".jpeg",
-    ]:
-        logging.debug(f"[DEBUG] Accepting {path} as fallback image")
-        return True
-
-    return False
 
 
 def save_json(path, data, backup=False):
@@ -225,258 +203,13 @@ def load_channels(path):
     return []
 
 
-def download_logos(channels, prev_channels):
-    start_time = time.time()
-
-    if STOP_PATH.exists():
-        STOP_PATH.unlink()
-
-    STOPPED = False
-
-    logging.debug("[DEBUG] Starting logo download process")
-
-    # Convert prev_channels list to a lookup dict
-    prev_logo_map = {
-        ch["channel_id"]: ch.get("logo_url", "")
-        for ch in prev_channels
-        if "channel_id" in ch
-    }
-    logging.debug(
-        f"[DEBUG] Built logo URL map for {len(prev_logo_map)} previous channels"
-    )
-
-    existing_basenames = {
-        normalize_filename(f.name) for f in LOGO_CACHE_DIR.glob("*.png")
-    }
-
-    if LOCK_PATH.exists():
-        try:
-            pid = int(LOCK_PATH.read_text())
-            if is_pid_alive(pid):
-                logging.debug(
-                    f"[DEBUG] Lock active by PID {pid}, skipping logo download"
-                )
-                return
-            else:
-                LOCK_PATH.unlink()
-        except Exception as e:
-            logging.debug(f"[DEBUG] Error reading lock file: {e}")
-            LOCK_PATH.unlink()
-
-    # ✅ Force refresh if cache is completely empty (e.g., after nuke)
-    if not any(LOGO_CACHE_DIR.glob("*.png")):
-        logging.warning("[WARN] Logo cache is empty. Forcing refresh.")
-        FLAGS["force_logo_refresh"] = True
-
-    try:
-        # Ensure path before writing lock
-        ensure_dirs(LOCK_PATH)
-        LOCK_PATH.write_text(str(os.getpid()))
-
-        total = len(channels)
-        downloaded = new = refreshed = skipped = failed = with_logo = 0
-
-        for i, ch in enumerate(channels, 1):
-            # Check for stop signal before continuing
-            if STOPPED := STOP_PATH.exists():
-                logging.debug("[DEBUG] Stop signal received. Aborting logo download.")
-                STOPPED = True
-                break
-
-            if ch["category"] not in LOGO_DOWNLOAD_CATS:
-                logging.debug(
-                    f"[DEBUG] Skipping {ch['name']} (not in {LOGO_DOWNLOAD_CATS})"
-                )
-                continue
-            if ch["category"] == "movies" and not any(
-                filter in ch["group"].lower() for filter in MOVIES_LOGO_FILTER
-            ):
-                logging.debug(
-                    f"[DEBUG] Skipping {ch['name']}: "
-                    f"Movie doesn't contain filters {MOVIES_LOGO_FILTER}"
-                )
-                continue
-
-            name = ch["name"]
-            logo_url = ch.get("logo_url")
-            if not logo_url:
-                logging.debug(f"[DEBUG] Skipping {name} (no logo_url)")
-                continue
-
-            ensure_dirs(LOGO_CACHE_DIR)
-            local_path = LOGO_CACHE_DIR / f"{slugify(name)}.png"
-            filename = local_path.name
-            unchanged = prev_logo_map.get(ch["channel_id"], "") == logo_url
-
-            if not FLAGS["force_logo_refresh"] and unchanged:
-                logging.debug(f"[DEBUG] Skipping {name} (unchanged)")
-                skipped += 1
-                continue
-            basename = normalize_filename(filename)
-            if ch["category"] == "tv" and basename in existing_basenames:
-                logo_path = LOGO_CACHE_DIR / f"{basename}.png"
-                ch["logo_local"] = str(logo_path)
-                with_logo += 1
-                logging.debug(
-                    f"[DEBUG] Skipping {name} (basename '{basename}' already cached) "
-                    f"→ assigned {logo_path.name}"
-                )
-                skipped += 1
-                continue
-            else:
-                try:
-                    logging.debug(f"[DEBUG] Downloading logo for {name} → {filename}")
-                    was_present = local_path.exists()
-                    subprocess.run(
-                        [
-                            "aria2c",
-                            "--quiet=true",
-                            "--dir",
-                            str(LOGO_CACHE_DIR),
-                            "--out",
-                            filename,
-                            "--allow-overwrite=true",
-                            "--timeout=5",
-                            "--max-tries=2",
-                            "--max-connection-per-server",
-                            str(DOWNLOAD_CONNECTIONS_PER_SERVER),
-                            "--split",
-                            str(DOWNLOAD_CONNECTIONS_PER_FILE),
-                            logo_url,
-                        ],
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                        check=True,
-                    )
-                    ch["logo_local"] = str(local_path)
-                    with_logo += 1
-                    existing_basenames.add(basename)
-                    downloaded += 1
-                    if was_present:
-                        refreshed += 1  # File exists, so we're refreshing it
-                    else:
-                        new += 1  # File doesn't exist, so it's a new download
-                except Exception as e:
-                    logging.debug(f"[DEBUG] Error downloading logo for {name}: {e}")
-                    failed += 1
-
-            progress = int((i / total) * 100)
-            notify(
-                "Downloading logos...",
-                f"{downloaded} dl ({new} new, {refreshed} refreshed), "
-                f"{skipped} skipped, {failed} failed, {with_logo} with logo",
-                progress=progress,
-            )
-
-    finally:
-        end_time = time.time()
-        if not STOPPED:
-            # ✅ Save updated full list with new logo_local values
-            save_json(ALL_CH_OUTPUT_JSON_PATH, channels, backup=False)
-            # ✅ Ensure the input for the next run has up-to-date metadata
-            save_json(ALL_CH_INPUT_JSON_PATH, channels, backup=False)
-
-            # ✅ Save tv/movies category slices (all, not filtered)
-            for cat in LOGO_DOWNLOAD_CATS:
-                save_json(
-                    OUTPUT_TARGET_PATH / f"{cat}_channels.json",
-                    [ch for ch in channels if ch.get("category") == cat],
-                    backup=False,
-                )
-
-            # Report on results
-            if downloaded > 0:
-                notify(
-                    "✅ Logos done",
-                    f"{downloaded} dl ({new} new, {refreshed} refreshed) | "
-                    f"{skipped} skip | {failed} fail",
-                    timeout=3000,
-                )
-            logging.debug(
-                f"[DEBUG] Logo download took {end_time - start_time:.2f} seconds"
-            )
-            logging.debug(
-                f"[DEBUG] Logo download complete: {downloaded} dl "
-                f"({new} new, {refreshed} refreshed), {skipped} skip, "
-                f"{failed} fail, {with_logo} with logo"
-            )
-            logging.debug("[DEBUG] Cleaning up unused logos")
-            cleanup_unused_logos()
-        else:
-            logging.info("[INFO] Logo download was interrupted by stop signal")
-            notify(
-                "⚠️ Logo download stopped",
-                f"{downloaded} dl ({new} new, {refreshed} refreshed) | "
-                f"{skipped} skip | {failed} fail | {with_logo} with logo",
-                timeout=3000,
-            )
-
-        if LOCK_PATH.exists():
-            LOCK_PATH.unlink()
-
-
-def trigger_logo_stop():
-    STOP_PATH = LOGO_CACHE_DIR / ".logo_download.stop"
-    STOP_PATH.touch()
-    logging.info("[INFO] Stop signal sent to background logo downloader.")
-
-
-def cleanup_unused_logos():
-    all_referenced = set()
-
-    for cat in ALL_CATS:
-        path = OUTPUT_TARGET_PATH / f"{cat}_channels.json"
-        if not path.exists():
-            logging.debug(f"[DEBUG] Skipping {cat} (no cache found)")
-            continue
-
-        current_channels = load_channels(path)
-        referenced = {
-            Path(ch["logo_local"]).name
-            for ch in current_channels
-            if ch.get("logo_local")
-        }
-
-        logging.debug(f"[DEBUG] {cat}: {len(referenced)} logos referenced")
-        all_referenced.update(referenced)
-
-    # 🚨 Safety net: Avoid mass deletion if reference list is suspiciously small
-    if len(all_referenced) < 10:
-        logging.warning(
-            "⚠️ Too few referenced logos — cleanup aborted to avoid mass deletion."
-        )
-        return
-
-    deleted = kept = skipped = 0
-    for file in LOGO_CACHE_DIR.iterdir():
-        if not file.is_file():
-            continue  # skip dirs or junk
-
-        mime, _ = mimetypes.guess_type(str(file))
-        if mime and mime.startswith("image"):
-            if file.name not in all_referenced:
-                # logging.debug(f"[DEBUG] Deleting unused image: {file}")
-                file.unlink()
-                deleted += 1
-            else:
-                kept += 1
-        else:
-            # logging.debug(f"[DEBUG] Skipping non-image file: {file} ({mime})")
-            skipped += 1
-
-    logging.info(
-        f"[INFO] Cleanup complete: {deleted} deleted, {kept} kept, {skipped} skipped."
-    )
-    logging.debug("[DEBUG] ✅ Cleanup complete.")
-
-
 def left_join_metadata(source_channels, target_channels, fields):
     """
     Performs a LEFT JOIN-style merge of metadata fields from source to target using channel_id.
 
     For each channel in target_channels:
     - If a channel with the same channel_id exists in source_channels,
-      copy specified fields (e.g., favorite, logo_local) if present.
+      copy specified fields (e.g., favorite) if present.
     - Fields in target will only be updated if found in the source.
 
     Channels present only in source (but not in target) are ignored.
@@ -539,14 +272,18 @@ def sync_json_to_upstream():
     upstream_channels = load_channels(ALL_CH_SOURCE_JSON_PATH)
 
     # 🧠 Now we merge FROM INPUT (our last run), not _prev or output
-    if ALL_CH_INPUT_JSON_PATH.exists():
-        input_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
+    if ALL_CH_OUTPUT_JSON_PATH.exists():
+        input_channels = load_channels(ALL_CH_OUTPUT_JSON_PATH)
     else:
         input_channels = []
 
     joined_channels = left_join_metadata(
         input_channels, upstream_channels, fields=FIELDS_TO_LEFT_JOIN
     )
+
+    joined_channels = [
+        {**ch, "url": patch_stream_url(ch["url"])} for ch in joined_channels
+    ]
 
     # Save merged result back to input (since input is state now)
     save_json(ALL_CH_INPUT_JSON_PATH, joined_channels, backup=True)
@@ -576,6 +313,19 @@ def sync_json_to_upstream():
             )
 
 
+def patch_stream_url(url: str) -> str:
+    # Skip if already patched
+    if f"/{EXTRA_USERNAME}/{EXTRA_PASSWORD}/" in url:
+        return url
+
+    old_segment = f"/{USER_TO_REPLACE}/{PASS_TO_REPLACE}/"
+    new_segment = f"/{EXTRA_USERNAME}/{EXTRA_PASSWORD}/"
+
+    if old_segment in url:
+        return url.replace(old_segment, new_segment)
+    return url  # unchanged if pattern not found
+
+
 def filter_for_show(category):
     relevant_json = OUTPUT_TARGET_PATH / f"{category}_channels.json"
     logging.debug(f"[DEBUG] Cache path: {relevant_json}")
@@ -602,51 +352,8 @@ def safe_load_channels(path, category=None):
 
 def handle_sync_json():
     """Handle the --sync-json command line argument."""
-    if LOCK_PATH.exists():
-        try:
-            pid = int(LOCK_PATH.read_text())
-            if is_pid_alive(pid):
-                logging.warning(
-                    f"[WARN] Sync aborted: logo download in progress by PID {pid}"
-                )
-                sys.exit(1)
-            else:
-                logging.debug("[DEBUG] Removing stale logo lock")
-                LOCK_PATH.unlink()
-        except Exception as e:
-            logging.debug(f"[DEBUG] Failed to read logo lock: {e}")
-            LOCK_PATH.unlink()
     sync_json_to_upstream()
     logging.info(f"[INFO] Sync complete. Fresh cache saved to {ALL_CH_INPUT_JSON_PATH}")
-
-
-def handle_download_logos_only():
-    """Handle the --download-logos-only argument.
-    Merges metadata into input, downloads logos, and promotes updated state.
-    """
-    logging.debug("[DEBUG] Download-logos-only mode activated")
-
-    if (
-        not ALL_CH_INPUT_JSON_PATH.exists()
-        or ALL_CH_INPUT_JSON_PATH.stat().st_size < 10
-    ):
-        logging.warning(
-            f"[WARN] No valid merged input found: {ALL_CH_INPUT_JSON_PATH}. Syncing..."
-        )
-        sync_json_to_upstream()
-
-    all_channels = load_channels(ALL_CH_INPUT_JSON_PATH)
-    if not all_channels or not isinstance(all_channels, list):
-        logging.error("❌ Input sync failed or upstream JSON is invalid.")
-        sys.exit(1)
-
-    all_channels_prev = copy.deepcopy(all_channels)
-
-    all_channels = left_join_metadata(
-        all_channels_prev, all_channels, FIELDS_TO_LEFT_JOIN
-    )
-
-    download_logos(all_channels, all_channels_prev)
 
 
 def launch_mpv(selected):
@@ -719,20 +426,11 @@ def handle_selected_channel(selected, sorted_and_favs):
     selected_entry = next((ch for ch in sorted_and_favs if ch["url"] == selected), None)
     if selected_entry:
         name = selected_entry["name"]
-        logo = selected_entry.get("logo_local")
-        if is_valid_local_logo(logo):
-            notify(
-                "Launching stream...",
-                f"🎬 {name}",
-                icon=logo,
-                timeout=4000,
-            )
-        else:
-            notify(
-                "Launching stream...",
-                f"🎬 {name}",
-                timeout=2000,
-            )
+        notify(
+            "Launching stream...",
+            f"🎬 {name}",
+            timeout=2000,
+        )
 
     logging.debug("[DEBUG] Launching MPV with caching")
 
@@ -743,6 +441,7 @@ def handle_selected_channel(selected, sorted_and_favs):
 
 def handle_favorite_toggle(selected_channel, sorted_and_favs):
     toggle_favorite(selected_channel)
+    save_json(ALL_CH_INPUT_JSON_PATH, sorted_and_favs, backup=True)
     save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
     split_and_save_cat_jsons(sorted_and_favs)
     notify("⭐ Favorite toggled", selected_channel["name"], timeout=2000)
@@ -837,11 +536,6 @@ def main():
         description="Launch IPTV channels via Rofi with category filtering.",
     )
     parser.add_argument(
-        "--force-logo-refresh",
-        action="store_true",
-        help="Force re-download of all channel logos.",
-    )
-    parser.add_argument(
         "--category",
         type=str,
         default="tv",
@@ -854,24 +548,9 @@ def main():
         help="Enable debug mode.",
     )
     parser.add_argument(
-        "--download-logos-only",
-        action="store_true",
-        help="Only download logos and exit.",
-    )
-    parser.add_argument(
         "--sync-json",
         action="store_true",
-        help="Sync upstream JSON into local cache, preserving favorites and logo paths",
-    )
-    parser.add_argument(
-        "--cleanup",
-        action="store_true",
-        help="Remove logos no longer referenced by any channel",
-    )
-    parser.add_argument(
-        "--stop",
-        action="store_true",
-        help="Signal background logo downloader to stop.",
+        help="Sync upstream JSON into local cache, preserving favorites",
     )
 
     args = parser.parse_args()
@@ -879,25 +558,12 @@ def main():
     configure_logging(args)
 
     logging.debug("[DEBUG] Debug mode enabled")
-    logging.debug(f"[DEBUG] Logo cache: {LOGO_CACHE_DIR}")
 
-    if args.stop:
-        trigger_logo_stop()
-        sys.exit(0)
-    if args.force_logo_refresh:
-        FLAGS["force_logo_refresh"] = True
-        logging.debug("[DEBUG] Forcing logo download")
     if args.category not in ALL_CATS:
         logging.error(f"[ERROR] Invalid category: {args.category}")
         sys.exit(1)
     if args.sync_json:
         handle_sync_json()
-        sys.exit(0)
-    if args.cleanup:
-        cleanup_unused_logos()
-        sys.exit(0)
-    if args.download_logos_only:
-        handle_download_logos_only()
         sys.exit(0)
     logging.debug(f"[DEBUG] Category selected: {args.category}")
 
