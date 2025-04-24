@@ -9,6 +9,7 @@ aquamarine-git###pacman
 aria2###pacman
 asdf-vm###pacman
 atool###pacman
+atuin###pacman
 axel###pacman
 b43-fwcutter###pacman
 baobab###pacman
@@ -27,7 +28,6 @@ brother-dcp-l2530dw###pacman
 btop###pacman
 btrfs-progs###pacman
 buku-git###pacman
-calc###pacman
 cantarell-fonts###pacman
 chafa###pacman
 chaotic-keyring###pacman
@@ -224,6 +224,7 @@ python-pipx###pacman
 python-pyqt5###pacman
 python-pytz###pacman
 python-setuptools###pacman
+qalculate-gtk###pacman
 qt5-wayland###pacman
 qt6-multimedia###pacman
 qt6-quick3d###pacman
