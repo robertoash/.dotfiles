@@ -137,6 +137,7 @@ jellyfin-media-player###pacman
 jfsutils###pacman
 jq###pacman
 kitty-git###pacman
+lazydocker###pacman
 lazygit###pacman
 less###pacman
 lib32-libunwind###pacman
