@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+import argparse
 import json
+import logging
 import os
 import subprocess
+import sys
 import time
+
+# Add the custom script path to PYTHONPATH
+sys.path.append("/home/rash/.config/scripts")
+from _utils import logging_utils  # noqa: E402
 
 vars = {
     "CONFIG_DIR": os.environ.get("DOTFILES_DIR", "/home/rash/.config"),
@@ -28,7 +35,7 @@ APPS = {
     "1": [
         {
             "name": "browser_personal",
-            "command": "vivaldi",
+            "command": "vivaldi_launch --profile rash",
             "is_master": True,
         },
         {
@@ -40,7 +47,7 @@ APPS = {
     "2": [
         {
             "name": "browser_jobhunt",
-            "command": "vivaldi_jobhunt",
+            "command": "vivaldi_launch --profile jobhunt",
             "is_master": True,
         },
     ],
@@ -93,7 +100,7 @@ APPS = {
     "11": [
         {
             "name": "gpt_zen",
-            "command": "vivaldi_app --app=https://chatgpt.com/",
+            "command": "vivaldi_launch --profile chatgpt",
             "is_master": True,
         },
         {
@@ -122,11 +129,20 @@ APPS = {
         },
         {
             "name": "perplexity_zen",
-            "command": "vivaldi_app --app=https://perplexity.ai",
+            "command": "vivaldi_launch --profile perplexity",
             "is_master": False,
         },
     ],
 }
+
+
+def configure_logging(args):
+    # Configure logging
+    logging_utils.configure_logging()
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    else:
+        logging.getLogger().setLevel(logging.WARNING)
 
 
 def get_window_addresses():
@@ -208,12 +224,24 @@ def launch_and_manage(workspace, name, command, is_master):
     command = command.replace("___name___", name)
 
     print(f"Launching: {command}")
-    subprocess.Popen(command, shell=True)
+
+    # Ensure proper environment for all launched apps
+    env = os.environ.copy()
+    # Ensure PATH includes common locations
+    if "PATH" in env:
+        paths = env["PATH"].split(":")
+        if not any(p.endswith("/.local/bin") for p in paths):
+            env["PATH"] = f"{env['PATH']}:/home/rash/.local/bin"
+
+    # Start the process with the enhanced environment
+    process = subprocess.Popen(command, shell=True, env=env)
+    logging.debug(f"Started process for {name} with PID {process.pid}")
 
     # Wait specifically for this window
     address = wait_for_window(existing_windows)
     # time.sleep(0.2)
     if not address:
+        logging.warning(f"No window detected for {name} in workspace {workspace}")
         return  # Skip if window did not appear
 
     print(f"New window detected at {address}")
@@ -225,10 +253,22 @@ def launch_and_manage(workspace, name, command, is_master):
         subprocess.run(["hyprctl", "dispatch", "layoutmsg", "swapwithmaster"])
 
 
+def arg_parser():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="MQTT Listener for Linux")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    args = parser.parse_args()
+    return args
+
+
 def main():
     """Launch all applications sequentially, ensuring correct workspace assignment."""
 
-    # Initial delay
+    args = arg_parser()
+    configure_logging(args)
+    logging.info("Starting Hyprland Launch Apps on Login Service")
+
+    # Initial delay - allow window manager to stabilize
     time.sleep(0.5)
 
     # Launch apps in order of workspace
@@ -240,9 +280,11 @@ def main():
     subprocess.run(["hyprctl", "dispatch", "workspace", "11"], check=True)
     # Move focus to master window
     master_address = get_master_window_address("11")
-    subprocess.run(
-        ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"], check=True
-    )
+    if master_address:  # Check if master address exists
+        subprocess.run(
+            ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"],
+            check=True,
+        )
 
     time.sleep(0.2)
 
@@ -250,9 +292,11 @@ def main():
     subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
     master_address = get_master_window_address("1")
     # Move focus to master window
-    subprocess.run(
-        ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"], check=True
-    )
+    if master_address:  # Check if master address exists
+        subprocess.run(
+            ["hyprctl", "dispatch", "focuswindow", f"address:{master_address}"],
+            check=True,
+        )
 
 
 if __name__ == "__main__":
