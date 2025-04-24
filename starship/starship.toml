@@ -15,7 +15,7 @@ $hostname\
 $virtualenv\
 $direnv\
 $time
-${custom.smart_cwd}${custom.yazi}$character
+${custom.smart_cwd}${custom.secure_shell}${custom.yazi}$character
 """
 
 palette = "tokyonight_deep"
@@ -259,7 +259,18 @@ fi
 when = "test -n \"$YAZI_LEVEL\""
 format = "[$symbol$output]($style) "
 symbol = "🧭 "
-style = "bold red"
+style = "fg:color17"
+
+[custom.secure_shell]
+command = '''
+if [ "$SECURE_SHELL" = "1" ]; then
+  echo "STEALTH MODE"
+fi
+'''
+when = "test -n \"$SECURE_SHELL\""
+format = "[$symbol$output]($style) "
+symbol = "😈 "
+style = "fg:color9"
 
 
 #[custom.my_module_name]
