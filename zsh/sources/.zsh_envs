@@ -8,6 +8,11 @@ export BROWSER="vivaldi --profile-directory=rash %s"
 export BROWSER_CLEAN="vivaldi"
 export NOTE_EDITOR="obsidian"
 export VISUAL="hx"
+export QT_QPA_PLATFORMTHEME=gtk2
+export XDG_CURRENT_DESKTOP=Hyprland
+
+# Theme
+export GTK_THEME="tokyonight_deep"
 
 export CURRENT_PROJECT_DIR="/home/rash/dev/apps"
 export DOTFILES_DIR="/home/rash/.config"
