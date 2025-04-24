@@ -4,10 +4,12 @@
 # # History & Cache
 # #################################
 
-HISTSIZE=10000
-SAVEHIST=10000
-HISTCONTROL=ignoreboth
-HISTFILE=~/.config/zsh/.zsh_history
+export HISTSIZE=10000
+export SAVEHIST=10000
+export HISTCONTROL=ignoreboth
+if [[ -z "$SECURE_SHELL" ]]; then
+  export HISTFILE="$HOME/.cache/zsh_history"
+fi
 
 
 # #################################
@@ -56,10 +58,12 @@ zstyle ':completion:*:*:hx:*' command 'fasd --complete'
 # # Autocompletion priority
 # #################################
 
-# Activate fasd (easy file and dir jump)
-eval "$(fasd --init auto)"
-unalias z 2>/dev/null # Reclaim z command
-unalias zz 2>/dev/null # Reclaim zz command
+if [[ -z "$SECURE_SHELL" ]]; then
+  # Activate fasd (easy file and dir jump)
+  eval "$(fasd --init auto)"
+  unalias z 2>/dev/null # Reclaim z command
+  unalias zz 2>/dev/null # Reclaim zz command
+fi
 
 # #################################
 # # Sourcing
@@ -133,8 +137,12 @@ fi
 function lk {
   cd "$(walk --icons --with-border --fuzzy "$@")"
 }
-#zoxide
-eval "$(zoxide init zsh)"
+if [[ -z "$SECURE_SHELL" ]]; then
+  #zoxide
+  eval "$(zoxide init zsh)"
+  # Atuin shell history
+  eval "$(atuin init zsh --disable-up-arrow)"
+fi
 # Load Starship prompt
 eval "$(starship init zsh)"
 # Launch neofetch only in interactive shells and not within yazi
