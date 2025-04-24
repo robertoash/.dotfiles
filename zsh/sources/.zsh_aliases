@@ -90,6 +90,7 @@ alias yz="yazi"
 ## Git Tools
 alias delete_gone_branches="git branch -vv | awk '$0 ~ /: gone]/ {print $1;}' | xargs -r git branch -D"
 alias lg="lazygit"
+alias lzd="lazydocker"
 
 ## Media
 alias cnn="~/scripts/secrets/launch_iptv.py --cnn"
