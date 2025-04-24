@@ -21,6 +21,9 @@ alias yay_total="yay -Syu --devel"
 alias yay_update="yayupdate"
 
 # Applications
+## Atuin
+alias atuin_clean="atuin history prune"
+
 ## Backup Tools
 alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
 alias bkup_buku="bash ~/.config/scripts/backup/run_buku_bkup.sh"
