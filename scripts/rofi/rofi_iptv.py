@@ -356,9 +356,9 @@ def handle_sync_json():
     logging.info(f"[INFO] Sync complete. Fresh cache saved to {ALL_CH_INPUT_JSON_PATH}")
 
 
-def launch_mpv(selected):
+def launch_mpv(selected_entry):
     """Launch MPV with caching, retry, and background tolerance."""
-    logging.debug(f"[DEBUG] Launching MPV: {selected}")
+    logging.debug(f"[DEBUG] Launching MPV: {selected_entry}")
 
     try:
         subprocess.Popen(
@@ -375,7 +375,9 @@ def launch_mpv(selected):
                 "--stream-lavf-o=reconnect=1",  # Reconnect if the stream fails
                 "--stream-lavf-o=reconnect_streamed=1",  # Reconnect streamed formats
                 "--stream-lavf-o=reconnect_delay_max=5",  # Max 5s before retrying a reconnect
-                selected,
+                "--wayland-app-id=rofi_iptv",
+                f"--title=IPTV - {selected_entry['name']}",  # Title with channel name
+                selected_entry["url"],
             ],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
@@ -420,10 +422,12 @@ def rofi_select(channels):
         return None
 
 
-def handle_selected_channel(selected, sorted_and_favs):
+def handle_selected_channel(selected_url, sorted_and_favs):
     """Handle the selected channel by launching MPV and showing notifications."""
-    logging.debug(f"[DEBUG] User selected: {selected}")
-    selected_entry = next((ch for ch in sorted_and_favs if ch["url"] == selected), None)
+    logging.debug(f"[DEBUG] User selected: {selected_url}")
+    selected_entry = next(
+        (ch for ch in sorted_and_favs if ch["url"] == selected_url), None
+    )
     if selected_entry:
         name = selected_entry["name"]
         notify(
@@ -434,7 +438,7 @@ def handle_selected_channel(selected, sorted_and_favs):
 
     logging.debug("[DEBUG] Launching MPV with caching")
 
-    launch_mpv(selected)
+    launch_mpv(selected_entry)
 
     logging.debug("[DEBUG] MPV exited, script ending")
 
@@ -596,7 +600,10 @@ def main():
                 (ch for ch in sorted_and_favs if ch.get("quickbind") == slot), None
             )
             if quickbound:
-                handle_selected_channel(quickbound["url"], sorted_and_favs)
+                handle_selected_channel(
+                    selected_url=quickbound["url"],
+                    sorted_and_favs=sorted_and_favs,
+                )
             else:
                 notify(f"❌ No channel assigned to quickbind [{slot}]", timeout=2000)
             break
@@ -606,11 +613,18 @@ def main():
             break
 
         if action == "favorite":
-            if handle_favorite_submenu(selection, selected_channel, sorted_and_favs):
+            if handle_favorite_submenu(
+                display_name=selection,
+                selected_channel=selected_channel,
+                sorted_and_favs=sorted_and_favs,
+            ):
                 continue
 
         elif action == "launch":
-            handle_selected_channel(selected_channel["url"], sorted_and_favs)
+            handle_selected_channel(
+                selected_url=selected_channel["url"],
+                sorted_and_favs=sorted_and_favs,
+            )
             break
 
 
