@@ -38,6 +38,8 @@
 !rofi/
 !ruff/
 !scripts/
+!spotifyd/
+!spotify-player/
 !starship/
 !swappy/
 !swayidle/
@@ -79,6 +81,8 @@
 !rofi/**/*
 !ruff/**/*
 !scripts/**/*
+!spotifyd/**/*
+!spotify-player/**/*
 !starship/**/*
 !swappy/**/*
 !swayidle/**/*
