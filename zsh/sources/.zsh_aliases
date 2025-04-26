@@ -81,8 +81,8 @@ alias o='a -e xdg-open' # quick opening files with xdg-open
 # alias f='fasd -f'        # file
 # alias sd='fasd -sid'     # interactive directory selection
 # alias sf='fasd -sif'     # interactive file selection
-# alias z='fasd_cd -d'     # cd, same functionality as j in autojump
-# alias zz='fasd_cd -d -i' # cd with interactive selection
+# alias z='fasd_cd -d'     # cd, same functionality as j in autojump [DISABLED MANUALLY]
+# alias zz='fasd_cd -d -i' # cd with interactive selection [DISABLED MANUALLY]
 
 ## File Management
 alias yz="yazi"
@@ -111,6 +111,9 @@ alias mst="mullvad status"
 ## Notes & Text
 alias define="camb"
 alias note="notesh -f ~/notes/quick.json"
+
+## Server
+alias iptvparse='ssh root@dockerlab "python3 /root/dev/setup_files/iptv_server/iptv_m3u_gen.py"'
 
 ## SVT Text
 alias svtti="svttext -colors -interactive"

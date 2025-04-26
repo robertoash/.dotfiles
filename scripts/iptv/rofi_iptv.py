@@ -53,10 +53,10 @@ ROFI_CH_SORTING = {
         {
             "regex_patterns": 2,
             "patterns_in_order": [
-                r"^SWE|",
-                r"^US|",
-                r"^SAL|",
-                r"^ESP|",
+                r"^SWE\|",
+                r"^US\|",
+                r"^SAL\|",
+                r"^ESP\|",
             ],
         },
         {
