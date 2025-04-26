@@ -1,27 +1,30 @@
 #!/bin/bash
+# ~/.config/scripts/iptv/full_iptv_refresh.sh
 
-# --- Step 1: Run remote IPTV parser ---
-echo "🔄 Running remote IPTV parser..."
-ssh root@dockerlab 'python3 /root/dev/setup_files/iptv_server/iptv_m3u_gen.py'
+set -euo pipefail
+
+# ========== Start Timer ==========
+start_time=$(date +%s)
+
+echo "🔄 Running IPTV parser..."
+~/.config/scripts/iptv/iptv_m3u_gen.py
 if [ $? -ne 0 ]; then
-    echo "❌ Failed running remote IPTV parser!"
+    echo "❌ IPTV parser failed!"
     exit 1
 fi
 
-# --- Step 2: Run backup script locally ---
-echo "💾 Running local backup script..."
-run_bkup_script --script iptv
+echo "💾 Sending IPTV files to server..."
+~/.config/scripts/iptv/upload_iptv_files_to_server.sh
 if [ $? -ne 0 ]; then
     echo "❌ Backup script failed!"
     exit 1
 fi
 
-# --- Step 3: Sync IPTV JSON ---
-echo "🔄 Syncing IPTV JSON locally..."
-~/.config/scripts/rofi/rofi_iptv.py --sync-json
-if [ $? -ne 0 ]; then
-    echo "❌ IPTV JSON sync failed!"
-    exit 1
-fi
+# ========== End Timer ==========
+end_time=$(date +%s)
+duration=$((end_time - start_time))
 
-echo "✅ Full IPTV refresh completed successfully! 🎉"
+minutes=$((duration / 60))
+seconds=$((duration % 60))
+
+echo "✅ Full IPTV refresh completed in ${minutes} min ${seconds} sec."

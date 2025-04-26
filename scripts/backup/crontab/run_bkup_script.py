@@ -15,7 +15,6 @@ script_mapping = {
     "buku": "bkup_buku.py",
     "snapshot-keep": "snapshot_keep_policy.py",
     "take-snapshot": "take_linuxmini_snapshot.py",
-    "iptv": "bkup_iptv.py",
 }
 
 additional_args = {

@@ -2,14 +2,12 @@
 import argparse
 import json
 import logging
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
 import psutil
-from dotenv import load_dotenv
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
@@ -18,33 +16,12 @@ from _utils import logging_utils  # noqa: E402
 # ========== CONFIG ==========
 ALL_CH_JSON_FILENAME = "all_channels.json"
 
-SOURCE_PATH = Path("/media/sda1/server_bkups/iptv_server/")
-ALL_CH_SOURCE_JSON_PATH = SOURCE_PATH / ALL_CH_JSON_FILENAME
-
-TARGET_PATH = Path("/home/rash/.config/scripts/_cache/rofi/iptv/")
-
-INPUT_DIR = "input"
-INPUT_TARGET_PATH = TARGET_PATH / INPUT_DIR
-ALL_CH_INPUT_JSON_PATH = INPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
-
-OUTPUT_DIR = "output"
-OUTPUT_TARGET_PATH = TARGET_PATH / OUTPUT_DIR
-ALL_CH_OUTPUT_JSON_PATH = OUTPUT_TARGET_PATH / ALL_CH_JSON_FILENAME
+OUTPUT_DIR = Path("/home/rash/.config/scripts/_cache/iptv/output")
+ALL_CH_OUTPUT_JSON_PATH = OUTPUT_DIR / ALL_CH_JSON_FILENAME
 
 ALL_CATS = ["tv", "movies", "series", "spicy", "all"]
-FIELDS_TO_LEFT_JOIN = ["favorite", "quickbind"]
-EXCLUDED_CHANNELS = [r"^### ### #"]
+
 NOTIFICATION_ID = "1718"
-
-env_path = Path.home() / ".secrets" / "iptv.env"
-load_dotenv(dotenv_path=env_path)
-USER_TO_REPLACE = os.getenv("USER_TO_REPLACE", "")
-PASS_TO_REPLACE = os.getenv("PASS_TO_REPLACE", "")
-EXTRA_USERNAME = os.getenv("EXTRA_USERNAME", "")
-EXTRA_PASSWORD = os.getenv("EXTRA_PASSWORD", "")
-
-if not all([USER_TO_REPLACE, PASS_TO_REPLACE, EXTRA_USERNAME, EXTRA_PASSWORD]):
-    raise RuntimeError("❌ Missing credentials in .env file")
 
 ROFI_CH_SORTING = {
     "quickbind": 0,
@@ -89,12 +66,6 @@ def ensure_dirs(path):
             path.mkdir(parents=True, exist_ok=True)
 
 
-def normalize_filename(name: str) -> str:
-    stem = Path(name).stem.lower()
-    # Remove any pattern like _123 or _123_
-    return re.sub(r"_\d+_?|_\d+$", "", stem).lower()
-
-
 def notify(title, message="", icon=None, progress=None, close=False, timeout=None):
     cmd = ["dunstify", "-r", NOTIFICATION_ID]
     if close:
@@ -120,11 +91,11 @@ def is_pid_alive(pid):
     return alive
 
 
-def save_json(path, data, backup=False):
-    logging.debug(f"[DEBUG] Saving JSON to {path} (backup={backup})")
+def save_json(path, data, do_backup=False):
+    logging.debug(f"[DEBUG] Saving JSON to {path} (backup={do_backup})")
     ensure_dirs(path)
 
-    if backup and path.exists():
+    if do_backup and path.exists():
         backup = path.with_name(path.stem + "_prev.json")
         path.replace(backup)
 
@@ -203,47 +174,6 @@ def load_channels(path):
     return []
 
 
-def left_join_metadata(source_channels, target_channels, fields):
-    """
-    Performs a LEFT JOIN-style merge of metadata fields from source to target using channel_id.
-
-    For each channel in target_channels:
-    - If a channel with the same channel_id exists in source_channels,
-      copy specified fields (e.g., favorite) if present.
-    - Fields in target will only be updated if found in the source.
-
-    Channels present only in source (but not in target) are ignored.
-    """
-    logging.debug(
-        f"[DEBUG] Starting LEFT JOIN of {len(source_channels)} → {len(target_channels)} channels"
-    )
-
-    meta_map = {
-        ch["channel_id"]: {f: ch.get(f) for f in fields}
-        for ch in source_channels
-        if "channel_id" in ch
-    }
-
-    matches = 0
-    for ch in target_channels:
-        meta = meta_map.get(ch.get("channel_id"))
-        if not meta:
-            logging.debug(
-                f"[DEBUG] No match for channel: {ch['name']} ({ch['group']}) → metadata not merged"
-            )
-            continue
-        matches += 1
-        for field in fields:
-            if field in meta and meta[field] is not None:
-                ch[field] = meta[field]
-
-    logging.info(
-        f"[INFO] Metadata joined for {matches} out of {len(target_channels)} channels"
-    )
-
-    return target_channels
-
-
 def split_and_save_cat_jsons(channels_json):
     """Splits JSON into multiple files based on category."""
     for category in ALL_CATS:
@@ -255,79 +185,14 @@ def split_and_save_cat_jsons(channels_json):
             ]
         logging.debug(f"[DEBUG] Saving {category} channels: {len(filtered_json)}")
         save_json(
-            OUTPUT_TARGET_PATH / f"{category}_channels.json",
+            OUTPUT_DIR / f"{category}_channels.json",
             filtered_json,
-            backup=True,
+            do_backup=True,
         )
 
 
-def sync_json_to_upstream():
-    """Sync upstream JSON into local input, preserving metadata fields."""
-    logging.debug("[DEBUG] Sync JSON triggered")
-
-    if not ALL_CH_SOURCE_JSON_PATH.exists():
-        logging.error(f"❌ Upstream JSON not found: {ALL_CH_SOURCE_JSON_PATH}")
-        return
-
-    upstream_channels = load_channels(ALL_CH_SOURCE_JSON_PATH)
-
-    # 🧠 Now we merge FROM INPUT (our last run), not _prev or output
-    if ALL_CH_OUTPUT_JSON_PATH.exists():
-        input_channels = load_channels(ALL_CH_OUTPUT_JSON_PATH)
-    else:
-        input_channels = []
-
-    joined_channels = left_join_metadata(
-        input_channels, upstream_channels, fields=FIELDS_TO_LEFT_JOIN
-    )
-
-    joined_channels = [
-        {**ch, "url": patch_stream_url(ch["url"])} for ch in joined_channels
-    ]
-
-    # Save merged result back to input (since input is state now)
-    save_json(ALL_CH_INPUT_JSON_PATH, joined_channels, backup=True)
-    split_and_save_cat_jsons(joined_channels)
-
-    for field in FIELDS_TO_LEFT_JOIN:
-        local_count = sum(1 for ch in joined_channels if ch.get(field))
-        updated_count = sum(1 for ch in upstream_channels if ch.get(field))
-
-        if local_count > updated_count:
-            logging.warning(
-                f"[WARN] Metadata field `{field}` dropped from "
-                f"{local_count} to {updated_count} during left join"
-            )
-        elif local_count == updated_count:
-            if local_count == 0:
-                logging.info(
-                    f"[INFO] No records updated for `{field}` during left join"
-                )
-            else:
-                logging.info(
-                    f"[INFO] Metadata field `{field}` fully preserved ({local_count})"
-                )
-        else:
-            logging.info(
-                f"[INFO] Metadata field `{field}` expanded: {local_count} → {updated_count}"
-            )
-
-
-def patch_stream_url(url: str) -> str:
-    # Skip if already patched
-    if f"/{EXTRA_USERNAME}/{EXTRA_PASSWORD}/" in url:
-        return url
-
-    old_segment = f"/{USER_TO_REPLACE}/{PASS_TO_REPLACE}/"
-    new_segment = f"/{EXTRA_USERNAME}/{EXTRA_PASSWORD}/"
-
-    if old_segment in url:
-        return url.replace(old_segment, new_segment)
-    return url  # unchanged if pattern not found
-
-
 def filter_for_show(category):
-    relevant_json = OUTPUT_TARGET_PATH / f"{category}_channels.json"
+    relevant_json = OUTPUT_DIR / f"{category}_channels.json"
     logging.debug(f"[DEBUG] Cache path: {relevant_json}")
 
     filtered_channels = safe_load_channels(relevant_json, category)
@@ -341,19 +206,10 @@ def filter_for_show(category):
 
 def safe_load_channels(path, category=None):
     """Load channels from path. Trigger sync if file is missing/empty."""
-    if not path.exists() or path.stat().st_size < 10:
-        logging.warning(f"[WARN] Channel cache missing or empty: {path}")
-        sync_json_to_upstream()  # Auto-fallback
     channels = load_channels(path)
     if category:
         channels = [ch for ch in channels if ch.get("category") == category]
     return channels
-
-
-def handle_sync_json():
-    """Handle the --sync-json command line argument."""
-    sync_json_to_upstream()
-    logging.info(f"[INFO] Sync complete. Fresh cache saved to {ALL_CH_INPUT_JSON_PATH}")
 
 
 def launch_mpv(selected_entry):
@@ -383,9 +239,9 @@ def launch_mpv(selected_entry):
             stderr=subprocess.DEVNULL,
         )
         logging.debug("[DEBUG] MPV launched successfully")
-    except Exception as e:
-        logging.error(f"[ERROR] Failed to launch MPV: {e}")
-        subprocess.run(["dunstify", "⚠️ MPV Error", f"Failed to launch stream: {e}"])
+    except Exception as exc:
+        logging.error(f"[ERROR] Failed to launch MPV: {exc}")
+        subprocess.run(["dunstify", "⚠️ MPV Error", f"Failed to launch stream: {exc}"])
 
 
 def rofi_select(channels):
@@ -445,8 +301,7 @@ def handle_selected_channel(selected_url, sorted_and_favs):
 
 def handle_favorite_toggle(selected_channel, sorted_and_favs):
     toggle_favorite(selected_channel)
-    save_json(ALL_CH_INPUT_JSON_PATH, sorted_and_favs, backup=True)
-    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
+    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, do_backup=True)
     split_and_save_cat_jsons(sorted_and_favs)
     notify("⭐ Favorite toggled", selected_channel["name"], timeout=2000)
 
@@ -523,7 +378,7 @@ def handle_favorite_submenu(display_name, selected_channel, sorted_and_favs):
                 timeout=2000,
             )
 
-    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, backup=True)
+    save_json(ALL_CH_OUTPUT_JSON_PATH, sorted_and_favs, do_backup=True)
     split_and_save_cat_jsons(sorted_and_favs)
     return True
 
@@ -532,8 +387,6 @@ def handle_favorite_submenu(display_name, selected_channel, sorted_and_favs):
 
 
 def main():
-    global FLAGS
-
     logging.debug("[DEBUG] Starting main()")
 
     parser = argparse.ArgumentParser(
@@ -551,11 +404,6 @@ def main():
         action="store_true",
         help="Enable debug mode.",
     )
-    parser.add_argument(
-        "--sync-json",
-        action="store_true",
-        help="Sync upstream JSON into local cache, preserving favorites",
-    )
 
     args = parser.parse_args()
 
@@ -566,9 +414,6 @@ def main():
     if args.category not in ALL_CATS:
         logging.error(f"[ERROR] Invalid category: {args.category}")
         sys.exit(1)
-    if args.sync_json:
-        handle_sync_json()
-        sys.exit(0)
     logging.debug(f"[DEBUG] Category selected: {args.category}")
 
     while True:

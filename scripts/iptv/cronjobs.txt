@@ -1,0 +1,2 @@
+# Local: Run full IPTV refresh (parse + rsync) 4x a day
+5 5,11,13,18 * * * /home/rash/.config/scripts/iptv/full_iptv_refresh.sh >> /home/rash/.config/scripts/_logs/iptv/full_refresh.log 2>&1
