@@ -119,7 +119,7 @@ btop.log
 espanso/match/secrets.yml
 lazygit/state.yml
 scripts/_logs/
-scripts/secrets/
+scripts/_secrets/
 venv/
 waybar/configs/JakooLit_Hyprland_Dots
 waybar/styles/JakooLit_Hyprland_Dots
