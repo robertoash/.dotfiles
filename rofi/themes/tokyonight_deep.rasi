@@ -110,6 +110,7 @@ listview {
     columns: 4;
     lines: 5;
     background-color: @background;
+    scrollbar: false;
 }
 
 element {
