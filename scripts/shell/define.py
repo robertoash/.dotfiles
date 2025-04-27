@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# ================================================================================ #
+# Define.py - A comprehensive dictionary lookup tool
+# ================================================================================ #
+# This script uses sdcv to look up word definitions in various dictionaries and
+# formats the output for better readability. It supports multiple dictionaries
+# including WordNet, Moby Thesaurus, Urban Dictionary, and Wiktionary.
+# ================================================================================ #
 
 import argparse
 import re
@@ -6,7 +13,9 @@ import subprocess
 import sys
 import textwrap
 
-# ------------------ Configuration ------------------ #
+# ================================================================================ #
+# ================================ CONFIGURATION ================================== #
+# ================================================================================ #
 
 TEXT_WIDTH = 120
 
@@ -24,32 +33,9 @@ KNOWN_LANGUAGES = {
 # Order for displaying dictionaries
 SORTING_ORDER = ["wordnet", "wiktsv", "urban", "mobythes"]
 
-# ------------------ POS Helpers ------------------ #
-
-
-def standardize_pos(pos):
-    pos_map = {
-        "n": "n.",
-        "noun": "n.",
-        "v": "vb.",
-        "vb": "vb.",
-        "verb": "vb.",
-        "adj": "adj.",
-        "adjective": "adj.",
-        "a": "adj.",
-    }
-    return pos_map.get(pos.lower().rstrip("."), pos)
-
-
-def is_pos_line(line):
-    parts = line.strip().split()
-    if not parts:
-        return False
-    standardized = standardize_pos(parts[0])
-    return standardized in KNOWN_POS or re.match(r"^[a-zA-Z]+\.$", parts[0])
-
-
-# ------------------ Dictionary Processors Registry ------------------ #
+# ================================================================================ #
+# ========================= DICTIONARY PROCESSOR REGISTRY ======================== #
+# ================================================================================ #
 
 # Dictionary processor registry - maps short codes to processor functions
 DICT_PROCESSORS = {}
@@ -76,18 +62,51 @@ def register_buffer_handler(dict_code):
     return decorator
 
 
-# ------------------ Output Helpers ------------------ #
+# ================================================================================ #
+# ================================ SHARED UTILITIES ============================== #
+# ================================================================================ #
+
+# -------------- Part of Speech Utilities -------------- #
 
 
-def indent(level, size=4):
+def shared_standardize_pos(pos):
+    """Standardize various POS formats to a consistent format"""
+    pos_map = {
+        "n": "n.",
+        "noun": "n.",
+        "v": "vb.",
+        "vb": "vb.",
+        "verb": "vb.",
+        "adj": "adj.",
+        "adjective": "adj.",
+        "a": "adj.",
+    }
+    return pos_map.get(pos.lower().rstrip("."), pos)
+
+
+def shared_is_pos_line(line):
+    """Check if a line is a Part of Speech marker"""
+    parts = line.strip().split()
+    if not parts:
+        return False
+    standardized = shared_standardize_pos(parts[0])
+    return standardized in KNOWN_POS or re.match(r"^[a-zA-Z]+\.$", parts[0])
+
+
+# -------------- Text Formatting Utilities -------------- #
+
+
+def shared_indent(level, size=4):
+    """Create indentation string based on level"""
     return " " * (level * size)
 
 
-def wrap_text(number, text, base_indent=2, indent_size=4):
+def shared_wrap_text(number, text, base_indent=2, indent_size=4):
+    """Wrap text with consistent indentation and numbering"""
     number_str = f"{number}:  "
-    prefix = indent(base_indent, indent_size) + number_str
+    prefix = shared_indent(base_indent, indent_size) + number_str
     # For consistent wrapping, use a fixed indentation level for continuations
-    subsequent = indent(base_indent + 1, indent_size)
+    subsequent = shared_indent(base_indent + 1, indent_size)
     return textwrap.fill(
         text.strip(),
         width=TEXT_WIDTH,
@@ -98,9 +117,10 @@ def wrap_text(number, text, base_indent=2, indent_size=4):
 
 # Default buffer handler for most dictionaries
 @register_buffer_handler("default")
-def flush_buffer(buffer, buffer_level):
+def shared_flush_buffer(buffer, buffer_level):
+    """Default buffer formatting handler for all dictionaries"""
     if buffer.strip():
-        prefix = indent(buffer_level)
+        prefix = shared_indent(buffer_level)
         subsequent = " " * len(prefix)
         print(
             textwrap.fill(
@@ -113,7 +133,56 @@ def flush_buffer(buffer, buffer_level):
     return ""
 
 
-# ------------------ Runner ------------------ #
+# -------------- Language Specific Processing -------------- #
+
+
+def shared_process_english_pos_line(parts, entry_counter):
+    """Process an English part-of-speech line to extract any definition"""
+    rest_of_line = parts[1].strip() if len(parts) > 1 else ""
+
+    # If this line contains a definition (starts with a number),
+    # return it as-is to be processed by the regular definition handling
+    if rest_of_line and re.match(r"^\d+\s*[:)]", rest_of_line):
+        return rest_of_line, entry_counter
+
+    return rest_of_line, entry_counter
+
+
+def shared_process_parts(
+    parts, number_pattern, buffer, buffer_level, entry_counter, lang
+):
+    """Process parts of a definition across multiple dictionaries"""
+    processed = False
+
+    for part in parts:
+        cleaned = part.strip()
+
+        if not cleaned:
+            continue
+
+        if re.match(number_pattern, cleaned):
+            if buffer.strip():
+                buffer = shared_flush_buffer(buffer, buffer_level + 1)
+
+            if lang == "english":
+                cleaned = re.sub(r"^\d+\s*[:)]?\s*", "", cleaned)
+            else:
+                cleaned = re.sub(r"^\d+\s+", "", cleaned)
+
+            if entry_counter != 1:
+                print()
+
+            print(shared_wrap_text(entry_counter, cleaned))
+            entry_counter += 1
+        else:
+            buffer += " " + cleaned
+
+    return buffer, entry_counter, processed
+
+
+# ================================================================================ #
+# ================================ RUNNER UTILITIES ============================== #
+# ================================================================================ #
 
 
 def run_sdcv(query, requested_dicts=None):
@@ -136,59 +205,20 @@ def run_sdcv(query, requested_dicts=None):
     return output_lines, True
 
 
-# ------------------ Language Specific Processing ------------------ #
+# ================================================================================ #
+# =========================== DICTIONARY-SPECIFIC HANDLERS ======================= #
+# ================================================================================ #
 
-
-def process_english_pos_line(parts, entry_counter):
-    rest_of_line = parts[1].strip() if len(parts) > 1 else ""
-
-    # If this line contains a definition (starts with a number),
-    # return it as-is to be processed by the regular definition handling
-    if rest_of_line and re.match(r"^\d+\s*[:)]", rest_of_line):
-        return rest_of_line, entry_counter
-
-    return rest_of_line, entry_counter
-
-
-def process_parts(parts, number_pattern, buffer, buffer_level, entry_counter, lang):
-    processed = False
-
-    for part in parts:
-        cleaned = part.strip()
-
-        if not cleaned:
-            continue
-
-        if re.match(number_pattern, cleaned):
-            if buffer.strip():
-                buffer = flush_buffer(buffer, buffer_level + 1)
-
-            if lang == "english":
-                cleaned = re.sub(r"^\d+\s*[:)]?\s*", "", cleaned)
-            else:
-                cleaned = re.sub(r"^\d+\s+", "", cleaned)
-
-            if entry_counter != 1:
-                print()
-
-            print(wrap_text(entry_counter, cleaned))
-            entry_counter += 1
-        else:
-            buffer += " " + cleaned
-
-    return buffer, entry_counter, processed
-
-
-# ------------------ Dictionary-specific processors ------------------ #
+# -------------------------- Swedish Wiktionary Handlers ------------------------- #
 
 
 @register_dict_processor("wiktsv")
-def process_entry_line_swedish(line_content, buffer, buffer_level, entry_counter):
+def process_entry_line_wiktsv(line_content, buffer, buffer_level, entry_counter):
     # Handle Swedish Dictionary's "a." format for adjectives
     if line_content.strip() == "a.":
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level)
-        print(f"{indent(1)}adj.")
+            buffer = shared_flush_buffer(buffer, buffer_level)
+        print(f"{shared_indent(1)}adj.")
         return buffer, 1, True
 
     # Handle raw Swedish dictionary definitions that start with a number
@@ -198,27 +228,95 @@ def process_entry_line_swedish(line_content, buffer, buffer_level, entry_counter
         def_num = raw_def_match.group(1)
         content = raw_def_match.group(2)
         # Format and print this definition with proper indentation
-        print(f"{indent(2)}{def_num}:  {content}")
+        print(f"{shared_indent(2)}{def_num}:  {content}")
         return buffer, int(def_num) + 1, True
 
     parts = re.split(r"(?=\d+\s+(?:\(|[a-zåäöA-ZÅÄÖ]))", line_content)
 
     if len(parts) == 1 and not re.match(r"^\d+\s", line_content):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level + 1)
+            buffer = shared_flush_buffer(buffer, buffer_level + 1)
 
-        print(wrap_text(entry_counter, line_content))
+        print(shared_wrap_text(entry_counter, line_content))
         entry_counter += 1
         return buffer, entry_counter, True
 
     # Use process_parts to handle properly formatted definitions
-    return process_parts(
+    return shared_process_parts(
         parts, r"^\d+\s", buffer, buffer_level, entry_counter, "swedish"
     )
 
 
+# ---------------------------- WordNet Dictionary Handlers ---------------------------- #
+
+
+@register_buffer_handler("wordnet")
+def format_wordnet_buffer(buffer, buffer_level):
+    """Format WordNet buffer content with consistent indentation"""
+    if not buffer.strip():
+        return ""
+
+    # Check if this is a definition we're building
+    if buffer.startswith("DEFBUILDING:"):
+        parts = buffer.split(":", 2)
+        if len(parts) >= 3:
+            def_num = parts[1]
+            content = parts[2].strip()
+
+            # Create a consistent format for definition numbers
+            num_str = f"{def_num}:  "  # Always 2 spaces after colon
+
+            # Calculate proper indentation
+            initial_indent = shared_indent(2) + num_str
+            subsequent_indent = " " * len(initial_indent)
+
+            # Clean up all whitespace issues including mid-definition newlines
+            # Ensure all newlines and extra spaces are replaced with single spaces
+            content = re.sub(r"\s+", " ", content).strip()
+
+            # Format with textwrap for consistent wrapping
+            wrapped_content = textwrap.fill(
+                content,
+                width=TEXT_WIDTH,
+                initial_indent=initial_indent,
+                subsequent_indent=subsequent_indent,
+                break_on_hyphens=False,  # Don't break on hyphens
+                break_long_words=False,  # Don't break long words
+                tabsize=4,  # Consistent tab size
+                expand_tabs=True,  # Expand tabs to spaces
+                replace_whitespace=True,  # Replace all whitespace with spaces
+            )
+
+            print(wrapped_content)
+            return ""
+
+    # For other content (not definition starts)
+    initial_indent = shared_indent(3)
+    subsequent_indent = initial_indent
+    content = buffer.strip()
+
+    # Clean up all whitespace issues including mid-definition newlines
+    content = re.sub(r"\s+", " ", content)
+
+    # Format with textwrap for consistent wrapping
+    wrapped_content = textwrap.fill(
+        content,
+        width=TEXT_WIDTH,
+        initial_indent=initial_indent,
+        subsequent_indent=subsequent_indent,
+        break_on_hyphens=False,
+        break_long_words=False,
+        tabsize=4,
+        expand_tabs=True,
+        replace_whitespace=True,
+    )
+
+    print(wrapped_content)
+    return ""
+
+
 @register_dict_processor("wordnet")
-def process_entry_line_english(line_content, buffer, buffer_level, entry_counter):
+def process_entry_line_wordnet(line_content, buffer, buffer_level, entry_counter):
     line = line_content.strip()
 
     # Check for POS markers first - they can be with or without a period
@@ -226,9 +324,9 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
     if pos_match:
         # Always flush buffer when hitting a POS marker
         if buffer:
-            buffer = flush_buffer(buffer, buffer_level)
+            buffer = shared_flush_buffer(buffer, buffer_level)
         # Print the POS marker with a period
-        print(f"{indent(1)}{pos_match.group(1)}.")
+        print(f"{shared_indent(1)}{pos_match.group(1)}.")
         # Reset entry counter for new section
         entry_counter = 1
         return buffer, entry_counter, True
@@ -245,7 +343,7 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
             elif buffer.startswith("DEF1_CONTENT:"):
                 content = buffer[13:].strip()
                 num_str = "1:  "
-                prefix = indent(2) + num_str
+                prefix = shared_indent(2) + num_str
                 subsequent = " " * len(prefix)
 
                 # Clean up content and ensure no mid-definition newlines
@@ -264,7 +362,7 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
                 )
                 buffer = ""
             else:
-                buffer = flush_buffer(buffer, buffer_level)
+                buffer = shared_flush_buffer(buffer, buffer_level)
 
         # Extract definition number and content
         def_num = def_match.group(1)
@@ -289,7 +387,7 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
         if re.match(r"^\s*\d+", line):
             # Format the complete definition #1 before processing the new definition
             num_str = "1:  "
-            prefix = indent(2) + num_str
+            prefix = shared_indent(2) + num_str
             subsequent = " " * len(prefix)
 
             # Clean up content
@@ -337,8 +435,11 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
     return buffer, entry_counter, True
 
 
+# ---------------------------- Moby Thesaurus Handlers ---------------------------- #
+
+
 @register_buffer_handler("mobythes")
-def format_thesaurus_buffer(buffer, buffer_level):
+def format_mobythes_buffer(buffer, buffer_level):
     """Format a buffer of comma-separated synonyms with proper wrapping"""
     if not buffer.strip():
         return ""
@@ -352,9 +453,11 @@ def format_thesaurus_buffer(buffer, buffer_level):
     for synonym in synonyms:
         synonym = synonym.strip()
         # If adding this synonym would make the line too long, print and reset
-        if line_length + len(synonym) + 2 > TEXT_WIDTH - len(indent(buffer_level)):
+        if line_length + len(synonym) + 2 > TEXT_WIDTH - len(
+            shared_indent(buffer_level)
+        ):
             if formatted_synonyms:
-                print(f"{indent(buffer_level)}{formatted_synonyms.rstrip(', ')}")
+                print(f"{shared_indent(buffer_level)}{formatted_synonyms.rstrip(', ')}")
             formatted_synonyms = f"{synonym}, "
             line_length = len(synonym) + 2
         else:
@@ -363,20 +466,20 @@ def format_thesaurus_buffer(buffer, buffer_level):
 
     # Print any remaining synonyms
     if formatted_synonyms:
-        print(f"{indent(buffer_level)}{formatted_synonyms.rstrip(', ')}")
+        print(f"{shared_indent(buffer_level)}{formatted_synonyms.rstrip(', ')}")
 
     return ""
 
 
 @register_dict_processor("mobythes")
-def process_moby_thesaurus(line_content, buffer, buffer_level, entry_counter):
+def process_entry_line_mobythes(line_content, buffer, buffer_level, entry_counter):
     # Check for the header line containing the synonym count
     if re.match(r"^\d+\s+Moby\s+Thesaurus\s+words\s+for", line_content):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level)
+            buffer = shared_flush_buffer(buffer, buffer_level)
 
         # Extract and print the header
-        print(f"{indent(buffer_level)}{line_content}")
+        print(f"{shared_indent(buffer_level)}{line_content}")
         return buffer, entry_counter, True
 
     # Process list of synonyms
@@ -397,13 +500,16 @@ def process_moby_thesaurus(line_content, buffer, buffer_level, entry_counter):
     return buffer, entry_counter, False
 
 
+# ---------------------------- Urban Dictionary Handlers ---------------------------- #
+
+
 @register_dict_processor("urban")
-def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
+def process_entry_line_urban(line_content, buffer, buffer_level, entry_counter):
     # Process numbered definitions with votes
     # Format: "1. (4324 up, 488 down)"
     if re.match(r"^\d+\.\s+\(\d+\s+up,\s+\d+\s+down\)", line_content):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level + 1)
+            buffer = shared_flush_buffer(buffer, buffer_level + 1)
 
         # Extract definition number and votes
         match = re.match(r"^(\d+)\..*\((\d+)\s+up,\s+(\d+)\s+down\)", line_content)
@@ -412,7 +518,7 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
             votes_up = match.group(2)
             votes_down = match.group(3)
             print(
-                f"\n{indent(buffer_level)}{definition_num}:  [↑{votes_up} ↓{votes_down}]"
+                f"\n{shared_indent(buffer_level)}{definition_num}:  [↑{votes_up} ↓{votes_down}]"
             )
 
         # Reset entry counter for each new definition
@@ -424,7 +530,7 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
         r"^\d+\.\s+\(", line_content
     ):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level + 1)
+            buffer = shared_flush_buffer(buffer, buffer_level + 1)
 
         # Extract text, removing the original numbering
         match = re.match(r"^\d+\.\s+(.*)", line_content)
@@ -436,7 +542,7 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
             text = re.sub(r"^\d+\.\s+", "- ", text)
 
             # Print with bullet point instead of number
-            prefix = indent(buffer_level + 1)
+            prefix = shared_indent(buffer_level + 1)
             subsequent = " " * len(prefix)
             print(
                 textwrap.fill(
@@ -455,7 +561,7 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
         and not line_content.startswith(("See", "More"))
     ):
         # Use the textwrap.fill function for consistent formatting
-        prefix = indent(buffer_level + 1)
+        prefix = shared_indent(buffer_level + 1)
         subsequent = " " * len(prefix)
         print(
             textwrap.fill(
@@ -470,9 +576,9 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
     # Process "See" references
     if line_content.startswith("See "):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level + 1)
+            buffer = shared_flush_buffer(buffer, buffer_level + 1)
         # Increase indentation by one level for "See also:" lines
-        prefix = indent(buffer_level + 1)
+        prefix = shared_indent(buffer_level + 1)
         subsequent = " " * len(prefix)
         print(
             textwrap.fill(
@@ -487,8 +593,8 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
     # Process "More online" links
     if line_content.startswith("More online:"):
         if buffer.strip():
-            buffer = flush_buffer(buffer, buffer_level + 1)
-        print(f"\n{indent(buffer_level)}{line_content}")
+            buffer = shared_flush_buffer(buffer, buffer_level + 1)
+        print(f"\n{shared_indent(buffer_level)}{line_content}")
         return buffer, entry_counter, True
 
     # Accumulate definition text in buffer (this should rarely be reached for Urban Dictionary)
@@ -496,72 +602,9 @@ def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
     return buffer, entry_counter, False
 
 
-@register_buffer_handler("wordnet")
-def format_wordnet_buffer(buffer, buffer_level):
-    """Format WordNet buffer content with consistent indentation"""
-    if not buffer.strip():
-        return ""
-
-    # Check if this is a definition we're building
-    if buffer.startswith("DEFBUILDING:"):
-        parts = buffer.split(":", 2)
-        if len(parts) >= 3:
-            def_num = parts[1]
-            content = parts[2].strip()
-
-            # Create a consistent format for definition numbers
-            num_str = f"{def_num}:  "  # Always 2 spaces after colon
-
-            # Calculate proper indentation
-            initial_indent = indent(2) + num_str
-            subsequent_indent = " " * len(initial_indent)
-
-            # Clean up all whitespace issues including mid-definition newlines
-            # Ensure all newlines and extra spaces are replaced with single spaces
-            content = re.sub(r"\s+", " ", content).strip()
-
-            # Format with textwrap for consistent wrapping
-            wrapped_content = textwrap.fill(
-                content,
-                width=TEXT_WIDTH,
-                initial_indent=initial_indent,
-                subsequent_indent=subsequent_indent,
-                break_on_hyphens=False,  # Don't break on hyphens
-                break_long_words=False,  # Don't break long words
-                tabsize=4,  # Consistent tab size
-                expand_tabs=True,  # Expand tabs to spaces
-                replace_whitespace=True,  # Replace all whitespace with spaces
-            )
-
-            print(wrapped_content)
-            return ""
-
-    # For other content (not definition starts)
-    initial_indent = indent(3)
-    subsequent_indent = initial_indent
-    content = buffer.strip()
-
-    # Clean up all whitespace issues including mid-definition newlines
-    content = re.sub(r"\s+", " ", content)
-
-    # Format with textwrap for consistent wrapping
-    wrapped_content = textwrap.fill(
-        content,
-        width=TEXT_WIDTH,
-        initial_indent=initial_indent,
-        subsequent_indent=subsequent_indent,
-        break_on_hyphens=False,
-        break_long_words=False,
-        tabsize=4,
-        expand_tabs=True,
-        replace_whitespace=True,
-    )
-
-    print(wrapped_content)
-    return ""
-
-
-# ------------------ Tokenizer ------------------ #
+# ================================================================================ #
+# =========================== PARSING AND TOKENIZATION =========================== #
+# ================================================================================ #
 
 
 def tag_line(line, prev_tag):
@@ -585,7 +628,7 @@ def tag_line(line, prev_tag):
             return "#search_term_related"
 
     # Part-of-speech line detection has no dependency on prev_tag
-    if is_pos_line(line):
+    if shared_is_pos_line(line):
         return "#pos"
 
     # Default case
@@ -615,7 +658,9 @@ def parse_sdcv(lines):
     return parsed
 
 
-# ------------------ Main Output ------------------ #
+# ================================================================================ #
+# ============================= OUTPUT PROCESSING ================================ #
+# ================================================================================ #
 
 
 def process_parsed(parsed):
@@ -636,7 +681,7 @@ def process_parsed(parsed):
             current_dict = KNOWN_LANGUAGES[line[3:].strip()]
             print(f"\n{current_dict.upper()}:")
             printed_words[current_dict] = False
-            buffer = flush_buffer(buffer, buffer_level)
+            buffer = shared_flush_buffer(buffer, buffer_level)
             continue
 
         if tag == "#search_term_related":
@@ -647,11 +692,11 @@ def process_parsed(parsed):
             continue
 
         if tag == "#pos":
-            buffer = flush_buffer(buffer, buffer_level)
+            buffer = shared_flush_buffer(buffer, buffer_level)
             parts = line.strip().split(maxsplit=1)
-            pos = standardize_pos(parts[0])
+            pos = shared_standardize_pos(parts[0])
 
-            print(f"{indent(1)}{pos}")
+            print(f"{shared_indent(1)}{pos}")
 
             entry_counter = 1
 
@@ -659,7 +704,7 @@ def process_parsed(parsed):
                 rest_of_line = parts[1].strip()
 
                 if current_dict in ["wordnet"]:
-                    rest_of_line, entry_counter = process_english_pos_line(
+                    rest_of_line, entry_counter = shared_process_english_pos_line(
                         parts, entry_counter
                     )
 
@@ -671,12 +716,12 @@ def process_parsed(parsed):
                     ):
                         # Use the wordnet processor to handle this definition
                         # This ensures consistent handling with other definitions
-                        buffer, entry_counter, _ = process_entry_line_english(
+                        buffer, entry_counter, _ = process_entry_line_wordnet(
                             rest_of_line, buffer, buffer_level, entry_counter
                         )
                     else:
                         # If it's not a definition, just print it directly
-                        print(wrap_text(entry_counter, rest_of_line))
+                        print(shared_wrap_text(entry_counter, rest_of_line))
                         entry_counter += 1
             continue
 
@@ -710,7 +755,7 @@ def process_parsed(parsed):
                         # Process definition #1 content
                         content = buffer[13:].strip()
                         num_str = "1:  "
-                        prefix = indent(2) + num_str
+                        prefix = shared_indent(2) + num_str
                         subsequent = " " * len(prefix)
 
                         # Clean up content
@@ -741,7 +786,7 @@ def process_parsed(parsed):
             # Process definition #1 content
             content = buffer[13:].strip()
             num_str = "1:  "
-            prefix = indent(2) + num_str
+            prefix = shared_indent(2) + num_str
             subsequent = " " * len(prefix)
 
             # Clean up content
@@ -801,7 +846,9 @@ def process_search_results(search_term, search_results):
             process_parsed(dict_entries)
 
 
-# ------------------ Main ------------------ #
+# ================================================================================ #
+# ================================== MAIN FUNCTION =============================== #
+# ================================================================================ #
 
 
 def main():
