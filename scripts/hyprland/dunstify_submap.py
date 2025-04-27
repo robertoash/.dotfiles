@@ -11,7 +11,7 @@ indent_size = 4
 
 
 def reset_submap():
-    subprocess.Popen(["hyprcrl", "dispatch", "submap", "reset"])
+    subprocess.Popen(["hyprctl", "dispatch", "submap", "reset"])
 
 
 def validate_meta(meta):
