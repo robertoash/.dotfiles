@@ -18,6 +18,8 @@ KNOWN_LANGUAGES = {
     "Urban Dictionary P2 (En-En)": "urban-en",
 }
 
+SORTING_ORDER = ["wordnet-en", "wikt-sv", "oxford-advanced-learner-en", "urban-en"]
+
 # ------------------ POS Helpers ------------------ #
 
 
@@ -161,6 +163,68 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
     )
 
 
+def process_oxford_dictionary(line_content, buffer, buffer_level, entry_counter):
+    # Process section headers (all caps)
+    if re.match(r"^[A-Z][\sA-Z/]+$", line_content):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        print(f"{indent(buffer_level)}{line_content}")
+        return buffer, entry_counter, True
+
+    # Process numbered definitions
+    if re.match(r"^\d+\.", line_content):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+
+        # Extract the definition number and content
+        match = re.match(r"^(\d+\.)\s*(.*)", line_content)
+        if match:
+            content = match.group(2).strip()
+            print(wrap_text(entry_counter, content))
+            entry_counter += 1
+        return buffer, entry_counter, True
+
+    # Process example sentences with bullet points
+    if line_content.startswith("•"):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        example = line_content.replace("•", "", 1).strip()
+        print(f"{indent(buffer_level + 1)}• {example}")
+        return buffer, entry_counter, True
+
+    # Process parenthetical information like "(informal)"
+    if line_content.startswith("(") and not re.match(r"^\(\d+", line_content):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        print(f"{indent(buffer_level)}{line_content}")
+        return buffer, entry_counter, True
+
+    # Process word origin, thesaurus, example banks, etc.
+    if (
+        line_content.startswith("Word Origin:")
+        or line_content.startswith("Thesaurus:")
+        or line_content.startswith("Example Bank:")
+        or line_content.startswith("Synonyms:")
+        or line_content.startswith("Verb forms:")
+    ):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        print(f"\n{indent(buffer_level)}{line_content}")
+        return buffer, entry_counter, True
+
+    # Process POS headers
+    if line_content == "verb" or line_content == "noun" or line_content == "adjective":
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        print(f"\n{indent(1)}{line_content}.")
+        entry_counter = 1
+        return buffer, entry_counter, True
+
+    # Accumulate other content in buffer
+    buffer += " " + line_content
+    return buffer, entry_counter, False
+
+
 def process_parts(parts, number_pattern, buffer, buffer_level, entry_counter, lang):
     processed = False
 
@@ -231,7 +295,11 @@ def process_parsed(parsed):
             if len(parts) > 1 and parts[1].strip():
                 rest_of_line = parts[1].strip()
 
-                if current_dict == "english":
+                if current_dict in [
+                    "wordnet-en",
+                    "oxford-advanced-learner-en",
+                    "urban-en",
+                ]:
                     rest_of_line, entry_counter = process_english_pos_line(
                         parts, entry_counter
                     )
@@ -249,8 +317,12 @@ def process_parsed(parsed):
             else:
                 processed = False
 
-                if current_dict == "swedish":
+                if current_dict == "wikt-sv":
                     buffer, entry_counter, processed = process_entry_line_swedish(
+                        line_content, buffer, buffer_level, entry_counter
+                    )
+                elif current_dict == "oxford-advanced-learner-en":
+                    buffer, entry_counter, processed = process_oxford_dictionary(
                         line_content, buffer, buffer_level, entry_counter
                     )
                 else:
@@ -278,9 +350,34 @@ def process_search_results(search_term, search_results):
         print(f"No definitions found for '{search_term}'")
         return
 
+    # Group parsed results by dictionary source
+    dictionaries = {}
     for source, parsed in search_results.items():
         if source == "sdcv":
-            process_parsed(parsed)
+            # Extract dictionaries from the parsed results
+            current_dict = None
+            for tag, line in parsed:
+                if tag == "#language":
+                    current_dict = KNOWN_LANGUAGES[line[3:].strip()]
+                    dictionaries[current_dict] = []
+                if current_dict and tag != "#search_feedback":
+                    dictionaries.setdefault(current_dict, []).append((tag, line))
+
+    # Sort dictionaries according to SORTING_ORDER
+    sorted_dicts = []
+    for dict_id in SORTING_ORDER:
+        if dict_id in dictionaries:
+            sorted_dicts.append(dictionaries[dict_id])
+
+    # Add any remaining dictionaries that weren't in SORTING_ORDER
+    for dict_id, entries in dictionaries.items():
+        if dict_id not in SORTING_ORDER:
+            sorted_dicts.append(entries)
+
+    # Process each dictionary's parsed content in the sorted order
+    for dict_entries in sorted_dicts:
+        if dict_entries:
+            process_parsed(dict_entries)
 
 
 # ------------------ Main ------------------ #
