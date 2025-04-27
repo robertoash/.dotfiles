@@ -239,7 +239,7 @@ def launch_and_manage(workspace, name, command, is_master):
 
     # Wait specifically for this window
     address = wait_for_window(existing_windows)
-    # time.sleep(0.2)
+    time.sleep(0.1)
     if not address:
         logging.warning(f"No window detected for {name} in workspace {workspace}")
         return  # Skip if window did not appear
