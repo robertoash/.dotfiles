@@ -142,8 +142,10 @@ def run_sdcv(query, requested_dicts=None):
 def process_english_pos_line(parts, entry_counter):
     rest_of_line = parts[1].strip() if len(parts) > 1 else ""
 
+    # If this line contains a definition (starts with a number),
+    # return it as-is to be processed by the regular definition handling
     if rest_of_line and re.match(r"^\d+\s*[:)]", rest_of_line):
-        rest_of_line = re.sub(r"^\d+\s*[:)]?\s*", "", rest_of_line)
+        return rest_of_line, entry_counter
 
     return rest_of_line, entry_counter
 
@@ -231,35 +233,6 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
         entry_counter = 1
         return buffer, entry_counter, True
 
-    # DIRECT FIX FOR TREE DEFINITION 1:
-    # Check if this is specifically definition 1 for "tree" - hard-coded fix
-    if re.match(
-        r"^\s*1[:.]?\s*a tall perennial woody plant having a main trunk and$",
-        line_content,
-    ):
-        # This is the first line of the tree definition, print it directly
-        # We'll flush any existing buffer first
-        if buffer:
-            buffer = flush_buffer(buffer, buffer_level)
-
-        # Output the first line exactly as in the raw format
-        print(f"{indent(2)}1:  a tall perennial woody plant having a main trunk and")
-        entry_counter = 2  # The next definition should be #2
-
-        # Flag that we're waiting for the continuation line
-        buffer = "WAITING_FOR_TREE_CONTINUATION"
-        return buffer, entry_counter, True
-
-    # Check for the continuation line of definition 1 for "tree"
-    if buffer == "WAITING_FOR_TREE_CONTINUATION" and (
-        line.startswith("branches forming a distinct")
-        or "branches forming a distinct" in line
-    ):
-        # This is the continuation line for tree definition
-        print(f"{indent(3)}{line}")
-        buffer = ""  # Reset buffer
-        return buffer, entry_counter, True
-
     # Check for a definition - just needs to start with a number after any whitespace
     def_match = re.match(r"^\s*(\d+)[:.]?\s*(.+)$", line_content)
     if def_match:
@@ -268,6 +241,28 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
             # Let the wordnet buffer handler take care of the previous definition
             if buffer.startswith("DEFBUILDING:"):
                 buffer = format_wordnet_buffer(buffer, buffer_level)
+            # Special case for definition #1 content buffer
+            elif buffer.startswith("DEF1_CONTENT:"):
+                content = buffer[13:].strip()
+                num_str = "1:  "
+                prefix = indent(2) + num_str
+                subsequent = " " * len(prefix)
+
+                # Clean up content and ensure no mid-definition newlines
+                content = re.sub(r"\s+", " ", content).strip()
+
+                # Format with textwrap for consistent wrapping
+                print(
+                    textwrap.fill(
+                        content,
+                        width=TEXT_WIDTH,
+                        initial_indent=prefix,
+                        subsequent_indent=subsequent,
+                        break_on_hyphens=False,
+                        break_long_words=False,
+                    )
+                )
+                buffer = ""
             else:
                 buffer = flush_buffer(buffer, buffer_level)
 
@@ -275,40 +270,58 @@ def process_entry_line_english(line_content, buffer, buffer_level, entry_counter
         def_num = def_match.group(1)
         content = def_match.group(2).strip()
 
-        # Start building this definition
-        buffer = f"DEFBUILDING:{def_num}:{content}"
+        # Unified handling for all definitions, with slight special case for #1
+        if def_num == "1":
+            # Store in special buffer to collect potential multi-line content for def #1
+            buffer = f"DEF1_CONTENT:{content}"
+        else:
+            # All other definitions use the standard approach with DEFBUILDING marker
+            buffer = f"DEFBUILDING:{def_num}:{content}"
+
         entry_counter = int(def_num) + 1
         return buffer, entry_counter, True
 
-    # THE FIX for sdcv line break issue:
-    # The raw WordNet output from sdcv includes multi-line definitions where
-    # lines are broken with specific indentation patterns. We need to detect these
-    # continuation lines and combine them with the previous line to form complete
-    # definitions that can be properly wrapped.
+    # Special handling for definition #1 content collection
+    if buffer and buffer.startswith("DEF1_CONTENT:"):
+        prev_content = buffer[13:]  # Extract previous content
 
-    # Check for continuation lines - WordNet from sdcv has a specific pattern
-    # Lines with 10 spaces of indentation after a definition are continuations
-    if (
-        line_content.startswith("          ")
-        and buffer
-        and buffer.startswith("DEFBUILDING:")
-    ):
-        # This is clearly a continuation line from the raw sdcv WordNet output
+        # Check if this is a new definition (starts with a digit)
+        if re.match(r"^\s*\d+", line):
+            # Format the complete definition #1 before processing the new definition
+            num_str = "1:  "
+            prefix = indent(2) + num_str
+            subsequent = " " * len(prefix)
+
+            # Clean up content
+            content = re.sub(r"\s+", " ", prev_content).strip()
+
+            # Format with textwrap
+            print(
+                textwrap.fill(
+                    content,
+                    width=TEXT_WIDTH,
+                    initial_indent=prefix,
+                    subsequent_indent=subsequent,
+                    break_on_hyphens=False,
+                    break_long_words=False,
+                )
+            )
+
+            # Clear buffer and don't mark as processed
+            buffer = ""
+            return buffer, entry_counter, False
+
+        # This is a continuation of definition #1, just append to the buffer
+        buffer = f"DEF1_CONTENT:{prev_content} {line}"
+        return buffer, entry_counter, True
+
+    # Handle continuation lines for non-#1 definitions
+    if re.match(r"^\s+", line_content) and buffer and buffer.startswith("DEFBUILDING:"):
+        # This is a continuation line with indentation
         buffer += " " + line.strip()
         return buffer, entry_counter, True
 
-    # Check if this is a continuation line of a definition from sdcv
-    # Looking for lines with specific indentation pattern that sdcv uses for definitions
-    if (
-        re.match(r"^\s{6,}\S", line_content)
-        and buffer
-        and buffer.startswith("DEFBUILDING:")
-    ):
-        # This is a continuation of the current definition, with the typical sdcv indentation
-        buffer += " " + line.strip()
-        return buffer, entry_counter, True
-
-    # Check if we're building a definition and this is additional content for it
+    # Check for any continuation while we're building a definition
     if buffer and buffer.startswith("DEFBUILDING:"):
         # Add this line to the current definition being built
         buffer += " " + line.strip()
@@ -496,50 +509,14 @@ def format_wordnet_buffer(buffer, buffer_level):
             def_num = parts[1]
             content = parts[2].strip()
 
-            # SPECIAL HANDLING FOR TREE DEFINITION
-            # The word "angiosperms" often gets broken across lines
-            # This happens consistently with definition 1 - let's use a special format
-            if def_num == "1" and "angiosperms" in content:
-                # For definition 1, use a narrower width to avoid terminal breaking "angiosperms"
-                narrower_width = 70  # Use a narrower width just for this definition
-
-                # Create a consistent format for definition numbers
-                num_str = f"{def_num}:  "  # Always 2 spaces after colon
-
-                # Calculate proper indentation
-                initial_indent = indent(2) + num_str
-                subsequent_indent = " " * len(initial_indent)
-
-                # Clean up all whitespace issues
-                # Ensure all newlines and extra spaces are replaced with single spaces
-                content = re.sub(r"\s+", " ", content).strip()
-
-                # Format with textwrap for consistent wrapping using the narrower width
-                wrapped_content = textwrap.fill(
-                    content,
-                    width=narrower_width,
-                    initial_indent=initial_indent,
-                    subsequent_indent=subsequent_indent,
-                    break_on_hyphens=False,
-                    break_long_words=False,
-                    tabsize=4,
-                    expand_tabs=True,
-                    replace_whitespace=True,
-                )
-
-                print(wrapped_content)
-                return ""
-
             # Create a consistent format for definition numbers
             num_str = f"{def_num}:  "  # Always 2 spaces after colon
 
             # Calculate proper indentation
             initial_indent = indent(2) + num_str
-
-            # For all definitions, use standard formatting
             subsequent_indent = " " * len(initial_indent)
 
-            # Clean up all whitespace issues
+            # Clean up all whitespace issues including mid-definition newlines
             # Ensure all newlines and extra spaces are replaced with single spaces
             content = re.sub(r"\s+", " ", content).strip()
 
@@ -564,7 +541,7 @@ def format_wordnet_buffer(buffer, buffer_level):
     subsequent_indent = initial_indent
     content = buffer.strip()
 
-    # Clean up all whitespace issues
+    # Clean up all whitespace issues including mid-definition newlines
     content = re.sub(r"\s+", " ", content)
 
     # Format with textwrap for consistent wrapping
@@ -687,23 +664,20 @@ def process_parsed(parsed):
                     )
 
                 if rest_of_line:
-                    if current_dict == "wordnet":
-                        # Format with consistent indentation for Wordnet
-                        number_str = f"{entry_counter}:  "
-                        prefix = indent(2) + number_str
-                        subsequent = " " * len(prefix)  # Fixed indentation level
-                        print(
-                            textwrap.fill(
-                                rest_of_line,
-                                width=TEXT_WIDTH,
-                                initial_indent=prefix,
-                                subsequent_indent=subsequent,
-                            )
+                    # Check if this is a definition (starts with a number)
+                    if (
+                        re.match(r"^\d+\s*[:)]", rest_of_line)
+                        and current_dict == "wordnet"
+                    ):
+                        # Use the wordnet processor to handle this definition
+                        # This ensures consistent handling with other definitions
+                        buffer, entry_counter, _ = process_entry_line_english(
+                            rest_of_line, buffer, buffer_level, entry_counter
                         )
                     else:
-                        # Other dictionaries use the standard wrap_text
+                        # If it's not a definition, just print it directly
                         print(wrap_text(entry_counter, rest_of_line))
-                    entry_counter += 1
+                        entry_counter += 1
             continue
 
         if tag == "#entry_line":
@@ -731,18 +705,65 @@ def process_parsed(parsed):
                 or next_tag is None
             ):
                 if buffer.strip():
-                    # Get the appropriate buffer handler based on dictionary type
-                    buffer_handler = DICT_BUFFER_HANDLERS.get(
-                        current_dict, DICT_BUFFER_HANDLERS.get("default")
-                    )
-                    buffer = buffer_handler(buffer, buffer_level)
+                    # Handle buffer based on type
+                    if buffer.startswith("DEF1_CONTENT:"):
+                        # Process definition #1 content
+                        content = buffer[13:].strip()
+                        num_str = "1:  "
+                        prefix = indent(2) + num_str
+                        subsequent = " " * len(prefix)
 
+                        # Clean up content
+                        content = re.sub(r"\s+", " ", content).strip()
+
+                        # Format with textwrap
+                        print(
+                            textwrap.fill(
+                                content,
+                                width=TEXT_WIDTH,
+                                initial_indent=prefix,
+                                subsequent_indent=subsequent,
+                                break_on_hyphens=False,
+                                break_long_words=False,
+                            )
+                        )
+                        buffer = ""
+                    else:
+                        # Use appropriate handler for other buffer types
+                        buffer_handler = DICT_BUFFER_HANDLERS.get(
+                            current_dict, DICT_BUFFER_HANDLERS.get("default")
+                        )
+                        buffer = buffer_handler(buffer, buffer_level)
+
+    # Handle any remaining buffer at the end
     if buffer.strip():
-        # Handle any remaining buffer at the end
-        buffer_handler = DICT_BUFFER_HANDLERS.get(
-            current_dict, DICT_BUFFER_HANDLERS.get("default")
-        )
-        buffer = buffer_handler(buffer, buffer_level)
+        if buffer.startswith("DEF1_CONTENT:"):
+            # Process definition #1 content
+            content = buffer[13:].strip()
+            num_str = "1:  "
+            prefix = indent(2) + num_str
+            subsequent = " " * len(prefix)
+
+            # Clean up content
+            content = re.sub(r"\s+", " ", content).strip()
+
+            # Format with textwrap
+            print(
+                textwrap.fill(
+                    content,
+                    width=TEXT_WIDTH,
+                    initial_indent=prefix,
+                    subsequent_indent=subsequent,
+                    break_on_hyphens=False,
+                    break_long_words=False,
+                )
+            )
+        else:
+            # Use appropriate handler for other buffer types
+            buffer_handler = DICT_BUFFER_HANDLERS.get(
+                current_dict, DICT_BUFFER_HANDLERS.get("default")
+            )
+            buffer = buffer_handler(buffer, buffer_level)
 
 
 def process_search_results(search_term, search_results):
