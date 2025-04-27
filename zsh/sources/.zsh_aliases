@@ -109,7 +109,6 @@ alias mdis="mullvad disconnect"
 alias mst="mullvad status"
 
 ## Notes & Text
-alias define="camb"
 alias note="notesh -f ~/notes/quick.json"
 
 ## Server
