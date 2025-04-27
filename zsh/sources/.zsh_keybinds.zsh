@@ -14,8 +14,8 @@ bindkey '^X^A' fasd-complete    # C-x C-a to do fasd-complete (files and directo
 bindkey '^X^F' fasd-complete-f  # C-x C-f to do fasd-complete-f (only files)
 bindkey '^X^D' fasd-complete-d  # C-x C-d to do fasd-complete-d (only directories)
 
-# Alt + S -> Shell-GPT
-bindkey '^[s' _sgpt_zsh
+# Alt + G -> Shell-GPT search and replace command
+bindkey '^[g' _sgpt_zsh
 
 # Alt + F -> Fuzzy path completion
 bindkey '^[f' __fzf_path_complete
