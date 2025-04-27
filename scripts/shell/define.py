@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import re
 import subprocess
 import sys
@@ -11,14 +12,14 @@ TEXT_WIDTH = 120
 
 KNOWN_POS = {"n.", "vb.", "adj."}
 KNOWN_LANGUAGES = {
-    "WordNet": "wordnet-en",
-    "wikt-sv-ALL-2024-10-05": "wikt-sv",
-    "Oxford Advanced Learner's Dictionary 8th Ed.": "oxford-advanced-learner-en",
-    "Urban Dictionary P1 (En-En)": "urban-en",
-    "Urban Dictionary P2 (En-En)": "urban-en",
+    "WordNet": "wordnet",
+    "wikt-sv-ALL-2024-10-05": "wiktsv",
+    "Oxford Advanced Learner's Dictionary 8th Ed.": "oald",
+    "Urban Dictionary P1 (En-En)": "urban",
+    "Urban Dictionary P2 (En-En)": "urban",
 }
 
-SORTING_ORDER = ["wordnet-en", "wikt-sv", "oxford-advanced-learner-en", "urban-en"]
+SORTING_ORDER = ["wordnet", "wiktsv", "oald", "urban"]
 
 # ------------------ POS Helpers ------------------ #
 
@@ -70,10 +71,23 @@ def tag_line(line, prev_tag):
 def parse_sdcv(lines):
     parsed = []
     prev_tag = None
+    current_dict = None
+
     for line in lines:
         tag = tag_line(line, prev_tag)
+
+        # Track current dictionary
+        if tag == "#language":
+            dict_name = line[3:].strip()
+            current_dict = KNOWN_LANGUAGES.get(dict_name)
+
+        # Special handling for Urban Dictionary - don't treat its lines as POS
+        if tag == "#pos" and current_dict == "urban":
+            tag = "#entry_line"
+
         parsed.append((tag, line.rstrip()))
         prev_tag = tag
+
     return parsed
 
 
@@ -114,8 +128,19 @@ def flush_buffer(buffer, buffer_level):
 # ------------------ Runner ------------------ #
 
 
-def run_sdcv(query):
-    result = subprocess.run(["sdcv"] + query, capture_output=True, text=True)
+def run_sdcv(query, requested_dicts=None):
+    cmd = ["sdcv"]
+
+    # If specific dictionaries are requested, add them to the command
+    if requested_dicts:
+        # Map short names back to full dictionary names for sdcv
+        for dict_short in requested_dicts:
+            for full_name, short_name in KNOWN_LANGUAGES.items():
+                if short_name == dict_short:
+                    cmd.extend(["--use-dict", full_name])
+
+    cmd.extend(query)
+    result = subprocess.run(cmd, capture_output=True, text=True)
     output_lines = result.stdout.splitlines()
 
     if output_lines and output_lines[0].startswith("Nothing similar"):
@@ -397,16 +422,12 @@ def process_parsed(parsed):
             if len(parts) > 1 and parts[1].strip():
                 rest_of_line = parts[1].strip()
 
-                if current_dict in [
-                    "wordnet-en",
-                    "oxford-advanced-learner-en",
-                    "urban-en",
-                ]:
+                if current_dict in ["wordnet", "oald", "urban"]:
                     rest_of_line, entry_counter = process_english_pos_line(
                         parts, entry_counter
                     )
 
-                if rest_of_line and current_dict != "urban-en":
+                if rest_of_line and current_dict != "urban":
                     print(wrap_text(entry_counter, rest_of_line))
                     entry_counter += 1
             continue
@@ -423,11 +444,11 @@ def process_parsed(parsed):
                     buffer, entry_counter, processed = process_entry_line_swedish(
                         line_content, buffer, buffer_level, entry_counter
                     )
-                elif current_dict == "oxford-advanced-learner-en":
+                elif current_dict == "oald":
                     buffer, entry_counter, processed = process_oxford_dictionary(
                         line_content, buffer, buffer_level, entry_counter
                     )
-                elif current_dict == "urban-en":
+                elif current_dict == "urban":
                     buffer, entry_counter, processed = process_urban_dictionary(
                         line_content, buffer, buffer_level, entry_counter
                     )
@@ -490,18 +511,40 @@ def process_search_results(search_term, search_results):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: define <word>")
+    parser = argparse.ArgumentParser(
+        description="Look up word definitions in various dictionaries"
+    )
+    parser.add_argument("word", nargs="?", help="The word to look up")
+    parser.add_argument(
+        "--dict",
+        dest="dictionaries",
+        help="Comma-separated list of dictionaries to use (e.g., urban,oald)",
+    )
+    args = parser.parse_args()
+
+    if args.word:
+        search_term = args.word
+    else:
+        if args.dictionaries:
+            print("Error: Word argument is required when using --dict")
+            sys.exit(1)
+        print("Usage: define.py [--dict=DICT1,DICT2,...] <word>")
+        parser.print_help()
         sys.exit(1)
 
-    search_term = sys.argv[1]
+    # If dictionaries are specified, prepare them for filtering
+    requested_dicts = None
+    if args.dictionaries:
+        requested_dicts = [d.strip() for d in args.dictionaries.split(",")]
 
-    sdcv_lines, sdcv_found = run_sdcv([search_term])
-
+    # Run sdcv with specified dictionaries if any
+    sdcv_lines, sdcv_found = run_sdcv([search_term], requested_dicts)
     search_results = {}
 
     if sdcv_found:
-        search_results["sdcv"] = parse_sdcv(sdcv_lines)
+        # Parse the SDCV results
+        parsed_results = parse_sdcv(sdcv_lines)
+        search_results["sdcv"] = parsed_results
 
     process_search_results(search_term, search_results)
 
