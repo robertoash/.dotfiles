@@ -254,6 +254,104 @@ def process_parts(parts, number_pattern, buffer, buffer_level, entry_counter, la
     return buffer, entry_counter, processed
 
 
+def process_urban_dictionary(line_content, buffer, buffer_level, entry_counter):
+    # Process numbered definitions with votes
+    # Format: "1. (4324 up, 488 down)"
+    if re.match(r"^\d+\.\s+\(\d+\s+up,\s+\d+\s+down\)", line_content):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+
+        # Extract definition number and votes
+        match = re.match(r"^(\d+)\..*\((\d+)\s+up,\s+(\d+)\s+down\)", line_content)
+        if match:
+            definition_num = match.group(1)
+            votes_up = match.group(2)
+            votes_down = match.group(3)
+            print(
+                f"\n{indent(buffer_level)}{definition_num}:  [↑{votes_up} ↓{votes_down}]"
+            )
+
+        # Reset entry counter for each new definition
+        entry_counter = 1
+        return buffer, entry_counter, True
+
+    # Process numbered items (could be sub-definitions or examples)
+    if re.match(r"^\d+\.\s+", line_content) and not re.match(
+        r"^\d+\.\s+\(", line_content
+    ):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+
+        # Extract text, removing the original numbering
+        match = re.match(r"^\d+\.\s+(.*)", line_content)
+        if match:
+            text = match.group(1).strip()
+
+            # Replace internal numbering with bullet points
+            # For example: "1. example" becomes "- example"
+            text = re.sub(r"^\d+\.\s+", "- ", text)
+
+            # Print with bullet point instead of number
+            prefix = indent(buffer_level + 1)
+            subsequent = " " * len(prefix)
+            print(
+                textwrap.fill(
+                    f"- {text}",
+                    width=TEXT_WIDTH,
+                    initial_indent=prefix,
+                    subsequent_indent=subsequent,
+                )
+            )
+            return buffer, entry_counter, True
+
+    # Process non-numbered lines - treat as part of the definition
+    if (
+        line_content
+        and not re.match(r"^\d+\.", line_content)
+        and not line_content.startswith(("See", "More"))
+    ):
+        # Use the textwrap.fill function for consistent formatting
+        prefix = indent(buffer_level + 1)
+        subsequent = " " * len(prefix)
+        print(
+            textwrap.fill(
+                f"- {line_content}",
+                width=TEXT_WIDTH,
+                initial_indent=prefix,
+                subsequent_indent=subsequent,
+            )
+        )
+        return buffer, entry_counter, True
+
+    # Process "See" references
+    if line_content.startswith("See "):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        # Increase indentation by one level for "See also:" lines
+        prefix = indent(buffer_level + 1)
+        subsequent = " " * len(prefix)
+        print(
+            textwrap.fill(
+                f"See also: {line_content[4:]}",
+                width=TEXT_WIDTH,
+                initial_indent=prefix,
+                subsequent_indent=subsequent,
+            )
+        )
+        return buffer, entry_counter, True
+
+    # Process "More online" links
+    if line_content.startswith("More online:"):
+        if buffer.strip():
+            buffer = flush_buffer(buffer, buffer_level + 1)
+        print(f"\n{indent(buffer_level)}{line_content}")
+        return buffer, entry_counter, True
+
+    # Accumulate definition text in buffer (this should rarely be reached for Urban Dictionary)
+    buffer += " " + line_content
+    return buffer, entry_counter, False
+
+
 # ------------------ Main Output ------------------ #
 
 
@@ -289,7 +387,11 @@ def process_parsed(parsed):
             buffer = flush_buffer(buffer, buffer_level)
             parts = line.strip().split(maxsplit=1)
             pos = standardize_pos(parts[0])
-            print(f"{indent(1)}{pos}")
+
+            # Skip printing POS for Urban Dictionary
+            if current_dict != "urban-en":
+                print(f"{indent(1)}{pos}")
+
             entry_counter = 1
 
             if len(parts) > 1 and parts[1].strip():
@@ -304,7 +406,7 @@ def process_parsed(parsed):
                         parts, entry_counter
                     )
 
-                if rest_of_line:
+                if rest_of_line and current_dict != "urban-en":
                     print(wrap_text(entry_counter, rest_of_line))
                     entry_counter += 1
             continue
@@ -323,6 +425,10 @@ def process_parsed(parsed):
                     )
                 elif current_dict == "oxford-advanced-learner-en":
                     buffer, entry_counter, processed = process_oxford_dictionary(
+                        line_content, buffer, buffer_level, entry_counter
+                    )
+                elif current_dict == "urban-en":
+                    buffer, entry_counter, processed = process_urban_dictionary(
                         line_content, buffer, buffer_level, entry_counter
                     )
                 else:
