@@ -126,6 +126,7 @@ hyprpaper-git###pacman
 hyprpicker###pacman
 inetutils###pacman
 inotify-tools###pacman
+insync###pacman
 intel-media-driver###pacman
 intel-ucode###pacman
 interception-caps2esc###pacman
@@ -202,6 +203,7 @@ otf-commit-mono-nerd###pacman
 otf-futura-renner###pacman
 otf-geist-mono-nerd###pacman
 pacman-contrib###pacman
+papirus-icon-theme###pacman
 pastel###pacman
 pavucontrol###pacman
 pcmanfm-gtk3###pacman
@@ -243,6 +245,7 @@ rtkit###pacman
 ruff###pacman
 s-nail###pacman
 samba###pacman
+sdcv###pacman
 seahorse###pacman
 sg3_utils###pacman
 slack-desktop###pacman
@@ -251,8 +254,12 @@ smartmontools###pacman
 sof-firmware###pacman
 solaar###pacman
 speedtest++###pacman
-spotify###pacman
+spotify-player-full###pacman
+spotifyd###pacman
 sqls###pacman
+stardict-dictd-moby-thesaurus###pacman
+stardict-urban###pacman
+stardict-wordnet###pacman
 starship###pacman
 steam###pacman
 steam-native-runtime###pacman
@@ -354,7 +361,11 @@ otf-futura-renner###yay
 pyprland-git###yay
 reiserfsprogs###yay
 rofi-lbonn-wayland-git###yay
+spotify-player-full###yay
 sqls###yay
+stardict-dictd-moby-thesaurus###yay
+stardict-urban###yay
+stardict-wordnet###yay
 svttext-git###yay
 termux-language-server###yay
 ticktick###yay
