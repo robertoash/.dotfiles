@@ -164,7 +164,7 @@ config.set(
 # `{line0}`: Same as `{line}`, but starting from index 0. * `{column0}`:
 # Same as `{column}`, but starting from index 0.
 # Type: ShellCommand
-c.editor.command = ["alacritty", "-e", "helix", "{file}:{line}:{column0}"]
+c.editor.command = ["alacritty", "-e", "nvim", "{file}:{line}:{column0}"]
 
 # Page to open if :open -t/-b/-w is used without URL. Use `about:blank`
 # for a blank page.

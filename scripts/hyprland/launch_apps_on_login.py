@@ -85,12 +85,12 @@ APPS = {
     ],
     "5": [
         {
-            "name": "helix",
-            "command": "kitty --title ___name___ -e hx",
+            "name": "nvim",
+            "command": "kitty --hold --title ___name___ -e nvim",
             "is_master": True,
         },
         {
-            "name": "hx_terminal",
+            "name": "nvim_terminal",
             "command": (
                 f"kitty --title ___name___ --working-directory {vars['CONFIG_DIR']}"
             ),
