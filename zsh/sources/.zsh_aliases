@@ -71,7 +71,7 @@ alias llrl="llr -L"
 alias lls="lll -s size"
 
 ## Fasd Quick Access
-alias h='f -e hx' # quick opening files with helix
+alias v='f -e nvim' # quick opening files with nvim
 alias m='f -e mpv' # quick opening files with mpv
 alias o='a -e xdg-open' # quick opening files with xdg-open
 # Other default aliases (already baked into fasd)
@@ -107,6 +107,9 @@ alias monitor_windows="xprop"
 alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
 alias mst="mullvad status"
+
+## Neovim
+alias nv="nvim"
 
 ## Notes & Text
 alias note="notesh -f ~/notes/quick.json"

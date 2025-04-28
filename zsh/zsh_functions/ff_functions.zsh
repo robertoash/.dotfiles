@@ -101,7 +101,7 @@ perform_ff_action() {
 
     case "$mode" in
         open) xdg-open "$target" ;;
-        edit) hx "$target" ;;
+        edit) nvim "$target" ;;
         copy-path)
             if [[ -d "$target" ]]; then
                 # For directories, copy the path with a trailing slash to indicate it's a directory
@@ -159,7 +159,7 @@ ff_help() {
     echo
     echo "After selection, choose an action:"
     echo "  - open       → xdg-open"
-    echo "  - edit       → hx"
+    echo "  - edit       → nvim"
     echo "  - copy       → wl-copy"
     echo "  - yazi       → open in yazi"
     echo "  - pcmanfm    → reveal in PCManFM"

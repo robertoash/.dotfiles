@@ -26,8 +26,8 @@
 .steam/
 .snapshots/
 .TVLite/
+.var/
 .vscode-insiders/
-.vscode/
 .vscode/
 .yarn/
 builds/
@@ -40,7 +40,6 @@ insync/j.roberto.ash@gmail.com/Google Drive/Work/
 insync/j.roberto.ash@gmail.com/Google Drive/cv_old/
 insync/j.roberto.ash@gmail.com/Google Drive/job_search/
 obsidian/vault/.obsidian/
-
 .config/BraveSoftware/
 .config/Code - Insiders/
 .config/Cursor/
@@ -63,7 +62,6 @@ obsidian/vault/.obsidian/
 .config/waybar/config_alts/jakoolit/
 .config/yay/
 .config/zsh/plugins/
-
 *.gdslides
 /go/
 /.eclipse/

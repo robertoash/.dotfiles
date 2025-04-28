@@ -49,10 +49,6 @@ zstyle ':completion:*' menu select
 fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath) # append asdf completions to fpath
 autoload -Uz compinit && compinit # initialise completions with ZSH's compinit
 
-# Deactivate hx command completions
-compdef -d hx
-# Use fasd for hx command completions
-zstyle ':completion:*:*:hx:*' command 'fasd --complete'
 
 # #################################
 # # Autocompletion priority
