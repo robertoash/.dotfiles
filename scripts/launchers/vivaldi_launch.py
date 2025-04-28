@@ -52,6 +52,10 @@ PROFILES = {
         "profile_directory": "app_profile",
         "app_url": "https://claude.ai",
     },
+    "google_calendar": {
+        "profile_directory": "app_profile",
+        "app_url": "https://calendar.google.com",
+    },
 }
 
 BASE_ARGS = [
