@@ -108,9 +108,6 @@ alias mcon="mullvad connect"
 alias mdis="mullvad disconnect"
 alias mst="mullvad status"
 
-## Neovim
-alias nv="nvim"
-
 ## Notes & Text
 alias note="notesh -f ~/notes/quick.json"
 
