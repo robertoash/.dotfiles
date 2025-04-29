@@ -10,23 +10,6 @@ import sys
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils  # noqa: E402
 
-# Parse command-line arguments
-parser = argparse.ArgumentParser(description="Retrieve environment secrets.")
-parser.add_argument("--debug", action="store_true", help="Enable debug logging")
-args = parser.parse_args()
-
-# Configure logging in quiet mode
-logging_utils.configure_logging(quiet=True)
-logger = logging.getLogger()
-
-# Override the console handler to use stderr instead of stdout
-for handler in logger.handlers:
-    if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
-        handler.stream = sys.stderr
-
-# Set log level based on debug flag
-logger.setLevel(logging.DEBUG if args.debug else logging.ERROR)
-
 # Lock file location
 lock_file = "/tmp/secrets_script.lock"
 
@@ -37,8 +20,23 @@ secrets_files = [
     "/home/rash/.secrets/.sp_secrets",
     "/home/rash/.secrets/.cjar_secrets",
     "/home/rash/.secrets/.openai_api_key",
+    "/home/rash/.secrets/.linkding_envs",
 ]
 gpg_id = "j.roberto.ash@gmail.com"
+
+
+def configure_logging(args):
+    # Configure logging in quiet mode
+    logging_utils.configure_logging(quiet=True)
+    logger = logging.getLogger()
+
+    # Override the console handler to use stderr instead of stdout
+    for handler in logger.handlers:
+        if isinstance(handler, logging.StreamHandler) and handler.stream == sys.stdout:
+            handler.stream = sys.stderr
+
+    # Set log level based on debug flag
+    logger.setLevel(logging.DEBUG if args.debug else logging.ERROR)
 
 
 def conf_source(file):
@@ -93,6 +91,34 @@ def conf_decrypt(file):
 
 
 def main():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Retrieve environment secrets.")
+    parser.add_argument("--debug", action="store_true", help="Enable debug logging")
+    parser.add_argument("--decrypt", help="Decrypt a file")
+    parser.add_argument("--edit", help="Edit a file")
+    args = parser.parse_args()
+
+    configure_logging(args)
+
+    if args.decrypt:
+        file = args.decrypt.removesuffix(".asc")
+        if conf_decrypt(file):
+            print(f"✅ Decrypted to: {file}")
+        else:
+            sys.exit(1)
+        return
+
+    if args.edit:
+        file = args.edit.removesuffix(".asc")
+        if not conf_decrypt(file):
+            sys.exit(1)
+        editor = os.environ.get("EDITOR", "nvim")
+        subprocess.run([editor, file])
+        if not conf_encrypt(file):
+            sys.exit(1)
+        print(f"🔒 Re-encrypted: {file} → {file}.asc")
+        return
+
     with open(lock_file, "w") as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)
         for file in secrets_files:
