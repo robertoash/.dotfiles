@@ -132,34 +132,60 @@ require('telescope').load_extension('fzf')
 -- require('lualine').setup({})
 
 -- ==============================================
+--  Custom Functions
+-- ==============================================
+
+-- :W - write with mkdir -p
+vim.api.nvim_create_user_command("W", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  local dir = vim.fn.fnamemodify(file, ":p:h")
+  if vim.fn.isdirectory(dir) == 0 then
+    vim.fn.mkdir(dir, "p")
+  end
+  vim.cmd("write")
+end, {})
+
+-- :WQ - write and quit with mkdir -p
+vim.api.nvim_create_user_command("WQ", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  local dir = vim.fn.fnamemodify(file, ":p:h")
+  if vim.fn.isdirectory(dir) == 0 then
+    vim.fn.mkdir(dir, "p")
+  end
+  vim.cmd("wq")
+end, {})
+
+-- ==============================================
 -- 🧠 Keymaps
 -- ==============================================
 
+local function multi_mode_remap(key, target, modes)
+  for _, mode in ipairs(modes) do
+    vim.keymap.set(mode, key, target, { noremap = true })
+  end
+end
+
 -- --- Nordic Normal Mode Boost Pack (init.lua version) ---
 -- Map ¤ (Shift+4) to move to end of line ($)
-vim.keymap.set('n', '¤', '$', { noremap = true })
+multi_mode_remap('¤', '$', { 'n', 'v', 'i' })
 -- Map & (Shift+6) to move to first non-blank (^)
-vim.keymap.set('n', '&', '^', { noremap = true })
+multi_mode_remap('&', '^', { 'n', 'v', 'i' })
 -- Map ½ (Shift+backtick) to toggle case (~)
-vim.keymap.set('n', '½', '~', { noremap = true })
+multi_mode_remap('½', '~', { 'n', 'v', 'i' })
 -- Map ´ (dead accent next to backspace) to auto-indent (=)
-vim.keymap.set('n', '´', '=', { noremap = true })
+multi_mode_remap('´', '=', { 'n', 'v', 'i' })
 -- Map Ä (Shift+Ä) to register prefix (")
-vim.keymap.set('n', 'Ä', '"', { noremap = true })
+multi_mode_remap('Ä', '"', { 'n', 'v', 'i' })
 -- Map ä (Shift+ä) to jump to mark (')
-vim.keymap.set('n', 'ä', "'", { noremap = true })
--- Map å (where { lives) to {
-vim.keymap.set('n', 'å', '{', { noremap = true })
-vim.keymap.set('n', 'Å', '}', { noremap = true })
--- Map ¨ (where [ lives) to [
-vim.keymap.set('n', '¨', '[', { noremap = true })
--- Map ^ (where ] lives) to ]
-vim.keymap.set('n', '^', ']', { noremap = true })
-
--- Double Space for Escape behavior
-vim.keymap.set('i', '<Space><Space>', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('v', '<Space><Space>', '<Esc>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Space><Space>', ':nohlsearch<CR>', { noremap = true, silent = true })
+multi_mode_remap('ä', "'", { 'n', 'v', 'i' })
+-- Map å (US equivalent location) to {
+multi_mode_remap('å', '{', { 'n', 'v', 'i' })
+-- Map Å (Shift+Å) to register prefix (})
+multi_mode_remap('Å', '}', { 'n', 'v', 'i' })
+-- Map ¨ (US equivalent location) to [
+multi_mode_remap('¨', '[', { 'n', 'v', 'i' })
+-- Map ^ (US equivalent location) to ]
+multi_mode_remap('^', ']', { 'n', 'v', 'i' })
 
 -- Telescope Smart Find
 local function smart_find_files()
