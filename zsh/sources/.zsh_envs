@@ -29,6 +29,9 @@ export ASDF_DATA_DIR="/home/rash/.asdf"
 # Fd ignore
 export FD_IGNORE_FILE="$HOME/.config/fd/ignore"
 
+# Linkding
+export LINKDING_URL="https://links.rashlab.net"
+
 # Taskwarrior
 export TASKRC="$HOME/.config/task/taskrc"
 export TASKDATA="$HOME/.config/task/.task"
