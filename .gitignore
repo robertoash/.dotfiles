@@ -135,3 +135,4 @@ theme_it/backups
 btop/btop.conf
 hypr/keybind_submaps/rofi_iptv.conf
 zsh/sources/.zsh_secrets
+hypr/keybind_submaps/tgt.conf
