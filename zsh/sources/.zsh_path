@@ -2,6 +2,9 @@
 # # Path setting
 # #################################
 
+# Cargo path
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # Pipx path
 export PATH="$PATH:/home/rash/.local/bin"
 
