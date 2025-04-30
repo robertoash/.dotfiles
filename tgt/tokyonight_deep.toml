@@ -1,0 +1,67 @@
+[palette]
+black = "#0b0c19"
+white = "#ffffff"
+background = "#010111"
+primary = "#7aa2f7"
+primary_variant = "#82aaff"
+primary_light = "#8bffff"
+secondary = "#f7768e"
+secondary_variant = "#ff5f8f"
+secondary_light = "#ff5f8f"
+ternary = "#b9bdcc"
+ternary_variant = "#d0d6e3"
+ternary_light = "#7dcfff"
+surface = "#1d1d2c"
+on_surface = "#ffffff"
+error = "#ff5f8f"
+on_error = "#f7768e"
+
+[common]
+border_component_focused = { fg = "secondary", bg = "background", bold = false, underline = false, italic = false }
+item_selected = { fg = "", bg = "surface", bold = true, underline = false, italic = false }
+timestamp = { fg = "ternary_light", bg = "background", bold = false, underline = false, italic = false }
+
+[chat_list]
+self = { fg = "primary", bg = "background", bold = false, underline = false, italic = false }
+item_selected = { fg = "", bg = "primary", bold = false, underline = false, italic = false }
+item_chat_name = { fg = "primary_light", bg = "background", bold = true, underline = false, italic = false }
+item_message_content = { fg = "secondary_light", bg = "background", bold = false, underline = false, italic = true }
+item_unread_counter = { fg = "secondary", bg = "background", bold = true, underline = false, italic = false }
+
+[chat]
+self = { fg = "primary", bg = "background", bold = false, underline = false, italic = false }
+chat_name = { fg = "secondary", bg = "background", bold = true, underline = false, italic = false }
+message_myself_name = { fg = "primary_light", bg = "background", bold = true, underline = false, italic = false }
+message_myself_content = { fg = "primary_variant", bg = "background", bold = false, underline = false, italic = false }
+message_other_name = { fg = "secondary_light", bg = "background", bold = true, underline = false, italic = false }
+message_other_content = { fg = "secondary_variant", bg = "background", bold = false, underline = false, italic = false }
+message_reply_text = { fg = "ternary", bg = "background", bold = false, underline = false, italic = false }
+message_reply_name = { fg = "secondary_light", bg = "background", bold = true, underline = false, italic = false }
+message_reply_content = { fg = "secondary_variant", bg = "background", bold = false, underline = false, italic = false }
+
+[prompt]
+self = { fg = "primary", bg = "background", bold = false, underline = false, italic = false }
+message_text = { fg = "primary_light", bg = "background", bold = false, underline = false, italic = false }
+message_text_selected = { fg = "secondary_light", bg = "ternary", bold = false, underline = false, italic = true }
+message_preview_text = { fg = "ternary", bg = "background", bold = false, underline = false, italic = false }
+
+[reply_message]
+self = { fg = "secondary_light", bg = "background", bold = false, underline = false, italic = false }
+message_text = { fg = "secondary_variant", bg = "background", bold = false, underline = false, italic = false }
+
+[status_bar]
+self = { fg = "on_surface", bg = "surface", bold = false, underline = false, italic = false }
+size_info_text = { fg = "primary_light", bg = "surface", bold = false, underline = false, italic = false }
+size_info_numbers = { fg = "secondary_light", bg = "surface", bold = false, underline = false, italic = true }
+press_key_text = { fg = "primary_light", bg = "surface", bold = false, underline = false, italic = false }
+press_key_key = { fg = "secondary_light", bg = "surface", bold = false, underline = false, italic = true }
+message_quit_text = { fg = "primary_light", bg = "surface", bold = false, underline = false, italic = false }
+message_quit_key = { fg = "secondary_light", bg = "surface", bold = false, underline = false, italic = true }
+open_chat_text = { fg = "primary_light", bg = "surface", bold = false, underline = false, italic = false }
+open_chat_name = { fg = "secondary_light", bg = "surface", bold = false, underline = false, italic = true }
+
+[title_bar]
+self = { fg = "on_surface", bg = "surface", bold = false, underline = false, italic = false }
+title1 = { fg = "primary_light", bg = "surface", bold = true, underline = true, italic = true }
+title2 = { fg = "secondary_light", bg = "surface", bold = true, underline = true, italic = true }
+title3 = { fg = "ternary_light", bg = "surface", bold = true, underline = true, italic = false }
