@@ -12,10 +12,6 @@ alias rr='clear && exec zsh'
 alias sudo="sudo "
 alias zsh_reload="source ~/.config/zsh/.zshrc"
 
-## System Power
-alias poweroff="~/.config/scripts/hyprland/custom_shutdown.py --poweroff"
-alias reboot="~/.config/scripts/hyprland/custom_shutdown.py --reboot"
-
 ## Package Management
 alias yay_total="yay -Syu --devel"
 alias yay_update="yayupdate"
