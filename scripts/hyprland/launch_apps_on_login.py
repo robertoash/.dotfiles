@@ -286,7 +286,7 @@ def main():
             check=True,
         )
 
-    time.sleep(0.2)
+    time.sleep(0.3)
 
     # Switch back to default workspace in DP-1
     subprocess.run(["hyprctl", "dispatch", "workspace", "1"], check=True)
