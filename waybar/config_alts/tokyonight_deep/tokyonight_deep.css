@@ -289,19 +289,33 @@ window#waybar.hidden {
 
 #workspaces button:hover {
     border-radius: 9px;
-    color: @color7;
+    color: @background;
     background-color: @color4;
-    padding: 0 4px;
 }
 
 #workspaces button.persistent {
     color: @color17;
 }
 
-#workspaces button.active {
-    color: @accent;
-    padding: 3px 5px 5px 5px;
+/* Highlight active workspace even if not focused */
+#workspaces button.visible {
+    background-color: @color0;
+    color: @background;
+    margin: 0px 5px 0px 5px;
+    padding: 0px 5px 2px 5px;
 }
+#workspaces button.visible:hover {
+    background-color: @accent;
+    color: @background;
+}
+
+#workspaces button.active {
+    background-color: @accent;
+    color: @background;
+    margin: 0px 5px 0px 5px;
+    padding: 0px 5px 2px 5px;
+}
+
 
 #workspaces button.urgent {
     color: @color9;
