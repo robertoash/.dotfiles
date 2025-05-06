@@ -165,28 +165,6 @@ local function multi_mode_remap(key, target, modes)
   end
 end
 
--- --- Nordic Normal Mode Boost Pack (init.lua version) ---
--- Map ¤ (Shift+4) to move to end of line ($)
-multi_mode_remap('¤', '$', { 'n', 'v', 'i' })
--- Map & (Shift+6) to move to first non-blank (^)
-multi_mode_remap('&', '^', { 'n', 'v', 'i' })
--- Map ½ (Shift+backtick) to toggle case (~)
-multi_mode_remap('½', '~', { 'n', 'v', 'i' })
--- Map ´ (dead accent next to backspace) to auto-indent (=)
-multi_mode_remap('´', '=', { 'n', 'v', 'i' })
--- Map Ä (Shift+Ä) to register prefix (")
-multi_mode_remap('Ä', '"', { 'n', 'v', 'i' })
--- Map ä (Shift+ä) to jump to mark (')
-multi_mode_remap('ä', "'", { 'n', 'v', 'i' })
--- Map å (US equivalent location) to {
-multi_mode_remap('å', '{', { 'n', 'v', 'i' })
--- Map Å (Shift+Å) to register prefix (})
-multi_mode_remap('Å', '}', { 'n', 'v', 'i' })
--- Map ¨ (US equivalent location) to [
-multi_mode_remap('¨', '[', { 'n', 'v', 'i' })
--- Map ^ (US equivalent location) to ]
-multi_mode_remap('^', ']', { 'n', 'v', 'i' })
-
 -- Telescope Smart Find
 local function smart_find_files()
   local ok = pcall(require('telescope.builtin').git_files, { show_untracked = true })
