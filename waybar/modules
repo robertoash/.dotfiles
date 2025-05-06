@@ -1,8 +1,19 @@
 
 {
     // HYPRLAND WORKSPACES. CHOOSE as desired and place on waybar configs
+    // NUMBERS Style
+    "hyprland/workspaces#numbers": {
+        "active-only": false,
+        "all-outputs": false,
+        "format": "{icon}",
+        "show-special": false,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+    },
+
     // CIRCLES Style
-    "hyprland/workspaces": {
+    "hyprland/workspaces#circles": {
         "active-only": false,
         "all-outputs": true,
         "format": "{icon}",
