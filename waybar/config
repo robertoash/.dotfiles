@@ -19,7 +19,9 @@
 		"custom/separator#dot-line",
 		"cpu",
 		"custom/separator#dot-line",
-		"memory"
+		"memory",
+		"custom/separator#dot-line",
+		"hyprland/language"
 	],
 
 	"modules-center": [
