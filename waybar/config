@@ -23,9 +23,11 @@
 	],
 
 	"modules-center": [
-		"idle_inhibitor",
+		"custom/hypridle",
 		"custom/separator#dot-line",
-		"hyprland/window"
+		"hyprland/window",
+		"custom/separator#dot-line",
+		"hyprland/submap"
 	],
 
 	"modules-right": [
