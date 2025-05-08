@@ -142,6 +142,6 @@ fi
 # Load Starship prompt
 eval "$(starship init zsh)"
 # Launch neofetch only in interactive shells and not within yazi
-if [[ -n "$PS1" && -z "$IN_YAZI" ]]; then
+if [[ -n "$PS1" && -z "$YAZI_LEVEL" ]]; then
     neofetch
 fi
