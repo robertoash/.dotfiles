@@ -281,6 +281,10 @@ def rofi_select(channels):
 def handle_selected_channel(selected_url, sorted_and_favs):
     """Handle the selected channel by launching MPV and showing notifications."""
     logging.debug(f"[DEBUG] User selected: {selected_url}")
+
+    # Copy the selected URL to the clipboard
+    subprocess.run(["wl-copy", selected_url])
+
     selected_entry = next(
         (ch for ch in sorted_and_favs if ch["url"] == selected_url), None
     )
