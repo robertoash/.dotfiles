@@ -28,8 +28,8 @@ x-scheme-handler/mailto=vivaldi-stable.desktop
 x-scheme-handler/tonsite=org.telegram.desktop.desktop
 x-scheme-handler/unknown=vivaldi-stable.desktop
 x-scheme-handler/webcal=vivaldi-stable.desktop
-inode/directory=pcmanfm.desktop
-application/x-gnome-saved-search=pcmanfm.desktop
+inode/directory=yazi.desktop
+application/x-gnome-saved-search=yazi.desktop
 
 [Added Associations]
 application/javascript=nvim.desktop;
