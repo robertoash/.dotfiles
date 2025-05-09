@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import signal
 import subprocess
@@ -37,7 +38,20 @@ def toggle_hypridle(hypridle_is_on: bool):
 
 
 def main():
-    hypridle_is_on = get_status()
+    parser = argparse.ArgumentParser(description="Toggle hypridle on/off")
+    parser.add_argument(
+        "--start-fresh",
+        action="store_true",
+        help="Delete PID file if it exists and turn hypridle on",
+    )
+    args = parser.parse_args()
+
+    if args.start_fresh:
+        PID_FILE.unlink(missing_ok=True)
+        hypridle_is_on = False
+    else:
+        hypridle_is_on = get_status()
+
     hypridle_is_on = toggle_hypridle(hypridle_is_on)
     write_status(hypridle_is_on)
 

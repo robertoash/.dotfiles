@@ -118,7 +118,6 @@
         "on-click": "hyprctl switchxkblayout current next"
     },
 
-
     "hyprland/submap": {
         "format": "<span style=\"italic\">  {}</span>", // Icon: expand-arrows-alt
         "tooltip": false
@@ -451,6 +450,12 @@
         "on-click": "~/.config/scripts/waybar/toggle_hypridle.py",
         "tooltip": false
     },
+    "custom/current_profile": {
+        "format": "󱧶 {}",
+        "exec": "jq -r '._current // \"unknown\"' ~/.config/hypr/workspace_profiles.json",
+        "interval": 2
+    },
+
 
     // Separators
     "custom/separator#dot": {
