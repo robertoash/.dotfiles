@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+PROFILE=$1
+QUTE_BASE="$HOME/.config/qutebrowser/profiles/$PROFILE"
+
+if [ ! -d "$QUTE_BASE" ]; then
+    echo "❌ Profile '$PROFILE' doesn't exist."
+    exit 1
+fi
+
+exec qutebrowser --basedir "$QUTE_BASE"
+
