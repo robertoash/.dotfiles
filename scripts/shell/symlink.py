@@ -1,8 +1,38 @@
 #!/usr/bin/env python3
 import argparse
+import glob
 import os
+import readline
 import shutil
 import sys
+
+
+def complete_path(text, state):
+    # Expand ~ to home directory
+    text = os.path.expanduser(text)
+    # Use glob to match files/folders
+    results = glob.glob(text + "*")
+    # Add a trailing slash to directories
+    results = [r + "/" if os.path.isdir(r) else r for r in results]
+    # Remove the expanded home directory for display if the user typed ~
+    if text.startswith(os.path.expanduser("~")):
+        results = [
+            (
+                "~" + r[len(os.path.expanduser("~")) :]
+                if r.startswith(os.path.expanduser("~"))
+                else r
+            )
+            for r in results
+        ]
+    try:
+        return results[state]
+    except IndexError:
+        return None
+
+
+readline.set_completer_delims(" \t\n;")
+readline.set_completer(complete_path)
+readline.parse_and_bind("tab: complete")
 
 
 def prompt(message):
@@ -48,11 +78,13 @@ def confirm(message):
 
 def main():
     link_path, link_target_path = get_paths()
+    link_path = os.path.expanduser(link_path)
+    link_target_path = os.path.expanduser(link_target_path)
 
     print("\n🚀 Preparing to create symlink:\n")
     print(f"    {link_path}  -->  {link_target_path}\n")
 
-    if not os.path.exists(os.path.expanduser(link_target_path)):
+    if not os.path.exists(link_target_path):
         print(f"❌ Error: The real destination '{link_target_path}' does not exist.")
         sys.exit(1)
 
@@ -71,7 +103,7 @@ def main():
             sys.exit(1)
 
     try:
-        os.symlink(os.path.expanduser(link_target_path), link_path)
+        os.symlink(link_target_path, link_path)
         print(f"✅ Success! Created symlink:\n   {link_path} -> {link_target_path}")
     except Exception as e:
         print(f"❌ Failed to create symlink: {e}")
