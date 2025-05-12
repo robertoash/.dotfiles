@@ -42,6 +42,12 @@ c.content.notifications.enabled = False
 c.colors.webpage.darkmode.enabled = True
 
 # === 2. PRIVACY & BLOCKING ===
+# User agent
+config.set(
+    "content.headers.user_agent",
+    "Mozilla/5.0 ({os_info}; rv:131.0) Gecko/20100101 Firefox/131.0",
+    "https://accounts.google.com/*",
+)
 
 # Adblock method
 c.content.blocking.method = "both"
@@ -132,15 +138,10 @@ if profile_name == "rash":
     c.content.autoplay = True
     c.content.notifications.enabled = True
     c.content.cookies.accept = "no-3rdparty"
-
 elif profile_name == "jobhunt":
     c.url.start_pages = "https://www.linkedin.com"
     c.content.autoplay = False
     c.content.cookies.accept = "no-3rdparty"
-    c.content.headers.user_agent = (
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-        "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-    )
 
 # === 7. POWER TOOLS ===
 
