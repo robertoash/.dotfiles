@@ -34,24 +34,24 @@ b_zen() {
         shift
         case $1 in
           https://*|http://*)
-            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="$1"
+            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app="$1"
             echo "Opening $1"
             return
             ;;
           *)
-            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://$1"
+            vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app="https://$1"
             echo "Opening https://$1"
             return
             ;;
         esac
         ;;
       [0-9]*)
-        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
+        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=$(bk_o --url "$1")
         echo "Opening Buku index $1"
         return
         ;;
       *)
-        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app=$(bk_o --url "$1")
+        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=$(bk_o --url "$1")
         echo "Opening Buku first match for string '$1'"
         return
         ;;
@@ -60,6 +60,7 @@ b_zen() {
 }
 
 no_paywall() {
-  echo "Opening https://www.removepaywall.com/search?url=$1 on vivaldi"
-  vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="Default" --app="https://www.removepaywall.com/search?url=$1"
+  local paywall_url="https://www.removepaywall.com/search?url=$1"
+  echo "Opening $paywall_url on qutebrowser"
+  qute_profile rash "$paywall_url"
 }
