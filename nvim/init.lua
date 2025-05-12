@@ -19,7 +19,7 @@ vim.o.number = true
 vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = "a"
+vim.o.mouse = "" -- "a" to activate
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
@@ -98,45 +98,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 		end
 	end,
 })
-
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
-
--- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-
--- Diagnostic keymaps
-vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
-
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
--- TIP: Disable arrow keys in normal mode
-vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
-vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
-
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
-
--- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
--- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
--- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
--- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
--- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -352,7 +313,7 @@ require("lazy").setup({
 			end
 
 			local fb_actions = require("telescope._extensions.file_browser.actions")
-      local actions = require("telescope.actions")
+			local actions = require("telescope.actions")
 
 			require("telescope").setup({
 				-- You can put your default mappings / updates / etc. in here
@@ -394,45 +355,45 @@ require("lazy").setup({
 						grouped = true,
 						hidden = true,
 						mappings = {
-              ["i"] = {
-                ["<A-c>"] = fb_actions.create,
-                ["<S-CR>"] = fb_actions.create_from_prompt,
-                ["<A-r>"] = fb_actions.rename,
-                ["<A-m>"] = fb_actions.move,
-                ["<A-y>"] = fb_actions.copy,
-                ["<A-d>"] = fb_actions.remove,
-                ["<C-o>"] = fb_actions.open,
-                ["<C-g>"] = fb_actions.goto_parent_dir,
-                ["<C-e>"] = fb_actions.goto_home_dir,
-                ["<C-w>"] = fb_actions.goto_cwd,
-                ["<C-t>"] = fb_actions.change_cwd,
-                ["<C-f>"] = fb_actions.toggle_browser,
-                ["<C-s>"] = fb_actions.toggle_all,
-                ["<bs>"] = fb_actions.backspace,
-                ["<C-h>"] = fb_actions.goto_parent_dir,
-                ["<C-j>"] = actions.move_selection_better,
-                ["<C-k>"] = actions.move_selection_worse,
-                ["<C-l>"] = actions.select_default,
-              },
-              ["n"] = {
-                ["c"] = fb_actions.create,
-                ["r"] = fb_actions.rename,
-                ["m"] = fb_actions.move,
-                ["y"] = fb_actions.copy,
-                ["d"] = fb_actions.remove,
-                ["o"] = fb_actions.open,
-                ["g"] = fb_actions.goto_parent_dir,
-                ["e"] = fb_actions.goto_home_dir,
-                ["w"] = fb_actions.goto_cwd,
-                ["t"] = fb_actions.change_cwd,
-                ["f"] = fb_actions.toggle_browser,
-                ["s"] = fb_actions.toggle_all,
-                ["h"] = fb_actions.goto_parent_dir,
-                ["j"] = actions.move_selection_better,
-                ["k"] = actions.move_selection_worse,
-                ["l"] = actions.select_default,
-              },
-            },
+							["i"] = {
+								["<A-c>"] = fb_actions.create,
+								["<S-CR>"] = fb_actions.create_from_prompt,
+								["<A-r>"] = fb_actions.rename,
+								["<A-m>"] = fb_actions.move,
+								["<A-y>"] = fb_actions.copy,
+								["<A-d>"] = fb_actions.remove,
+								["<C-o>"] = fb_actions.open,
+								["<C-g>"] = fb_actions.goto_parent_dir,
+								["<C-e>"] = fb_actions.goto_home_dir,
+								["<C-w>"] = fb_actions.goto_cwd,
+								["<C-t>"] = fb_actions.change_cwd,
+								["<C-f>"] = fb_actions.toggle_browser,
+								["<C-s>"] = fb_actions.toggle_all,
+								["<bs>"] = fb_actions.backspace,
+								["<C-h>"] = fb_actions.goto_parent_dir,
+								["<C-j>"] = actions.move_selection_better,
+								["<C-k>"] = actions.move_selection_worse,
+								["<C-l>"] = actions.select_default,
+							},
+							["n"] = {
+								["c"] = fb_actions.create,
+								["r"] = fb_actions.rename,
+								["m"] = fb_actions.move,
+								["y"] = fb_actions.copy,
+								["d"] = fb_actions.remove,
+								["o"] = fb_actions.open,
+								["g"] = fb_actions.goto_parent_dir,
+								["e"] = fb_actions.goto_home_dir,
+								["w"] = fb_actions.goto_cwd,
+								["t"] = fb_actions.change_cwd,
+								["f"] = fb_actions.toggle_browser,
+								["s"] = fb_actions.toggle_all,
+								["h"] = fb_actions.goto_parent_dir,
+								["j"] = actions.move_selection_better,
+								["k"] = actions.move_selection_worse,
+								["l"] = actions.select_default,
+							},
+						},
 					},
 				},
 			})
@@ -871,8 +832,11 @@ require("lazy").setup({
 				-- <c-k>: Toggle signature help
 				--
 				-- See :h blink-cmp-config-keymap for defining your own keymap
-				preset = "default",
-
+				preset = "super-tab",
+				custom = {
+					["<C-j>"] = "next", -- Navigate to next item
+					["<C-k>"] = "previous", -- Navigate to previous item
+				},
 				-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
 				--    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
 			},
@@ -1068,6 +1032,56 @@ require("lazy").setup({
 	},
 })
 
+-- [[ Basic Keymaps ]]
+--  See `:help vim.keymap.set()`
+
+-- Clear highlights on search when pressing <Esc> in normal mode
+--  See `:help hlsearch`
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
+-- Diagnostic keymaps
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- is not what someone will guess without a bit more experience.
+--
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- TIP: Disable arrow keys in normal mode
+vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
+
+-- Keybinds to make split navigation easier.
+--  Use CTRL+<hjkl> to switch between windows
+--
+--  See `:help wincmd` for a list of all window commands
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
+-- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
+-- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
+-- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
+-- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+-- Open file_browser
+vim.keymap.set("n", "<leader>sb", ":Telescope file_browser<CR>", { desc = "[S]earch with file [B]rowser" })
+
+-- [[ Buffer operations ]]
+
+-- Close buffer
+vim.keymap.set("n", "<leader>bd", ":bd<CR>", { desc = "[B]uffer [D]elete" })
+-- Next/previous buffer
+vim.keymap.set("n", "<leader>bp", ":bp<CR>", { desc = "[B]uffer [P]revious" })
+vim.keymap.set("n", "<leader>bn", ":bn<CR>", { desc = "[B]uffer [N]ext" })
+
 --[[
   ===============================================================================
   🎨 LOAD CUSTOM TOKYONIGHT_DEEP THEME
@@ -1078,7 +1092,7 @@ pcall(require, "colors.tokyonight_deep")
 require("colors.tokyonight_deep").setup()
 
 -- ==============================================
---  Custom Functions (from old config)
+--  Custom Functions
 -- ==============================================
 -- :W - write with mkdir -p
 vim.api.nvim_create_user_command("W", function()
@@ -1099,6 +1113,14 @@ vim.api.nvim_create_user_command("WQ", function()
 	end
 	vim.cmd("wq")
 end, {})
+
+--[[
+--=================================================================================
+--Customization
+--=================================================================================
+  ]]
+
+pcall(require, "lsp.overrides.qutebrowser")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
