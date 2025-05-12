@@ -8,5 +8,5 @@ if [ ! -d "$QUTE_BASE" ]; then
     exit 1
 fi
 
-exec qutebrowser --basedir "$QUTE_BASE"
-
+qutebrowser --basedir "$QUTE_BASE" &
+disown
