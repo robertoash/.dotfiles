@@ -167,7 +167,28 @@ def focus_by_location(monitor_side, position):
         print(f"No windows found on {monitor_side} monitor")
         return 1
 
+    # If the exact position isn't available, use fallback logic
     if position not in window_positions:
+        if position.startswith("slave"):
+            # If any slave position is requested but not available
+
+            # Try to find the highest available slave position
+            available_slaves = sorted(
+                [pos for pos in window_positions.keys() if pos.startswith("slave")]
+            )
+
+            if available_slaves:
+                # Use the last (highest numbered) available slave
+                fallback_position = available_slaves[-1]
+                print(f"Position {position} not found, focusing {fallback_position} instead")
+                focus_window(window_positions[fallback_position])
+                return 0
+            elif "master" in window_positions:
+                # No slaves available, fall back to master
+                print("No slave positions found, focusing master instead")
+                focus_window(window_positions["master"])
+                return 0
+
         print(f"No window found at position {position} on {monitor_side} monitor")
         return 1
 
