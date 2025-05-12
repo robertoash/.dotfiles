@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from . import app_launcher, move_windows
+from . import app_launcher, focus_location, move_windows
 
 
 def main():
@@ -31,6 +31,9 @@ Examples:
 
   # Launch apps for a specific profile with debug logging
   hypr-window-ops launch-apps --profile jobhunt --debug
+
+  # Focus window at specific location (master) on left monitor
+  hypr-window-ops focus_location left master
         """,
     )
     subparsers = parser.add_subparsers(
@@ -95,6 +98,35 @@ Examples:
         "--debug", action="store_true", help="Enable detailed debug logging"
     )
 
+    # Focus location subcommand
+    focus_parser = subparsers.add_parser(
+        "focus_location",
+        help="Focus window at a specific location on monitor",
+        description="""
+Focus a window at a specific location (master, slave1, etc.) on a monitor.
+This helps with quickly navigating between window positions in Hyprland.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Focus the master window on the left monitor
+  hypr-window-ops focus_location left master
+
+  # Focus the second slave window on the right monitor
+  hypr-window-ops focus_location right slave2
+        """,
+    )
+    focus_parser.add_argument(
+        "monitor_side",
+        choices=["left", "right"],
+        help="Which monitor to target (left or right)",
+    )
+    focus_parser.add_argument(
+        "position",
+        choices=["master", "slave1", "slave2", "slave3"],
+        help="Window position to focus (master, slave1, slave2, slave3)",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -109,6 +141,8 @@ Examples:
         return app_launcher.launch_profile_apps(
             profile_name=args.profile, debug=args.debug
         )
+    elif args.command == "focus_location":
+        return focus_location.focus_by_location(args.monitor_side, args.position)
     else:
         parser.print_help()
         return 1
