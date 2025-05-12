@@ -131,6 +131,7 @@
         "offscreen-css-text": "(inactive)",
         "rewrite": {
             "vivaldi-stable > (.*)": "  > $1",
+            "org.qutebrowser.qutebrowser > (.*)": "  > $1",
             "code-insiders-url-handler > (.*) - (.*) \\(Workspace\\) - .*": "󰨞 > $1 - $2",
             "Alacritty > (.*)": "alacritty > $1",
         }
