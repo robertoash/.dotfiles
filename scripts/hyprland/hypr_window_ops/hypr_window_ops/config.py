@@ -15,9 +15,9 @@ APP_PROFILES_PATH = HOME / ".config" / "hypr" / "launch_apps.json"
 DEFAULT_PROFILE = "personal"
 
 # Delays
-WINDOW_DELAY = 0.3
+WINDOW_DELAY = 0.5
 FOCUS_DELAY = 0.5
-WINDOW_CREATION_DELAY = 0.2
+WINDOW_CREATION_DELAY = 0.5
 
 
 # Load APP_PROFILES from external JSON file
