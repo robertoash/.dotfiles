@@ -1,13 +1,23 @@
-nv() {
+# Common implementation function
+_nvim_wrapper() {
   if [ -d "$1" ]; then
-    nvim "$1" -c "Telescope file_browser hidden=true grouped=true"
+    command nvim "$1" -c "Telescope find_files"
   else
-    nvim "$@"
+    command nvim "$@"
   fi
 }
 
-# Open the cwd in nvim
-nvd() {
-  nvim -c "Telescope file_browser hidden=true grouped=true"
+# Define both nvim and nv using the common implementation
+nvim() {
+  _nvim_wrapper "$@"
+}
+
+nv() {
+  _nvim_wrapper "$@"
+}
+
+# Open the cwd in nvim with Telescope file_browser
+nvfb() {
+  command nvim -c "Telescope file_browser"
 }
 
