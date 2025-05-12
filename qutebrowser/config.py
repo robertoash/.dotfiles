@@ -1,24 +1,12 @@
 import os
 
-# This just quiets the linter errors
-try:
-    config  # type: ignore
-except NameError:
-    from types import SimpleNamespace
-
-    config = SimpleNamespace(bind=lambda *a, **k: None, load_autoconfig=lambda: None)
-    c = SimpleNamespace()
-
-
-# Load default settings first
+# Now it's safe to use!
 config.load_autoconfig()
 
-# Retrieve the base directory from the environment variable
-profile_path = os.environ.get("QUTE_BASEDIR", "")
-
-# Extract the profile name from the base directory path
+# Get the directory of the *symlink*, not the resolved file
+symlink_path = os.path.abspath(__file__)
+profile_path = os.path.dirname(os.path.dirname(symlink_path))
 profile_name = os.path.basename(profile_path)
-
 
 # === 1. CORE BEHAVIOR ===
 
@@ -31,6 +19,11 @@ c.tabs.show = "multiple"
 c.tabs.position = "left"
 c.tabs.width = "15%"
 c.tabs.title.format = "{index}: {current_title}"
+c.window.title_format = f"[qute-{profile_name}] - {{current_url}}"
+
+# Autosave session
+c.auto_save.session = True
+c.session.lazy_restore = False
 
 # Smooth scrolling
 c.scrolling.smooth = True
@@ -68,8 +61,8 @@ c.content.images = True
 # === 3. UI & THEMING ===
 
 # Font
-c.fonts.default_family = "FiraCode Nerd Font"
-c.fonts.default_size = "10pt"
+c.fonts.default_family = "GeistMono Nerd Font"
+c.fonts.default_size = "13pt"
 
 # Hint styling
 c.hints.border = "1px solid #e0af68"
@@ -125,25 +118,28 @@ config.bind("P", "open -- {primary}")
 # Close tab fast
 config.bind("x", "tab-close")
 
-# === 5. PER-PROFILE BEHAVIOR ===
+# === 5. ALIASES ===
+
+c.aliases["cs"] = "config-source"
+
+# === 6. PER-PROFILE BEHAVIOR ===
 
 if profile_name == "rash":
-    c.url.start_pages = "https://www.reddit.com"
+    c.url.start_pages = "https://www.startpage.com"
     c.content.autoplay = True
     c.content.notifications.enabled = True
-    c.tabs.title.format = "[rash] {index}: {title}"
+    c.content.cookies.accept = "no-3rdparty"
 
 elif profile_name == "jobhunt":
     c.url.start_pages = "https://www.linkedin.com"
     c.content.autoplay = False
     c.content.cookies.accept = "no-3rdparty"
-    c.tabs.title.format = "[jobhunt] {index}: {title}"
     c.content.headers.user_agent = (
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
     )
 
-# === 6. POWER TOOLS ===
+# === 7. POWER TOOLS ===
 
 # Block autoplay globally
 c.content.autoplay = False
