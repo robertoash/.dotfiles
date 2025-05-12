@@ -6,6 +6,7 @@ A utility for managing windows and workspaces in Hyprland, with functionality fo
 
 - **Application Launcher**: Launch applications in predefined workspaces with proper window placement (master/stack)
 - **Move Windows**: Move all windows from the current workspace to a target workspace in one command
+- **Focus Location**: Focus windows in specific positions (master/slave) on specific monitors (left/right)
 
 ## Installation
 
@@ -48,6 +49,20 @@ To move all windows to a special workspace:
 
 ```bash
 hypr-window-ops move-windows stash
+```
+
+### Focus Windows by Location
+
+Focus the master window on the left monitor:
+
+```bash
+hypr-window-ops focus_location left master
+```
+
+Focus the second slave window on the right monitor:
+
+```bash
+hypr-window-ops focus_location right slave2
 ```
 
 ## Configuration
@@ -118,4 +133,15 @@ Add keybindings in `keybinds.conf`:
 bindd = $HYPER, 1, Move all windows to ws 1, exec, hypr-window-ops move-windows 1
 bindd = $HYPER, 2, Move all windows to ws 2, exec, hypr-window-ops move-windows 2
 # Add more bindings for other workspaces...
+
+# Focus windows by location
+bind = SUPER CTRL, z, exec, hypr-window-ops focus_location left master
+bind = SUPER CTRL, x, exec, hypr-window-ops focus_location left slave1
+bind = SUPER CTRL, c, exec, hypr-window-ops focus_location left slave2
+bind = SUPER CTRL, v, exec, hypr-window-ops focus_location left slave3
+
+bind = SUPER CTRL, m, exec, hypr-window-ops focus_location right master
+bind = SUPER CTRL, n, exec, hypr-window-ops focus_location right slave1
+bind = SUPER CTRL, comma, exec, hypr-window-ops focus_location right slave2
+bind = SUPER CTRL, period, exec, hypr-window-ops focus_location right slave3
 ```
