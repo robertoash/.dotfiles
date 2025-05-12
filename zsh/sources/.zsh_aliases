@@ -48,6 +48,9 @@ alias bk_p="switch_buku_db rashp"
 alias bk_r="switch_buku_db rash"
 alias bk_s="switch_buku_db"
 
+### DCLI
+alias dcli="~/.config/scripts/shell/dcli_wrapper.py"
+
 ### SGPT
 alias gs="sgpt -s --no-interaction"
 alias gsi="sgpt -s --interaction"
