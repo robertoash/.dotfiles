@@ -56,6 +56,10 @@ PROFILES = {
         "profile_directory": "app_profile",
         "app_url": "https://calendar.google.com",
     },
+    "ha": {
+        "profile_directory": "app_profile",
+        "app_url": "https://ha.rashlab.net",
+    },
 }
 
 BASE_ARGS = [
