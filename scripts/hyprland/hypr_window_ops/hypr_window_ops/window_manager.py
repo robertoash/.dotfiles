@@ -4,6 +4,8 @@ import json
 import subprocess
 import time
 
+from . import config
+
 
 def run_hyprctl(command):
     """Run a hyprctl command and return the parsed JSON output."""
@@ -98,8 +100,10 @@ def is_window_master(window_address, workspace):
     return master_window == window_address
 
 
-def wait_for_window(existing_windows, timeout=5):
+def wait_for_window(existing_windows, timeout=None):
     """Wait for a new window to appear, up to `timeout` seconds."""
+    if timeout is None:
+        timeout = config.MAX_WAIT_FOR_WINDOW
     start_time = time.time()
     while time.time() - start_time < timeout:
         current_windows = get_window_addresses()

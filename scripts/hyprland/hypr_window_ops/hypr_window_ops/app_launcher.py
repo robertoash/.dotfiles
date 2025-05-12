@@ -76,7 +76,7 @@ def launch_profile_apps(
     logging.info(f"Launching apps for profile: {profile_name}")
 
     # Initial delay - allow window manager to stabilize
-    time.sleep(config.WINDOW_DELAY)
+    time.sleep(config.INITIAL_DELAY)
 
     profile_data = config.APP_PROFILES.get(profile_name)
     if not profile_data:
@@ -99,7 +99,7 @@ def launch_profile_apps(
     # Return to default workspaces and focus master windows
     # Switch to monitor 2 (DP-2) workspace
     focus_workspace_master("11")
-    time.sleep(config.FOCUS_DELAY)
+    time.sleep(config.FOCUS_WS_DELAY)
 
     # Switch to monitor 1 (DP-1) workspace
     focus_workspace_master("1")
