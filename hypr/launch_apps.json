@@ -3,7 +3,7 @@
         "1": [
             {
                 "name": "browser_personal",
-                "command": "vivaldi_launch --profile rash",
+                "command": "qute_profile rash",
                 "is_master": true
             },
             {
@@ -14,20 +14,8 @@
         ],
         "2": [
             {
-                "name": "cursor_dev",
-                "command": "cursor --new-window --enable-features=UseOzonePlatform --ozone-platform=wayland --file-uri /home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/Dev_cloud/cursor/apps.code-workspace",
-                "is_master": true
-            },
-            {
-                "name": "dev_terminal",
-                "command": "kitty --title ___name___ --working-directory /home/rash/dev/apps/",
-                "is_master": false
-            }
-        ],
-        "3": [
-            {
-                "name": "cursor",
-                "command": "cursor --new-window --enable-features=UseOzonePlatform --ozone-platform=wayland --file-uri /home/rash/insync/j.roberto.ash@gmail.com/Google\\ Drive/Dev_cloud/cursor/dotfiles.code-workspace",
+                "name": "nvim_config",
+                "command": "kitty --hold --title ___name___ -e nvim ~/.config/",
                 "is_master": true
             },
             {
@@ -36,22 +24,22 @@
                 "is_master": false
             }
         ],
-        "4": [
+        "3": [
             {
-                "name": "nvim",
-                "command": "kitty --hold --title ___name___ -e nvim",
+                "name": "nvim_dev",
+                "command": "kitty --hold --title ___name___ -e nvim ~/dev/apps/",
                 "is_master": true
             },
             {
-                "name": "nvim_terminal",
-                "command": "kitty --title ___name___ --working-directory /home/rash/.config",
+                "name": "dev_terminal",
+                "command": "kitty --title ___name___ --working-directory /home/rash/dev/apps/",
                 "is_master": false
             }
         ],
-        "5": [
+        "4": [
             {
                 "name": "browser_jobhunt",
-                "command": "vivaldi_launch --profile jobhunt",
+                "command": "qute_profile jobhunt",
                 "is_master": true
             },
             {
@@ -67,12 +55,12 @@
         ],
         "11": [
             {
-                "name": "gpt_zen",
-                "command": "vivaldi_launch --profile chatgpt",
+                "name": "claude_zen",
+                "command": "vivaldi_launch --profile claude",
                 "is_master": true
             },
             {
-                "name": "gpt_terminal",
+                "name": "claude_terminal",
                 "command": "kitty --title ___name___",
                 "is_master": false
             }
