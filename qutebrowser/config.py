@@ -99,10 +99,10 @@ c.colors.webpage.bg = "#1a1b26"
 # Vim-style navigation
 config.bind("J", "tab-prev")
 config.bind("K", "tab-next")
-config.bind("<Ctrl-j>", "scroll-page 0 0.5")
-config.bind("<Ctrl-k>", "scroll-page 0 -0.5")
-config.bind("<Ctrl-h>", "scroll-page -0.5 0")
-config.bind("<Ctrl-l>", "scroll-page 0.5 0")
+config.bind("<Ctrl-j>", "scroll-page 0 1")
+config.bind("<Ctrl-k>", "scroll-page 0 -1")
+config.bind("<Ctrl-h>", "scroll-page -1 0")
+config.bind("<Ctrl-l>", "scroll-page 1 0")
 
 # mpv integration
 config.bind(",m", "spawn --detach mpv {url}")
@@ -156,7 +156,7 @@ c.content.javascript.clipboard = "access-paste"
 
 # Custom search engines
 c.url.searchengines = {
-    "DEFAULT": "https://startpage.com/?q={}",
+    "DEFAULT": "https://startpage.com/do/dsearch?query={}",
     "g": "https://www.google.com/search?q={}",
     "gh": "https://github.com/search?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
