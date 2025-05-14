@@ -408,6 +408,41 @@ return {
 					},
 				},
 			})
+
+			-- Create an autocmd to intercept quit and write commands in Neo-tree buffer
+			-- and redirect them to the last accessed window
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "neo-tree",
+				callback = function(event)
+					-- Create a command-line autocmd to intercept commands for this specific buffer
+					vim.api.nvim_create_autocmd("CmdlineEnter", {
+						callback = function()
+							-- Setup a one-time handler for when command is executed
+							vim.api.nvim_create_autocmd("CmdlineLeave", {
+								once = true,
+								callback = function()
+									-- Get the command that was entered
+									local cmd = vim.fn.getcmdline()
+
+									-- Check if this is one of the commands we want to intercept
+									if cmd:match("^%s*q!?$") or cmd:match("^%s*wq!?$") or cmd:match("^%s*x!?$") then
+										-- Schedule the interception after the command-line is fully processed
+										vim.schedule(function()
+											-- Cancel any effect of the command in the Neo-tree buffer
+											vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
+											-- Switch to the last window
+											vim.cmd("wincmd p")
+											-- Run the command there
+											vim.cmd(cmd)
+										end)
+									end
+								end
+							})
+						end,
+						buffer = event.buf,
+					})
+				end,
+			})
 		end,
 	},
 }
