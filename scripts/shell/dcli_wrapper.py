@@ -371,13 +371,20 @@ def get_otp_for_credential(search_term):
         return False
 
 
+# Directly execute dcli with passthrough for interactive I/O
+def direct_execute_dcli(args):
+    cmd = ["dcli"] + args
+    # Use subprocess.run without capturing output to allow interactive I/O
+    return subprocess.run(cmd)
+
+
 def main():
     # Check dependencies first
     check_dependencies()
 
     # If no arguments provided, show help
     if len(sys.argv) < 2:
-        execute_dcli(["--help"])
+        direct_execute_dcli(["--help"])
         sys.exit(0)
 
     # First argument is the command
@@ -398,8 +405,9 @@ def main():
     elif command in ["o", "otp"]:
         handle_direct_otp(args[1:])  # Skip the 'otp' command
     else:
-        # For other commands, just pass through to dcli
-        print(execute_dcli(args))
+        # For other commands, directly execute dcli with interactive I/O
+        result = direct_execute_dcli(args)
+        sys.exit(result.returncode)
 
 
 if __name__ == "__main__":
