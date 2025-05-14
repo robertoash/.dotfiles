@@ -21,6 +21,7 @@ secrets_files = [
     "/home/rash/.secrets/.cjar_secrets",
     "/home/rash/.secrets/.openai_api_key",
     "/home/rash/.secrets/.linkding_envs",
+    "/home/rash/.secrets/.anthropic_api_key",
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
