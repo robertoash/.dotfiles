@@ -41,7 +41,27 @@ return {
 		},
 		lazy = false,
 		keys = {
-			{ "<leader>e", "<Cmd>Neotree reveal<CR>", desc = "Reveal file in NeoTree" },
+			{ "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle NeoTree" },
+			{ "<leader>e.", function()
+				local reveal_file = vim.fn.expand('%:p')
+				if (reveal_file == '') then
+					reveal_file = vim.fn.getcwd()
+				else
+					local f = io.open(reveal_file, "r")
+					if (f) then
+						f:close()
+					else
+						reveal_file = vim.fn.getcwd()
+					end
+				end
+				require('neo-tree.command').execute({
+					action = "focus",          -- OPTIONAL, this is the default value
+					source = "filesystem",     -- OPTIONAL, this is the default value
+					position = "left",         -- OPTIONAL, this is the default value
+					reveal_file = reveal_file, -- path to file or folder to reveal
+					reveal_force_cwd = true,   -- change cwd without asking if needed
+				})
+			end, desc = "Reveal file in NeoTree" },
 		},
 		config = function()
 			-- If you want icons for diagnostic errors, you'll need to define them somewhere.
@@ -253,10 +273,10 @@ return {
 				},
 				filesystem = {
 					filtered_items = {
-						visible = false, -- when true, they will just be displayed differently than normal items
-						hide_dotfiles = true,
-						hide_gitignored = true,
-						hide_hidden = true, -- only works on Windows for hidden files/directories
+						visible = true, -- Show hidden files by default
+						hide_dotfiles = false,
+						hide_gitignored = false,
+						hide_hidden = false, -- only works on Windows for hidden files/directories
 						hide_by_name = {
 							--"node_modules"
 						},
@@ -304,6 +324,8 @@ return {
 							["<c-x>"] = "clear_filter",
 							["[g"] = "prev_git_modified",
 							["]g"] = "next_git_modified",
+							["h"] = "navigate_up", -- Go to parent directory with h
+							["l"] = "open", -- Open directories or files with l (like Enter)
 							["o"] = {
 								"show_help",
 								nowait = false,
