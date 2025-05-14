@@ -35,9 +35,48 @@ def check_dependencies():
         sys.exit(1)
 
 
+# Check if dcli is authenticated
+def is_authenticated():
+    try:
+        # Try to run sync command with a short timeout
+        cmd = ["dcli", "sync"]
+
+        # Use a short timeout - if it takes longer than 1 second, it's likely
+        # waiting for an OTP or password
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1)
+
+        # If authenticated, the output will contain "Successfully synced"
+        return "Successfully synced" in result.stdout and result.returncode == 0
+    except subprocess.TimeoutExpired:
+        # If it times out, then it's probably waiting for authentication
+        return False
+    except Exception:
+        return False
+
+
 # Execute dcli command and get output
 def execute_dcli(args, ignore_errors=False):
     try:
+        # For password related commands, check auth first
+        cmd_requires_auth = args[0] in ["password", "p", "note", "n", "otp", "o"]
+
+        if cmd_requires_auth and not is_authenticated():
+            print("dcli is not authenticated. Switching to interactive mode...")
+            # Run in interactive mode
+            result = direct_execute_dcli(args)
+            # If this was successful, return empty string to signal we handled it
+            if (
+                isinstance(result, subprocess.CompletedProcess)
+                and result.returncode == 0
+            ):
+                return ""
+            return (
+                result.returncode
+                if isinstance(result, subprocess.CompletedProcess)
+                else result
+            )
+
+        # Regular execution with output capture
         cmd = ["dcli"] + args
         result = subprocess.run(cmd, capture_output=True, text=True)
 
@@ -85,6 +124,10 @@ def handle_password(args, otp=False, silent=False):
 
     # Execute command
     output = execute_dcli(search_args)
+
+    # If we got an int (returncode) or empty string (interactive auth handled), exit early
+    if isinstance(output, int) or output == "":
+        return False, None, None
 
     try:
         credentials = json.loads(output)
@@ -200,6 +243,10 @@ def handle_note(args):
     # Execute command
     output = execute_dcli(orig_args)
 
+    # If we got an int (returncode) or empty string (interactive auth handled), exit early
+    if isinstance(output, int) or output == "":
+        return
+
     try:
         notes = json.loads(output)
 
@@ -276,6 +323,10 @@ def handle_direct_otp(args):
     json_args = ["password", "-f", "otp"] + args + ["-o", "json"]
     json_output = execute_dcli(json_args)
 
+    # If we got an int (returncode) or empty string (interactive auth handled), exit early
+    if isinstance(json_output, int) or json_output == "":
+        return
+
     try:
         credentials = json.loads(json_output)
 
@@ -292,6 +343,10 @@ def handle_direct_otp(args):
             # Get the actual OTP with console output
             otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
             otp_output = execute_dcli(otp_args)
+
+            # Check if we got a string result
+            if isinstance(otp_output, int) or otp_output == "":
+                return
 
             if otp_output and not otp_output.startswith("Error"):
                 otp_code = otp_output.strip()
@@ -336,6 +391,10 @@ def handle_direct_otp(args):
                 otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
                 otp_output = execute_dcli(otp_args)
 
+                # Check if we got a string result
+                if isinstance(otp_output, int) or otp_output == "":
+                    return
+
                 if otp_output and not otp_output.startswith("Error"):
                     otp_code = otp_output.strip()
                     subprocess.run(["wl-copy"], input=otp_code, text=True)
@@ -357,6 +416,10 @@ def get_otp_for_credential(search_term):
     otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
     otp_output = execute_dcli(otp_args)
 
+    # Check if we got a string result
+    if isinstance(otp_output, int) or otp_output == "":
+        return False
+
     # Parse the output - if it's a single line, it's the OTP code
     if otp_output and not otp_output.startswith("Error"):
         # Strip any whitespace and newlines
@@ -375,7 +438,12 @@ def get_otp_for_credential(search_term):
 def direct_execute_dcli(args):
     cmd = ["dcli"] + args
     # Use subprocess.run without capturing output to allow interactive I/O
-    return subprocess.run(cmd)
+    result = subprocess.run(cmd)
+    # If this is a password command and we had to authenticate, return empty string
+    # to signal that we should not proceed with credential handling
+    if args[0] in ["p", "password", "n", "note", "o", "otp"] and result.returncode == 0:
+        return ""
+    return result
 
 
 def main():
