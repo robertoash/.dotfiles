@@ -6,6 +6,10 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.have_nerd_font = true
 
+-- Performance and responsiveness
+vim.o.timeout = true
+vim.o.timeoutlen = 300
+
 --=============================================================================
 -- EDITOR OPTIONS
 --=============================================================================
@@ -22,7 +26,6 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
 -- Performance and responsiveness
 vim.o.updatetime = 250
-vim.o.timeoutlen = 300
 
 -- Clipboard
 vim.schedule(function()
@@ -94,6 +97,14 @@ rtp:prepend(lazypath)
 --=============================================================================
 require("lazy").setup({
 	---------------------------
+	-- DIRECT IMPORTS
+	-- ------------------------
+
+	{
+		import = "plugins.neo-tree"
+	},
+
+	---------------------------
 	-- UTILITY PLUGINS
 	---------------------------
 	-- Indentation detection
@@ -163,7 +174,7 @@ require("lazy").setup({
 	},
 
 	---------------------------
-	-- CLAUDE-CODE.NVIM
+	-- AI
 	---------------------------
 
 	{
@@ -204,6 +215,66 @@ require("lazy").setup({
 				),
 			})
 		end,
+	},
+
+	{
+		"yetone/avante.nvim",
+		event = "VeryLazy",
+		version = false, -- Never set this value to "*"! Never!
+		opts = {
+			-- add any opts here
+			-- for example
+			provider = "openai",
+			openai = {
+				endpoint = "https://api.openai.com/v1",
+				model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+				timeout = 30000, -- Timeout in milliseconds, increase this for reasoning models
+				temperature = 0,
+				max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
+				--reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
+			},
+		},
+		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		build = "make",
+		-- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"stevearc/dressing.nvim",
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			--- The below dependencies are optional,
+			"echasnovski/mini.pick", -- for file_selector provider mini.pick
+			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+			"ibhagwan/fzf-lua", -- for file_selector provider fzf
+			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+			"zbirenbaum/copilot.lua", -- for providers='copilot'
+			{
+				-- support for image pasting
+				"HakonHarnes/img-clip.nvim",
+				event = "VeryLazy",
+				opts = {
+					-- recommended settings
+					default = {
+						embed_image_as_base64 = false,
+						prompt_for_file_name = false,
+						drag_and_drop = {
+							insert_mode = true,
+						},
+						-- required for Windows users
+						use_absolute_path = true,
+					},
+				},
+			},
+			{
+				-- Make sure to set this up properly if you have lazy=true
+				"MeanderingProgrammer/render-markdown.nvim",
+				opts = {
+					file_types = { "markdown", "Avante" },
+				},
+				ft = { "markdown", "Avante" },
+			},
+		},
 	},
 
 	---------------------------
@@ -549,7 +620,7 @@ require("lazy").setup({
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format Lua code
 				"black",
-				"pyright"
+				"pyright",
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -569,10 +640,10 @@ require("lazy").setup({
 			})
 			-- Auto-format on save - like having a tiny robot butler tidy your code! 🤖
 			vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = "*.py",
-			callback = function()
-				vim.lsp.buf.format({ timeout_ms = 1000 })
-			end,
+				pattern = "*.py",
+				callback = function()
+					vim.lsp.buf.format({ timeout_ms = 1000 })
+				end,
 			})
 		end,
 	},
@@ -818,3 +889,27 @@ vim.keymap.set("n", "<leader>bn", ":bn<CR>", { desc = "[B]uffer [N]ext" })
 -- Select whole document
 -- Map <leader>% to grab the ENTIRE document like a document-hungry kraken
 vim.keymap.set("n", "<leader>%", "ggVG", { noremap = true, desc = "Select entire buffer" })
+
+-- Reveal current file in NeoTree
+vim.keymap.set('n', '<leader>e.', function()
+    local reveal_file = vim.fn.expand('%:p')
+    if (reveal_file == '') then
+      reveal_file = vim.fn.getcwd()
+    else
+      local f = io.open(reveal_file, "r")
+      if (f) then
+        f.close(f)
+      else
+        reveal_file = vim.fn.getcwd()
+      end
+    end
+    require('neo-tree.command').execute({
+      action = "focus",          -- OPTIONAL, this is the default value
+      source = "filesystem",     -- OPTIONAL, this is the default value
+      position = "left",         -- OPTIONAL, this is the default value
+      reveal_file = reveal_file, -- path to file or folder to reveal
+      reveal_force_cwd = true,   -- change cwd without asking if needed
+    })
+    end,
+    { desc = "Open neo-tree at current file or working directory" }
+);
