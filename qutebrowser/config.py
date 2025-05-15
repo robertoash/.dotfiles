@@ -1,6 +1,5 @@
 import os
 
-# Now it's safe to use!
 config.load_autoconfig()
 # Get the directory of the *symlink*, not the resolved file
 symlink_path = os.path.abspath(__file__)
@@ -61,7 +60,7 @@ c.content.images = True
 # Font
 c.fonts.default_family = "GeistMono Nerd Font"
 c.fonts.default_size = "13pt"
-## Hint styling
+# Hint styling
 c.hints.chars = "asdfghjklöqweryuopånbvcxz"
 c.hints.uppercase = True
 c.fonts.hints = "13pt GeistMono Nerd Font"
@@ -167,6 +166,26 @@ config.bind(";D", "hint links download")  # Download linked file
 c.aliases["cs"] = "config-source"
 
 # === USERSCRIPTS ===
+
+# Path to scripts
+
+PASTE_DELAY = 500
+rofi_dcli_script = "/home/rash/.config/scripts/qutebrowser/rofi_dcli.py"
+run_with_paste_script = "/home/rash/.config/qutebrowser/userscripts/run_with_paste.py"
+
+# = Rofi password manager
+rofi_p_cmd = ("spawn --userscript {} --script {} --paste-delay {} {{}}").format(
+    run_with_paste_script, rofi_dcli_script, PASTE_DELAY
+)
+c.aliases["rofi_username"] = rofi_p_cmd.format("username")
+c.aliases["rofi_password"] = rofi_p_cmd.format("password")
+c.aliases["rofi_otp"] = rofi_p_cmd.format("otp")
+
+# In insert mode: Use rofi for credential selection
+config.bind("<Alt-p>u", "rofi_username", mode="insert")
+config.bind("<Alt-p>p", "rofi_password", mode="insert")
+config.bind("<Alt-p>o", "rofi_otp", mode="insert")
+
 
 # === PER-PROFILE BEHAVIOR ===
 

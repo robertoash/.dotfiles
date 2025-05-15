@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
 import subprocess
@@ -91,141 +92,237 @@ def execute_dcli(args, ignore_errors=False):
         sys.exit(1)
 
 
-def handle_password(args, otp=False, silent=False):
-    # Get original args but replace output format with json
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="Headless mode for GUI integration",
+        default=False,
+    )
+    # Parse known args so we don't interfere with dcli's own args
+    args, unknown = parser.parse_known_args()
+    return args, unknown
+
+
+def select_and_copy(
+    items,
+    field,
+    headless,
+    single_msg_fn,
+    multi_display_fn,
+    clipboard_fn,
+    not_found_msg,
+    sys_exit_on_none=True,
+    interactive_state=None,  # New: dict to hold state between steps
+):
+    if not items:
+        print(not_found_msg)
+        if sys_exit_on_none:
+            sys.exit(1)
+        return False
+    if len(items) == 1:
+        item = items[0]
+        value = clipboard_fn(item)
+        if value:
+            subprocess.run(["wl-copy"], input=value, text=True)
+            if not headless:
+                print(single_msg_fn(item))
+            return True
+        else:
+            print(f"Field '{field}' not found in the item.")
+            return False
+    else:
+        if headless:
+            for i, item in enumerate(items):
+                print(f"{i}: {multi_display_fn(item)}")
+            print("CHOOSE_INDEX")
+            sys.stdout.flush()
+            # Read index from stdin
+            try:
+                idx_line = sys.stdin.readline()
+                idx = int(idx_line.strip())
+                if idx < 0 or idx >= len(items):
+                    print("Invalid index.")
+                    if sys_exit_on_none:
+                        sys.exit(1)
+                    return False
+                item = items[idx]
+                value = clipboard_fn(item)
+                if value:
+                    subprocess.run(["wl-copy"], input=value, text=True)
+                    if not headless:
+                        print(single_msg_fn(item))
+                    return True
+                else:
+                    print(f"Field '{field}' not found in the selected item.")
+                    return False
+            except Exception:
+                print("Invalid input.")
+                if sys_exit_on_none:
+                    sys.exit(1)
+                return False
+        else:
+            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
+                for i, item in enumerate(items):
+                    tmp.write(f"{i}: {multi_display_fn(item)}\n")
+                tmp_path = tmp.name
+            try:
+                fzf_cmd = f'cat {tmp_path} | fzf --prompt="Select entry: " --height=10'
+                fzf_result = subprocess.run(
+                    fzf_cmd, shell=True, capture_output=True, text=True
+                )
+                if fzf_result.returncode != 0:
+                    print("Selection cancelled.")
+                    if sys_exit_on_none:
+                        sys.exit(1)
+                    return False
+                selection = fzf_result.stdout.strip()
+                if not selection:
+                    print("No selection made.")
+                    if sys_exit_on_none:
+                        sys.exit(1)
+                    return False
+                index = int(selection.split(":", 1)[0])
+                item = items[index]
+                value = clipboard_fn(item)
+                if value:
+                    subprocess.run(["wl-copy"], input=value, text=True)
+                    if not headless:
+                        print(single_msg_fn(item))
+                    return True
+                else:
+                    print(f"Field '{field}' not found in the selected item.")
+                    return False
+            finally:
+                os.unlink(tmp_path)
+
+
+# Utility to run dcli and parse JSON output
+def run_dcli_json(args, silent=False):
+    output = execute_dcli(args)
+    if isinstance(output, int) or output == "":
+        return None
+    try:
+        return json.loads(output)
+    except json.JSONDecodeError:
+        if not silent:
+            print(f"Error: Failed to parse JSON output: {output}")
+        return None
+
+
+# Consolidated handler for all entry types (password, note, username, otp)
+def handle_entry(
+    dcli_args,
+    field,
+    headless,
+    single_msg_fn,
+    multi_display_fn,
+    clipboard_fn,
+    not_found_msg,
+    sys_exit_on_none=True,
+    otp_prompt_fn=None,  # Optional, for password/otp
+    otp_action_fn=None,  # Optional, for password/otp
+    otp_check_fn=None,  # Optional, for password/otp
+    search_terms=None,  # Optional, for password/otp
+    interactive_state=None,  # New: dict to hold state between steps
+):
+    items = run_dcli_json(dcli_args)
+    if items is None:
+        return False, None, None
+    found = select_and_copy(
+        items,
+        field,
+        headless,
+        single_msg_fn,
+        multi_display_fn,
+        clipboard_fn,
+        not_found_msg,
+        sys_exit_on_none=sys_exit_on_none,
+        interactive_state=interactive_state,
+    )
+    if (
+        found
+        and len(items) == 1
+        and otp_prompt_fn
+        and otp_action_fn
+        and otp_check_fn
+        and search_terms
+    ):
+        cred = items[0]
+        if otp_check_fn(cred) and not headless:
+            if otp_prompt_fn():
+                otp_action_fn(search_terms[0])
+        elif otp_check_fn(cred) and headless:
+            otp_input = otp_prompt_fn(headless=True)
+            if otp_input:
+                otp_action_fn(search_terms[0])
+    return found, items
+
+
+def handle_password(args, otp=False, silent=False, headless=False):
     orig_args = args.copy()
-
-    # Get field if specified
     field = "otp" if otp else "password"
-
-    # Extract search terms (non-option arguments)
-    search_terms = []
-    for arg in orig_args:
-        if not arg.startswith("-") and arg not in ["password", "p"]:
-            search_terms.append(arg)
-
-    # If no search terms, we can't proceed
+    search_terms = [
+        arg
+        for arg in orig_args
+        if not arg.startswith("-") and arg not in ["password", "p"]
+    ]
     if not search_terms:
         if not silent:
             print("No search terms provided.")
         return False, None, None
-
-    # Build the correct command in proper order
-    search_args = ["password"]  # Always use 'password', not 'p'
-
-    if otp:  # Add field parameter if we're looking for OTP
+    search_args = ["password"]
+    if otp:
         search_args.extend(["-f", field])
-
-    # Add search terms
     search_args.extend(search_terms)
-
-    # Add json output format
     search_args.extend(["-o", "json"])
 
-    # Execute command
-    output = execute_dcli(search_args)
+    def single_msg(cred):
+        emoji = "🔑" if field == "otp" else "🔓"
+        return (
+            f"{emoji} {field.capitalize()} for "
+            f'"{cred.get('title', 'Unknown')}" copied to clipboard.'
+        )
 
-    # If we got an int (returncode) or empty string (interactive auth handled), exit early
-    if isinstance(output, int) or output == "":
-        return False, None, None
+    def multi_display(cred):
+        title = cred.get("title", "Unknown")
+        login = cred.get("login", "") or cred.get("email", "")
+        return f"{title} - {login}" if login else title
 
-    try:
-        credentials = json.loads(output)
-    except json.JSONDecodeError:
-        if not silent:
-            print("Error: Failed to parse JSON output.")
-        return False, None, None
+    def clipboard(cred):
+        return cred.get(field, "")
 
-    if not credentials:
-        if not silent:
-            print("No matching credentials found.")
-        return False, None, None
+    def otp_check(cred):
+        return "otpSecret" in cred or "otp" in cred
 
-    # Handle single result
-    if len(credentials) == 1:
-        credential = credentials[0]
-
-        # Extract field value and OTP status
-        value = credential.get(field, "")
-        has_otp = "otpSecret" in credential or "otp" in credential
-        search_term = search_terms[0]  # Use the search term for follow-up
-
-        if value:
-            subprocess.run(["wl-copy"], input=value, text=True)
-            if not silent:
-                emoji = "🔑" if field == "otp" else "🔓"
-                print(
-                    f"{emoji} {field.capitalize()} for "
-                    f"\"{credential.get('title', 'Unknown')}\" copied to clipboard."
-                )
-            return True, search_term, has_otp
-        else:
-            if not silent:
-                print(f"Field '{field}' not found in the credential.")
-            return False, None, None
-    else:
-        # Create temporary file for fzf selection
-        with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
-            for i, cred in enumerate(credentials):
-                title = cred.get("title", "Unknown")
-                login = cred.get("login", "") or cred.get("email", "")
-                display = f"{title} - {login}" if login else title
-                tmp.write(f"{i}: {display}\n")
-            tmp_path = tmp.name
-
-        try:
-            # Use fzf for selection
-            fzf_cmd = f'cat {tmp_path} | fzf --prompt="Select credential: " --height=10'
-            fzf_result = subprocess.run(
-                fzf_cmd, shell=True, capture_output=True, text=True
-            )
-
-            if fzf_result.returncode != 0:
-                if not silent:
-                    print("Selection cancelled.")
-                return False, None, None
-
-            selection = fzf_result.stdout.strip()
-            if not selection:
-                if not silent:
-                    print("No selection made.")
-                return False, None, None
-
-            # Extract index from selection
-            index = int(selection.split(":", 1)[0])
-            credential = credentials[index]
-
-            # Extract field value and OTP status
-            value = credential.get(field, "")
-            has_otp = "otpSecret" in credential or "otp" in credential
-            search_term = credential.get(
-                "title", search_terms[0]
-            )  # Use title for follow-up
-
-            if value:
-                subprocess.run(["wl-copy"], input=value, text=True)
-                if not silent:
-                    emoji = "🔑" if field == "otp" else "🔓"
-                    print(
-                        f"{emoji} {field.capitalize()} for "
-                        f"\"{credential.get('title', 'Unknown')}\" copied to clipboard."
-                    )
-                return True, search_term, has_otp
-            else:
-                if not silent:
-                    print(f"Field '{field}' not found in the selected credential.")
-                return False, None, None
-        finally:
-            # Clean up temporary file
-            os.unlink(tmp_path)
+    found, cred, items = handle_entry(
+        search_args,
+        field,
+        headless,
+        single_msg,
+        multi_display,
+        clipboard,
+        "No matching credentials found.",
+        sys_exit_on_none=True,
+        otp_prompt_fn=prompt_for_otp,
+        otp_action_fn=lambda search_term: get_otp_for_credential(
+            search_term, headless=headless
+        ),
+        otp_check_fn=otp_check,
+        search_terms=search_terms,
+    )
+    if found and cred:
+        has_otp = "otpSecret" in cred or "otp" in cred
+        search_term = search_terms[0]
+        if headless:
+            return True, search_term, False
+        return True, search_term, has_otp
+    return found, None, None
 
 
-# Handle note command with fzf and wl-copy
-def handle_note(args):
-    # Get original args but replace output format with json
+def handle_note(args, headless=False):
     orig_args = args.copy()
-
-    # Remove -o/--output if present and add our own
     if "-o" in orig_args:
         idx = orig_args.index("-o")
         if idx + 1 < len(orig_args):
@@ -236,72 +333,115 @@ def handle_note(args):
         if idx + 1 < len(orig_args):
             orig_args.pop(idx + 1)
         orig_args.pop(idx)
-
-    # Add json output format
     orig_args += ["-o", "json"]
 
-    # Execute command
-    output = execute_dcli(orig_args)
+    def single_msg(note):
+        return f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard."
 
-    # If we got an int (returncode) or empty string (interactive auth handled), exit early
-    if isinstance(output, int) or output == "":
+    def multi_display(note):
+        return note.get("title", "Unknown")
+
+    def clipboard(note):
+        return note.get("content", "")
+
+    handle_entry(
+        orig_args,
+        "content",
+        headless,
+        single_msg,
+        multi_display,
+        clipboard,
+        "No matching notes found.",
+        sys_exit_on_none=True,
+    )
+
+
+def handle_username(args, headless=False):
+    orig_args = args.copy()
+    search_terms = [
+        arg
+        for arg in orig_args
+        if not arg.startswith("-") and arg not in ["username", "u"]
+    ]
+    if not search_terms:
+        print("No search terms provided.")
         return
+    search_args = ["password"] + search_terms + ["-o", "json"]
 
-    try:
-        notes = json.loads(output)
+    def single_msg(cred):
+        return (
+            f"👤 Username for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
+        )
 
-        if not notes:
-            print("No matching notes found.")
-            sys.exit(1)
+    def multi_display(cred):
+        title = cred.get("title", "Unknown")
+        login = cred.get("login", "") or cred.get("email", "")
+        return f"{title} - {login}" if login else title
 
-        # Handle single result
-        if len(notes) == 1:
-            note = notes[0]
-            content = note.get("content", "")
-            subprocess.run(["wl-copy"], input=content, text=True)
-            print(f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard.")
+    def clipboard(cred):
+        return cred.get("login", "") or cred.get("email", "")
+
+    handle_entry(
+        search_args,
+        "login",
+        headless,
+        single_msg,
+        multi_display,
+        clipboard,
+        "No matching credentials found.",
+        sys_exit_on_none=True,
+    )
+
+
+def handle_direct_otp(args, headless=False):
+    json_args = ["password", "-f", "otp"] + args + ["-o", "json"]
+
+    def single_msg(cred):
+        return "🔑 OTP code copied to clipboard."
+
+    def multi_display(cred):
+        title = cred.get("title", "Unknown")
+        login = cred.get("login", "") or cred.get("email", "")
+        return f"{title} - {login}" if login else title
+
+    def clipboard(cred):
+        otp_args = ["password", "-f", "otp", cred.get("title", ""), "-o", "console"]
+        otp_output = execute_dcli(otp_args)
+        if isinstance(otp_output, int) or otp_output == "":
+            return ""
+        if otp_output and not otp_output.startswith("Error"):
+            return otp_output.strip()
+        return ""
+
+    handle_entry(
+        json_args,
+        "otp",
+        headless,
+        single_msg,
+        multi_display,
+        clipboard,
+        "No matching OTP credentials found.",
+        sys_exit_on_none=False,
+        otp_prompt_fn=prompt_for_otp,
+        otp_action_fn=lambda search_term: get_otp_for_credential(
+            search_term, headless=headless
+        ),
+        otp_check_fn=None,
+        search_terms=None,
+    )
+
+
+def prompt_for_otp(headless=False):
+    if headless:
+        print("PROMPT: Enter OTP code:")
+        sys.stdout.flush()
+        otp_input = sys.stdin.readline().strip()
+        if otp_input:
+            print("Copying OTP code...")
+            return otp_input  # Return the entered OTP or signal to proceed
         else:
-            # Create temporary file for fzf selection
-            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
-                for i, note in enumerate(notes):
-                    title = note.get("title", "Unknown")
-                    tmp.write(f"{i}: {title}\n")
-                tmp_path = tmp.name
-
-            try:
-                # Use fzf for selection
-                fzf_cmd = f'cat {tmp_path} | fzf --prompt="Select note: " --height=10'
-                fzf_result = subprocess.run(
-                    fzf_cmd, shell=True, capture_output=True, text=True
-                )
-
-                if fzf_result.returncode != 0:
-                    print("Selection cancelled.")
-                    sys.exit(1)
-
-                selection = fzf_result.stdout.strip()
-                if not selection:
-                    print("No selection made.")
-                    sys.exit(1)
-
-                # Extract index from selection
-                index = int(selection.split(":", 1)[0])
-                note = notes[index]
-
-                content = note.get("content", "")
-                subprocess.run(["wl-copy"], input=content, text=True)
-                print(
-                    f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard."
-                )
-            finally:
-                # Clean up temporary file
-                os.unlink(tmp_path)
-    except json.JSONDecodeError:
-        print(f"Error: Failed to parse JSON output: {output}")
-        sys.exit(1)
-
-
-def prompt_for_otp():
+            print("Exiting without copying OTP.")
+            return None
     print("🔑 OTP available for this credential.")
     print("ENTER to copy OTP to clipboard, ESC to exit.")
     sys.stdout.flush()
@@ -317,101 +457,8 @@ def prompt_for_otp():
         # Ignore other keys
 
 
-# Handle direct OTP command
-def handle_direct_otp(args):
-    # First use JSON to determine number of matches and get credential info
-    json_args = ["password", "-f", "otp"] + args + ["-o", "json"]
-    json_output = execute_dcli(json_args)
-
-    # If we got an int (returncode) or empty string (interactive auth handled), exit early
-    if isinstance(json_output, int) or json_output == "":
-        return
-
-    try:
-        credentials = json.loads(json_output)
-
-        # No credentials found
-        if not credentials:
-            print("No matching OTP credentials found.")
-            return
-
-        # Single credential - get OTP directly
-        if len(credentials) == 1:
-            credential = credentials[0]
-            search_term = credential.get("title", args[0] if args else "")
-
-            # Get the actual OTP with console output
-            otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
-            otp_output = execute_dcli(otp_args)
-
-            # Check if we got a string result
-            if isinstance(otp_output, int) or otp_output == "":
-                return
-
-            if otp_output and not otp_output.startswith("Error"):
-                otp_code = otp_output.strip()
-                subprocess.run(["wl-copy"], input=otp_code, text=True)
-                print("🔑 OTP code copied to clipboard.")
-            else:
-                print("No OTP code found for this credential.")
-        else:
-            # Multiple credentials - use fzf for selection
-            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
-                for i, cred in enumerate(credentials):
-                    title = cred.get("title", "Unknown")
-                    login = cred.get("login", "") or cred.get("email", "")
-                    display = f"{title} - {login}" if login else title
-                    tmp.write(f"{i}: {display}\n")
-                tmp_path = tmp.name
-
-            try:
-                # Use fzf for selection
-                fzf_cmd = (
-                    f'cat {tmp_path} | fzf --prompt="Select credential: " --height=10'
-                )
-                fzf_result = subprocess.run(
-                    fzf_cmd, shell=True, capture_output=True, text=True
-                )
-
-                if fzf_result.returncode != 0:
-                    print("Selection cancelled.")
-                    return
-
-                selection = fzf_result.stdout.strip()
-                if not selection:
-                    print("No selection made.")
-                    return
-
-                # Extract index from selection
-                index = int(selection.split(":", 1)[0])
-                credential = credentials[index]
-                search_term = credential.get("title", "")
-
-                # Get the actual OTP with console output
-                otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
-                otp_output = execute_dcli(otp_args)
-
-                # Check if we got a string result
-                if isinstance(otp_output, int) or otp_output == "":
-                    return
-
-                if otp_output and not otp_output.startswith("Error"):
-                    otp_code = otp_output.strip()
-                    subprocess.run(["wl-copy"], input=otp_code, text=True)
-                    print("🔑 OTP code copied to clipboard.")
-                else:
-                    print("No OTP code found for this credential.")
-            finally:
-                # Clean up temporary file
-                os.unlink(tmp_path)
-    except json.JSONDecodeError:
-        print("Error parsing credential information.")
-        # Fall back to handle_password with fzf
-        handle_password(args, otp=True)
-
-
 # Handle OTP retrieval after password
-def get_otp_for_credential(search_term):
+def get_otp_for_credential(search_term, headless=False):
     # Get the OTP code with console output
     otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
     otp_output = execute_dcli(otp_args)
@@ -427,111 +474,12 @@ def get_otp_for_credential(search_term):
 
         # Copy to clipboard
         subprocess.run(["wl-copy"], input=otp_code, text=True)
-        print("🔑 OTP code copied to clipboard.")
+        if not headless:
+            print("🔑 OTP code copied to clipboard.")
         return True
     else:
         print("No OTP code found in the credential.")
         return False
-
-
-# Handle username extraction and copying
-def handle_username(args):
-    # Get original args but replace output format with json
-    orig_args = args.copy()
-
-    # Extract search terms (non-option arguments)
-    search_terms = []
-    for arg in orig_args:
-        if not arg.startswith("-") and arg not in ["username", "u"]:
-            search_terms.append(arg)
-
-    # If no search terms, we can't proceed
-    if not search_terms:
-        print("No search terms provided.")
-        return
-
-    # Build the command to get password entry in JSON format
-    search_args = ["password"] + search_terms + ["-o", "json"]
-
-    # Execute command
-    output = execute_dcli(search_args)
-
-    # If we got an int (returncode) or empty string (interactive auth handled), exit early
-    if isinstance(output, int) or output == "":
-        return
-
-    try:
-        credentials = json.loads(output)
-
-        if not credentials:
-            print("No matching credentials found.")
-            return
-
-        # Handle single result
-        if len(credentials) == 1:
-            credential = credentials[0]
-
-            # Try to get username or fall back to email if username not present
-            username = credential.get("login", "")
-            if not username:
-                username = credential.get("email", "")
-
-            if username:
-                subprocess.run(["wl-copy"], input=username, text=True)
-                print(
-                    f"👤 Username for \"{credential.get('title', 'Unknown')}\" copied to clipboard."
-                )
-            else:
-                print("No username or email found in the credential.")
-        else:
-            # Create temporary file for fzf selection
-            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
-                for i, cred in enumerate(credentials):
-                    title = cred.get("title", "Unknown")
-                    login = cred.get("login", "") or cred.get("email", "")
-                    display = f"{title} - {login}" if login else title
-                    tmp.write(f"{i}: {display}\n")
-                tmp_path = tmp.name
-
-            try:
-                # Use fzf for selection
-                fzf_cmd = (
-                    f'cat {tmp_path} | fzf --prompt="Select credential: " --height=10'
-                )
-                fzf_result = subprocess.run(
-                    fzf_cmd, shell=True, capture_output=True, text=True
-                )
-
-                if fzf_result.returncode != 0:
-                    print("Selection cancelled.")
-                    return
-
-                selection = fzf_result.stdout.strip()
-                if not selection:
-                    print("No selection made.")
-                    return
-
-                # Extract index from selection
-                index = int(selection.split(":", 1)[0])
-                credential = credentials[index]
-
-                # Try to get username or fall back to email if username not present
-                username = credential.get("login", "")
-                if not username:
-                    username = credential.get("email", "")
-
-                if username:
-                    subprocess.run(["wl-copy"], input=username, text=True)
-                    print(
-                        f"👤 Username for \"{credential.get('title', 'Unknown')}\" copied to clipboard."
-                    )
-                else:
-                    print("No username or email found in the credential.")
-            finally:
-                # Clean up temporary file
-                os.unlink(tmp_path)
-    except json.JSONDecodeError:
-        print("Error parsing credential information.")
 
 
 # Directly execute dcli with passthrough for interactive I/O
@@ -547,35 +495,172 @@ def direct_execute_dcli(args):
 
 
 def main():
-    # Check dependencies first
     check_dependencies()
-
-    # If no arguments provided, show help
+    parsed, unknown = parse_args()
+    headless = parsed.headless
+    sys.argv = [sys.argv[0]] + unknown
     if len(sys.argv) < 2:
         direct_execute_dcli(["--help"])
         sys.exit(0)
-
-    # First argument is the command
     command = sys.argv[1]
-    args = sys.argv[1:]  # Include the command itself
+    args = sys.argv[1:]
 
-    # Handle specific commands
-    if command in ["p", "password"]:
-        success, search_term, has_otp = handle_password(args)
+    command_map = {
+        "p": "password",
+        "password": "password",
+        "n": "note",
+        "note": "note",
+        "o": "otp",
+        "otp": "otp",
+        "u": "username",
+        "username": "username",
+    }
 
-        # If password retrieval was successful and credential has OTP
-        if success and has_otp:
-            if prompt_for_otp():
-                get_otp_for_credential(search_term)
+    if command_map.get(command) == "password":
+        orig_args = args.copy()
+        search_terms = [
+            arg
+            for arg in orig_args
+            if not arg.startswith("-") and arg not in ["password", "p"]
+        ]
+        if not search_terms:
+            print("No search terms provided.")
+            sys.exit(1)
+        search_args = ["password"] + search_terms + ["-o", "json"]
 
-    elif command in ["n", "note"]:
-        handle_note(args)
-    elif command in ["o", "otp"]:
-        handle_direct_otp(args[1:])  # Skip the 'otp' command
-    elif command in ["u", "username"]:
-        handle_username(args)
+        def single_msg(cred):
+            return f"🔓 Password for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
+
+        def multi_display(cred):
+            title = cred.get("title", "Unknown")
+            login = cred.get("login", "") or cred.get("email", "")
+            return f"{title} - {login}" if login else title
+
+        def clipboard(cred):
+            return cred.get("password", "")
+
+        def otp_check(cred):
+            return "otpSecret" in cred or "otp" in cred
+
+        handle_entry(
+            search_args,
+            "password",
+            headless,
+            single_msg,
+            multi_display,
+            clipboard,
+            "No matching credentials found.",
+            sys_exit_on_none=True,
+            otp_prompt_fn=prompt_for_otp,
+            otp_action_fn=lambda search_term: get_otp_for_credential(
+                search_term, headless=headless
+            ),
+            otp_check_fn=otp_check,
+            search_terms=search_terms,
+        )
+    elif command_map.get(command) == "note":
+        orig_args = args.copy()
+        if "-o" in orig_args:
+            idx = orig_args.index("-o")
+            if idx + 1 < len(orig_args):
+                orig_args.pop(idx + 1)
+            orig_args.pop(idx)
+        elif "--output" in orig_args:
+            idx = orig_args.index("--output")
+            if idx + 1 < len(orig_args):
+                orig_args.pop(idx + 1)
+            orig_args.pop(idx)
+        orig_args += ["-o", "json"]
+
+        def single_msg(note):
+            return f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard."
+
+        def multi_display(note):
+            return note.get("title", "Unknown")
+
+        def clipboard(note):
+            return note.get("content", "")
+
+        handle_entry(
+            orig_args,
+            "content",
+            headless,
+            single_msg,
+            multi_display,
+            clipboard,
+            "No matching notes found.",
+            sys_exit_on_none=True,
+        )
+    elif command_map.get(command) == "otp":
+        json_args = ["password", "-f", "otp"] + args[1:] + ["-o", "json"]
+
+        def single_msg(cred):
+            return "🔑 OTP code copied to clipboard."
+
+        def multi_display(cred):
+            title = cred.get("title", "Unknown")
+            login = cred.get("login", "") or cred.get("email", "")
+            return f"{title} - {login}" if login else title
+
+        def clipboard(cred):
+            otp_args = ["password", "-f", "otp", cred.get("title", ""), "-o", "console"]
+            otp_output = execute_dcli(otp_args)
+            if isinstance(otp_output, int) or otp_output == "":
+                return ""
+            if otp_output and not otp_output.startswith("Error"):
+                return otp_output.strip()
+            return ""
+
+        handle_entry(
+            json_args,
+            "otp",
+            headless,
+            single_msg,
+            multi_display,
+            clipboard,
+            "No matching OTP credentials found.",
+            sys_exit_on_none=False,
+            otp_prompt_fn=prompt_for_otp,
+            otp_action_fn=lambda search_term: get_otp_for_credential(
+                search_term, headless=headless
+            ),
+            otp_check_fn=None,
+            search_terms=None,
+        )
+    elif command_map.get(command) == "username":
+        orig_args = args.copy()
+        search_terms = [
+            arg
+            for arg in orig_args
+            if not arg.startswith("-") and arg not in ["username", "u"]
+        ]
+        if not search_terms:
+            print("No search terms provided.")
+            sys.exit(1)
+        search_args = ["password"] + search_terms + ["-o", "json"]
+
+        def single_msg(cred):
+            return f"👤 Username for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
+
+        def multi_display(cred):
+            title = cred.get("title", "Unknown")
+            login = cred.get("login", "") or cred.get("email", "")
+            return f"{title} - {login}" if login else title
+
+        def clipboard(cred):
+            return cred.get("login", "") or cred.get("email", "")
+
+        handle_entry(
+            search_args,
+            "login",
+            headless,
+            single_msg,
+            multi_display,
+            clipboard,
+            "No matching credentials found.",
+            sys_exit_on_none=True,
+        )
     else:
-        # For other commands, directly execute dcli with interactive I/O
         result = direct_execute_dcli(args)
         sys.exit(result.returncode)
 
