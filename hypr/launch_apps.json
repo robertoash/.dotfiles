@@ -56,7 +56,7 @@
         "11": [
             {
                 "name": "claude_zen",
-                "command": "vivaldi_launch --profile claude",
+                "command": "chromium_launch --profile claude",
                 "is_master": true
             },
             {
@@ -85,7 +85,7 @@
             },
             {
                 "name": "perplexity_zen",
-                "command": "vivaldi_launch --profile perplexity",
+                "command": "chromium_launch --profile perplexity",
                 "is_master": false
             }
         ]
