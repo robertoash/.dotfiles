@@ -36,6 +36,7 @@ require("lazy").setup({
 	{ import = "plugins.formatting" },
 	{ import = "plugins.ui" },
 	{ import = "plugins.treesitter" },
+	{ import = "plugins.comment" },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {
@@ -76,3 +77,4 @@ require("custom.commands")
 -- CUSTOM KEYMAPS
 --=============================================================================
 require("custom.keymaps")
+
