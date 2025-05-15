@@ -35,6 +35,7 @@
 !onagre/
 !palettes/
 !qutebrowser/
+!qutebrowser/userscripts/
 !rofi/
 !ruff/
 !scripts/
@@ -79,6 +80,7 @@
 !nvim/**/*
 !onagre/**/*
 !palettes/**/*
+!qutebrowser/userscripts/**/*
 !rofi/**/*
 !ruff/**/*
 !scripts/**/*
