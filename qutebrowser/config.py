@@ -7,7 +7,7 @@ symlink_path = os.path.abspath(__file__)
 profile_path = os.path.dirname(os.path.dirname(symlink_path))
 profile_name = os.path.basename(profile_path)
 
-# === 1. CORE BEHAVIOR ===
+# === CORE BEHAVIOR ===
 
 # Defaults
 c.editor.command = ["kitty", "-e", "nvim", "{}"]
@@ -33,7 +33,7 @@ c.content.notifications.enabled = False
 # Dark mode (experimental)
 c.colors.webpage.darkmode.enabled = True
 
-# === 2. PRIVACY & BLOCKING ===
+# === PRIVACY & BLOCKING ===
 
 # User agent
 config.set(
@@ -56,7 +56,7 @@ c.content.webrtc_ip_handling_policy = "default-public-interface-only"
 c.content.javascript.enabled = True  # set to False for paranoia mode
 c.content.images = True
 
-# === 3. UI & THEMING ===
+# === UI & THEMING ===
 
 # Font
 c.fonts.default_family = "GeistMono Nerd Font"
@@ -92,7 +92,7 @@ c.colors.tabs.selected.odd.bg = "#7aa2f7"
 c.colors.tabs.selected.even.bg = "#7aa2f7"
 c.colors.webpage.bg = "#1a1b26"
 
-# === 7. POWER TOOLS ===
+# === POWER TOOLS ===
 
 # Block autoplay globally
 c.content.autoplay = False
@@ -109,7 +109,7 @@ c.url.searchengines = {
     "aur": "https://aur.archlinux.org/packages/?K={}",
 }
 
-# === 4. KEYBINDINGS ===
+# === KEYBINDINGS ===
 
 # Vim-style navigation
 config.bind("J", "tab-prev")
@@ -134,15 +134,17 @@ config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
 config.bind("P", "open -- {primary}")
 # Close tab fast
 config.bind("x", "tab-close")
+
 # = Hint Keybinds =
+# Remove defaults
+config.unbind(";i")
 # General hinting modes
-config.bind(";f", "hint all")  # Default letter hints
+config.bind(";f", "hint --mode=letter all")  # Default letter hints
 config.bind(";1", "hint --mode=number all")  # Number mode with text filtering
 config.bind(";w", "hint --mode=word all")  # Word mode (human-readable labels)
 # Links
 config.bind(";ll", "hint links")  # Clickable links
 config.bind(";ly", "hint links yank")  # Copy link URL
-config.bind(";lo", "hint links open")  # Force open link
 config.bind(";lt", "hint links tab")  # Open link in new tab
 config.bind(";lb", "hint links tab-bg")  # Open in background tab
 # Inputs / Forms
@@ -160,12 +162,13 @@ config.bind(";D", "hint links download")  # Download linked file
 # Example custom hint group (requires c.hints.selectors["your-group"])
 # config.bind(";e", "hint reddit-expand")  # e.g. Reddit media expando
 
-
-# === 5. ALIASES ===
+# === ALIASES ===
 
 c.aliases["cs"] = "config-source"
 
-# === 6. PER-PROFILE BEHAVIOR ===
+# === USERSCRIPTS ===
+
+# === PER-PROFILE BEHAVIOR ===
 
 if profile_name == "rash":
     c.url.start_pages = "https://www.startpage.com"
