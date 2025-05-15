@@ -11,6 +11,7 @@ alias reset="reset && neofetch"
 alias rr='clear && exec zsh'
 alias sudo="sudo "
 alias zsh_reload="source ~/.config/zsh/.zshrc"
+alias "snk_here"="snake_case_all ."
 
 ## Package Management
 alias yay_total="yay -Syu --devel"
