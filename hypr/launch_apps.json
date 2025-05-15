@@ -53,6 +53,18 @@
                 "is_master": false
             }
         ],
+        "5": [
+            {
+                "name": "cursor_config",
+                "command": "cursor --new-window --enable-features=UseOzonePlatform --ozone-platform=wayland --file-uri='/home/rash/insync/j.roberto.ash@gmail.com/Google Drive/Dev_cloud/cursor/dotfiles.code-workspace'",
+                "is_master": true
+            },
+            {
+                "name": "cursor_terminal",
+                "command": "kitty --title ___name___ --working-directory /home/rash/.config",
+                "is_master": false
+            }
+        ],
         "11": [
             {
                 "name": "claude_zen",
