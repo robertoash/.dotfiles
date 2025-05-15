@@ -43,7 +43,7 @@ def is_authenticated():
 
         # Use a short timeout - if it takes longer than 1 second, it's likely
         # waiting for an OTP or password
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
 
         # If authenticated, the output will contain "Successfully synced"
         return "Successfully synced" in result.stdout and result.returncode == 0
@@ -434,6 +434,106 @@ def get_otp_for_credential(search_term):
         return False
 
 
+# Handle username extraction and copying
+def handle_username(args):
+    # Get original args but replace output format with json
+    orig_args = args.copy()
+
+    # Extract search terms (non-option arguments)
+    search_terms = []
+    for arg in orig_args:
+        if not arg.startswith("-") and arg not in ["username", "u"]:
+            search_terms.append(arg)
+
+    # If no search terms, we can't proceed
+    if not search_terms:
+        print("No search terms provided.")
+        return
+
+    # Build the command to get password entry in JSON format
+    search_args = ["password"] + search_terms + ["-o", "json"]
+
+    # Execute command
+    output = execute_dcli(search_args)
+
+    # If we got an int (returncode) or empty string (interactive auth handled), exit early
+    if isinstance(output, int) or output == "":
+        return
+
+    try:
+        credentials = json.loads(output)
+
+        if not credentials:
+            print("No matching credentials found.")
+            return
+
+        # Handle single result
+        if len(credentials) == 1:
+            credential = credentials[0]
+
+            # Try to get username or fall back to email if username not present
+            username = credential.get("login", "")
+            if not username:
+                username = credential.get("email", "")
+
+            if username:
+                subprocess.run(["wl-copy"], input=username, text=True)
+                print(
+                    f"👤 Username for \"{credential.get('title', 'Unknown')}\" copied to clipboard."
+                )
+            else:
+                print("No username or email found in the credential.")
+        else:
+            # Create temporary file for fzf selection
+            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
+                for i, cred in enumerate(credentials):
+                    title = cred.get("title", "Unknown")
+                    login = cred.get("login", "") or cred.get("email", "")
+                    display = f"{title} - {login}" if login else title
+                    tmp.write(f"{i}: {display}\n")
+                tmp_path = tmp.name
+
+            try:
+                # Use fzf for selection
+                fzf_cmd = (
+                    f'cat {tmp_path} | fzf --prompt="Select credential: " --height=10'
+                )
+                fzf_result = subprocess.run(
+                    fzf_cmd, shell=True, capture_output=True, text=True
+                )
+
+                if fzf_result.returncode != 0:
+                    print("Selection cancelled.")
+                    return
+
+                selection = fzf_result.stdout.strip()
+                if not selection:
+                    print("No selection made.")
+                    return
+
+                # Extract index from selection
+                index = int(selection.split(":", 1)[0])
+                credential = credentials[index]
+
+                # Try to get username or fall back to email if username not present
+                username = credential.get("login", "")
+                if not username:
+                    username = credential.get("email", "")
+
+                if username:
+                    subprocess.run(["wl-copy"], input=username, text=True)
+                    print(
+                        f"👤 Username for \"{credential.get('title', 'Unknown')}\" copied to clipboard."
+                    )
+                else:
+                    print("No username or email found in the credential.")
+            finally:
+                # Clean up temporary file
+                os.unlink(tmp_path)
+    except json.JSONDecodeError:
+        print("Error parsing credential information.")
+
+
 # Directly execute dcli with passthrough for interactive I/O
 def direct_execute_dcli(args):
     cmd = ["dcli"] + args
@@ -472,6 +572,8 @@ def main():
         handle_note(args)
     elif command in ["o", "otp"]:
         handle_direct_otp(args[1:])  # Skip the 'otp' command
+    elif command in ["u", "username"]:
+        handle_username(args)
     else:
         # For other commands, directly execute dcli with interactive I/O
         result = direct_execute_dcli(args)
