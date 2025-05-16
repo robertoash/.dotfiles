@@ -68,7 +68,7 @@ c.fonts.hints = "13pt GeistMono Nerd Font"
 # False is sequentially (aa,ab,ac...)
 c.hints.scatter = True
 c.hints.auto_follow = "unique-match"
-c.hints.dictionary = "/usr/share/dict/words/"
+c.hints.dictionary = "~/.local/share/qutebrowser/words"
 c.hints.mode = "letter"
 c.colors.hints.bg = "yellow"
 c.colors.hints.fg = "black"
