@@ -18,17 +18,6 @@ PROFILE = "rash"
 
 
 # --- FUNCTIONS ---
-def ensure_cookie_dir():
-    """Not needed when using --cookies-from-browser"""
-    pass
-
-
-def check_cookies():
-    """Check if the browser profile exists"""
-    # This is a basic check - could be improved
-    return True
-
-
 def rofi_prompt(items, prompt_text=None):
     """Show the magical rofi selection menu ✨"""
     cmd = ROFI_CMD.copy()
@@ -46,10 +35,6 @@ def rofi_prompt(items, prompt_text=None):
 
 def fetch_watch_later():
     """The critical treasure hunt - actually works! 💎"""
-    if not check_cookies():
-        print("🍪 Could not find the browser profile!")
-        print(f"Please check that {BROWSER} with profile {PROFILE} exists.")
-        sys.exit(1)
 
     # Format for output string, broken into multiple lines to meet line length requirements
     format_str = (
@@ -160,8 +145,6 @@ def launch_video(video):
 # --- MAIN ---
 def main():
     """The grand orchestration 🎭"""
-    ensure_cookie_dir()
-
     print("🎬 Fetching your Watch Later videos...")
     videos = fetch_watch_later()
 
