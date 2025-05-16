@@ -180,19 +180,32 @@ def focus_by_location(monitor_side, position):
             if available_slaves:
                 # Use the last (highest numbered) available slave
                 fallback_position = available_slaves[-1]
-                print(f"Position {position} not found, focusing {fallback_position} instead")
-                focus_window(window_positions[fallback_position])
-                return 0
+                print(
+                    f"Position {position} not found, focusing {fallback_position} instead"
+                )
+                target_address = window_positions[fallback_position]
             elif "master" in window_positions:
                 # No slaves available, fall back to master
                 print("No slave positions found, focusing master instead")
-                focus_window(window_positions["master"])
-                return 0
+                target_address = window_positions["master"]
+            else:
+                print(
+                    f"No window found at position {position} on {monitor_side} monitor"
+                )
+                return 1
+        else:
+            print(f"No window found at position {position} on {monitor_side} monitor")
+            return 1
+    else:
+        target_address = window_positions[position]
 
-        print(f"No window found at position {position} on {monitor_side} monitor")
-        return 1
+    # Check if the target window is already focused
+    active_window = get_active_window()
+    if active_window and active_window.get("address") == target_address:
+        # Already focused, do nothing
+        return 0
 
-    focus_window(window_positions[position])
+    focus_window(target_address)
     return 0
 
 
