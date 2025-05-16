@@ -43,10 +43,14 @@ return {
 		"yetone/avante.nvim",
 		event = "VeryLazy",
 		version = false, -- Never set this value to "*"! Never!
+		lazy = false,
+		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+		build = "make",
+		-- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
 		opts = {
 			-- add any opts here
 			-- for example
-			provider = "openai",
+			provider = "claude",
 			openai = {
 				endpoint = "https://api.openai.com/v1",
 				model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
@@ -55,10 +59,14 @@ return {
 				max_completion_tokens = 8192, -- Increase this to include reasoning tokens (for reasoning models)
 				--reasoning_effort = "medium", -- low|medium|high, only used for reasoning models
 			},
+			claude = {
+				endpoint = "https://api.anthropic.com",
+				model = "claude-3-5-sonnet-20241022", -- Or your preferred Claude model
+				temperature = 0,
+				max_tokens = 4096,
+			},
+			auto_suggestions_provider = "claude",
 		},
-		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
-		build = "make",
-		-- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 			"stevearc/dressing.nvim",
@@ -99,3 +107,4 @@ return {
 		},
 	},
 }
+
