@@ -124,7 +124,7 @@ alias svttic="svtti"
 alias cgrid="python3 ~/.config/scripts/shell/color_grid.py"
 
 ## Spotify_player
-alias spot="spotify_player"
+alias spt="spotify_player"
 
 ## System Tools
 alias code="code-insiders"
