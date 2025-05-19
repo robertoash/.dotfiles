@@ -120,6 +120,10 @@ alias svttc="svttext -colors"
 alias svttci="svtti"
 alias svttic="svtti"
 
+# Gcalcli
+alias "gcal"="gcalcli"
+alias "gcal_a"="gcal agenda"
+
 ## Scripts
 alias cgrid="python3 ~/.config/scripts/shell/color_grid.py"
 
@@ -150,4 +154,3 @@ alias z_netflix="b_zen --web https://netflix.com"
 alias z_ppx="b_zen --web https://perplexity.ai"
 alias z_svt="b_zen --web https://svtplay.se"
 alias z_yt="b_zen --web https://youtube.com"
-
