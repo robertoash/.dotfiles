@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from . import app_launcher, focus_location, move_windows
+from . import app_launcher, focus_location, move_windows, switch_ws_on_monitor
 
 
 def main():
@@ -127,6 +127,29 @@ Examples:
         help="Window position to focus (master, slave1, slave2, slave3)",
     )
 
+    # Switch workspace on monitor subcommand
+    switch_ws_parser = subparsers.add_parser(
+        "switch-ws",
+        help="Switch to the Nth workspace on the current monitor",
+        description="""
+Switch to the Nth workspace (by order) on the currently focused monitor.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  hypr-window-ops switch-ws 1
+  hypr-window-ops switch-ws 2
+        """,
+    )
+    switch_ws_parser.add_argument(
+        "n",
+        help=(
+            "Workspace number (1 = first on monitor, 2 = second, etc.) "
+            "or 'next' for next available"
+        ),
+        metavar="N|next",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -143,6 +166,15 @@ Examples:
         )
     elif args.command == "focus_location":
         return focus_location.focus_by_location(args.monitor_side, args.position)
+    elif args.command == "switch-ws":
+        if args.n == "next":
+            return switch_ws_on_monitor.switch_to_next_workspace_on_focused_monitor()
+        try:
+            n = int(args.n)
+        except ValueError:
+            print("Argument must be an integer or 'next'.")
+            return 1
+        return switch_ws_on_monitor.switch_to_nth_workspace_on_focused_monitor(n)
     else:
         parser.print_help()
         return 1
