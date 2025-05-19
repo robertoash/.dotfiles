@@ -131,10 +131,10 @@ config.bind(",p", "open -- {clipboard}")
 config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
 # Paste & go
 config.bind("P", "open -- {primary}")
-# Close tab fast
-config.bind("x", "tab-close")
 # Toggle tab list
 config.bind("<Alt-h>", "config-cycle tabs.show multiple never")
+# Duplicate tab
+config.bind("D", "tab-clone")
 
 # = Hint Keybinds =
 # Remove defaults
