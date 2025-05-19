@@ -9,20 +9,29 @@ SEPARATOR = "###"
 
 MANAGERS = {
     "pacman": {
-        "retrieve": ["sh", "-c", "pacman -Qe | awk '{print $1}'"],
-        "restore": lambda pkg: ["sudo", "pacman", "-S", "--noconfirm", pkg],
+        "retrieve": ["sh", "-c", "pacman -Qe"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: ["sudo", "pacman", "-S", "--noconfirm", pkg],
     },
     "yay": {
-        "retrieve": ["sh", "-c", "pacman -Qme | awk '{print $1}'"],
-        "restore": lambda pkg: ["yay", "-S", "--noconfirm", pkg],
+        "retrieve": ["sh", "-c", "pacman -Qme"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: ["yay", "-S", "--noconfirm", pkg],
     },
     "pipx": {
-        "retrieve": ["sh", "-c", "pipx list --short | awk '{print $1}'"],
-        "restore": lambda pkg: ["pipx", "install", pkg],
+        "retrieve": ["sh", "-c", "pipx list --short"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: ["pipx", "install", pkg],
     },
     "flatpak": {
-        "retrieve": ["sh", "-c", "flatpak list --app --columns=application"],
-        "restore": lambda pkg: ["flatpak", "install", "--noninteractive", pkg],
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
     },
     "ya": {
         "retrieve": [
@@ -30,7 +39,20 @@ MANAGERS = {
             "-c",
             "ya pack -l | grep / | awk '{gsub(/\\s+\\([^)]+\\)/,\"\"); print}' | awk '{$1=$1};1'",
         ],
-        "restore": lambda pkg: ["ya", "pack", "install", pkg],
+        "parse": lambda line: (line.strip(), None),
+        "restore": lambda pkg, ver=None: ["ya", "pack", "install", pkg],
+    },
+    "cargo": {
+        "retrieve": [
+            "sh",
+            "-c",
+            "cargo install --list | grep -E '^[^ ]+ v[0-9]'",
+        ],
+        "parse": lambda line: (
+            line.split()[0],
+            line.split()[1][:-1] if len(line.split()) > 1 else None,
+        ),
+        "restore": lambda pkg, ver=None: ["cargo", "install", pkg],
     },
 }
 
@@ -43,7 +65,9 @@ def save_packages(filename):
                     subprocess.check_output(commands["retrieve"]).decode().splitlines()
                 )
                 for package in packages:
-                    f.write(f"{package}{SEPARATOR}{manager}\n")
+                    name, version = commands["parse"](package)
+                    version = version or ""
+                    f.write(f"{name}{SEPARATOR}{version}{SEPARATOR}{manager}\n")
             except subprocess.CalledProcessError:
                 print(f"Warning: Failed to retrieve packages for {manager}")
 
@@ -52,12 +76,12 @@ def reinstall_packages(filename):
     with open(filename) as f:
         for line in f:
             parts = line.strip().split(SEPARATOR)
-            if len(parts) != 2:
+            if len(parts) != 3:
                 print(f"Warning: Invalid line in {filename}: {line.strip()}")
                 continue
-            package, manager = parts
+            package, version, manager = parts
             if manager in MANAGERS:
-                result = subprocess.run(MANAGERS[manager]["restore"](package))
+                result = subprocess.run(MANAGERS[manager]["restore"](package, version))
                 if result.returncode != 0:
                     print(f"Failed to install {package} via {manager}")
 
