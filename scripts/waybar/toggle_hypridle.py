@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
 import argparse
-import os
-import signal
 import subprocess
 from pathlib import Path
 
 PID_FILE = Path("/tmp/waybar/hypridle.pid")
 STATUS_FILE = Path("/tmp/waybar/hypridle_status.json")
+
+
+def kill_all_hypridle():
+    """Kill all running hypridle processes."""
+    subprocess.run(
+        ["pkill", "-x", "hypridle"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def is_hypridle_running():
+    """Check if any hypridle process is running."""
+    result = subprocess.run(["pgrep", "-x", "hypridle"], stdout=subprocess.PIPE)
+    return result.returncode == 0
 
 
 def write_status(hypridle_is_on: bool):
@@ -15,21 +28,16 @@ def write_status(hypridle_is_on: bool):
 
 
 def get_status():
-    if PID_FILE.exists():
-        return True
-    else:
-        return False
+    return is_hypridle_running()
 
 
 def toggle_hypridle(hypridle_is_on: bool):
     if hypridle_is_on:
-        try:
-            os.kill(int(PID_FILE.read_text()), signal.SIGTERM)
-        except ProcessLookupError:
-            pass
+        kill_all_hypridle()
         PID_FILE.unlink(missing_ok=True)
         return False
     else:
+        # Start a new hypridle process
         proc = subprocess.Popen(
             ["hypridle"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
@@ -42,11 +50,12 @@ def main():
     parser.add_argument(
         "--start-fresh",
         action="store_true",
-        help="Delete PID file if it exists and turn hypridle on",
+        help="Delete PID file if it exists, kill all hypridle, and turn hypridle on",
     )
     args = parser.parse_args()
 
     if args.start_fresh:
+        kill_all_hypridle()
         PID_FILE.unlink(missing_ok=True)
         hypridle_is_on = False
     else:
