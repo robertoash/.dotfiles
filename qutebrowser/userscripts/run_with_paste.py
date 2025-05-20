@@ -1,55 +1,44 @@
 #!/usr/bin/env python3
-import argparse
-import os
 import subprocess
+from qutescript import userscript
+from qutescript.cli import parser
 
-PASTE_DELAY = 500  # In milliseconds to match cmd-later
-
-
-def run(script, script_args):
-    try:
-        # Run the script with output capture
-        result = subprocess.run(
-            [script, *script_args],
-            check=True,
-            text=True,
-            capture_output=True,  # This captures stdout and stderr
-        )
-        return result
-    except subprocess.CalledProcessError as e:
-        print(f"Error running script: {e}")
-        return None
+# Add your arguments to qutescript's parser
+parser.add_argument("--script", help="The script to run", required=True)
+parser.add_argument(
+    "--paste-delay",
+    type=int,
+    help="The delay in milliseconds to wait before pasting",
+    default=500,
+)
+parser.add_argument("args", nargs="*", help="Arguments for the script")
 
 
-def paste(result=None, paste_delay=PASTE_DELAY):
-    try:
-        # After script completes, send the paste command to qutebrowser
-        with open(os.environ["QUTE_FIFO"], "w") as fifo:
-            # Default to fake-key if no method provided or clipboard specified
-            fifo.write(f"cmd-later {paste_delay} fake-key <Ctrl-v>\n")
-            print("Pasted clipboard contents.")
-    except Exception as e:
-        print(f"Error pasting: {e}")
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--script", required=True, help="The script to run")
-    parser.add_argument(
-        "--paste-delay",
-        help="The delay in milliseconds to wait before pasting",
-        default=PASTE_DELAY,
-    )
-    parser.add_argument("args", nargs="*", help="Arguments for the script")
+@userscript
+def run_with_paste(request):
+    # Parse arguments using qutescript's parser
     args = parser.parse_args()
 
     # Print debug info
     print(f"Running script: {args.script}")
     print(f"With args: {args.args}")
+    print(f"Using paste delay: {args.paste_delay}ms")
 
-    result = run(args.script, args.args)
-    paste(result, args.paste_delay)
+    try:
+        # Run the script with output capture
+        subprocess.run(
+            [args.script] + args.args,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+
+        # Send paste command
+        return f"cmd-later {args.paste_delay} fake-key <Ctrl-v>"
+
+    except Exception as e:
+        request.send_text(f"Error: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    run_with_paste()
