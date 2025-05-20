@@ -176,18 +176,11 @@ rofi_dcli_script = "/home/rash/.config/scripts/qutebrowser/rofi_dcli.py"
 run_with_paste_script = "/home/rash/.config/qutebrowser/userscripts/run_with_paste.py"
 
 # = Rofi password manager
-rofi_p_cmd = ("spawn --userscript {} --script {} --paste-delay {} {{}}").format(
-    run_with_paste_script, rofi_dcli_script, PASTE_DELAY
-)
-c.aliases["rofi_username"] = rofi_p_cmd.format("username")
-c.aliases["rofi_password"] = rofi_p_cmd.format("password")
-c.aliases["rofi_otp"] = rofi_p_cmd.format("otp")
+run_with_paste_cmd = f"spawn --userscript run_with_paste.py --script {rofi_dcli_script} --paste-delay {PASTE_DELAY}"
 
-# In insert mode: Use rofi for credential selection
-config.bind("<Alt-p>u", "rofi_username", mode="insert")
-config.bind("<Alt-p>p", "rofi_password", mode="insert")
-config.bind("<Alt-p>o", "rofi_otp", mode="insert")
-
+config.bind("<Alt-p>u", f"{run_with_paste_cmd} username", mode="insert")
+config.bind("<Alt-p>p", f"{run_with_paste_cmd} password", mode="insert")
+config.bind("<Alt-p>o", f"{run_with_paste_cmd} otp", mode="insert")
 
 # === PER-PROFILE BEHAVIOR ===
 
