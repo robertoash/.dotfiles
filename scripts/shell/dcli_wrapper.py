@@ -56,12 +56,50 @@ def is_authenticated():
 
 
 # Execute dcli command and get output
-def execute_dcli(args, ignore_errors=False):
+def execute_dcli(args, ignore_errors=False, headless=False):
     try:
         # For password related commands, check auth first
         cmd_requires_auth = args[0] in ["password", "p", "note", "n", "otp", "o"]
 
         if cmd_requires_auth and not is_authenticated():
+            if headless:
+                max_tries = 3
+                tries = 0
+                notified = False
+                while not is_authenticated() and tries < max_tries:
+                    if not notified:
+                        subprocess.run(
+                            ["dunstify", "Authentication required. Redirecting..."]
+                        )
+                        notified = True
+                    print(
+                        "You are not logged in. Launching a terminal for dcli login...",
+                        file=sys.stderr,
+                    )
+                    subprocess.run(["kitty", "-e", "dcli", "sync"])
+                    tries += 1
+                    if not is_authenticated() and tries < max_tries:
+                        print(
+                            f"Authentication failed or not completed. Please try again. "
+                            f"({tries}/{max_tries})",
+                            file=sys.stderr,
+                        )
+                if not is_authenticated():
+                    print(
+                        f"Authentication failed after {max_tries} attempts. Exiting.",
+                        file=sys.stderr,
+                    )
+                    subprocess.run(["dunstify", "dcli login failed after 3 attempts"])
+                    sys.exit(1)
+                print("Authentication successful. Continuing...", file=sys.stderr)
+                subprocess.run(["dunstify", "dcli login successful"])
+                # Now authenticated, proceed to run the original dcli command
+                cmd = ["dcli"] + args
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                if result.returncode != 0 and not ignore_errors:
+                    print(f"Error executing dcli: {result.stderr}")
+                    sys.exit(result.returncode)
+                return result.stdout.strip()
             print("dcli is not authenticated. Switching to interactive mode...")
             # Run in interactive mode
             result = direct_execute_dcli(args)
@@ -199,8 +237,8 @@ def select_and_copy(
 
 
 # Utility to run dcli and parse JSON output
-def run_dcli_json(args, silent=False):
-    output = execute_dcli(args)
+def run_dcli_json(args, silent=False, headless=False):
+    output = execute_dcli(args, headless=headless)
     if isinstance(output, int) or output == "":
         return None
     try:
@@ -227,7 +265,7 @@ def handle_entry(
     search_terms=None,  # Optional, for password/otp
     interactive_state=None,  # New: dict to hold state between steps
 ):
-    items = run_dcli_json(dcli_args)
+    items = run_dcli_json(dcli_args, headless=headless)
     if items is None:
         return False, None, None
     found = select_and_copy(
@@ -406,7 +444,7 @@ def handle_direct_otp(args, headless=False):
 
     def clipboard(cred):
         otp_args = ["password", "-f", "otp", cred.get("title", ""), "-o", "console"]
-        otp_output = execute_dcli(otp_args)
+        otp_output = execute_dcli(otp_args, headless=headless)
         if isinstance(otp_output, int) or otp_output == "":
             return ""
         if otp_output and not otp_output.startswith("Error"):
@@ -461,7 +499,7 @@ def prompt_for_otp(headless=False):
 def get_otp_for_credential(search_term, headless=False):
     # Get the OTP code with console output
     otp_args = ["password", "-f", "otp", search_term, "-o", "console"]
-    otp_output = execute_dcli(otp_args)
+    otp_output = execute_dcli(otp_args, headless=headless)
 
     # Check if we got a string result
     if isinstance(otp_output, int) or otp_output == "":
@@ -604,7 +642,7 @@ def main():
 
         def clipboard(cred):
             otp_args = ["password", "-f", "otp", cred.get("title", ""), "-o", "console"]
-            otp_output = execute_dcli(otp_args)
+            otp_output = execute_dcli(otp_args, headless=headless)
             if isinstance(otp_output, int) or otp_output == "":
                 return ""
             if otp_output and not otp_output.startswith("Error"):
