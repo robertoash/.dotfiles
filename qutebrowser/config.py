@@ -106,6 +106,7 @@ c.url.searchengines = {
     "gh": "https://github.com/search?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
     "aur": "https://aur.archlinux.org/packages/?K={}",
+    "px": "https://www.perplexity.ai/search/?q={}",
 }
 
 # === KEYBINDINGS ===
