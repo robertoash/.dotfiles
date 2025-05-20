@@ -15,7 +15,7 @@
         "2": [
             {
                 "name": "nvim_config",
-                "command": "kitty --hold --title ___name___ --working-directory /home/rash/.config -e nvim ~/.config/",
+                "command": "kitty --hold --title ___name___ --working-directory /home/rash/.config -e zsh -i -c 'nvim ~/.config/'",
                 "is_master": true
             },
             {
@@ -27,7 +27,7 @@
         "3": [
             {
                 "name": "nvim_dev",
-                "command": "kitty --hold --title ___name___ --working-directory /home/rash/dev/apps/ -e nvim ~/dev/apps/",
+                "command": "kitty --hold --title ___name___ --working-directory /home/rash/dev/apps/ -e zsh -i -c 'nvim ~/dev/apps/'",
                 "is_master": true
             },
             {
