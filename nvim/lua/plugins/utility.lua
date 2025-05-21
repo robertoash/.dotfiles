@@ -57,13 +57,14 @@ return {
 					F12 = "<F12>",
 				},
 			},
-
-			-- Document existing key chains
-			spec = {
-				{ "<leader>s", group = "[S]earch" },
-				{ "<leader>t", group = "[T]oggle" },
-				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
-			},
 		},
+	},
+
+	-- Flash.nvim: fast navigation
+	{
+		"folke/flash.nvim",
+		event = "VeryLazy",
+		opts = {},
+		-- Keymaps are now managed in custom/keymaps.lua
 	},
 }

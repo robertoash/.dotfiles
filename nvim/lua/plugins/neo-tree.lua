@@ -46,29 +46,7 @@ return {
 			},
 		},
 		lazy = false,
-		keys = {
-			{ "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle NeoTree" },
-			{ "<leader>e.", function()
-				local reveal_file = vim.fn.expand('%:p')
-				if (reveal_file == '') then
-					reveal_file = vim.fn.getcwd()
-				else
-					local f = io.open(reveal_file, "r")
-					if (f) then
-						f:close()
-					else
-						reveal_file = vim.fn.getcwd()
-					end
-				end
-				require('neo-tree.command').execute({
-					action = "focus",          -- OPTIONAL, this is the default value
-					source = "filesystem",     -- OPTIONAL, this is the default value
-					position = "left",         -- OPTIONAL, this is the default value
-					reveal_file = reveal_file, -- path to file or folder to reveal
-					reveal_force_cwd = true,   -- change cwd without asking if needed
-				})
-			end, desc = "Reveal file in NeoTree" },
-		},
+		-- Keymaps are now managed in custom/keymaps.lua
 		config = function()
 			-- If you want icons for diagnostic errors, you'll need to define them somewhere.
 			-- In Neovim v0.10+, you can configure them in vim.diagnostic.config(), like:

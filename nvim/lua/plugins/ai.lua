@@ -5,6 +5,7 @@ return {
 			"nvim-lua/plenary.nvim", -- Required for git operations
 		},
 		config = function()
+			-- All keymaps are now managed in custom/keymaps.lua
 			require("claude-code").setup({
 				-- Terminal window settings
 				window = {
@@ -25,16 +26,6 @@ return {
 				git = {
 					use_git_root = true, -- Start Claude in the project root
 				},
-				-- Claude-code keymaps
-				-- Open Claude Code with <leader>cc
-				vim.keymap.set("n", "<leader>cc", "<cmd>ClaudeCode<CR>", { desc = "Open Claude Code" }),
-				-- Continue conversation with <leader>cn
-				vim.keymap.set(
-					"n",
-					"<leader>cn",
-					"<cmd>ClaudeCode --continue<CR>",
-					{ desc = "Continue with Claude Code" }
-				),
 			})
 		end,
 	},
