@@ -14,8 +14,8 @@
         ],
         "2": [
             {
-                "name": "nvim_config",
-                "command": "kitty --hold --title ___name___ --working-directory /home/rash/.config -e zsh -i -c 'nvim ~/.config/'",
+                "name": "neovide_config",
+                "command": "zsh -i -c 'neovide --wayland_app_id=neovide_config ~/.config/'",
                 "is_master": true
             },
             {
@@ -26,8 +26,8 @@
         ],
         "3": [
             {
-                "name": "nvim_dev",
-                "command": "kitty --hold --title ___name___ --working-directory /home/rash/dev/apps/ -e zsh -i -c 'nvim ~/dev/apps/'",
+                "name": "neovide_dev",
+                "command": "zsh -i -c 'neovide --wayland_app_id=neovide_dev ~/dev/apps/'",
                 "is_master": true
             },
             {
