@@ -18,7 +18,13 @@ return {
 			"nvim-lua/plenary.nvim",
 			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
 			"MunifTanjim/nui.nvim",
-			{"3rd/image.nvim", opts = {}}, -- Optional image support in preview window: See `# Preview Mode` for more information
+			{
+				"3rd/image.nvim",
+				opts = {}, -- Optional image support in preview window: See `# Preview Mode` for more information
+				enabled = function()
+					return vim.g.neovide == nil -- Disable on Neovide
+				end,
+			},
 			{
 				"s1n7ax/nvim-window-picker", -- for open_with_window_picker keymaps
 				version = "2.*",
