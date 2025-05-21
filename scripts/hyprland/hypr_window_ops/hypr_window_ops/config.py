@@ -25,7 +25,7 @@ FOCUS_WS_DELAY = 0.2
 
 # WINDOW_CREATION_DELAY: Time to wait after launching each app.
 # Allows the app's window to appear before continuing (prevents race conditions).
-WINDOW_CREATION_DELAY = 0.5
+WINDOW_CREATION_DELAY = 1
 
 # MAX_WAIT_FOR_WINDOW: Maximum time (in seconds) to wait for a new window to appear after
 # launching an app.
