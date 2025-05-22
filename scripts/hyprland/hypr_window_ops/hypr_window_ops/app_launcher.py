@@ -96,6 +96,9 @@ def launch_profile_apps(
                 app["is_master"],
             )
 
+        # Ensure focus stays on the master window for this workspace
+        focus_workspace_master(workspace)
+
     # Return to default workspaces and focus master windows
     # Switch to monitor 2 (DP-2) workspace
     focus_workspace_master("11")
