@@ -375,6 +375,12 @@ local split_window_mappings = {
 	{ "n", "|v", "<C-w>v", { desc = "Split window vertically" } },
 }
 
+-- Delete to blackhole mappings
+local delete_to_blackhole_mappings = {
+	{ "n", "D", '"_d', { desc = "Delete to blackhole" } },
+	{ "v", "D", '"_d', { desc = "Delete to blackhole" } },
+	{ "n", "DD", '"_dd', { desc = "Delete line to blackhole" } },
+}
 -- =====================
 -- Keymap binding section
 -- =====================
@@ -403,5 +409,6 @@ set_keymaps(buffer_mappings)
 set_keymaps(selectall_mappings)
 set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
+set_keymaps(delete_to_blackhole_mappings)
 
 return {}
