@@ -67,4 +67,15 @@ return {
 		opts = {},
 		-- Keymaps are now managed in custom/keymaps.lua
 	},
+
+	{
+		"m4xshen/hardtime.nvim",
+		lazy = false,
+		dependencies = {
+			"MunifTanjim/nui.nvim",
+		},
+		opts = {}
+	},
+
+
 }
