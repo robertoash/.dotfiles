@@ -10,6 +10,8 @@ import termios
 import tty
 from shutil import which
 
+EXIT_AUTH_REQUIRED = 42  # Custom exit code for auth-required situations
+
 
 # Get a single keypress from the user
 def getch():
@@ -86,11 +88,12 @@ def execute_dcli(args, ignore_errors=False, headless=False):
                         )
                 if not is_authenticated():
                     print(
-                        f"Authentication failed after {max_tries} attempts. Exiting.",
+                        f"Authentication failed after {max_tries} attempts. "
+                        "Please authenticate and re-run the command.",
                         file=sys.stderr,
                     )
                     subprocess.run(["dunstify", "dcli login failed after 3 attempts"])
-                    sys.exit(1)
+                    sys.exit(EXIT_AUTH_REQUIRED)
                 print("Authentication successful. Continuing...", file=sys.stderr)
                 subprocess.run(["dunstify", "dcli login successful"])
                 # Now authenticated, proceed to run the original dcli command
@@ -100,7 +103,9 @@ def execute_dcli(args, ignore_errors=False, headless=False):
                     print(f"Error executing dcli: {result.stderr}")
                     sys.exit(result.returncode)
                 return result.stdout.strip()
-            print("dcli is not authenticated. Switching to interactive mode...")
+            print(
+                "dcli is not authenticated. Please authenticate and re-run the command."
+            )
             # Run in interactive mode
             result = direct_execute_dcli(args)
             # If this was successful, return empty string to signal we handled it
