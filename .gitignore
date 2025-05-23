@@ -12,6 +12,7 @@
 
 # ...and these directories...
 !alacritty/
+!atuin/
 !bat/
 !dunst/
 !environment.d/
@@ -25,6 +26,7 @@
 !helix/
 !hypr/
 !ignore/
+!kanata/
 !kitty/
 !lazygit/
 !lf/
@@ -34,6 +36,7 @@
 !nvim/
 !onagre/
 !palettes/
+!qalculate/
 !qutebrowser/
 !qutebrowser/userscripts/
 !rofi/
@@ -58,6 +61,7 @@
 
 # ...as well as any subfolders in them and their contents...
 !alacritty/**/*
+!atuin/**/*
 !bat/**/*
 !dunst/**/*
 !environment.d/**/*
@@ -71,6 +75,7 @@
 !helix/**/*
 !ignore/**/*
 !hypr/**/*
+!kanata/**/*
 !kitty/**/*
 !lazygit/**/*
 !lf/**/*
@@ -80,6 +85,7 @@
 !nvim/**/*
 !onagre/**/*
 !palettes/**/*
+!qalculate/**/*
 !qutebrowser/userscripts/**/*
 !rofi/**/*
 !ruff/**/*
@@ -139,3 +145,5 @@ hypr/keybind_submaps/rofi_iptv.conf
 zsh/sources/.zsh_secrets
 hypr/keybind_submaps/message_submaps
 scripts/hyprland/hypr_window_ops/hypr_window_ops.egg-info
+qalculate/qalc.history
+qalculate/qalculate-gtk.cfg
