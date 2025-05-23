@@ -3,9 +3,6 @@
 --=============================================================================
 -- All plugin-specific keymaps are now managed here, not in plugin configs
 -- Note: Additional plugin-specific keymaps can be found in their respective plugin configs
--- Telescope keymaps: <leader>s*, <leader>/, <leader>ff
--- LSP keymaps: gr*, gO, gW, <leader>th
--- Format keymap: <leader>f
 
 --==========================================================================
 --                			PLUGIN MAPPINGS
@@ -15,19 +12,18 @@
 local wk_ok, wk = pcall(require, "which-key")
 if wk_ok then
 	wk.add({
+		{ "<leader><leader>", group = "Quick Actions", mode = { "n", "v" } },
+		{ "<leader>a", group = "[A]vante AI", mode = { "n", "v" } },
+		{ "<leader>b", group = "[B]uffer Operations", mode = { "n", "v" } },
+		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
+		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
+		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
+		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
+		{ "<leader>m", group = "Apply for[M]at", mode = { "n" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>t", group = "[T]oggle", mode = { "n", "v" } },
-		{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
-		{ "<leader>f", group = "[F]ormat", mode = { "n", "v" } },
-		{ "<leader>b", group = "[B]uffer", mode = { "n", "v" } },
-		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
 		{ "<leader>w", group = "[W]indow", mode = { "n", "v" } },
-		{ "<leader>d", group = "[D]iagnostic", mode = { "n", "v" } },
-		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
-		{ "<leader>a", group = "[A]vante AI", mode = { "n", "v" } },
-		{ "<leader><leader>", group = "Quick Actions", mode = { "n", "v" } },
-		{ "|", group = "Split [|] Window", mode = { "n", "v" } },
+		{ "-", group = "Window splits [|]", mode = { "n", "v" } },
 	})
 end
 
@@ -55,7 +51,7 @@ local claude_mappings = {
 local format_mappings = {
 	{
 		"n",
-		"<leader>fm",
+		"<leader>m",
 		function()
 			local ok, conform = pcall(require, "conform")
 			if ok then
@@ -149,7 +145,7 @@ local filebrowser_mappings = {
 local flash_mappings = {
 	{
 		{ "n", "x", "o" },
-		"<leader><leader>f",
+		"<leader>ff",
 		function()
 			local ok, flash = pcall(require, "flash")
 			if ok then
@@ -164,18 +160,18 @@ local flash_mappings = {
 local telescope_mappings = {
 	{
 		"n",
-		"<leader><leader>b",
+		"<leader>sb",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
 				builtin.buffers()
 			end
 		end,
-		{ desc = "[ ] Find existing buffers" },
+		{ desc = "[S]earch existing buffers" },
 	},
 	{
 		"n",
-		"<leader>/",
+		"<leader>sz",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -188,14 +184,14 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sf",
+		"<leader>sr",
 		function()
 			local ok, ext = pcall(require, "telescope")
 			if ok and ext.extensions and ext.extensions.frecency then
 				ext.extensions.frecency.frecency({ hidden = true, no_ignore = true })
 			end
 		end,
-		{ desc = "[F]ind [F]recent files (including hidden & ignored)" },
+		{ desc = "[S]earch F[R]ecent files" },
 	},
 	{
 		"n",
@@ -265,7 +261,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sr",
+		"<leader>s<Enter>",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -341,27 +337,14 @@ local arrow_mappings = {
 -- Faster navigation
 local fastnav_mappings = {
 	{ "n", "<C-j>", "10j", { desc = "Move down 10 times" } },
+	{ "v", "<C-j>", "10j", { desc = "Move down 10 times" } },
 	{ "n", "<C-k>", "10k", { desc = "Move up 10 times" } },
-}
-
--- Window navigation
-local window_mappings = {
-	{ "n", "<C-s-h>", "<C-w><C-h>", { desc = "Move focus to the left window" } },
-	{ "n", "<C-s-l>", "<C-w><C-l>", { desc = "Move focus to the right window" } },
-	{ "n", "<C-s-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" } },
-	{ "n", "<C-s-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" } },
+	{ "v", "<C-k>", "10k", { desc = "Move up 10 times" } },
 }
 
 -- Diagnostics
 local diagnostic_mappings = {
-	{ "n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" } },
-}
-
--- Buffer operations
-local buffer_mappings = {
-	{ "n", "<leader>bd", ":bd<CR>", { desc = "[B]uffer [D]elete" } },
-	{ "n", "<leader>bp", ":bp<CR>", { desc = "[B]uffer [P]revious" } },
-	{ "n", "<leader>bn", ":bn<CR>", { desc = "[B]uffer [N]ext" } },
+	{ "n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" } },
 }
 
 -- Select whole document
@@ -369,12 +352,41 @@ local selectall_mappings = {
 	{ "n", "<leader>%", "ggVG", { noremap = true, desc = "Select entire buffer" } },
 }
 
--- Split window mappings
-local split_window_mappings = {
-	{ "n", "|s", "<C-w>s", { desc = "Split window horizontally" } },
-	{ "n", "|v", "<C-w>v", { desc = "Split window vertically" } },
+-- Buffer and Window Management Keybinds
+
+-- Window creation and closing using <leader>-
+local window_operations_mappings = {
+	-- Window creation (splits)
+	{ "n", "-s", "<C-w>s", { desc = "Split window horizontally" } },
+	{ "n", "-v", "<C-w>v", { desc = "Split window vertically" } },
+	-- Window closing
+	{ "n", "-c", "<C-w>c", { desc = "Close current window/split" } },
 }
 
+-- Window navigation using Alt+Shift+hjkl
+local window_navigation_mappings = {
+	{ "n", "<A-S-h>", "<C-w>h", { desc = "Go to left window" } },
+	{ "n", "<A-S-j>", "<C-w>j", { desc = "Go to lower window" } },
+	{ "n", "<A-S-k>", "<C-w>k", { desc = "Go to upper window" } },
+	{ "n", "<A-S-l>", "<C-w>l", { desc = "Go to right window" } },
+	{ "n", "<A-S-w>", "<C-w>w", { desc = "Go to next window" } },
+}
+
+-- Buffer management keybinds using <leader>b
+local buffer_mappings = {
+	-- Buffer creation
+	{ "n", "<leader>bn", ":enew<CR>", { desc = "Create new buffer" } },
+	-- Buffer navigation
+	{ "n", "<leader>bj", ":bnext<CR>", { desc = "Next buffer" } },
+	{ "n", "<leader>bk", ":bprev<CR>", { desc = "Previous buffer" } },
+	{ "n", "<leader>bl", ":blast<CR>", { desc = "Last buffer" } },
+	{ "n", "<leader>bf", ":bfirst<CR>", { desc = "First buffer" } },
+	-- Buffer closing
+	{ "n", "<leader>bc", ":bd<CR>", { desc = "Close buffer completely" } },
+	{ "n", "<leader>b!", ":bd!<CR>", { desc = "Force close buffer (ignore unsaved)" } },
+	-- Buffer listing
+	{ "n", "<leader>bb", ":ls<CR>", { desc = "List all buffers" } },
+}
 -- Delete to blackhole mappings
 local delete_to_blackhole_mappings = {
 	{ "n", "D", '"_d', { desc = "Delete to blackhole" } },
@@ -402,10 +414,11 @@ set_keymaps(neotree_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(arrow_mappings)
 set_keymaps(fastnav_mappings)
-set_keymaps(window_mappings)
+set_keymaps(window_operations_mappings)
+set_keymaps(window_navigation_mappings)
+set_keymaps(buffer_mappings)
 set_keymaps(diagnostic_mappings)
 set_keymaps(filebrowser_mappings)
-set_keymaps(buffer_mappings)
 set_keymaps(selectall_mappings)
 set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
