@@ -1,0 +1,14 @@
+# TokyoNight Deep – Atuin Theme Adaptation
+# Styled using named colors only (for Atuin compatibility)
+[theme]
+name = "tokyonight_deep"
+parent = ""
+
+[colors]
+AlertInfo = "limegreen"         # Subtle, calm notifications
+AlertWarn = "orange"       # Warm and attention-grabbing
+AlertError = "crimson"         # Strong and clearly alarming
+Annotation = "teal"        # Cool tone for annotations (like comments)
+Base = "white"              # Deep base, evoking night
+Guidance = "cyan"          # Guidance in vibrant, calming blue-green
+Important = "fuchsia"      # Eye-catching and vibrant for emphasis
