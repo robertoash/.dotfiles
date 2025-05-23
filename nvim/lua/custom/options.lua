@@ -24,6 +24,9 @@ vim.o.scrolloff = 10
 vim.o.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
+-- Conceal for obsidian markdown
+vim.opt.conceallevel = 1
+
 -- Performance and responsiveness
 vim.o.updatetime = 250
 
