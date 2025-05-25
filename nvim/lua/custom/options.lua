@@ -9,6 +9,8 @@ vim.g.have_nerd_font = true
 -- Performance and responsiveness
 vim.o.timeout = true
 vim.o.timeoutlen = 300
+-- Disable swap files
+vim.opt.swapfile = false
 
 --=============================================================================
 -- EDITOR OPTIONS
