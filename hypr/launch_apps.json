@@ -14,29 +14,17 @@
         ],
         "2": [
             {
-                "name": "neovide_config",
-                "command": "zsh -i -c 'neovide --wayland_app_id=neovide_config ~/.config/'",
+                "name": "nvim_config",
+                "command": "kitty --hold --title ___name___ --working-directory '/home/rash/.config' -e zsh -i -c 'nvim ~/.config'",
                 "is_master": true
             },
             {
                 "name": "config_terminal",
-                "command": "kitty --title ___name___ --working-directory /home/rash/.config",
+                "command": "kitty --title ___name___ --working-directory '/home/rash/.config'",
                 "is_master": false
             }
         ],
         "3": [
-            {
-                "name": "neovide_dev",
-                "command": "zsh -i -c 'neovide --wayland_app_id=neovide_dev ~/dev/apps/'",
-                "is_master": true
-            },
-            {
-                "name": "dev_terminal",
-                "command": "kitty --title ___name___ --working-directory /home/rash/dev/apps/",
-                "is_master": false
-            }
-        ],
-        "4": [
             {
                 "name": "browser_jobhunt",
                 "command": "qute_profile jobhunt",
@@ -50,18 +38,6 @@
             {
                 "name": "pcmanfm",
                 "command": "pcmanfm -n",
-                "is_master": false
-            }
-        ],
-        "5": [
-            {
-                "name": "cursor_config",
-                "command": "cursor --new-window --enable-features=UseOzonePlatform --ozone-platform=wayland --file-uri='/home/rash/insync/j.roberto.ash@gmail.com/Google Drive/Dev_cloud/cursor/dotfiles.code-workspace'",
-                "is_master": true
-            },
-            {
-                "name": "cursor_terminal",
-                "command": "kitty --title ___name___ --working-directory /home/rash/.config",
                 "is_master": false
             }
         ],
@@ -82,23 +58,6 @@
                 "name": "obsidian",
                 "command": "env OBSIDIAN_USE_WAYLAND=1 obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland",
                 "is_master": true
-            },
-            {
-                "name": "obsidian_terminal",
-                "command": "kitty --title ___name___",
-                "is_master": false
-            }
-        ],
-        "13": [
-            {
-                "name": "perplexity_terminal",
-                "command": "kitty --title ___name___",
-                "is_master": true
-            },
-            {
-                "name": "perplexity_zen",
-                "command": "chromium_launch --profile perplexity",
-                "is_master": false
             }
         ]
     }
