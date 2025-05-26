@@ -2,14 +2,14 @@ return {
 	-- If you want neo-tree's file operations to work with LSP (updating imports, etc.), you can use a plugin like
 	-- https://github.com/antosha417/nvim-lsp-file-operations:
 	{
-	  "antosha417/nvim-lsp-file-operations",
-	  dependencies = {
-	    "nvim-lua/plenary.nvim",
-	    "nvim-neo-tree/neo-tree.nvim",
-	  },
-	  config = function()
-	    require("lsp-file-operations").setup()
-	  end,
+		"antosha417/nvim-lsp-file-operations",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-neo-tree/neo-tree.nvim",
+		},
+		config = function()
+			require("lsp-file-operations").setup()
+		end,
 	},
 	{
 		"nvim-neo-tree/neo-tree.nvim",
@@ -81,7 +81,7 @@ return {
 						event = "file_opened",
 						handler = function()
 							require("neo-tree.command").execute({ action = "close" })
-						end
+						end,
 					},
 				},
 				default_component_configs = {
@@ -176,7 +176,6 @@ return {
 				-- A list of functions, each representing a global custom command
 				-- that will be available in all sources (if not overridden in `opts[source_name].commands`)
 				-- see `:h neo-tree-custom-commands-global`
-				commands = {},
 				window = {
 					position = "left",
 					width = 40,
@@ -251,9 +250,11 @@ return {
 				commands = {
 					auto_close = function(state)
 						local node = state.tree:get_node()
-						if node:get_type() ~= "file" then return end
+						if node:get_type() ~= "file" then
+							return
+						end
 						require("neo-tree.command").execute({ action = "close" })
-					end
+					end,
 				},
 				filesystem = {
 					filtered_items = {
@@ -265,6 +266,12 @@ return {
 							--"node_modules"
 						},
 						hide_by_pattern = { -- uses glob style patterns
+							"~/.local/.snapshots/**",
+							"~/.config/Cursor/**",
+							"~/.config/.cursor/**",
+							"~/.config/Code - Insiders/**",
+							"~/.config/BraveSoftware/**",
+							"~/.config/vivaldi/**",
 							--"*.meta",
 							--"*/src/*/tsconfig.json",
 						},
@@ -413,14 +420,18 @@ return {
 										-- Schedule the interception after the command-line is fully processed
 										vim.schedule(function()
 											-- Cancel any effect of the command in the Neo-tree buffer
-											vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
+											vim.api.nvim_feedkeys(
+												vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+												"n",
+												true
+											)
 											-- Switch to the last window
 											vim.cmd("wincmd p")
 											-- Run the command there
 											vim.cmd(cmd)
 										end)
 									end
-								end
+								end,
 							})
 						end,
 						buffer = event.buf,
