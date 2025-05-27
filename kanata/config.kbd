@@ -44,8 +44,8 @@
   ;; - Single tap: Escape
   ;; - Double tap (quick): Caps Lock toggle  
   ;; - Hold: Super+Ctrl+Alt+Shift (hyper key)
-  caps-multi (tap-dance 200 (
-    (tap-hold-press 50 200 esc (multi lmet lctl lalt lsft)) ;; tap=esc, hold=hyper
+  caps-multi (tap-dance 175 (
+    (tap-hold-press 50 175 esc (multi lmet lctl lalt lsft)) ;; tap=esc, hold=hyper
     caps ;; double-tap = caps lock
   ))
   
