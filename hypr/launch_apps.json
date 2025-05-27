@@ -15,7 +15,7 @@
         "2": [
             {
                 "name": "nvim_config",
-                "command": "kitty --hold --title ___name___ --working-directory '/home/rash/.config' -e zsh -i -c 'nvim ~/.config'",
+                "command": "kitty --hold --title ___name___ --working-directory '/home/rash/.config' -e zsh -i -c 'nvim ~/.config; exec zsh'",
                 "is_master": true
             },
             {
