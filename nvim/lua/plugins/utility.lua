@@ -1,4 +1,10 @@
 return {
+	-- Smooth scroll
+	{
+		"karb94/neoscroll.nvim",
+		opts = {},
+	},
+
 	-- Indentation detection
 	{
 		"NMAC427/guess-indent.nvim",
@@ -74,8 +80,6 @@ return {
 		dependencies = {
 			"MunifTanjim/nui.nvim",
 		},
-		opts = {}
+		opts = {},
 	},
-
-
 }
