@@ -57,5 +57,8 @@ vim.o.tabstop = 4
 vim.o.smartindent = true
 vim.o.breakindent = true
 
+-- Turn on language detection
+vim.cmd("filetype plugin indent on")
+
 -- Return the module (not necessary but good practice)
 return {}

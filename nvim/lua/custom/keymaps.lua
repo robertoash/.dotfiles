@@ -5,7 +5,7 @@
 -- Note: Additional plugin-specific keymaps can be found in their respective plugin configs
 
 --==========================================================================
---                			PLUGIN MAPPINGS
+--                          PLUGIN MAPPINGS
 --==========================================================================
 
 -- Which-key group registration (popup organization)
@@ -317,7 +317,7 @@ local telescope_mappings = {
 }
 
 --==========================================================================
---               			CUSTOM KEYMAPS
+--                          CUSTOM KEYMAPS
 --==========================================================================
 
 -- Basic movement and operations
@@ -387,12 +387,14 @@ local buffer_mappings = {
 	-- Buffer listing
 	{ "n", "<leader>bb", ":ls<CR>", { desc = "List all buffers" } },
 }
+
 -- Delete to blackhole mappings
 local delete_to_blackhole_mappings = {
 	{ "n", "D", '"_d', { desc = "Delete to blackhole" } },
 	{ "v", "D", '"_d', { desc = "Delete to blackhole" } },
 	{ "n", "DD", '"_dd', { desc = "Delete line to blackhole" } },
 }
+
 -- =====================
 -- Keymap binding section
 -- =====================
