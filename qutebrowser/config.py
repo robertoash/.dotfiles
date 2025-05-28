@@ -137,6 +137,10 @@ config.bind("<Alt-h>", "config-cycle tabs.show multiple never")
 # Duplicate tab
 config.bind("D", "tab-clone")
 
+# Text expansion
+config.bind(",@", "spawn --userscript text-expand :@@")
+config.bind(",x", "spawn --userscript text-expand")
+
 # = Hint Keybinds =
 # Remove defaults
 config.unbind(";i")
