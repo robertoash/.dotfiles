@@ -111,6 +111,11 @@ alias mst="mullvad status"
 ## Notes & Text
 alias note="notesh -f ~/notes/quick.json"
 
+## Rsync
+alias rs='rsync -ah --itemize-changes --partial --progress --stats'
+alias rsdry='rsync -ah --itemize-changes --progress --stats --dry-run'
+alias rsmv='rsync -ah --progress --stats --remove-source-files'
+
 ## Server
 alias iptvparse='ssh root@dockerlab "python3 /root/dev/setup_files/iptv_server/iptv_m3u_gen.py"'
 
