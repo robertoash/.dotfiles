@@ -30,6 +30,7 @@ x-scheme-handler/unknown=qutebrowser.desktop
 x-scheme-handler/webcal=qutebrowser.desktop
 inode/directory=yazi.desktop
 application/x-gnome-saved-search=yazi.desktop
+x-scheme-handler/etcher=balenaEtcher.desktop
 
 [Added Associations]
 application/javascript=nvim.desktop;
