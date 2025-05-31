@@ -59,16 +59,20 @@ return {
 			},
 
 			sources = {
-				default = { "lsp", "path", "snippets", "lazydev" },
+				default = { 'lsp', 'path', 'snippets', 'lazydev' },
 				providers = {
-					lazydev = { module = "lazydev.integrations.blink", score_offset = 100 },
-					path = { hidden = true },
-				},
+					lazydev = {
+						module = "lazydev.integrations.blink",
+						score_offset = 100
+					},
+					path = {
+						opts = { hidden = true }
+					}
+				}
 			},
 
 			snippets = { preset = "luasnip" },
 			fuzzy = { implementation = "prefer_rust_with_warning" },
-			-- fuzzy = { implementation = "lua" },
 			signature = { enabled = true },
 		},
 	},
