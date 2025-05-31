@@ -112,12 +112,14 @@ c.url.searchengines = {
 # === KEYBINDINGS ===
 
 # Vim-style navigation
-config.bind("J", "tab-prev")
-config.bind("K", "tab-next")
+config.bind("j", "cmd-repeat 15 scroll down")
+config.bind("k", "cmd-repeat 15 scroll up")
 config.bind("<Ctrl-j>", "scroll-page 0 1")
 config.bind("<Ctrl-k>", "scroll-page 0 -1")
 config.bind("<Ctrl-h>", "scroll-page -1 0")
 config.bind("<Ctrl-l>", "scroll-page 1 0")
+config.bind("J", "tab-next")
+config.bind("K", "tab-prev")
 # mpv integration
 config.bind(",m", "spawn --detach mpv {url}")
 config.bind(",M", "hint links spawn --detach mpv {hint-url}")
@@ -140,6 +142,9 @@ config.bind("D", "tab-clone")
 # Text expansion
 config.bind(",@", "spawn --userscript text-expand :@@")
 config.bind(",x", "spawn --userscript text-expand")
+
+# Dark mode toggle
+config.bind(",d", "config-cycle colors.webpage.darkmode.enabled true false")
 
 # = Hint Keybinds =
 # Remove defaults
