@@ -29,7 +29,6 @@ ELPRIS_URL = "http://10.20.10.50:8999/elpris.png"
 
 # Cheatsheet configuration mapping (concise)
 CHEATSHEETS = {
-    "hx": cheatsheet_config("hx", CHEATSHEET_DIR / "hx_cheatsheet.png"),
     "elpris": cheatsheet_config("elpris", ELPRIS_URL, zoom=200),
     "nvim": cheatsheet_config("nvim", CHEATSHEET_DIR / "nvim_cheatsheet.png"),
     "vim": cheatsheet_config("vim", CHEATSHEET_DIR / "vim_cheatsheet.png"),
