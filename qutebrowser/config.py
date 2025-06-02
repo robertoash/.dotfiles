@@ -31,6 +31,10 @@ c.downloads.location.prompt = False
 c.content.notifications.enabled = False
 # Dark mode (experimental)
 c.colors.webpage.darkmode.enabled = True
+c.colors.webpage.darkmode.algorithm = "lightness-cielab"
+c.colors.webpage.darkmode.policy.page = "smart"
+c.colors.webpage.darkmode.threshold.background = 0
+c.colors.webpage.darkmode.threshold.foreground = 256
 
 # === PRIVACY & BLOCKING ===
 
