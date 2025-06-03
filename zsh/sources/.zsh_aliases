@@ -63,6 +63,9 @@ alias gtc="sgpt -c"
 alias drdp="bash ~/.config/scripts/docker/docker_redeploy_container.sh"
 alias dsp="bash ~/.config/scripts/docker/docker_simple.sh"
 
+## Dust
+alias dust="dust -r"
+
 ## Exa File Listing
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
 alias lll="ll -l -a"
