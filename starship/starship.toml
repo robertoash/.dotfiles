@@ -15,7 +15,7 @@ $hostname\
 $virtualenv\
 $direnv\
 $time
-${custom.smart_cwd}${custom.secure_shell}${custom.yazi}$character
+${env_var.SMART_CWD}${env_var.SECURE_SHELL}${env_var.YAZI_LEVEL}$character
 """
 
 palette = "tokyonight_deep"
@@ -242,28 +242,19 @@ format = '\[[$time]($style)\]'
 style = "fg:accent"
 
 # ── Custom ───────────────────────────────────────────────
-[custom.smart_cwd]
-command = "/home/rash/.config/scripts/starship/smart_path.py"
-when = "true"
-format = "[$output]($style) "
+[env_var.SMART_CWD]
+format = "[$env_value]($style) "
 style = "fg:accent"
-ignore_timeout = true
 
-[custom.yazi]
-command = "sh -c 'if [ -n \"$YAZI_LEVEL\" ]; then if [ \"$YAZI_LEVEL\" = \"1\" ]; then echo \"YAZI SHELL\"; else echo \"YAZI x$YAZI_LEVEL\"; fi; fi'"
-when = "sh -c '[ -n \"$YAZI_LEVEL\" ]'"
-format = "[$symbol$output]($style) "
-symbol = "🧭 "
+[env_var.YAZI_LEVEL]
+variable = "YAZI_LEVEL"
+format = "[🎷 YAZI]($style) "
 style = "fg:color17"
-ignore_timeout = true
 
-[custom.secure_shell]
-command = "sh -c 'if [ \"$SECURE_SHELL\" = \"1\" ]; then echo \"STEALTH MODE\"; fi'"
-when = "sh -c '[ -n \"$SECURE_SHELL\" ]'"
-format = "[$symbol$output]($style) "
-symbol = "😈 "
+[env_var.SECURE_SHELL]
+variable = "SECURE_SHELL"
+format = "[😈 STEALTH MODE]($style) "
 style = "fg:color9"
-ignore_timeout = true
 
 
 #[custom.my_module_name]
