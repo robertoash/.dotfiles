@@ -78,7 +78,7 @@ def execute_dcli(args, ignore_errors=False, headless=False):
                         "You are not logged in. Launching a terminal for dcli login...",
                         file=sys.stderr,
                     )
-                    subprocess.run(["foot", "dcli", "sync"])
+                    subprocess.run(["wezterm", "start", "--", "dcli", "sync"])
                     tries += 1
                     if not is_authenticated() and tries < max_tries:
                         print(

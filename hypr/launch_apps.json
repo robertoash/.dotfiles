@@ -8,19 +8,19 @@
             },
             {
                 "name": "browser_terminal",
-                "command": "foot -T ___name___",
+                "command": "wezterm start",
                 "is_master": false
             }
         ],
         "2": [
             {
                 "name": "nvim_config",
-                "command": "foot -LH -T ___name___ -D '/home/rash/.config' nvim ~/.config",
+                "command": "wezterm start --cwd '/home/rash/.config' -- nvim ~/.config",
                 "is_master": true
             },
             {
                 "name": "config_terminal",
-                "command": "foot -T ___name___ -D '/home/rash/.config'",
+                "command": "wezterm start --cwd '/home/rash/.config'",
                 "is_master": false
             }
         ],
@@ -32,7 +32,7 @@
             },
             {
                 "name": "jobhunt_terminal",
-                "command": "foot -T ___name___",
+                "command": "wezterm start",
                 "is_master": false
             },
             {
@@ -49,7 +49,7 @@
             },
             {
                 "name": "gpt_terminal",
-                "command": "foot -T ___name___",
+                "command": "wezterm start",
                 "is_master": false
             }
         ],

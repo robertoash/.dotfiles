@@ -23,4 +23,4 @@ END {
 
 choice=$(printf "%s\n" "$hosts" | rofi -dmenu -p "SSH")
 
-[ -n "$choice" ] && exec foot ssh "$choice"
+[ -n "$choice" ] && exec wezterm start -- ssh "$choice"

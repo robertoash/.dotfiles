@@ -9,7 +9,7 @@ profile_name = os.path.basename(profile_path)
 # === CORE BEHAVIOR ===
 
 # Defaults
-c.editor.command = ["foot", "nvim", "{}"]
+c.editor.command = ["wezterm", "start", "--", "nvim", "{}"]
 # Start page and homepage
 c.url.start_pages = "https://startpage.com"
 c.url.default_page = "https://startpage.com"
