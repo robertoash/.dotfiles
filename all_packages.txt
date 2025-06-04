@@ -33,7 +33,7 @@ chafa###1.14.5-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.9-1###pacman
+claude-code###1.0.11-1###pacman
 cloudflared###2025.5.0-1###pacman
 code-insiders-bin###1.95.0_1728049707-1###pacman
 coin-or-clp###1.17.10-1###pacman
@@ -42,7 +42,7 @@ colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###pacman
 cronie###1.7.2-1###pacman
 cryptsetup###2.7.5-2###pacman
 cups###2:2.4.12-2###pacman
-cursor-bin###0.51.2-1###pacman
+cursor-bin###1.0.0-1###pacman
 device-mapper###2.03.32-1###pacman
 dhclient###4.4.3.P1-4###pacman
 diffutils###3.12-2###pacman
@@ -67,14 +67,14 @@ efitools###1.9.2-5###pacman
 endeavouros-keyring###20231222-1###pacman
 endeavouros-mirrorlist###25.6-1###pacman
 eos-apps-info###25-1###pacman
-eos-dracut###1.6-1###pacman
+eos-dracut###1.7-1###pacman
 eos-hooks###1.16-1###pacman
 eos-log-tool###25.5-1###pacman
 eos-packagelist###2.3.1-2###pacman
 eos-quickstart###1.4.1-1###pacman
 eos-rankmirrors###25.4-2###pacman
 eos-update-notifier###24.7.1-1###pacman
-espanso-wayland-git###2.2.3.r23.gbbdc9245-1###pacman
+espanso-wayland-git###2.2.3.r24.g0671cdda-1###pacman
 ethtool###1:6.11-1###pacman
 evtest###1.35-2###pacman
 exfatprogs###1.2.9-1###pacman
@@ -97,6 +97,7 @@ gcalcli###4.5.1-2###pacman
 ghostscript###10.05.1-2###pacman
 gimp###3.0.4-2###pacman
 git-delta###0.18.2-4###pacman
+git-filter-repo###2.47.0-2###pacman
 github-cli###2.74.0-1###pacman
 glances###4.3.1-1###pacman
 gnome-disk-utility###46.1-2###pacman
@@ -191,7 +192,7 @@ mullvad-vpn###2025.6-1###pacman
 nano###8.4-1###pacman
 nano-syntax-highlighting###2022.11.02.r102.gbb94603-1###pacman
 neofetch###7.1.0-2###pacman
-neovim###0.11.1-2###pacman
+neovim###0.11.2-3###pacman
 netctl###1.29-2###pacman
 networkmanager###1.52.0-1###pacman
 networkmanager-openconnect###1.2.10-3###pacman
@@ -245,8 +246,8 @@ python-qutescript-git###r34.5115bc8-1###pacman
 python-setuptools###1:80.9.0-1###pacman
 qalculate-gtk###5.5.1-1###pacman
 qt5-wayland###5.15.17+kde+r57-1###pacman
-qt6-multimedia###6.9.0-1###pacman
-qt6-quick3d###6.9.0-1###pacman
+qt6-multimedia###6.9.1-1###pacman
+qt6-quick3d###6.9.1-1###pacman
 qutebrowser-git###3.5.0.r39.g9c7a75616-1###pacman
 rebuild-detector###4.4.5-1###pacman
 reflector###2023-3###pacman
@@ -269,7 +270,6 @@ slurp###1.5.0-1###pacman
 smartmontools###7.5-1###pacman
 sof-firmware###2025.01.1-1###pacman
 solaar###1.1.14-2###pacman
-speedtest++###1.15.r72.b743996-1.1###pacman
 spotify-player-full###0.20.5-1###pacman
 spotifyd###0.4.1-1###pacman
 sqls###0.2.27-1###pacman
@@ -293,7 +293,7 @@ tailscale###1.84.0-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
 tcpdump###4.99.5-1###pacman
-telegram-desktop###5.14.3-2###pacman
+telegram-desktop###5.14.3-3###pacman
 termux-language-server###0.0.27-1###pacman
 texinfo###7.2-1###pacman
 thefuck###3.32-11###pacman
@@ -316,7 +316,7 @@ ttf-liberation###2.1.5-2###pacman
 ttf-opensans###3.003-1###pacman
 tumbler###4.20.0-3###pacman
 ufw###0.36.2-5###pacman
-ungoogled-chromium-bin###137.0.7151.55-1###pacman
+ungoogled-chromium-bin###137.0.7151.68-1###pacman
 unrar###1:7.1.6-1###pacman
 unzip###6.0-22###pacman
 upower###1.90.9-1###pacman
@@ -324,7 +324,7 @@ urban-cli-bin###0.2.3-2###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
 vi###1:070224-6###pacman
-vivaldi###7.4.3684.43-1###pacman
+vivaldi###7.4.3684.46-1###pacman
 vlc###3.0.21-20###pacman
 vscode-json-languageserver###1.100.0-1###pacman
 walk###1.13.0-1###pacman
@@ -361,9 +361,8 @@ xorg-xrandr###1.5.3-1###pacman
 xterm###399-1###pacman
 yaml-language-server###1.18.0-1###pacman
 yay###12.5.0-1###pacman
-yazi-git###25.5.31.r4.g2044654-1###pacman
 zathura###0.5.11-1###pacman
-zathura-pdf-mupdf###0.4.4-16###pacman
+zathura-pdf-mupdf###0.4.4-17###pacman
 zip###3.0-11###pacman
 zoxide###0.9.8-2###pacman
 zsh###5.9-5###pacman
@@ -375,11 +374,11 @@ buku-git###5.0.r19.g1925143-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.9-1###yay
+claude-code###1.0.11-1###yay
 code-insiders-bin###1.95.0_1728049707-1###yay
 colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###yay
-cursor-bin###0.51.2-1###yay
-espanso-wayland-git###2.2.3.r23.gbbdc9245-1###yay
+cursor-bin###1.0.0-1###yay
+espanso-wayland-git###2.2.3.r24.g0671cdda-1###yay
 fasd-git###1.0.1.r7.g90b531a-1###yay
 foot-git###1.22.3.r44.geeaecba7-1###yay
 fselect###0.8.9-1###yay
@@ -414,7 +413,6 @@ qutebrowser-git###3.5.0.r39.g9c7a75616-1###yay
 reiserfsprogs###3.6.27-5###yay
 rofi-lbonn-wayland-git###1.7.9.wayland1.r0.g07955bf9-1###yay
 slack-desktop###4.44.60-1###yay
-speedtest++###1.15.r72.b743996-1.1###yay
 spotify-player-full###0.20.5-1###yay
 sqls###0.2.27-1###yay
 stardict-dictd-moby-thesaurus###2.4.2-3###yay
@@ -425,7 +423,7 @@ termux-language-server###0.0.27-1###yay
 thunar-git###4.21.1+77+g254828c19-1###yay
 ticktick###6.0.30-2###yay
 tokyonight-gtk-theme-git###r86.006154c7-1###yay
-ungoogled-chromium-bin###137.0.7151.55-1###yay
+ungoogled-chromium-bin###137.0.7151.68-1###yay
 urban-cli-bin###0.2.3-2###yay
 walk###1.13.0-1###yay
 waybar-git###r3845.0332d2eb-1###yay
@@ -433,7 +431,6 @@ wdisplays###1.1.1-1.3###yay
 wezterm-git###20250604.060157.5106c8c1-1###yay
 wl-color-picker###1.4-1###yay
 xdg-desktop-portal-hyprland-git###1.3.9.r6.g76bbf1a-1###yay
-yazi-git###25.5.31.r4.g2044654-1###yay
 black###25.1.0###pipx
 cambridge###3.13.11###pipx
 cjar###0.1.0###pipx
@@ -450,11 +447,15 @@ yt-dlp###2025.3.31###pipx
 com.github.tchx84.Flatseal###2.3.0###flatpak
 WARNING: `ya pack` is deprecated, use the new `ya pkg` instead. See https://github.com/sxyazi/yazi/pull/2770 for more details.######ya
 boydaihungst/mediainfo######ya
-KKV9/command######ya
 yazi-rs/plugins:jump-to-char######ya
 dedukun/relative-motions######ya
 stelcodes/bunny######ya
 yazi-rs/plugins:mount######ya
+KKV9/command######ya
 yazi-rs/flavors:catppuccin-mocha######ya
+cargo-binstall###v1.12.6###cargo
 cargo-update###v16.3.0###cargo
+speedtest-rs###v0.2.0###cargo
 tgt###v1.0.0###cargo
+yazi-cli###v25.5.3###cargo
+yazi-fm###v25.5.31###cargo
