@@ -18,7 +18,7 @@ c.tabs.show = "multiple"
 c.tabs.position = "left"
 c.tabs.width = "15%"
 c.tabs.title.format = "{index}: {current_title}"
-c.window.title_format = f"[qute-{profile_name}] - {{current_url}}"
+c.window.title_format = f"{{current_url}} @ [qute-{profile_name}] "
 # Autosave session
 c.auto_save.session = True
 c.session.lazy_restore = False
@@ -103,10 +103,8 @@ c.content.javascript.clipboard = "access-paste"
 c.url.searchengines = {
     "DEFAULT": "https://startpage.com/do/dsearch?query={}",
     "g": "https://www.google.com/search?q={}",
-    "gh": "https://github.com/search?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
     "aur": "https://aur.archlinux.org/packages/?K={}",
-    "px": "https://www.perplexity.ai/search/?q={}",
 }
 
 # === KEYBINDINGS ===
