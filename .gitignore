@@ -147,3 +147,5 @@ hypr/keybind_submaps/message_submaps
 scripts/hyprland/hypr_window_ops/hypr_window_ops.egg-info
 qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
+fish/conf.d/secrets/secrets.fish
+fish/sources/secrets.fish
