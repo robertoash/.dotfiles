@@ -41,7 +41,6 @@ require("lazy").setup({
 	---------------------------
 	-- PLUGIN IMPORTS
 	---------------------------
-	{ import = "plugins.neo-tree" },
 	{ import = "plugins.utility" },
 	{ import = "plugins.ai" },
 	{ import = "plugins.telescope" },
@@ -51,6 +50,7 @@ require("lazy").setup({
 	{ import = "plugins.ui" },
 	{ import = "plugins.treesitter" },
 	{ import = "plugins.comment" },
+	{ import = "plugins.snacks" },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

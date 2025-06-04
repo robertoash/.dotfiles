@@ -1,15 +1,4 @@
 return {
-	-- Smooth scroll
-	{
-		"karb94/neoscroll.nvim",
-		opts = {},
-	},
-
-	-- Indentation detection
-	{
-		"NMAC427/guess-indent.nvim",
-	},
-
 	-- Git integration
 	{
 		"lewis6991/gitsigns.nvim",

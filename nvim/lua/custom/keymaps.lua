@@ -16,14 +16,14 @@ if wk_ok then
 		{ "<leader>a", group = "[A]vante AI", mode = { "n", "v" } },
 		{ "<leader>b", group = "[B]uffer Operations", mode = { "n", "v" } },
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
-		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
 		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>m", group = "Apply for[M]at", mode = { "n" } },
+		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>t", group = "[T]oggle", mode = { "n", "v" } },
 		{ "<leader>w", group = "[W]indow", mode = { "n", "v" } },
 		{ "-", group = "Window splits [|]", mode = { "n", "v" } },
+		{ "_", group = "[_]Explore", mode = { "n", "v" } },
 	})
 end
 
@@ -51,54 +51,40 @@ local claude_mappings = {
 local format_mappings = {
 	{
 		"n",
-		"<leader>m",
+		"<leader>=",
 		function()
 			local ok, conform = pcall(require, "conform")
 			if ok then
 				conform.format({ async = true, lsp_format = "fallback" })
 			end
 		end,
-		{ desc = "[F]ormat buffer" },
+		{ desc = "Format buffer [=]" },
 	},
 }
 
--- Neo-tree
-local neotree_mappings = {
+-- Snacks.nvim explorer (replacing neo-tree)
+local snacks_explorer_mappings = {
 	{
 		"n",
-		"<leader>ee",
+		"__",
 		function()
-			vim.cmd("Neotree toggle")
+			local ok, snacks = pcall(require, "snacks")
+			if ok then
+				snacks.explorer()
+			end
 		end,
-		{ desc = "Toggle NeoTree" },
+		{ desc = "Toggle Explorer" },
 	},
 	{
 		"n",
-		"<leader>e.",
+		"_.",
 		function()
-			local ok, neotree = pcall(require, "neo-tree.command")
-			local reveal_file = vim.fn.expand("%:p")
-			if reveal_file == "" then
-				reveal_file = vim.fn.getcwd()
-			else
-				local f = io.open(reveal_file, "r")
-				if f then
-					f:close()
-				else
-					reveal_file = vim.fn.getcwd()
-				end
-			end
+			local ok, snacks = pcall(require, "snacks")
 			if ok then
-				neotree.execute({
-					action = "focus",
-					source = "filesystem",
-					position = "left",
-					reveal_file = reveal_file,
-					reveal_force_cwd = true,
-				})
+				snacks.explorer({ path = vim.fn.expand("%:p:h") })
 			end
 		end,
-		{ desc = "Reveal file in NeoTree" },
+		{ desc = "Reveal file in Explorer" },
 	},
 }
 
@@ -412,7 +398,7 @@ end
 
 set_keymaps(claude_mappings)
 set_keymaps(format_mappings)
-set_keymaps(neotree_mappings)
+set_keymaps(snacks_explorer_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(arrow_mappings)
 set_keymaps(fastnav_mappings)

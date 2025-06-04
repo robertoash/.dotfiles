@@ -66,7 +66,7 @@ return {
 						score_offset = 100
 					},
 					path = {
-						opts = { hidden = true }
+						opts = {}
 					}
 				}
 			},
