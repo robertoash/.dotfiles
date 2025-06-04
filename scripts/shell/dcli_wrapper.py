@@ -78,7 +78,7 @@ def execute_dcli(args, ignore_errors=False, headless=False):
                         "You are not logged in. Launching a terminal for dcli login...",
                         file=sys.stderr,
                     )
-                    subprocess.run(["kitty", "-e", "dcli", "sync"])
+                    subprocess.run(["foot", "dcli", "sync"])
                     tries += 1
                     if not is_authenticated() and tries < max_tries:
                         print(
@@ -325,7 +325,7 @@ def handle_password(args, otp=False, silent=False, headless=False):
         emoji = "🔑" if field == "otp" else "🔓"
         return (
             f"{emoji} {field.capitalize()} for "
-            f'"{cred.get('title', 'Unknown')}" copied to clipboard.'
+            f'"{cred.get("title", "Unknown")}" copied to clipboard.'
         )
 
     def multi_display(cred):
@@ -379,7 +379,7 @@ def handle_note(args, headless=False):
     orig_args += ["-o", "json"]
 
     def single_msg(note):
-        return f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard."
+        return f'📝 Note "{note.get("title", "Unknown")}" copied to clipboard.'
 
     def multi_display(note):
         return note.get("title", "Unknown")
@@ -412,9 +412,7 @@ def handle_username(args, headless=False):
     search_args = ["password"] + search_terms + ["-o", "json"]
 
     def single_msg(cred):
-        return (
-            f"👤 Username for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
-        )
+        return f'👤 Username for "{cred.get("title", "Unknown")}" copied to clipboard.'
 
     def multi_display(cred):
         title = cred.get("title", "Unknown")
@@ -572,7 +570,9 @@ def main():
         search_args = ["password"] + search_terms + ["-o", "json"]
 
         def single_msg(cred):
-            return f"🔓 Password for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
+            return (
+                f'🔓 Password for "{cred.get("title", "Unknown")}" copied to clipboard.'
+            )
 
         def multi_display(cred):
             title = cred.get("title", "Unknown")
@@ -616,7 +616,7 @@ def main():
         orig_args += ["-o", "json"]
 
         def single_msg(note):
-            return f"📝 Note \"{note.get('title', 'Unknown')}\" copied to clipboard."
+            return f'📝 Note "{note.get("title", "Unknown")}" copied to clipboard.'
 
         def multi_display(note):
             return note.get("title", "Unknown")
@@ -683,7 +683,9 @@ def main():
         search_args = ["password"] + search_terms + ["-o", "json"]
 
         def single_msg(cred):
-            return f"👤 Username for \"{cred.get('title', 'Unknown')}\" copied to clipboard."
+            return (
+                f'👤 Username for "{cred.get("title", "Unknown")}" copied to clipboard.'
+            )
 
         def multi_display(cred):
             title = cred.get("title", "Unknown")

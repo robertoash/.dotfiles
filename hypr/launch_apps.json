@@ -8,19 +8,19 @@
             },
             {
                 "name": "browser_terminal",
-                "command": "kitty --title ___name___",
+                "command": "foot -T ___name___",
                 "is_master": false
             }
         ],
         "2": [
             {
                 "name": "nvim_config",
-                "command": "kitty --hold --title ___name___ --working-directory '/home/rash/.config' -e zsh -i -c 'nvim ~/.config; exec zsh'",
+                "command": "foot -LH -T ___name___ -D '/home/rash/.config' nvim ~/.config",
                 "is_master": true
             },
             {
                 "name": "config_terminal",
-                "command": "kitty --title ___name___ --working-directory '/home/rash/.config'",
+                "command": "foot -T ___name___ -D '/home/rash/.config'",
                 "is_master": false
             }
         ],
@@ -32,7 +32,7 @@
             },
             {
                 "name": "jobhunt_terminal",
-                "command": "kitty --title ___name___",
+                "command": "foot -T ___name___",
                 "is_master": false
             },
             {
@@ -49,7 +49,7 @@
             },
             {
                 "name": "gpt_terminal",
-                "command": "kitty --title ___name___",
+                "command": "foot -T ___name___",
                 "is_master": false
             }
         ],
