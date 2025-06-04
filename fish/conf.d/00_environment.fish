@@ -51,7 +51,9 @@ set -gx DOCKER_BUILDKIT 1
 set -gx STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
 
 # Secrets
-# Note: Fish equivalent needed for secure_env_secrets.py
+# Use Fish's command substitution and string splitting for better handling
 if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
-    eval (/home/rash/.config/scripts/shell/secure_env_secrets.py)
+    for cmd in (string split ' && ' (/home/rash/.config/scripts/shell/secure_env_secrets.py))
+        eval $cmd
+    end
 end

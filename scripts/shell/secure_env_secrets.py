@@ -26,6 +26,28 @@ secrets_files = [
 gpg_id = "j.roberto.ash@gmail.com"
 
 
+def detect_shell():
+    """Detect the current shell being used."""
+    # Check parent process name
+    try:
+        ppid = os.getppid()
+        with open(f"/proc/{ppid}/comm", "r") as f:
+            parent_name = f.read().strip()
+        if parent_name in ["fish"]:
+            return "fish"
+        elif parent_name in ["bash", "zsh", "sh"]:
+            return "posix"
+    except (OSError, FileNotFoundError):
+        pass
+
+    # Fallback to SHELL environment variable
+    shell = os.environ.get("SHELL", "")
+    if "fish" in shell:
+        return "fish"
+    else:
+        return "posix"  # Default to POSIX (bash/zsh) syntax
+
+
 def configure_logging(args):
     # Configure logging in quiet mode
     logging_utils.configure_logging(quiet=True)
@@ -40,14 +62,69 @@ def configure_logging(args):
     logger.setLevel(logging.DEBUG if args.debug else logging.ERROR)
 
 
-def conf_source(file):
+def conf_source(file, shell_type=None):
+    if shell_type is None:
+        shell_type = detect_shell()
+
     if os.path.getsize(file) > 0:
         try:
-            with open(file) as f:
-                for line in f:
-                    if line.strip() and not line.strip().startswith("#"):
-                        key, value = line.strip().split("=", 1)
-                        print(f'export {key}="{value.strip()}"')
+            if shell_type == "fish":
+                # For Fish, we need to output in a format that works with eval
+                commands = []
+                with open(file) as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#"):
+                            # Strip 'export ' prefix if present to make files shell-agnostic
+                            if line.startswith("export "):
+                                line = line[7:]  # Remove 'export ' prefix
+
+                            # Ensure we have a key=value pair, handle empty values
+                            if "=" not in line:
+                                continue  # Skip malformed lines
+
+                            key, value = line.split("=", 1)
+                            key = key.strip()
+                            value = value.strip()
+
+                            # Remove quotes if they exist
+                            if (value.startswith('"') and value.endswith('"')) or (
+                                value.startswith("'") and value.endswith("'")
+                            ):
+                                value = value[1:-1]
+
+                            # Fish needs proper escaping
+                            escaped_value = value.replace("'", "\\'")
+                            commands.append(f"set -gx {key} '{escaped_value}'")
+
+                # Output commands separated by semicolons and newlines for Fish
+                print(" && ".join(commands))
+            else:
+                # Original logic for bash/zsh
+                with open(file) as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#"):
+                            # Strip 'export ' prefix if present
+                            if line.startswith("export "):
+                                line = line[7:]
+
+                            # Ensure we have a key=value pair
+                            if "=" not in line:
+                                continue
+
+                            key, value = line.split("=", 1)
+                            key = key.strip()
+                            value = value.strip()
+
+                            # Remove quotes if they exist
+                            if (value.startswith('"') and value.endswith('"')) or (
+                                value.startswith("'") and value.endswith("'")
+                            ):
+                                value = value[1:-1]
+
+                            print(f'export {key}="{value}"')
+
         except Exception as e:
             logging.error(f"Error: Sourcing {file} failed. {e}")
             return False
@@ -76,9 +153,26 @@ def conf_decrypt(file):
             decrypted_content = subprocess.check_output(
                 f"gpg --quiet -d {encrypted_file}", shell=True
             ).decode()
-            # Write the decrypted content back to a file
+
+            # Normalize the content to shell-agnostic format
+            normalized_lines = []
+            for line in decrypted_content.splitlines():
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    # Strip 'export ' prefix if present to standardize format
+                    if line.startswith("export "):
+                        line = line[7:]  # Remove 'export ' prefix
+                    normalized_lines.append(line)
+                else:
+                    # Keep comments and empty lines as-is
+                    normalized_lines.append(line)
+
+            # Write the normalized content back to file
             with open(file, "w") as f:
-                f.write(decrypted_content)
+                f.write("\n".join(normalized_lines))
+                if normalized_lines and not decrypted_content.endswith("\n"):
+                    f.write("\n")  # Ensure file ends with newline
+
         except subprocess.CalledProcessError as e:
             logging.error(
                 f"Error: Decryption failed for {encrypted_file} "
@@ -97,6 +191,11 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument("--decrypt", help="Decrypt a file")
     parser.add_argument("--edit", help="Edit a file")
+    parser.add_argument(
+        "--shell",
+        choices=["fish", "posix"],
+        help="Override shell detection (fish or posix)",
+    )
     args = parser.parse_args()
 
     configure_logging(args)
@@ -120,6 +219,8 @@ def main():
         print(f"🔒 Re-encrypted: {file} → {file}.asc")
         return
 
+    shell_type = args.shell if args.shell else detect_shell()
+
     with open(lock_file, "w") as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)
         for file in secrets_files:
@@ -127,7 +228,7 @@ def main():
                 conf_encrypt(file)
             if os.path.isfile(f"{file}.asc"):
                 conf_decrypt(file)
-                conf_source(file)
+                conf_source(file, shell_type)
                 conf_encrypt(file)
             else:
                 logging.error(f"Error: Neither {file} nor {file}.asc exists.")
