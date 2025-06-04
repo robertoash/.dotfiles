@@ -247,30 +247,23 @@ command = "/home/rash/.config/scripts/starship/smart_path.py"
 when = "true"
 format = "[$output]($style) "
 style = "fg:accent"
+ignore_timeout = true
 
 [custom.yazi]
-command = '''
-if [ "$YAZI_LEVEL" = "1" ]; then
-  echo "YAZI SHELL"
-elif [ -n "$YAZI_LEVEL" ]; then
-  echo "YAZI x$YAZI_LEVEL"
-fi
-'''
-when = "test -n \"$YAZI_LEVEL\""
+command = "sh -c 'if [ -n \"$YAZI_LEVEL\" ]; then if [ \"$YAZI_LEVEL\" = \"1\" ]; then echo \"YAZI SHELL\"; else echo \"YAZI x$YAZI_LEVEL\"; fi; fi'"
+when = "sh -c '[ -n \"$YAZI_LEVEL\" ]'"
 format = "[$symbol$output]($style) "
 symbol = "🧭 "
 style = "fg:color17"
+ignore_timeout = true
 
 [custom.secure_shell]
-command = '''
-if [ "$SECURE_SHELL" = "1" ]; then
-  echo "STEALTH MODE"
-fi
-'''
-when = "test -n \"$SECURE_SHELL\""
+command = "sh -c 'if [ \"$SECURE_SHELL\" = \"1\" ]; then echo \"STEALTH MODE\"; fi'"
+when = "sh -c '[ -n \"$SECURE_SHELL\" ]'"
 format = "[$symbol$output]($style) "
 symbol = "😈 "
 style = "fg:color9"
+ignore_timeout = true
 
 
 #[custom.my_module_name]
