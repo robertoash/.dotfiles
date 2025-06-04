@@ -18,12 +18,12 @@ if wk_ok then
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
 		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
+		{ "<leader>j", group = "[J]ust Explore", mode = { "n", "v" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>t", group = "[T]oggle", mode = { "n", "v" } },
 		{ "<leader>w", group = "[W]indow", mode = { "n", "v" } },
+		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
 		{ "-", group = "Window splits [|]", mode = { "n", "v" } },
-		{ "_", group = "[_]Explore", mode = { "n", "v" } },
 	})
 end
 
@@ -66,7 +66,7 @@ local format_mappings = {
 local snacks_explorer_mappings = {
 	{
 		"n",
-		"__",
+		"<leader>jj",
 		function()
 			local ok, snacks = pcall(require, "snacks")
 			if ok then
@@ -77,7 +77,7 @@ local snacks_explorer_mappings = {
 	},
 	{
 		"n",
-		"_.",
+		"<leader>jh",
 		function()
 			local ok, snacks = pcall(require, "snacks")
 			if ok then
