@@ -105,6 +105,7 @@ c.url.searchengines = {
     "g": "https://www.google.com/search?q={}",
     "yt": "https://www.youtube.com/results?search_query={}",
     "aur": "https://aur.archlinux.org/packages/?K={}",
+    "icons": "https://www.nerdfonts.com/cheat-sheet?q={}",
 }
 
 # === KEYBINDINGS ===

@@ -133,7 +133,7 @@
             "vivaldi-stable > (.*)": "  > $1",
             "org.qutebrowser.qutebrowser > (.*)": "  > $1",
             "code-insiders-url-handler > (.*) - (.*) \\(Workspace\\) - .*": "󰨞 > $1 - $2",
-            "Alacritty > (.*)": "alacritty > $1",
+            "wezterm > (.*)": "  > $1",
         }
     },
 
