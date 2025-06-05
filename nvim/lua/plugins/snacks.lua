@@ -15,6 +15,7 @@ return {
 					hidden = true,
 					auto_close = false,
 					replace_netrw = true,
+					ignored = true,
 				},
 			},
 		},
