@@ -12,7 +12,7 @@ return {
 			enabled = true,
 			sources = {
 				explorer = {
-					hidden = false,
+					hidden = true,
 					auto_close = false,
 					replace_netrw = true,
 				},
