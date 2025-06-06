@@ -21,6 +21,7 @@ prepend_keymap = [
     { on = ";", run = "plugin bunny fuzzy", desc = "Start bunny.yazi fuzzy search" },
     { on = "M", run = "plugin mount", desc = "Start mount plugin" },
     { on = "<Enter>", run = "plugin smart-enter", desc = "Smart enter" },
+    { on = "<C-y>", run = ''' shell 'ripdrag -na -s 80 "$@"' --confirm ''', desc = "Yank via drag and drop" },
 ]
 
 keymap = [

@@ -1,26 +1,26 @@
 [[plugin.deps]]
 use = "boydaihungst/mediainfo"
-rev = "c6d0de7"
-hash = "7b024fc14b462235068400207cbe7bf0"
+rev = "a7d1aa6"
+hash = "844133c7247cda086819d63a9ca5e457"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:jump-to-char"
-rev = "43ff052"
+rev = "63f9650"
 hash = "30fc0b37f03a597b92d387268319450f"
 
 [[plugin.deps]]
 use = "dedukun/relative-motions"
-rev = "ce2e890"
-hash = "23915860e59348bf4166778bb0e606f7"
+rev = "2e3b617"
+hash = "b67ee12053113983273e9118a7d1272b"
 
 [[plugin.deps]]
 use = "stelcodes/bunny"
-rev = "ea27f37"
-hash = "7956295208401cdbdf2b673b73437edd"
+rev = "a0b4e18"
+hash = "7acba2bb504c67dd7f2da135b88aae1b"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
-rev = "43ff052"
+rev = "63f9650"
 hash = "c0b6cd7dc830b96e77e5c8a71eec7926"
 
 [[plugin.deps]]
@@ -35,5 +35,5 @@ hash = "a7ab702e1ef0c097defbc976ed34c186"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "02f3fc6"
-hash = "2ac87e1b3a61f5887472899e86535d29"
+rev = "d04a298"
+hash = "288a0dedd5d13b28605cf82c05326dcd"
