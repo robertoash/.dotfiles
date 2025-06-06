@@ -1,0 +1,39 @@
+[[plugin.deps]]
+use = "boydaihungst/mediainfo"
+rev = "c6d0de7"
+hash = "7b024fc14b462235068400207cbe7bf0"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:jump-to-char"
+rev = "43ff052"
+hash = "30fc0b37f03a597b92d387268319450f"
+
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "ce2e890"
+hash = "23915860e59348bf4166778bb0e606f7"
+
+[[plugin.deps]]
+use = "stelcodes/bunny"
+rev = "ea27f37"
+hash = "7956295208401cdbdf2b673b73437edd"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "43ff052"
+hash = "c0b6cd7dc830b96e77e5c8a71eec7926"
+
+[[plugin.deps]]
+use = "KKV9/command"
+rev = "4762ecc"
+hash = "65fff40a0060fe4b1c42d49d29f770fd"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "63f9650"
+hash = "a7ab702e1ef0c097defbc976ed34c186"
+
+[[flavor.deps]]
+use = "yazi-rs/flavors:catppuccin-mocha"
+rev = "02f3fc6"
+hash = "2ac87e1b3a61f5887472899e86535d29"
