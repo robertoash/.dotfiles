@@ -12,7 +12,6 @@ atool###0.39.0-10###pacman
 atuin###18.6.1-1###pacman
 axel###2.17.14-1###pacman
 b43-fwcutter###019-6###pacman
-balena-etcher-bin###2.1.3-1###pacman
 baobab###48.0-3###pacman
 base###3-2###pacman
 base-devel###1-2###pacman
@@ -28,14 +27,14 @@ brother-dcp-l2530dw###4.0.0-1###pacman
 btop###1.4.3-3###pacman
 btrfs-progs###6.14-1###pacman
 buku-git###5.0.r19.g1925143-1###pacman
+caligula###0.4.8-2###pacman
 cantarell-fonts###1:0.303.1-2###pacman
 chafa###1.14.5-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.11-1###pacman
+claude-code###1.0.17-1###pacman
 cloudflared###2025.5.0-1###pacman
-code-insiders-bin###1.95.0_1728049707-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
 colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###pacman
@@ -51,14 +50,14 @@ dmraid###1.0.0.rc16.3-15###pacman
 dnsmasq###2.91-1###pacman
 docker###1:28.2.0-1###pacman
 docker-buildx###0.24.0-1###pacman
-docker-compose###2.36.2-1###pacman
+docker-compose###2.37.0-1###pacman
 dosfstools###4.2-5###pacman
 downgrade###11.5.2-1###pacman
 dracut###107-1###pacman
 dua-cli###2.30.1-1###pacman
 duf###0.8.1-3###pacman
 dunst###1.12.2-1###pacman
-dust###1.2.0-1###pacman
+dust###1.2.1-1###pacman
 dysk###2.10.1-1###pacman
 e2fsprogs###1.47.2-2###pacman
 ecryptfs-utils###111-9###pacman
@@ -82,12 +81,12 @@ expect###5.45.4-5###pacman
 eza###0.21.4-1###pacman
 f2fs-tools###1.16.0-3###pacman
 fasd-git###1.0.1.r7.g90b531a-1###pacman
+fastfetch###2.45.0-1###pacman
 fd###10.2.0-1###pacman
 feh###3.10.3-1###pacman
 ffmpegthumbnailer###2.2.3-3###pacman
 file-roller###44.5-1###pacman
 fish###4.0.2-1###pacman
-flatpak###1:1.16.1-1###pacman
 foot-git###1.22.3.r44.geeaecba7-1###pacman
 fsarchiver###0.8.8-1###pacman
 fselect###0.8.9-1###pacman
@@ -100,9 +99,8 @@ git-delta###0.18.2-4###pacman
 git-filter-repo###2.47.0-2###pacman
 github-cli###2.74.0-1###pacman
 glances###4.3.1-1###pacman
-gnome-disk-utility###46.1-2###pacman
+gnome-font-viewer###48.0-1###pacman
 gnome-keyring###1:48.0-1###pacman
-gnome-tweaks###46.1-2###pacman
 gnu-netcat###0.7.1-10###pacman
 gocryptfs###2.5.4-1###pacman
 greetd###0.10.3-1###pacman
@@ -110,7 +108,7 @@ greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###pacman
 grim###1.4.1-3###pacman
 grub###2:2.12.r292.g73d1c959-1###pacman
 gst-libav###1.26.2-1###pacman
-gst-plugin-pipewire###1:1.4.4-1###pacman
+gst-plugin-pipewire###1:1.4.5-1###pacman
 gst-plugins-bad###1.26.2-1###pacman
 gst-plugins-ugly###1.26.2-1###pacman
 gvfs###1.57.2-3###pacman
@@ -159,17 +157,17 @@ libid3tag###0.16.3-2###pacman
 libnma###1.10.6-3###pacman
 libnma-gtk4###1.10.6-3###pacman
 libopenraw###0.3.7-2###pacman
-libreoffice-fresh###25.2.3-3###pacman
+libreoffice-fresh###25.2.4-1###pacman
 libspng###0.7.4-2###pacman
 libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
 libwnck3###43.2-1###pacman
 libxfce4ui-git###1:4.21.1+7+g804cff29-1###pacman
 linkding-cli###2024.09.0-1###pacman
-linux###6.14.9.arch1-1###pacman
+linux###6.14.10.arch1-1###pacman
 linux-firmware###20250508.788aadc8-2###pacman
-linux-headers###6.14.9.arch1-1###pacman
-linux-lts###6.12.31-1###pacman
+linux-headers###6.14.10.arch1-1###pacman
+linux-lts###6.12.32-1###pacman
 logrotate###3.22.0-1###pacman
 lsb-release###2.0.r55.a25a4fc-1###pacman
 lsix###1.9.1-1###pacman
@@ -177,7 +175,7 @@ lsscsi###0.32-2###pacman
 lvm2###2.03.32-1###pacman
 man-db###2.13.1-1###pacman
 man-pages###6.14-1###pacman
-markdown-oxide-git###r635.1a9cdd3a-1###pacman
+markdown-oxide-git###r641.eee42f65-1###pacman
 marksman-git###r477.92d3db3-1###pacman
 mdadm###4.4-1###pacman
 mediainfo###25.04-1###pacman
@@ -191,7 +189,6 @@ mullvad-browser-bin###14.5.3-1###pacman
 mullvad-vpn###2025.6-1###pacman
 nano###8.4-1###pacman
 nano-syntax-highlighting###2022.11.02.r102.gbb94603-1###pacman
-neofetch###7.1.0-2###pacman
 neovim###0.11.2-3###pacman
 netctl###1.29-2###pacman
 networkmanager###1.52.0-1###pacman
@@ -221,13 +218,13 @@ pavucontrol###1:6.1-1###pacman
 pdfjs###5.3.31-1###pacman
 perl###5.40.2-1###pacman
 pinentry-bemenu###0.14.0-1###pacman
-pipewire-alsa###1:1.4.4-1###pacman
-pipewire-jack###1:1.4.4-1###pacman
-pipewire-pulse###1:1.4.4-1###pacman
+pipewire-alsa###1:1.4.5-1###pacman
+pipewire-jack###1:1.4.5-1###pacman
+pipewire-pulse###1:1.4.5-1###pacman
 pkgfile###24-1###pacman
 plocate###1.1.23-1###pacman
 polkit-gnome###0.105-11###pacman
-poppler-glib###25.05.0-1###pacman
+poppler-glib###25.05.0-2###pacman
 power-profiles-daemon###0.30-1###pacman
 pv###1.9.31-1###pacman
 pyprland-git###r1475.075aa9a-1###pacman
@@ -259,13 +256,12 @@ rofi-lbonn-wayland-git###1.7.9.wayland1.r0.g07955bf9-1###pacman
 rofimoji###6.5.0-2###pacman
 rsync###3.4.1-2###pacman
 rtkit###0.13-3###pacman
-ruff###0.11.12-1###pacman
+ruff###0.11.13-1###pacman
 s-nail###14.9.25-1###pacman
-samba###2:4.22.1-1###pacman
+samba###2:4.22.2-1###pacman
 sdcv###0.5.5-2###pacman
-seahorse###1:47.0.1-2###pacman
+seahorse###1:47.0.1-3###pacman
 sg3_utils###1.48-1###pacman
-slack-desktop###4.44.60-1###pacman
 slurp###1.5.0-1###pacman
 smartmontools###7.5-1###pacman
 sof-firmware###2025.01.1-1###pacman
@@ -293,12 +289,11 @@ tailscale###1.84.0-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
 tcpdump###4.99.5-1###pacman
-telegram-desktop###5.14.3-3###pacman
+telegram-desktop###5.15.0-1###pacman
 termux-language-server###0.0.27-1###pacman
 texinfo###7.2-1###pacman
 thefuck###3.32-11###pacman
-thunar-git###4.21.1+77+g254828c19-1###pacman
-ticktick###6.0.30-2###pacman
+thunar-git###4.21.1+92+g6d34a6d5b-1###pacman
 tinyxxd###1.3.7-1###pacman
 tk###8.6.16-1###pacman
 tldr###3.4.1-1###pacman
@@ -368,14 +363,12 @@ zoxide###0.9.8-2###pacman
 zsh###5.9-5###pacman
 aquamarine-git###0.8.0.r4.ga19cf76-1###yay
 asdf-vm###0.17.0-1###yay
-balena-etcher-bin###2.1.3-1###yay
 brother-dcp-l2530dw###4.0.0-1###yay
 buku-git###5.0.r19.g1925143-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.11-1###yay
-code-insiders-bin###1.95.0_1728049707-1###yay
+claude-code###1.0.17-1###yay
 colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###yay
 cursor-bin###1.0.0-1###yay
 espanso-wayland-git###2.2.3.r24.g0671cdda-1###yay
@@ -400,11 +393,10 @@ kanata-git###r1260.6f097f85-1###yay
 lazydocker###0.24.1-1###yay
 libxfce4ui-git###1:4.21.1+7+g804cff29-1###yay
 linkding-cli###2024.09.0-1###yay
-markdown-oxide-git###r635.1a9cdd3a-1###yay
+markdown-oxide-git###r641.eee42f65-1###yay
 marksman-git###r477.92d3db3-1###yay
 mullvad-browser-bin###14.5.3-1###yay
 mullvad-vpn###2025.6-1###yay
-neofetch###7.1.0-2###yay
 open-tv-bin###1.7.0-1###yay
 otf-futura-renner###1-2###yay
 pyprland-git###r1475.075aa9a-1###yay
@@ -412,7 +404,6 @@ python-qutescript-git###r34.5115bc8-1###yay
 qutebrowser-git###3.5.0.r39.g9c7a75616-1###yay
 reiserfsprogs###3.6.27-5###yay
 rofi-lbonn-wayland-git###1.7.9.wayland1.r0.g07955bf9-1###yay
-slack-desktop###4.44.60-1###yay
 spotify-player-full###0.20.5-1###yay
 sqls###0.2.27-1###yay
 stardict-dictd-moby-thesaurus###2.4.2-3###yay
@@ -420,8 +411,7 @@ stardict-urban###2.4.2-3###yay
 stardict-wordnet###2.4.2-4###yay
 svttext-git###13.e076ce0-1###yay
 termux-language-server###0.0.27-1###yay
-thunar-git###4.21.1+77+g254828c19-1###yay
-ticktick###6.0.30-2###yay
+thunar-git###4.21.1+92+g6d34a6d5b-1###yay
 tokyonight-gtk-theme-git###r86.006154c7-1###yay
 ungoogled-chromium-bin###137.0.7151.68-1###yay
 urban-cli-bin###0.2.3-2###yay
@@ -437,6 +427,7 @@ cjar###0.1.0###pipx
 homeassistant-cli###0.9.6###pipx
 hypr-window-ops###0.1.0###pipx
 isort###6.0.1###pipx
+jello###1.6.1###pipx
 notesh###0.8.0###pipx
 python-lsp-server###1.12.2###pipx
 shell-gpt###1.4.4###pipx
@@ -444,17 +435,117 @@ theme_it###0.1.0###pipx
 validate-pyproject###0.24.1###pipx
 wexpand###0.1.0###pipx
 yt-dlp###2025.3.31###pipx
-com.github.tchx84.Flatseal###2.3.0###flatpak
-WARNING: `ya pack` is deprecated, use the new `ya pkg` instead. See https://github.com/sxyazi/yazi/pull/2770 for more details.######ya
-boydaihungst/mediainfo######ya
-yazi-rs/plugins:jump-to-char######ya
-dedukun/relative-motions######ya
-stelcodes/bunny######ya
-yazi-rs/plugins:mount######ya
-KKV9/command######ya
-yazi-rs/flavors:catppuccin-mocha######ya
-cargo-binstall###v1.12.6###cargo
+WARNING: `ya pack` is deprecated, use the new `ya pkg` instead. See https://github.com/sxyazi/yazi/pull/2770 for more details.######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+boydaihungst/mediainfo######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+yazi-rs/plugins:jump-to-char######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+dedukun/relative-motions######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+stelcodes/bunny######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+yazi-rs/plugins:mount######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+KKV9/command######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+yazi-rs/plugins:smart-enter######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+yazi-rs/flavors:catppuccin-mocha######
+    "flatpak": {
+        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
+        "parse": lambda line: line.strip().split(maxsplit=1),
+        "restore": lambda pkg, ver=None: [
+            "flatpak",
+            "install",
+            "--noninteractive",
+            pkg,
+        ],
+    },
+    ya
+cargo-binstall###v1.12.7###cargo
 cargo-update###v16.3.0###cargo
+ripdrag###v0.4.10###cargo
 speedtest-rs###v0.2.0###cargo
 tgt###v1.0.0###cargo
 yazi-cli###v25.5.3###cargo
