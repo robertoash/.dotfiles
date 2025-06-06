@@ -8,5 +8,5 @@ end
 
 # Launch neofetch only in interactive shells and not within yazi
 if status is-interactive && not set -q YAZI_LEVEL
-    clear && neofetch
+    clear && fastfetch
 end

@@ -4,7 +4,7 @@
 # Core System
 ## Shell & Environment
 alias free_space="lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
-alias reset="reset && neofetch"
+alias reset="reset && fastfetch"
 alias rr='clear && exec fish'
 alias sudo="sudo "
 alias fish_reload="source ~/.config/fish/config.fish"

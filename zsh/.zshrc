@@ -143,5 +143,5 @@ fi
 eval "$(starship init zsh)"
 # Launch neofetch only in interactive shells and not within yazi
 if [[ -n "$PS1" && -z "$YAZI_LEVEL" ]]; then
-    clear && neofetch
+    clear && fastfetch
 fi

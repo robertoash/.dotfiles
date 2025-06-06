@@ -15,7 +15,7 @@ fish/
 │   ├── 04_fzf.fish          # FZF configuration
 │   ├── 05_applications.fish  # Application integrations
 │   ├── 06_startup.fish       # Startup tasks
-│   └── 99_final.fish         # Final setup (prompt, neofetch)
+│   └── 99_final.fish         # Final setup (prompt, fastfetch)
 ├── functions/            # Individual function files (auto-loaded)
 ├── completions/          # Custom completions (auto-loaded)
 └── sources/              # Additional source files
