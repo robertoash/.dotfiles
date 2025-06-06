@@ -5,16 +5,26 @@ return {
 	opts = {
 		bigfile = { enabled = true },
 		dashboard = { enabled = true },
-		explorer = { enabled = true },
-		indent = { enabled = true },
-		input = { enabled = true },
-		picker = {
+		explorer = {
 			enabled = true,
 			sources = {
 				explorer = {
 					hidden = true,
 					auto_close = false,
 					replace_netrw = true,
+					ignored = true,
+				},
+			},
+		},
+		indent = { enabled = true },
+		input = { enabled = true },
+		picker = {
+			enabled = true,
+			hidden = true,
+			ignored = true,
+			sources = {
+				files = {
+					hidden = true,
 					ignored = true,
 				},
 			},
