@@ -23,6 +23,7 @@ MANAGERS = {
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["pipx", "install", pkg],
     },
+    """
     "flatpak": {
         "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
         "parse": lambda line: line.strip().split(maxsplit=1),
@@ -33,6 +34,7 @@ MANAGERS = {
             pkg,
         ],
     },
+    """
     "ya": {
         "retrieve": [
             "sh",
