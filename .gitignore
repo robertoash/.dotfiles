@@ -17,6 +17,7 @@
 !dunst/
 !environment.d/
 !espanso/
+!fastfetch/
 !fd/
 !fish/
 !flake/
@@ -28,6 +29,7 @@
 !ignore/
 !kanata/
 !kitty/
+!lazydocker/
 !lazygit/
 !lf/
 !mc/
@@ -55,6 +57,7 @@
 !vim/
 !waybar/
 !xfce4/
+!yazi/
 !zathura/
 !zellij/
 !zsh/
@@ -66,6 +69,7 @@
 !dunst/**/*
 !environment.d/**/*
 !espanso/**/*
+!fastfetch/**/*
 !fd/**/*
 !fish/**/*
 !flake/**/*
@@ -77,6 +81,7 @@
 !hypr/**/*
 !kanata/**/*
 !kitty/**/*
+!lazydocker/
 !lazygit/**/*
 !lf/**/*
 !mc/**/*
@@ -101,6 +106,7 @@
 !thefuck/**/*
 !vim/**/*
 !waybar/**/*
+!yazi/**/*
 !zathura/**/*
 !zellij/**/*
 !zsh/**/*
@@ -149,3 +155,5 @@ qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
 fish/conf.d/secrets/secrets.fish
 fish/sources/secrets.fish
+yazi/flavors/catppuccin-mocha.yazi
+yazi/plugins
