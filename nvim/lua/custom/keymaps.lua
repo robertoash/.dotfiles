@@ -18,11 +18,13 @@ if wk_ok then
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
 		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>j", group = "[J]ust Explore", mode = { "n", "v" } },
+		{ "<leader>h", group = "[H]ints", mode = { "n", "v" } },
+		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
+		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
-		{ "<leader>t", group = "[T]oggle", mode = { "n", "v" } },
+		{ "<leader>t", group = "[T]erminal", mode = { "n", "v" } },
 		{ "<leader>w", group = "[W]indow", mode = { "n", "v" } },
-		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
+		{ "<leader>=", group = "[=] Apply format", mode = { "n" } },
 		{ "-", group = "Window splits [|]", mode = { "n", "v" } },
 	})
 end
@@ -58,7 +60,7 @@ local format_mappings = {
 				conform.format({ async = true, lsp_format = "fallback" })
 			end
 		end,
-		{ desc = "Format buffer [=]" },
+		{ desc = "[=] Format buffer" },
 	},
 }
 
@@ -66,7 +68,7 @@ local format_mappings = {
 local snacks_explorer_mappings = {
 	{
 		"n",
-		"<leader>jj",
+		"<leader>ee",
 		function()
 			local ok, snacks = pcall(require, "snacks")
 			if ok then
@@ -77,7 +79,7 @@ local snacks_explorer_mappings = {
 	},
 	{
 		"n",
-		"<leader>jh",
+		"<leader>e.",
 		function()
 			local ok, snacks = pcall(require, "snacks")
 			if ok then
@@ -330,12 +332,12 @@ local fastnav_mappings = {
 
 -- Diagnostics
 local diagnostic_mappings = {
-	{ "n", "<leader>dq", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" } },
+	{ "n", "<leader>qd", vim.diagnostic.setloclist, { desc = "Open [Q]uickfix [D]iagnostic list" } },
 }
 
 -- Select whole document
 local selectall_mappings = {
-	{ "n", "<leader>%", "ggVG", { noremap = true, desc = "Select entire buffer" } },
+	{ "n", "<leader>%", "ggVG", { noremap = true, desc = "[%] Select entire buffer" } },
 }
 
 -- Buffer and Window Management Keybinds
@@ -381,6 +383,68 @@ local delete_to_blackhole_mappings = {
 	{ "n", "DD", '"_dd', { desc = "Delete line to blackhole" } },
 }
 
+local snacks_terminal_mappings = {
+	-- Toggle single terminal (float)
+	{
+		"n",
+		"<leader>tt",
+		function()
+			require("snacks.terminal").toggle()
+		end,
+		{ desc = "Toggle Terminal (float)" },
+	},
+
+	-- Toggle all terminals
+	{
+		"n",
+		"<leader>tT",
+		function()
+			require("snacks.terminal").toggle_all()
+		end,
+		{ desc = "Toggle All Terminals" },
+	},
+
+	-- Terminal picker via Telescope
+	{
+		"n",
+		"<leader>tp",
+		function()
+			local pickers = require("telescope.pickers")
+			local finders = require("telescope.finders")
+			local conf = require("telescope.config").values
+			local actions = require("telescope.actions")
+			local action_state = require("telescope.actions.state")
+			local terms = require("snacks.terminal").list()
+
+			pickers
+				.new({}, {
+					prompt_title = "Terminal Buffers",
+					finder = finders.new_table({
+						results = terms,
+						entry_maker = function(entry)
+							return {
+								value = entry,
+								display = entry.name,
+								ordinal = entry.name,
+							}
+						end,
+					}),
+					sorter = conf.generic_sorter({}),
+					attach_mappings = function(prompt_bufnr, _)
+						actions.select_default:replace(function()
+							actions.close(prompt_bufnr)
+							local selection = action_state.get_selected_entry().value
+							selection:show()
+						end)
+						return true
+					end,
+				})
+				:find()
+		end,
+		{ desc = "Pick Terminal (Telescope)" },
+	},
+}
+
 -- =====================
 -- Keymap binding section
 -- =====================
@@ -411,5 +475,6 @@ set_keymaps(selectall_mappings)
 set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
 set_keymaps(delete_to_blackhole_mappings)
+set_keymaps(snacks_terminal_mappings)
 
 return {}
