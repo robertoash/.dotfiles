@@ -3,7 +3,7 @@
 # : Manager {{{
 
 [mgr]
-cwd = { fg = "#00ffbb" }
+cwd = { fg = "#ff5f8f" }
 
 # Hovered
 hovered         = { reversed = true }
@@ -169,11 +169,11 @@ rules = [
         { mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#d5a6ff" },
 
         # Documents
-        { mime = "application/{pdf,doc,rtf}", fg = "#41a6b5" },
+        { mime = "application/{pdf,doc,rtf,odt}", fg = "#b9bdcc" },
 
         # Fallback
-        { name = "*", fg = "#d0d6e3" },
-        { name = "*/", fg = "#7aa2f7" }
+        { name = "*", fg = "#ffffff" },
+        { name = "*/", fg = "#7aa2f7" },
 ]
 
 # : }}}
