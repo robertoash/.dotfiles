@@ -49,6 +49,18 @@ local claude_mappings = {
 	},
 }
 
+-- Lazygit
+local lazygit_mappings = {
+	{
+		"n",
+		"<leader>gg",
+		function()
+			require("snacks").lazygit({ cwd = vim.loop.cwd() })
+		end,
+		{ desc = "LazyGit (snacky)" },
+	},
+}
+
 -- Conform.nvim (formatting)
 local format_mappings = {
 	{
@@ -476,5 +488,6 @@ set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
 set_keymaps(delete_to_blackhole_mappings)
 set_keymaps(snacks_terminal_mappings)
+set_keymaps(lazygit_mappings)
 
 return {}
