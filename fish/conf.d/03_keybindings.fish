@@ -50,34 +50,39 @@ bind \e\[5C custom_forward_word             # Alternative Ctrl+Right
 # Alternative binding for Ctrl+Delete in some terminals
 bind \e\[M custom_delete_forward_word       # Alternative Ctrl+Delete
 
-# Ensure our custom functions work in different vim modes
-bind -M insert \e\[1\;5H custom_backward_word
-bind -M insert \e\[1\;5L custom_forward_word
-bind -M insert \e\[3\;5~ custom_delete_forward_word
-bind -M insert \e\[127\;5u custom_delete_backward_word
+set -l modes insert default visual replace
 
-# Default mode bindings
-bind -M default \e\[1\;5H custom_backward_word
-bind -M default \e\[1\;5L custom_forward_word
+for mode in $modes
+    if test $mode = default
+        bind -M $mode \e\[1\;5H custom_backward_word
+        bind -M $mode \e\[1\;5L custom_forward_word
+        bind -M $mode \e\[1\;6H custom_backward_word_space
+        bind -M $mode \e\[1\;6L custom_forward_word_space
 
-# Add bindings for all vi modes
-bind -M visual \e\[1\;5H custom_backward_word
-bind -M visual \e\[1\;5L custom_forward_word
-bind -M replace \e\[1\;5H custom_backward_word
-bind -M replace \e\[1\;5L custom_forward_word
+    else if test $mode = insert
+        bind -M $mode \e\[1\;5H custom_backward_word
+        bind -M $mode \e\[1\;5L custom_forward_word
+        bind -M $mode \e\[3\;5~ custom_delete_forward_word
+        bind -M $mode \e\[127\;5u custom_delete_backward_word
+        bind -M $mode \e\[1\;6H custom_backward_word_space
+        bind -M $mode \e\[1\;6L custom_forward_word_space
+        bind -M $mode \e\[3\;6~ custom_delete_forward_word_space
+        bind -M $mode \e\[127\;6u custom_delete_backward_word_space
 
-# Space-only bindings for all modes
-bind -M insert \e\[1\;6H custom_backward_word_space
-bind -M insert \e\[1\;6L custom_forward_word_space
-bind -M insert \e\[3\;6~ custom_delete_forward_word_space
-bind -M insert \e\[127\;6u custom_delete_backward_word_space
+    else
+        # visual and replace
+        bind -M $mode \e\[1\;5H custom_backward_word
+        bind -M $mode \e\[1\;5L custom_forward_word
+        bind -M $mode \e\[1\;6H custom_backward_word_space
+        bind -M $mode \e\[1\;6L custom_forward_word_space
+    end
+end
 
-bind -M default \e\[1\;6H custom_backward_word_space
-bind -M default \e\[1\;6L custom_forward_word_space
-bind -M visual \e\[1\;6H custom_backward_word_space
-bind -M visual \e\[1\;6L custom_forward_word_space
-bind -M replace \e\[1\;6H custom_backward_word_space
-bind -M replace \e\[1\;6L custom_forward_word_space
+# Fuzzy find files and dirs
+for mode in insert default visual
+    bind -M $mode \cf insert_fre_file
+    bind -M $mode \cd insert_zoxide_dir
+end
 
 # History substring search (if fish_history_substring_search is installed)
 # bind \e\[A history-substring-search-up

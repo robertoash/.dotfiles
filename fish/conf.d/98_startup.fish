@@ -1,9 +1,6 @@
 # ~/.config/fish/conf.d/06_startup.fish
 # Startup Configuration
 
-# Initialize fzf alias
-set_fzf_alias
-
 # Modify the startup call to use the full path for buku database
 switch_buku_db "rash" --startup
 

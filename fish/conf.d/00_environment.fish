@@ -29,6 +29,8 @@ set -gx GTK2_RC_FILES "$HOME/.config/gtk-2.0/gtkrc-2.0"
 set -gx YARN_RC_FILENAME ~/.config/yarn/.yarnrc
 set -gx ASDF_DATA_DIR "/home/rash/.asdf"
 
+# Fzf
+set -gx FZF_DEFAULT_COMMAND "fd ."
 # Fd ignore
 set -gx FD_IGNORE_FILE "$HOME/.config/fd/ignore"
 
