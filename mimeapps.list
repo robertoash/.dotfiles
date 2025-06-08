@@ -1,7 +1,7 @@
 [Default Applications]
 application/javascript=nvim.desktop
 application/json=nvim.desktop
-application/msword=libreoffice-writer.desktop
+application/msword=abiword.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/xml=nvim.desktop
 image/jpeg=feh.desktop
@@ -35,9 +35,9 @@ x-scheme-handler/etcher=balenaEtcher.desktop
 [Added Associations]
 application/javascript=nvim.desktop;
 application/json=nvim.desktop;
-application/msword=libreoffice-writer.desktop;
-application/vnd.oasis.opendocument.text=libreoffice-writer.desktop;text/x-python=nvim.desktop;
-application/x-abiword=libreoffice-writer.desktop;
+application/msword=abiword.desktop;
+application/vnd.oasis.opendocument.text=abiword.desktop;text/x-python=nvim.desktop;
+application/x-abiword=abiword.desktop;
 image/jpeg=feh.desktop;swappy.desktop;
 image/png=feh.desktop;
 text/css=nvim.desktop;
