@@ -141,10 +141,11 @@ iptables-nft###1:1.8.11-2###pacman
 iwd###3.8-1###pacman
 jellyfin-media-player###1.12.0-3.8###pacman
 jfsutils###1.1.15-9###pacman
+jp2a###1.3.2-1###pacman
 jq###1.8.0-1###pacman
 kanata-git###r1260.6f097f85-1###pacman
 lazydocker###0.24.1-1###pacman
-lazygit###0.51.1-1###pacman
+lazygit###0.52.0-1###pacman
 less###1:668-1###pacman
 lib32-libunwind###1.8.1-1###pacman
 lib32-libxkbcommon###1.10.0-1###pacman
@@ -162,7 +163,7 @@ libspng###0.7.4-2###pacman
 libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
 libwnck3###43.2-1###pacman
-libxfce4ui-git###1:4.21.1+7+g804cff29-1###pacman
+libxfce4ui-git###1:4.21.1+8+g503d33eb-1###pacman
 linkding-cli###2024.09.0-1###pacman
 linux###6.14.10.arch1-1###pacman
 linux-firmware###20250508.788aadc8-2###pacman
@@ -187,8 +188,6 @@ mpv###1:0.40.0-3###pacman
 mtools###1:4.0.48-1###pacman
 mullvad-browser-bin###14.5.3-1###pacman
 mullvad-vpn###2025.6-1###pacman
-nano###8.4-1###pacman
-nano-syntax-highlighting###2022.11.02.r102.gbb94603-1###pacman
 neovim###0.11.2-3###pacman
 netctl###1.29-2###pacman
 networkmanager###1.52.0-1###pacman
@@ -289,11 +288,11 @@ tailscale###1.84.0-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
 tcpdump###4.99.5-1###pacman
-telegram-desktop###5.15.0-1###pacman
+telegram-desktop###5.15.2-1###pacman
 termux-language-server###0.0.27-1###pacman
 texinfo###7.2-1###pacman
 thefuck###3.32-11###pacman
-thunar-git###4.21.1+92+g6d34a6d5b-1###pacman
+thunar-git###4.21.1+93+ge62a7b275-1###pacman
 tinyxxd###1.3.7-1###pacman
 tk###8.6.16-1###pacman
 tldr###3.4.1-1###pacman
@@ -391,7 +390,7 @@ insync###3.9.6.60027-2###yay
 jellyfin-media-player###1.12.0-3.8###yay
 kanata-git###r1260.6f097f85-1###yay
 lazydocker###0.24.1-1###yay
-libxfce4ui-git###1:4.21.1+7+g804cff29-1###yay
+libxfce4ui-git###1:4.21.1+8+g503d33eb-1###yay
 linkding-cli###2024.09.0-1###yay
 markdown-oxide-git###r641.eee42f65-1###yay
 marksman-git###r477.92d3db3-1###yay
@@ -411,7 +410,7 @@ stardict-urban###2.4.2-3###yay
 stardict-wordnet###2.4.2-4###yay
 svttext-git###13.e076ce0-1###yay
 termux-language-server###0.0.27-1###yay
-thunar-git###4.21.1+92+g6d34a6d5b-1###yay
+thunar-git###4.21.1+93+ge62a7b275-1###yay
 tokyonight-gtk-theme-git###r86.006154c7-1###yay
 ungoogled-chromium-bin###137.0.7151.68-1###yay
 urban-cli-bin###0.2.3-2###yay
