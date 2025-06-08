@@ -12,7 +12,7 @@
 local wk_ok, wk = pcall(require, "which-key")
 if wk_ok then
 	wk.add({
-		{ "<leader><leader>", group = "Quick Actions", mode = { "n", "v" } },
+		{ "<leader><leader>", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>a", group = "[A]vante AI", mode = { "n", "v" } },
 		{ "<leader>b", group = "[B]uffer Operations", mode = { "n", "v" } },
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
@@ -21,7 +21,7 @@ if wk_ok then
 		{ "<leader>h", group = "[H]ints", mode = { "n", "v" } },
 		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
 		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
-		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
+		{ "<leader>s", group = "[S]urround", mode = { "n", "v" } },
 		{ "<leader>t", group = "[T]erminal", mode = { "n", "v" } },
 		{ "<leader>w", group = "[W]indow", mode = { "n", "v" } },
 		{ "<leader>=", group = "[=] Apply format", mode = { "n" } },
@@ -102,44 +102,6 @@ local snacks_explorer_mappings = {
 	},
 }
 
--- File Browser (Telescope extension)
-local filebrowser_mappings = {
-	{
-		"n",
-		"<leader>sb",
-		function()
-			local ok, telescope = pcall(require, "telescope")
-			if ok and telescope.extensions and telescope.extensions.file_browser then
-				telescope.extensions.file_browser.file_browser({
-					hidden = true,
-					hide_dotfiles = true,
-					mappings = {
-						["n"] = {
-							h = function()
-								local ok2, fb_actions = pcall(require, "telescope")
-								if
-									ok2
-									and fb_actions.extensions
-									and fb_actions.extensions.file_browser
-									and fb_actions.extensions.file_browser.actions
-								then
-									fb_actions.extensions.file_browser.actions.goto_parent_dir()
-								end
-							end,
-							l = function()
-								local ok2, actions = pcall(require, "telescope.actions")
-								if ok2 then
-									actions.open_current()
-								end
-							end,
-						},
-					},
-				})
-			end
-		end,
-		{ desc = "[S]earch with file [B]rowser" },
-	},
-}
 
 -- Flash.nvim: fast navigation
 local flash_mappings = {
@@ -160,7 +122,7 @@ local flash_mappings = {
 local telescope_mappings = {
 	{
 		"n",
-		"<leader>sb",
+		"<leader><leader>b",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -171,7 +133,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sz",
+		"<leader><leader>z",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -184,7 +146,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sr",
+		"<leader><leader>r",
 		function()
 			local ok, ext = pcall(require, "telescope")
 			if ok and ext.extensions and ext.extensions.frecency then
@@ -195,7 +157,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sd",
+		"<leader><leader>d",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -206,7 +168,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sf",
+		"<leader><leader>f",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -217,7 +179,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sg",
+		"<leader><leader>g",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -228,7 +190,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sh",
+		"<leader><leader>h",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -239,7 +201,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sk",
+		"<leader><leader>k",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -250,18 +212,24 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sn",
+		"<leader><leader>n",
 		function()
+			-- Use regular find_files but in nvim config directory - more reliable scoping
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
-				builtin.find_files({ cwd = vim.fn.stdpath("config") })
+				builtin.find_files({
+					cwd = vim.fn.expand("~/.config/nvim"),
+					hidden = true,
+					no_ignore_parent = true,
+					prompt_title = "Find Neovim Files"
+				})
 			end
 		end,
 		{ desc = "[S]earch [N]eovim files" },
 	},
 	{
 		"n",
-		"<leader>s<Enter>",
+		"<leader><leader><Enter>",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -272,7 +240,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>ss",
+		"<leader><leader>s",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -283,7 +251,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>s/",
+		"<leader><leader>/",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -294,7 +262,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>sw",
+		"<leader><leader>w",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -305,7 +273,7 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>s.",
+		"<leader><leader>.",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -457,6 +425,18 @@ local snacks_terminal_mappings = {
 	},
 }
 
+-- Mini.surround keymaps
+local mini_surround_mappings = {
+	-- Normal and Visual mode mappings
+	{ { "n", "v" }, "sa", function() require("mini.surround").add() end, { desc = "[S]urround [A]dd" } },
+	{ "n", "sd", function() require("mini.surround").delete() end, { desc = "[S]urround [D]elete" } },
+	{ "n", "sf", function() require("mini.surround").find() end, { desc = "[S]urround [F]ind (right)" } },
+	{ "n", "sF", function() require("mini.surround").find_left() end, { desc = "[S]urround [F]ind (left)" } },
+	{ "n", "sh", function() require("mini.surround").highlight() end, { desc = "[S]urround [H]ighlight" } },
+	{ "n", "sr", function() require("mini.surround").replace() end, { desc = "[S]urround [R]eplace" } },
+	{ "n", "sn", function() require("mini.surround").update_n_lines() end, { desc = "[S]urround update [N] lines" } },
+}
+
 -- =====================
 -- Keymap binding section
 -- =====================
@@ -482,12 +462,12 @@ set_keymaps(window_operations_mappings)
 set_keymaps(window_navigation_mappings)
 set_keymaps(buffer_mappings)
 set_keymaps(diagnostic_mappings)
-set_keymaps(filebrowser_mappings)
 set_keymaps(selectall_mappings)
 set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
 set_keymaps(delete_to_blackhole_mappings)
 set_keymaps(snacks_terminal_mappings)
 set_keymaps(lazygit_mappings)
+set_keymaps(mini_surround_mappings)
 
 return {}
