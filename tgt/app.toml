@@ -8,7 +8,7 @@ paste_support = true
 # - 60.0 for smooth animations
 # - 30.0 for normal animations
 # - 15.0 for slow animations
-frame_rate = 60.0
+frame_rate = 120.0
 # `show_status_bar` enables the status bar at the bottom of the terminal.
 show_status_bar = true
 # `show_title_bar` enables the title bar at the top of the terminal.
