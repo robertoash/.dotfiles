@@ -60,6 +60,10 @@ PROFILES = {
         "profile_directory": "app_profile",
         "app_url": "https://ha.rashlab.net",
     },
+    "app_profile": {
+        "profile_directory": "app_profile",
+        "app_url": None,
+    },
 }
 
 BASE_ARGS = [
