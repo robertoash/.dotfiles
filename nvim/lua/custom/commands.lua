@@ -22,6 +22,17 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("BufReadPost", {
+	callback = function(args)
+		local file = vim.api.nvim_buf_get_name(args.buf)
+		-- Exclude non-file buffers, like [No Name] or help
+		if vim.fn.filereadable(file) == 1 then
+			-- Call out to shell to add to fre
+			vim.fn.jobstart({ "fre", "--add", file })
+		end
+	end,
+})
+
 --=============================================================================
 -- CUSTOM COMMANDS
 --=============================================================================
@@ -47,3 +58,4 @@ end, {})
 
 -- Return the module
 return {}
+
