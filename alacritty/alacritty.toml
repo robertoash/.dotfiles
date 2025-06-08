@@ -46,7 +46,7 @@ multiplier = 3
 save_to_clipboard = true
 
 [terminal.shell]
-program = "/bin/zsh"
+program = "/usr/bin/fish"
 
 [window]
 opacity = 0.4
