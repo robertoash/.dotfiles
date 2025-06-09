@@ -31,6 +31,8 @@ c.downloads.location.prompt = False
 c.content.notifications.enabled = False
 # Dark mode (experimental)
 c.colors.webpage.darkmode.enabled = True
+# Disable mouse wheel tab switch
+c.tabs.mousewheel_switching = False
 
 # === PRIVACY & BLOCKING ===
 
@@ -106,6 +108,7 @@ c.url.searchengines = {
     "yt": "https://www.youtube.com/results?search_query={}",
     "aur": "https://aur.archlinux.org/packages/?K={}",
     "icons": "https://www.nerdfonts.com/cheat-sheet?q={}",
+    "pj": "https://www.prisjakt.nu/search?query={}",
 }
 
 # === KEYBINDINGS ===
