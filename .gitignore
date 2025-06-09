@@ -157,3 +157,4 @@ fish/conf.d/secrets/secrets.fish
 fish/sources/secrets.fish
 yazi/flavors/catppuccin-mocha.yazi
 yazi/plugins
+nvim/lazy-lock.json
