@@ -3,7 +3,15 @@
 import argparse
 import sys
 
-from . import app_launcher, focus_location, move_windows, switch_ws_on_monitor
+from . import (
+    app_launcher,
+    focus_location,
+    monitor_movement,
+    move_windows,
+    snap_windows,
+    switch_ws_on_monitor,
+    window_properties,
+)
 
 
 def main():
@@ -150,6 +158,98 @@ Examples:
         metavar="N|next",
     )
 
+    # Window property commands
+    # Pin window without dimming
+    subparsers.add_parser(
+        "pin-nodim",
+        help="Toggle pinning of active window without dimming",
+        description="Toggle pinning of the active window without dimming.",
+    )
+
+    # Toggle nofocus
+    subparsers.add_parser(
+        "toggle-nofocus",
+        help="Toggle nofocus property for floating pinned windows",
+        description="Toggle nofocus property for floating pinned windows.",
+    )
+
+    # Toggle floating
+    subparsers.add_parser(
+        "toggle-floating",
+        help="Toggle floating state of the active window",
+        description="Toggle floating state of the active window with automatic resizing.",
+    )
+
+    # Toggle fullscreen without dimming
+    subparsers.add_parser(
+        "toggle-fullscreen-nodim",
+        help="Toggle fullscreen without dimming for the active window",
+        description="Toggle fullscreen without dimming for the active window.",
+    )
+
+    # Snap window to corner
+    snap_parser = subparsers.add_parser(
+        "snap-to-corner",
+        help="Snap window to corner",
+        description="""
+Snap a floating window to a specific corner or auto-detect based on cursor position.
+If no corner is specified, the corner will be inferred from cursor position relative
+to the window (cursor must be near a corner).
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Snap active window to lower-right corner
+  hypr-window-ops snap-to-corner --corner lower-right
+
+  # Auto-detect corner based on cursor position
+  hypr-window-ops snap-to-corner
+
+  # Snap specific window to upper-left corner
+  hypr-window-ops snap-to-corner --corner upper-left --address 0x12345
+        """,
+    )
+    snap_parser.add_argument(
+        "--corner",
+        choices=["lower-left", "lower-right", "upper-left", "upper-right"],
+        help="Corner to snap to (if not specified, auto-detect from cursor position)",
+    )
+    snap_parser.add_argument(
+        "--address",
+        help="Window address (if not specified, use active window)",
+    )
+
+    # Move window to monitor
+    move_monitor_parser = subparsers.add_parser(
+        "move-to-monitor",
+        help="Move window to adjacent monitor with corner mirroring",
+        description="""
+Move a floating window to the adjacent monitor (left or right) while preserving
+the relative corner position. The window's corner position will be mirrored
+horizontally (e.g., lower-right becomes lower-left when moving to left monitor).
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Move active window to left monitor
+  hypr-window-ops move-to-monitor --direction left
+
+  # Move active window to right monitor with debug output
+  hypr-window-ops move-to-monitor --direction right --debug
+        """,
+    )
+    move_monitor_parser.add_argument(
+        "--direction",
+        choices=["left", "right"],
+        required=True,
+        help="Direction to move window (left or right)",
+    )
+    move_monitor_parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug output",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -175,6 +275,26 @@ Examples:
             print("Argument must be an integer or 'next'.")
             return 1
         return switch_ws_on_monitor.switch_to_nth_workspace_on_focused_monitor(n)
+    elif args.command == "pin-nodim":
+        window_properties.pin_window_without_dimming()
+        return 0
+    elif args.command == "toggle-nofocus":
+        window_properties.toggle_nofocus()
+        return 0
+    elif args.command == "toggle-floating":
+        window_properties.toggle_floating()
+        return 0
+    elif args.command == "toggle-fullscreen-nodim":
+        window_properties.toggle_fullscreen_without_dimming()
+        return 0
+    elif args.command == "snap-to-corner":
+        return snap_windows.snap_window_to_corner(
+            corner=args.corner, window_address=args.address
+        )
+    elif args.command == "move-to-monitor":
+        return monitor_movement.move_window_to_monitor(
+            direction=args.direction, debug=args.debug
+        )
     else:
         parser.print_help()
         return 1

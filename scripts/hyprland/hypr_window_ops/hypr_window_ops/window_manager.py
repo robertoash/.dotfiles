@@ -16,6 +16,12 @@ def run_hyprctl(command):
     return json.loads(result.stdout)
 
 
+def run_hyprctl_command(command):
+    """Run a hyprctl command that doesn't return JSON (like dispatch, setprop)."""
+    result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
+    return result.returncode == 0
+
+
 def get_clients():
     """Get all clients/windows."""
     return run_hyprctl(["clients", "-j"])
@@ -118,25 +124,25 @@ def wait_for_window(existing_windows, timeout=None):
 
 def switch_to_workspace(workspace):
     """Switch to a specified workspace."""
-    subprocess.run(["hyprctl", "dispatch", "workspace", f"{workspace}"], check=True)
+    run_hyprctl_command(["dispatch", "workspace", f"{workspace}"])
 
 
 def focus_window(address):
     """Focus a window by address."""
-    subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{address}"])
+    run_hyprctl_command(["dispatch", "focuswindow", f"address:{address}"])
 
 
 def toggle_special_workspace(workspace_name):
     """Toggle a special workspace visibility."""
-    subprocess.run(["hyprctl", "dispatch", "togglespecialworkspace", workspace_name])
+    run_hyprctl_command(["dispatch", "togglespecialworkspace", workspace_name])
 
 
 def move_window_to_workspace(window_address, workspace, silent=True):
     """Move a window to a specified workspace."""
     workspace_str = workspace
     cmd = "movetoworkspacesilent" if silent else "movetoworkspace"
-    subprocess.run(
-        ["hyprctl", "dispatch", f"{cmd}", f"{workspace_str},address:{window_address}"]
+    run_hyprctl_command(
+        ["dispatch", f"{cmd}", f"{workspace_str},address:{window_address}"]
     )
 
 
@@ -169,7 +175,7 @@ def reorder_windows_by_at(layout):
         for i, win in enumerate(sorted_windows):
             focus_window(win["address"])
             for _ in range(i):
-                subprocess.run(["hyprctl", "dispatch", "layoutmsg", "swapprev"])
+                run_hyprctl_command(["dispatch", "layoutmsg", "swapprev"])
 
 
 def get_target_id(target_workspace, target_is_special):

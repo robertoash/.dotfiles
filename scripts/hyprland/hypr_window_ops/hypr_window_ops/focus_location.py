@@ -1,43 +1,31 @@
 #!/usr/bin/env python3
 
 import argparse
-import json
-import subprocess
 import sys
 
-
-def run_hyprctl(command):
-    """Run a hyprctl command and return the parsed JSON output."""
-    result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"Error running {' '.join(command)}: {result.stderr}")
-        return None
-
-    try:
-        return json.loads(result.stdout)
-    except json.JSONDecodeError as e:
-        print(f"Error parsing JSON: {e}")
-        return None
-
-
-def get_clients():
-    """Get all clients/windows."""
-    return run_hyprctl(["clients", "-j"]) or []
-
-
-def get_monitors():
-    """Get all monitors."""
-    return run_hyprctl(["monitors", "-j"]) or []
+from . import window_manager
 
 
 def focus_window(address):
     """Focus a window by address."""
-    subprocess.run(["hyprctl", "dispatch", "focuswindow", f"address:{address}"])
+    window_manager.run_hyprctl_command(
+        ["dispatch", "focuswindow", f"address:{address}"]
+    )
 
 
 def get_active_window():
     """Get the active window information."""
-    return run_hyprctl(["activewindow", "-j"])
+    return window_manager.run_hyprctl(["activewindow", "-j"])
+
+
+def get_clients():
+    """Get all clients/windows."""
+    return window_manager.get_clients()
+
+
+def get_monitors():
+    """Get all monitors."""
+    return window_manager.run_hyprctl(["monitors", "-j"]) or []
 
 
 def get_target_monitor_id(monitor_side):

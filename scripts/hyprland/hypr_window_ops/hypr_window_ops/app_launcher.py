@@ -54,7 +54,7 @@ def launch_and_manage(workspace, name, command, is_master):
     if is_master and not window_manager.is_window_master(address, workspace):
         print(f"Swapping {address} to master in workspace {workspace}")
         window_manager.focus_window(address)
-        subprocess.run(["hyprctl", "dispatch", "layoutmsg", "swapwithmaster"])
+        window_manager.run_hyprctl_command(["dispatch", "layoutmsg", "swapwithmaster"])
 
     return address
 
