@@ -1,0 +1,45 @@
+set default-fg                rgba(255,255,255,1)           # foreground
+set default-bg                rgba(1,1,17,1)                # background
+
+set completion-bg             rgba(54,59,84,1)              # color0
+set completion-fg             rgba(255,255,255,1)           # foreground
+set completion-highlight-bg   rgba(81,92,126,1)             # selection_background
+set completion-highlight-fg   rgba(255,255,255,1)           # foreground
+set completion-group-bg       rgba(54,59,84,1)              # color0
+set completion-group-fg       rgba(122,162,247,1)           # color4
+
+set colors.completion.odd.bg      rgba(1,1,17,1)  # background
+set colors.completion.even.bg     rgba(1,1,17,1)  # background
+set colors.completion.category.bg rgba(1,1,17,1)  # background
+
+set statusbar-fg              rgba(255,255,255,1)           # foreground
+set statusbar-bg              rgba(54,59,84,1)              # color0
+
+set notification-bg           rgba(54,59,84,1)              # color0
+set notification-fg           rgba(255,255,255,1)           # foreground
+set notification-error-bg     rgba(54,59,84,1)              # color0
+set notification-error-fg     rgba(247,118,142,1)           # color1
+set notification-warning-bg   rgba(54,59,84,1)              # color0
+set notification-warning-fg   rgba(230,193,0,1)             # color3
+
+set inputbar-fg               rgba(255,255,255,1)           # foreground
+set inputbar-bg               rgba(54,59,84,1)              # color0
+
+set index-fg                  rgba(255,255,255,1)           # foreground
+set index-bg                  rgba(1,1,17,1)                # background
+set index-active-fg           rgba(255,255,255,1)           # foreground
+set index-active-bg           rgba(54,59,84,1)              # color0
+
+set render-loading-bg         rgba(1,1,17,1)                # background
+set render-loading-fg         rgba(255,255,255,1)           # foreground
+
+set highlight-color           rgba(81,92,126,1)             # selection_background
+set highlight-fg              rgba(187,154,247,1)           # color5
+set highlight-active-color    rgba(187,154,247,1)           # color5
+
+# Document recoloring for dark mode
+set recolor                   "true"
+set recolor-lightcolor        rgba(11,12,25,1)              # PAGE BACKGROUND COLOR - color24 (tweak this to change page bg)
+set recolor-darkcolor         rgba(255,255,255,1)           # foreground - clean white text
+set recolor-keephue           "true"                        # preserve color relationships
+set recolor-reverse-video     "false"                       # normal color mapping
