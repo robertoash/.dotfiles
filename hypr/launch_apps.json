@@ -15,7 +15,7 @@
         "2": [
             {
                 "name": "nvim_config",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- nvim ~/.config",
+                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- fish -c 'nvim ~/.config; exec fish'",
                 "is_master": true
             },
             {
