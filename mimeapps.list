@@ -1,7 +1,7 @@
 [Default Applications]
 application/javascript=nvim.desktop
 application/json=nvim.desktop
-application/msword=abiword.desktop
+application/msword=libreoffice-writer.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/xml=nvim.desktop
 image/jpeg=feh.desktop
@@ -31,13 +31,15 @@ x-scheme-handler/webcal=qutebrowser.desktop
 inode/directory=yazi.desktop
 application/x-gnome-saved-search=yazi.desktop
 x-scheme-handler/etcher=balenaEtcher.desktop
+application/vnd.oasis.opendocument.text=libreoffice-writer.desktop
 
 [Added Associations]
 application/javascript=nvim.desktop;
 application/json=nvim.desktop;
-application/msword=abiword.desktop;
-application/vnd.oasis.opendocument.text=abiword.desktop;text/x-python=nvim.desktop;
-application/x-abiword=abiword.desktop;
+application/msword=libreoffice-writer.desktop;
+application/vnd.oasis.opendocument.text=libreoffice-writer.desktop;
+text/x-python=nvim.desktop;libreoffice-writer.desktop;
+application/x-abiword=libreoffice-writer.desktop;
 image/jpeg=feh.desktop;swappy.desktop;
 image/png=feh.desktop;
 text/css=nvim.desktop;
