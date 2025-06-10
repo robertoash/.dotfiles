@@ -76,26 +76,16 @@ def switch_to_next_workspace_on_focused_monitor():
         return 1
     ws_list = get_workspaces_on_monitor(monitor)
     print(f"[DEBUG] Workspaces on monitor {monitor}: {ws_list}")
-    # Determine the workspace id range for this monitor
-    if monitor == 0:
-        ws_range = range(1, 11)
-    elif monitor == 1:
-        ws_range = range(11, 21)
+
+    if not ws_list:
+        # If no workspaces on this monitor, create workspace 1
+        next_ws_id = 1
     else:
-        ws_range = range(21, 1000)  # Arbitrary upper bound for extra monitors
-    used_ids = {ws["id"] for ws in ws_list}
-    next_ws_id = None
-    for ws_id in ws_range:
-        if ws_id not in used_ids:
-            next_ws_id = ws_id
-            break
-    if next_ws_id is None:
-        # If all in range are used, pick the next available after the range (for monitor 0)
-        if monitor == 0:
-            next_ws_id = max(used_ids | set([10])) + 1
-        else:
-            # For other monitors, just pick the next after the range
-            next_ws_id = ws_range.stop
+        # Find the next available workspace ID after the highest existing one on this monitor
+        used_ids = {ws["id"] for ws in ws_list}
+        max_id = max(used_ids)
+        next_ws_id = max_id + 1
+
     print(f"[DEBUG] Switching to next workspace id: {next_ws_id} on monitor {monitor}")
     window_manager.switch_to_workspace(next_ws_id)
     return 0
