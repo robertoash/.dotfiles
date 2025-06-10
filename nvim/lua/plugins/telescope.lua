@@ -114,28 +114,7 @@ return {
 			pcall(require("telescope").load_extension, "fzf")
 			pcall(require("telescope").load_extension, "ui-select")
 
-			-- Slightly advanced example of overriding default behavior and theme
-			vim.keymap.set("n", "<leader>/", function()
-				-- You can pass additional configuration to Telescope to change the theme, layout, etc.
-				builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
-					winblend = 10,
-					previewer = false,
-				}))
-			end, { desc = "[/] Fuzzily search in current buffer" })
-
-			-- It's also possible to pass additional configuration options.
-			--  See `:help telescope.builtin.live_grep()` for information about particular keys
-			vim.keymap.set("n", "<leader>s/", function()
-				builtin.live_grep({
-					grep_open_files = true,
-					prompt_title = "Live Grep in Open Files",
-				})
-			end, { desc = "[S]earch [/] in Open Files" })
-
-			-- Shortcut for searching your Neovim configuration files
-			vim.keymap.set("n", "<leader>sn", function()
-				builtin.find_files({ cwd = vim.fn.stdpath("config") })
-			end, { desc = "[S]earch [N]eovim files" })
+			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
 
@@ -145,23 +124,7 @@ return {
 		dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
 		config = function()
 			require("telescope").load_extension("file_browser")
-
-			-- Add specific file_browser key handling
-			local fb_actions = require("telescope").extensions.file_browser.actions
-
-			-- Create a custom file browser launcher that includes key mappings
-			vim.keymap.set("n", "<leader>sb", function()
-				require("telescope").extensions.file_browser.file_browser({
-					hidden = true,
-					hide_dotfiles = true,
-					mappings = {
-						["n"] = {
-							["h"] = fb_actions.goto_parent_dir,
-							["l"] = require("telescope.actions").open_current,
-						},
-					},
-				})
-			end, { desc = "[S]earch with file [B]rowser" })
+			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
 
@@ -170,13 +133,7 @@ return {
 		version = "*",
 		config = function()
 			require("telescope").load_extension("frecency")
-			-- Add frecency finder with custom options
-			vim.keymap.set("n", "<leader>ff", function()
-				require("telescope").extensions.frecency.frecency({
-					hidden = true,
-					no_ignore = true,
-				})
-			end, { desc = "[F]ind [F]recent files (including hidden & ignored)" })
+			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
 }
