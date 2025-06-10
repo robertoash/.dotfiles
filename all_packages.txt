@@ -286,7 +286,7 @@ tailscale###1.84.0-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
 tcpdump###4.99.5-1###pacman
-telegram-desktop###5.15.2-1###pacman
+telegram-desktop###5.15.3-1###pacman
 termux-language-server###0.0.27-1###pacman
 texinfo###7.2-1###pacman
 thefuck###3.32-11###pacman
@@ -308,7 +308,7 @@ ttf-opensans###3.003-1###pacman
 tumbler###4.20.0-3###pacman
 ufw###0.36.2-5###pacman
 ungoogled-chromium-bin###137.0.7151.68-1###pacman
-unrar###1:7.1.6-1###pacman
+unrar###1:7.1.7-1###pacman
 unzip###6.0-22###pacman
 upower###1.90.9-1###pacman
 urban-cli-bin###0.2.3-2###pacman
