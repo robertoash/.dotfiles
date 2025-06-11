@@ -4,10 +4,10 @@
 (defcfg
   ;; For Wayland/Hyprland, use the default I8042 bus type
   linux-output-device-bus-type I8042
-  
+
   ;; Enable processing of keys not in defsrc if needed
   process-unmapped-keys no
-  
+
   ;; Optional: Filter to only your MX Keys keyboard
   ;; Uncomment and adjust the device name after running 'sudo kanata --list'
   ;; linux-dev-names-include ("Logitech MX Keys")
@@ -40,27 +40,52 @@
 
 ;; Define aliases for the Caps Lock behavior and home row mods
 (defalias
-  ;; Multi-function Caps Lock:
+  activate-kanata
+    (layer-switch nordic)
+  deactivate-kanata
+    (layer-switch almost_unchanged)
+)
+
+(defalias
+  ;; Multi-function Caps Lock for nordic layer:
   ;; - Single tap: Escape
-  ;; - Double tap (quick): Caps Lock toggle  
-  ;; - Hold: Super+Ctrl+Alt+Shift (hyper key)
+  ;; - Double tap (quick): Caps Lock toggle
+  ;; - Hold: Activate nordic-hyper layer
   caps-multi (tap-dance 175 (
-    (tap-hold-press 50 175 esc (multi lmet lctl lalt lsft)) ;; tap=esc, hold=hyper
+    (tap-hold-press 50 175 esc (layer-while-held nordic-hyper)) ;; tap=esc, hold=hyper layer
     caps ;; double-tap = caps lock
   ))
-  
+
+  ;; Multi-function Caps Lock for almost_unchanged layer:
+  ;; - Single tap: Escape
+  ;; - Double tap (quick): Caps Lock toggle
+  ;; - Hold: Activate unchanged-hyper layer
+  caps-multi-unchanged (tap-dance 175 (
+    (tap-hold-press 50 175 esc (layer-while-held unchanged-hyper)) ;; tap=esc, hold=hyper layer
+    caps ;; double-tap = caps lock
+  ))
+
   ;; Home row mods with 200ms tap/hold timeouts
   ;; Left hand
   a-met (tap-hold 200 200 a lmet)     ;; a = a tap, left meta hold
-  s-alt (tap-hold 200 200 s lctl)     ;; s = s tap, left alt hold
-  d-sft (tap-hold 200 200 d lalt)     ;; d = d tap, left shift hold
-  f-ctl (tap-hold 200 200 f lsft)     ;; f = f tap, left ctrl hold
+  s-ctl (tap-hold 200 200 s lctl)     ;; s = s tap, left ctl hold
+  d-alt (tap-hold 200 200 d lalt)     ;; d = d tap, left alt hold
+  f-sft (tap-hold 200 200 f lsft)     ;; f = f tap, left shift hold
   ;; Right hand
-  j-ctl (tap-hold 200 200 j rsft)     ;; j = j tap, right ctrl hold
-  k-sft (tap-hold 200 200 k lalt)     ;; k = k tap, right shift hold
-  l-alt (tap-hold 200 200 l rctl)     ;; l = l tap, right alt (AltGr) hold
+  j-sft (tap-hold 200 200 j rsft)     ;; j = j tap, right shift hold
+  k-alt (tap-hold 200 200 k lalt)     ;; k = k tap, right alt hold
+  l-ctl (tap-hold 200 200 l rctl)     ;; l = l tap, right ctl hold
   ö-met (tap-hold 200 200 ö rmet)     ;; ö = ö tap, right meta hold (virtual)
   ä-altgr (tap-hold 200 200 ä ralt)   ;; g = g tap, AltGr on hold
+
+                  ;; Toggle functionality for k key in different layers
+  ;; Back to simple: k has normal behavior, we'll use dedicated hyper+k combination
+  k-toggle-nordic @k-alt
+  k-toggle-unchanged k
+
+  ;; Dedicated hyper+k sequences for layer switching
+  hyper-k-nordic (layer-switch almost_unchanged)
+  hyper-k-unchanged (layer-switch nordic)
 )
 
 ;; Main layer - Nordic QWERTY layout with home row mods
@@ -69,7 +94,37 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi @a-met @s-alt @d-sft @f-ctl g    h    @j-ctl @k-sft @l-alt @ö-met @ä-altgr '
+  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-toggle-nordic @l-ctl @ö-met @ä-altgr '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt           spc            ralt rctl
+)
+
+;; Layer for when hyper (caps) is held - overrides nordic layer
+(deflayer nordic-hyper
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    @hyper-k-nordic _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                   _    _
+)
+
+;; Unchanged layer to deactivate kanata
+(deflayer almost_unchanged
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi-unchanged a    s    d    f    g    h    j    @k-toggle-unchanged    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
+)
+
+;; Layer for when hyper (caps) is held in almost_unchanged - overrides almost_unchanged layer
+(deflayer unchanged-hyper
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    @hyper-k-unchanged _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                   _    _
 )
