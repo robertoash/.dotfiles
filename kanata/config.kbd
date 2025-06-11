@@ -71,8 +71,9 @@
     caps ;; double-tap = caps lock
   ))
 
-  ;; Caps Lock for hyper layer - only hyper functionality, no tap-dance
-  caps-hypr (layer-while-held unified-hyper)
+  ;; Hyper key that outputs actual hyper modifier combination (Ctrl+Shift+Alt+Meta)
+  ;; This is what Hyprland will recognize as the "hyper" key
+  hyper-mod (multi lctl lsft lalt lmet)
 
   ;; Home row mods with 200ms tap/hold timeouts
   ;; Left hand
@@ -111,13 +112,13 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; Unified hyper layer - only toggles JSON status, layer switch happens on release
+;; Unified hyper layer - outputs actual hyper modifier combinations for Hyprland
 (deflayer unified-hyper
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  @caps-hypr _    _    _    _    _    _    _    @hyper-k-toggle-status _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
+  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
+  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @hyper-k-toggle-status    (multi @hyper-mod l)    _    _    _
+  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
   _    _    _                  _                   _    _
 )
 
@@ -133,11 +134,11 @@
 
 ;; Hyper layer for the almost_unchanged layer - allows toggling back to nordic
 (deflayer hyper-almost-unchanged
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  @caps-hypr _    _    _    _    _    _    _    @hyper-k-toggle-back _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
+  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
+  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @hyper-k-toggle-back    (multi @hyper-mod l)    _    _    _
+  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
   _    _    _                  _                   _    _
 )
 
