@@ -50,23 +50,23 @@
 )
 
 (defalias
-  ;; Multi-function Caps Lock for nordic layer:
+      ;; Hyper layer action - simple hold for unified hyper
+  caps-hyper-with-switch (tap-hold 50 175
+    esc  ;; tap action
+    (layer-while-held unified-hyper)  ;; hold action
+  )
+
+  ;; Multi-function Caps Lock that uses unified hyper layer:
   ;; - Single tap: Escape
   ;; - Double tap (quick): Caps Lock toggle
-  ;; - Hold: Activate nordic-hyper layer
+  ;; - Hold: Activate unified hyper layer, on release switch based on JSON status
   caps-multi (tap-dance 175 (
-    (tap-hold-press 50 175 esc (layer-while-held nordic-hyper)) ;; tap=esc, hold=hyper layer
+    (tap-hold-press 50 175 esc @caps-hyper-with-switch) ;; tap=esc, hold=hyper layer + switch on release
     caps ;; double-tap = caps lock
   ))
 
-  ;; Multi-function Caps Lock for almost_unchanged layer:
-  ;; - Single tap: Escape
-  ;; - Double tap (quick): Caps Lock toggle
-  ;; - Hold: Activate unchanged-hyper layer
-  caps-multi-unchanged (tap-dance 175 (
-    (tap-hold-press 50 175 esc (layer-while-held unchanged-hyper)) ;; tap=esc, hold=hyper layer
-    caps ;; double-tap = caps lock
-  ))
+  ;; Caps Lock for hyper layer - only hyper functionality, no tap-dance
+  caps-hypr (layer-while-held unified-hyper)
 
   ;; Home row mods with 200ms tap/hold timeouts
   ;; Left hand
@@ -81,19 +81,10 @@
   ö-met (tap-hold 200 200 ö rmet)     ;; ö = ö tap, right meta hold (virtual)
   ä-altgr (tap-hold 200 200 ä ralt)   ;; g = g tap, AltGr on hold
 
-                  ;; Toggle functionality for k key in different layers
-  ;; Back to simple: k has normal behavior, we'll use dedicated hyper+k combination
-  k-toggle-nordic @k-alt
-  k-toggle-unchanged k
-
-  ;; Dedicated hyper+k sequences for layer switching with status updates
-  hyper-k-nordic (multi
-    (layer-switch almost_unchanged)
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py plain)
-  )
-  hyper-k-unchanged (multi
-    (layer-switch nordic)
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py nordic)
+  ;; Hyper+k toggles JSON and switches layer immediately
+  hyper-k-toggle-status (multi
+    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py toggle)
+    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py switch-to-json-state)
   )
 )
 
@@ -103,17 +94,17 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-toggle-nordic @l-ctl @ö-met @ä-altgr '
+  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met @ä-altgr '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; Layer for when hyper (caps) is held - overrides nordic layer
-(deflayer nordic-hyper
+;; Unified hyper layer - only toggles JSON status, layer switch happens on release
+(deflayer unified-hyper
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    @hyper-k-nordic _    _    _    _
+  @caps-hypr _    _    _    _    _    _    _    @hyper-k-toggle-status _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _                  _                   _    _
 )
@@ -123,17 +114,8 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi-unchanged a    s    d    f    g    h    j    @k-toggle-unchanged    l    ö    ä    '
+  @caps-multi a    s    d    f    g    h    j    k    l    ö    ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; Layer for when hyper (caps) is held in almost_unchanged - overrides almost_unchanged layer
-(deflayer unchanged-hyper
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    @hyper-k-unchanged _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                  _                   _    _
-)
