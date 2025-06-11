@@ -65,6 +65,12 @@
     caps ;; double-tap = caps lock
   ))
 
+  ;; Caps Lock for almost_unchanged layer - uses different hyper layer
+  caps-multi-plain (tap-dance 175 (
+    (tap-hold-press 50 175 esc (layer-while-held hyper-almost-unchanged)) ;; tap=esc, hold=plain hyper layer
+    caps ;; double-tap = caps lock
+  ))
+
   ;; Caps Lock for hyper layer - only hyper functionality, no tap-dance
   caps-hypr (layer-while-held unified-hyper)
 
@@ -81,10 +87,16 @@
   ö-met (tap-hold 200 200 ö rmet)     ;; ö = ö tap, right meta hold (virtual)
   ä-altgr (tap-hold 200 200 ä ralt)   ;; g = g tap, AltGr on hold
 
-  ;; Hyper+k toggles JSON and switches layer immediately
+        ;; Hyper+k layer toggle - switches to almost_unchanged and sets JSON to plain
   hyper-k-toggle-status (multi
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py toggle)
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py switch-to-json-state)
+    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-plain)
+    (layer-switch almost_unchanged)
+  )
+
+  ;; Hyper+k when in almost_unchanged - switches back to nordic and sets JSON to normal
+  hyper-k-toggle-back (multi
+    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-nordic)
+    (layer-switch nordic)
   )
 )
 
@@ -114,8 +126,18 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi a    s    d    f    g    h    j    k    l    ö    ä    '
+  @caps-multi-plain a    s    d    f    g    h    j    k    l    ö    ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt           spc            ralt rctl
+)
+
+;; Hyper layer for the almost_unchanged layer - allows toggling back to nordic
+(deflayer hyper-almost-unchanged
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  @caps-hypr _    _    _    _    _    _    _    @hyper-k-toggle-back _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                   _    _
 )
 

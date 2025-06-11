@@ -21,14 +21,17 @@
 		"custom/separator#dot-line",
 		"memory",
 		"custom/separator#dot-line",
-		"hyprland/language"
+		"hyprland/language",
+		"custom/separator#line",
+		"custom/kanata_mode",
+		"custom/separator#blank"
 	],
 
 	"modules-center": [
 		"custom/hypridle",
 		"custom/separator#dot-line",
 		"hyprland/window",
-		"custom/separator#dot-line",
+		"custom/separator#blank_2",
 		"hyprland/submap"
 	],
 
