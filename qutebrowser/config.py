@@ -137,7 +137,7 @@ config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
 # Paste & go
 config.bind("P", "open -- {primary}")
 # Toggle tab list
-config.bind("<Alt-h>", "config-cycle tabs.show multiple never")
+config.bind("<Alt-h>", "config-cycle tabs.show always never")
 # Duplicate tab
 config.bind("D", "tab-clone")
 
