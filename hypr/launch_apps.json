@@ -43,12 +43,12 @@
         ],
         "11": [
             {
-                "name": "gpt_zen",
-                "command": "chromium_launch --profile chatgpt",
+                "name": "claude_zen",
+                "command": "chromium_launch --profile claude",
                 "is_master": true
             },
             {
-                "name": "gpt_terminal",
+                "name": "claude_terminal",
                 "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
                 "is_master": false
             }
