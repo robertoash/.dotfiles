@@ -1,3 +1,3 @@
 function gcalw
-    gcalcli calw
+    gcalcli calw --monday $argv
 end
