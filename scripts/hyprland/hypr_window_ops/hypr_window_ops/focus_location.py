@@ -30,35 +30,28 @@ def get_monitors():
 
 def get_target_monitor_id(monitor_side):
     """
-    Get the target monitor ID (0, 1, etc.) based on position (left or right).
-    Identifies monitors by sorting them by x-coordinate.
+    Get the target monitor ID based on position (left or right).
+    Uses hyprctl to get monitor data directly.
     """
-    monitors = get_monitors()
+    # Get monitor data directly from hyprctl
+    monitors = window_manager.run_hyprctl(["monitors", "-j"])
     if not monitors:
         print("No monitors detected!")
         return None
 
+    if len(monitors) == 1:
+        # Only one monitor, treat it as both left and right
+        return monitors[0]["id"]
+
     # Sort monitors by x-coordinate
     sorted_monitors = sorted(monitors, key=lambda m: m.get("x", 0))
 
-    # Find index of monitors in the sorted list
-    if monitor_side == "left" and sorted_monitors:
-        # Find the index of the leftmost monitor in the original list
-        leftmost = sorted_monitors[0]
-        for i, mon in enumerate(monitors):
-            if mon.get("name") == leftmost.get("name"):
-                return i  # This is the monitor ID (0, 1, etc.)
-    elif monitor_side == "right" and len(sorted_monitors) > 1:
-        # Find the index of the rightmost monitor in the original list
-        rightmost = sorted_monitors[-1]
-        for i, mon in enumerate(monitors):
-            if mon.get("name") == rightmost.get("name"):
-                return i  # This is the monitor ID (0, 1, etc.)
-    elif monitor_side == "right" and len(sorted_monitors) == 1:
-        # Only one monitor, treat it as both left and right
-        return 0  # The only monitor has ID 0
-
-    return None
+    # For left monitor, get the one with smallest x
+    # For right monitor, get the one with largest x
+    if monitor_side == "left":
+        return sorted_monitors[0]["id"]
+    else:  # right
+        return sorted_monitors[-1]["id"]
 
 
 def sort_windows_by_position(windows, monitor):
@@ -102,10 +95,10 @@ def get_windows_by_location(monitor_side):
         print(f"No {monitor_side} monitor found")
         return {}
 
-    # Get all monitors to find transform info and active workspace
-    monitors = get_monitors()
-    target_monitor = (
-        monitors[target_monitor_id] if target_monitor_id < len(monitors) else None
+    # Get monitor data directly from hyprctl
+    monitors = window_manager.run_hyprctl(["monitors", "-j"])
+    target_monitor = next(
+        (m for m in monitors if m.get("id") == target_monitor_id), None
     )
     if not target_monitor:
         print(f"Error: Monitor with ID {target_monitor_id} not found")
