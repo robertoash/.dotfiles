@@ -36,6 +36,8 @@
 	],
 
 	"modules-right": [
+		"clock#sal",
+		"custom/separator#dot-line",
 		"custom/in_office_idle",
 		"custom/separator#dot-line",
 		"custom/tibber_text",

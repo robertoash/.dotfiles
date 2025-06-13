@@ -252,6 +252,10 @@ window#waybar.hidden {
     }
 }
 
+#clock.sal {
+    color: @foreground;
+}
+
 #clock {
     color: @color11;
 }
