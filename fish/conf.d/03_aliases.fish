@@ -37,6 +37,8 @@ alias monitor_keys_full="wev"
 alias monitor_mouse_presses="wev -f wl_pointer:button"
 alias monitor_windows="xprop"
 
+## Nvim
+alias nv="nvim"
 ## Notes & Text
 alias note="notesh -f ~/notes/quick.json"
 

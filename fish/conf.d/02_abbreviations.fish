@@ -31,6 +31,7 @@ abbr snk_here "snake_case_all ."
 
 ## Package Management
 abbr yay_total "yay -Syu --devel"
+abbr Syu "yay_update"
 
 # System
 abbr free_space "lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
