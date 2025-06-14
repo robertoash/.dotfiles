@@ -1,8 +1,3 @@
-function open_in_browser_rash
-    set url $argv[1]
-    qute_profile rash $url
-end
-
 function lkd
   if test -n "$argv[1]"
     set url (linkding bookmarks all --query $argv[1] | jq -r '.results[0].url')

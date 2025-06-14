@@ -1,4 +1,4 @@
-function yayupdate
+function yay_update
     # Store initial package list
     set before (mktemp)
     pacman -Q > $before

@@ -52,10 +52,15 @@ set -gx DOCKER_BUILDKIT 1
 # Starship config
 set -gx STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
 
-# Secrets
-# Use Fish's command substitution and string splitting for better handling
-if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
-    for cmd in (string split ' && ' (/home/rash/.config/scripts/shell/secure_env_secrets.py))
-        eval $cmd
-    end
+# Secrets - Load in background to avoid startup delay
+if status is-interactive
+    fish -c "
+        sleep 0.2  # Let shell finish loading first
+        if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
+            for cmd in (string split ' && ' (/home/rash/.config/scripts/shell/secure_env_secrets.py))
+                eval \$cmd
+            end
+        end
+    " &
+    disown
 end

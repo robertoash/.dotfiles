@@ -14,9 +14,3 @@ end
 
 # Add stuff to python path
 set -gx PYTHONPATH "$PYTHONPATH:/home/rash/.config/scripts"
-
-# Add nodejs to path
-if command -v npm >/dev/null 2>&1
-    set -gx NPM_PREFIX (npm config get prefix)
-    fish_add_path "$NPM_PREFIX/bin"
-end

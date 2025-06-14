@@ -47,7 +47,7 @@ set -g fish_cursor_visual block
 # # Frequently Used Functions
 # #################################
 
-for file in ~/.config/fish/conf.d/functions/*.fish
+for file in ~/.config/fish/conf.d/startup_functions/*.fish
     source $file
 end
 
