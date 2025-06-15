@@ -26,6 +26,13 @@ end
 set --erase _asdf_shims
 
 # #################################
+# # Direnv Configuration
+# #################################
+
+# - Custom completions from completions/ directory
+direnv hook fish | source
+
+# #################################
 # # History Configuration
 # #################################
 
@@ -62,4 +69,3 @@ end
 # Note: Fish automatically loads:
 # - All files in conf.d/ directory (in alphabetical order)
 # - All .fish files in functions/ directory as functions
-# - Custom completions from completions/ directory
