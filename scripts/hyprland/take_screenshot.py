@@ -29,6 +29,12 @@ def region_annotate():
         pass
 
 
+def region_direct_save():
+    out_path = SCREENSHOT_DIR / f"region-{STAMP}.png"
+    region = subprocess.check_output("slurp", shell=True).decode().strip()
+    run(f'grim -g "{region}" -o "{out_path}"')
+
+
 def clipboard():
     region = subprocess.check_output("slurp", shell=True).decode().strip()
     p1 = subprocess.Popen(f'grim -g "{region}" -', shell=True, stdout=subprocess.PIPE)
@@ -36,6 +42,17 @@ def clipboard():
     if p1.stdout:
         p1.stdout.close()
     p1.wait()
+
+
+def window_direct_save():
+    out_path = SCREENSHOT_DIR / f"window-{STAMP}.png"
+    jq = r'''"\\(.at[0]),\\(.at[1]) \\(.size[0])x\\(.size[1])"'''
+    geom = (
+        subprocess.check_output(f"hyprctl activewindow -j | jq -j '{jq}'", shell=True)
+        .decode()
+        .strip()
+    )
+    run(f'grim -g "{geom}" -o "{out_path}"')
 
 
 def window_annotate():
@@ -77,15 +94,17 @@ def monitor_annotate():
 
 actions = {
     "region-annotate": region_annotate,
+    "region-direct-save": region_direct_save,
     "clipboard": clipboard,
     "window-annotate": window_annotate,
+    "window-direct-save": window_direct_save,
     "monitor-annotate": monitor_annotate,
 }
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 or sys.argv[1] not in actions:
         print(
-            "Usage: take_screenshot.py [region-annotate|clipboard|window-annotate|monitor-annotate]"
+            "Usage: take_screenshot.py [region-annotate|region-direct-save|clipboard|window-annotate|window-direct-save|monitor-annotate]"
         )
         sys.exit(1)
     actions[sys.argv[1]]()
