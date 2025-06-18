@@ -52,15 +52,17 @@ set -gx DOCKER_BUILDKIT 1
 # Starship config
 set -gx STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
 
-# Secrets - Load in background to avoid startup delay
+# Secrets - Load after first prompt to avoid startup delay
 if status is-interactive
-    fish -c "
-        sleep 0.2  # Let shell finish loading first
-        if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
-            for cmd in (string split ' && ' (/home/rash/.config/scripts/shell/secure_env_secrets.py))
-                eval \$cmd
+    function __load_secrets --on-event fish_prompt
+        # Only run once
+        if not set -q __secrets_loaded
+            if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
+                for cmd in (string split ' && ' (/home/rash/.config/scripts/shell/secure_env_secrets.py))
+                    eval $cmd
+                end
+                set -g __secrets_loaded 1
             end
         end
-    " &
-    disown
+    end
 end
