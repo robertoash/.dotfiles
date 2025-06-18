@@ -321,78 +321,12 @@
         "tooltip": true
     },
 
-    "custom/keybinds": {
-        "format":"󰺁 HINT!",
-        "exec": "echo ; echo  Key Hints SUPER H",
-        "on-click": "~/.config/hypr/scripts/KeyHints.sh",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
-    "custom/light_dark": {
-        "format": "{}",
-        "exec": "echo ; echo 󰔎 Dark-Light switcher",
-        "on-click": "~/.config/hypr/scripts/DarkLight.sh",
-        "on-click-right": "~/.config/hypr/scripts/WaybarStyles.sh",
-        "on-click-middle": "~/.config/hypr/scripts/Wallpaper.sh",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
     "custom/lock": {
         "format": "󰌾",
         "exec": "echo ; echo 󰷛  screen lock",
         "interval" : 86400, // once every day
         "tooltip": true,
         "on-click": "~/.config/hypr/scripts/LockScreen.sh"
-    },
-
-    "custom/menu": {
-        "format": "{}",
-        "exec": "echo ; echo 󱓟 app launcher",
-        "interval" : 86400, // once every day
-        "tooltip": true,
-        "on-click": "pkill rofi || rofi -show drun -modi run,drun,filebrowser,window",
-        "on-click-middle": "~/.config/hypr/scripts/WallpaperSelect.sh",
-        "on-click-right": "~/.config/hypr/scripts/WaybarLayout.sh"
-    },
-
-    // This is a custom cava visualizer
-    "custom/cava_mviz": {
-        "exec": "~/.config/hypr/scripts/WaybarCava.sh",
-        "format": "{}"
-    },
-
-    "custom/playerctl": {
-        "format": "<span>{}</span>",
-        "return-type": "json",
-        "max-length": 35,
-        "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} ~ {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
-        "on-click-middle": "playerctl play-pause",
-        "on-click": "playerctl previous",
-        "on-click-right": "playerctl next",
-        "scroll-step": 5.0,
-        "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
-        "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
-        "smooth-scrolling-threshold": 1
-    },
-
-    "custom/power": {
-        "format": "⏻ ",
-        "exec": "echo ; echo 󰟡 power // blur",
-        "on-click": "~/.config/scripts/rofi/rofi_shutdown.sh",
-        "on-click-right": "~/.config/hypr/scripts/ChangeBlur.sh",
-        "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
-    // NOTE:! This is only for Arch and Arch Based Distros
-    "custom/updater":{
-        "format": " {}",
-        "exec": "checkupdates | wc -l",
-        "exec-if": "[[ $(checkupdates | wc -l) ]]",
-        "interval": 15,
-        "on-click": "kitty -T update paru -Syu || yay -Syu && notify-send 'The system has been updated'"
     },
 
     "custom/weather": {
@@ -460,6 +394,7 @@
         "return-type": "json",
         "interval": 1,
         "format": "{}",
+        "on-click": "/home/rash/.config/scripts/kanata/toggle_kanata.py",
         "tooltip": true
     },
 

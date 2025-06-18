@@ -41,6 +41,22 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
+;; ===============================================
+;; CONFIGURATION: Toggle Key Settings
+;; ===============================================
+;; CURRENT TOGGLE KEY: Hyper+k
+;;
+;; TO CHANGE THE TOGGLE KEY:
+;; 1. Find the two layer definitions below: 'unified-hyper' and 'hyper-almost-unchanged'
+;; 2. In each layer, look for the current toggle position (marked with comments)
+;; 3. Move the toggle aliases to your desired key position
+;;
+;; EXAMPLE: To change from Hyper+k to Hyper+p:
+;; - In 'unified-hyper' layer: move @kanata-toggle-to-plain from 'k' position to 'p' position
+;; - In 'hyper-almost-unchanged' layer: move @kanata-toggle-to-nordic from 'k' position to 'p' position
+;; - Replace the old position with (multi @hyper-mod k) or (multi @hyper-mod p) respectively
+;; ===============================================
+
 ;; Define aliases for the Caps Lock behavior and home row mods
 (defalias
   activate-kanata
@@ -88,14 +104,14 @@
   ö-met (tap-hold 200 200 ö rmet)     ;; ö = ö tap, right meta hold (virtual)
   ä-altgr (tap-hold 200 200 ä ralt)   ;; g = g tap, AltGr on hold
 
-        ;; Hyper+k layer toggle - switches to almost_unchanged and sets JSON to plain
-  hyper-k-toggle-status (multi
+  ;; Kanata toggle actions - switches between nordic and almost_unchanged modes
+  ;; These use the toggle-key defined above
+  kanata-toggle-to-plain (multi
     (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-plain)
     (layer-switch almost_unchanged)
   )
 
-  ;; Hyper+k when in almost_unchanged - switches back to nordic and sets JSON to normal
-  hyper-k-toggle-back (multi
+  kanata-toggle-to-nordic (multi
     (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-nordic)
     (layer-switch nordic)
   )
@@ -117,7 +133,8 @@
   (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
   _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @hyper-k-toggle-status    (multi @hyper-mod l)    _    _    _
+     ;; positions: a                    s                    d                    f                    g                    h                    j                    k ← TOGGLE KEY         l                    ö    ä    '
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @kanata-toggle-to-plain    (multi @hyper-mod l)    _    _    _
   _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
   _    _    _                  _                   _    _
 )
@@ -137,7 +154,8 @@
   (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
   _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @hyper-k-toggle-back    (multi @hyper-mod l)    _    _    _
+     ;; positions: a                    s                    d                    f                    g                    h                    j                    k ← TOGGLE KEY         l                    ö    ä    '
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @kanata-toggle-to-nordic    (multi @hyper-mod l)    _    _    _
   _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
   _    _    _                  _                   _    _
 )
