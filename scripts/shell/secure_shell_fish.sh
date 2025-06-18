@@ -24,12 +24,6 @@ cat > "$FISH_CONFIG/conf.d/99-secure-shell.fish" <<EOF
 
 set -gx fish_history $SESSION_ID
 
-function update_smart_cwd --on-variable PWD
-    set -gx SMART_CWD (python /home/rash/.config/scripts/starship/smart_path.py)
-end
-
-update_smart_cwd
-
 set -gx SECURE_SHELL 1
 EOF
 
