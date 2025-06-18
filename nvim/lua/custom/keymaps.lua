@@ -303,7 +303,7 @@ local diagnostic_mappings = {
 
 -- Select whole document
 local selectall_mappings = {
-	{ "n", "<leader>%", "ggVG", { noremap = true, desc = "[%] Select entire buffer" } },
+	{ "n", "<leader>%", "<cmd>normal! ggVG<cr>", { noremap = true, desc = "[%] Select entire buffer" } },
 }
 
 -- Buffer and Window Management Keybinds
