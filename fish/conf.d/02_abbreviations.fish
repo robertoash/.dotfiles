@@ -35,12 +35,16 @@ abbr Syu "yay_update"
 
 # System
 abbr free_space "lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
+abbr mem "smem -t -k -c 'name rss' | tail -25"
 
 ### SGPT
 abbr gs "sgpt -s --no-interaction"
 abbr gsi "sgpt -s --interaction"
 abbr gd "sgpt -d"
 abbr gtc "sgpt -c"
+
+# Qalc
+abbr calc "qalc"
 
 ## Dust
 abbr dust "dust -r"
