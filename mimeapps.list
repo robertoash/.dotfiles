@@ -5,6 +5,7 @@ application/msword=libreoffice-writer.desktop
 application/pdf=org.pwmt.zathura.desktop
 application/xml=nvim.desktop
 image/jpeg=feh.desktop
+image/png=feh.desktop
 text/css=nvim.desktop
 text/html=qutebrowser.desktop
 text/plain=nvim.desktop
