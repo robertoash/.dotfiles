@@ -2,21 +2,17 @@
 # Injected at: 2025-04-13 23:32:45
 
 format = """
+$git_branch\
+$git_status\
 $python\
 $rust\
 $nodejs\
-$git_branch\
-$git_status\
-$fill\
-$cmd_duration\
-$status\
-$username\
-$hostname\
 $virtualenv\
-$direnv\
-$time
+${custom.direnv_status}
 ${env_var.SMART_CWD}${env_var.SECURE_SHELL}${env_var.YAZI_LEVEL}$character
 """
+
+right_format = """$cmd_duration$status$username$hostname$time"""
 
 palette = "tokyonight_deep"
 add_newline = true
@@ -156,8 +152,7 @@ Windows = "󰍲 "
 # ── Python (includes virtualenv and asdf) ───────────────
 [python]
 disabled = false
-format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
-pyenv_version_name = true
+format = '\[[${symbol}(${version})]($style)\]'
 style = "fg:color7"
 symbol = " "
 
@@ -165,7 +160,7 @@ symbol = " "
 [direnv]
 symbol = " "
 style = "fg:color5"
-format = '\[[$symbol]($style)\]'
+format = '\[[$symbol($allowed)]($style)\]'
 disabled = false
 
 # ── Docker Context ──────────────────────────────────────
@@ -256,10 +251,29 @@ variable = "SECURE_SHELL"
 format = "[😈 STEALTH MODE]($style) "
 style = "fg:color9"
 
-
-#[custom.my_module_name]
-#command = "echo 🌮"
-#when = "true"
-#style = "fg:color14"
-#format = "[$output]($style) "
+[custom.direnv_status]
+command = '''
+if test -n "$DIRENV_DIR"
+    if direnv status 2>/dev/null | grep -q "allowed 0"
+        # Get the full path to .direnv
+        set direnv_path "$DIRENV_DIR/.direnv"
+        
+        # Count the number of directory levels
+        set level_count (echo "$direnv_path" | tr "/" "\n" | wc -l)
+        
+        # If more than 3 levels, show ...+last 3 levels
+        if test "$level_count" -gt 4
+            set last_three (echo "$direnv_path" | rev | cut -d"/" -f1-3 | rev)
+            echo "A:...$last_three"
+        else
+            echo "A:$direnv_path"
+        end
+    else
+        echo "N"
+    end
+end
+'''
+when = 'test -n "$DIRENV_DIR"'
+style = "fg:color5"
+format = '\[[$output]($style)\]'
 
