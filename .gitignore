@@ -9,6 +9,7 @@
 !/README.md
 !rofimoji.rc
 !taskrc
+!user-dirs.dirs
 
 # ...and these directories...
 !alacritty/
