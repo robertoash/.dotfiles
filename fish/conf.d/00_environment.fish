@@ -7,7 +7,7 @@ set -gx VISUAL "nvim"
 set -gx SUDO_EDITOR "nvim"
 set -gx GIT_EDITOR "nvim"
 set -gx IDE "cursor"
-set -gx TERMINAL "alacritty"
+set -gx TERMINAL "wezterm"
 set -gx COLORTERM "truecolor"
 set -gx TERM "xterm-256color"
 set -gx BROWSER "/home/rash/.local/bin/qute_profile rash %s"
@@ -36,6 +36,9 @@ set -gx FD_IGNORE_FILE "$HOME/.config/fd/ignore"
 
 # Linkding
 set -gx LINKDING_URL "https://links.rashlab.net"
+
+# Rg
+set -gx RIPGREP_CONFIG_PATH "$HOME/.config/rg/.ripgreprc"
 
 # Taskwarrior
 set -gx TASKRC "$HOME/.config/task/taskrc"

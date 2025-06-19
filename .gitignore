@@ -42,6 +42,7 @@
 !qalculate/
 !qutebrowser/
 !qutebrowser/userscripts/
+!rg/
 !rofi/
 !ruff/
 !scripts/
@@ -94,6 +95,7 @@
 !palettes/**/*
 !qalculate/**/*
 !qutebrowser/userscripts/**/*
+!rg/**/*
 !rofi/**/*
 !ruff/**/*
 !scripts/**/*
@@ -161,3 +163,4 @@ fish/sources/secrets.fish
 yazi/flavors/catppuccin-mocha.yazi
 yazi/plugins
 nvim/lazy-lock.json
+yazi/package.toml
