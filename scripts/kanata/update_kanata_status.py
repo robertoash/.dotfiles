@@ -18,7 +18,7 @@ def main():
     # Handle start-fresh mode to initialize status file on boot
     if mode == "start-fresh":
         status = {
-            "text": "NORM",
+            "text": "MOD",
             "class": "normal",
             "tooltip": "Kanata: Nordic mode (home row mods active)",
         }
@@ -28,7 +28,7 @@ def main():
     # Handle set-to-plain mode - always set to plain state (idempotent)
     if mode == "set-to-plain":
         status = {
-            "text": "NOMODS",
+            "text": "NO-MODS",
             "class": "plain",
             "tooltip": "Kanata: Plain mode (no home row mods)",
         }
@@ -38,7 +38,7 @@ def main():
     # Handle set-to-nordic mode - always set to nordic state (idempotent)
     if mode == "set-to-nordic":
         status = {
-            "text": "NORM",
+            "text": "MOD",
             "class": "normal",
             "tooltip": "Kanata: Nordic mode (home row mods active)",
         }
