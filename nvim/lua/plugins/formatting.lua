@@ -47,7 +47,13 @@ return {
 		},
 		opts = {
 			keymap = {
-				preset = "super-tab",
+				preset = "none", -- Start with no preset to avoid conflicts
+				["<Tab>"] = { "accept", "fallback" },
+				["<C-j>"] = { "select_next", "fallback" },
+				["<C-k>"] = { "select_prev", "fallback" },
+				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				["<C-e>"] = { "hide", "fallback" },
+				["<CR>"] = { "fallback" }, -- Disable Enter for completion, let it just be newline
 			},
 
 			appearance = {
@@ -59,16 +65,18 @@ return {
 			},
 
 			sources = {
-				default = { 'lsp', 'path', 'snippets', 'lazydev' },
+				default = { "lsp", "path", "snippets", "lazydev" },
 				providers = {
 					lazydev = {
 						module = "lazydev.integrations.blink",
-						score_offset = 100
+						score_offset = 100,
 					},
 					path = {
-						opts = {}
-					}
-				}
+						opts = {
+							show_hidden_files_by_default = true,
+						},
+					},
+				},
 			},
 
 			snippets = { preset = "luasnip" },
@@ -77,4 +85,3 @@ return {
 		},
 	},
 }
-
