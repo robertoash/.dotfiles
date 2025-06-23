@@ -43,6 +43,14 @@ abbr gsi "sgpt -s --interaction"
 abbr gd "sgpt -d"
 abbr gtc "sgpt -c"
 
+# Fd
+abbr fd "fd -H"
+abbr fdf "fd -H -t f"
+abbr fdd "fd -H -t d"
+
+# Jc
+abbr jc "jc -p"
+
 # Qalc
 abbr calc "qalc"
 
