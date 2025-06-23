@@ -2,11 +2,15 @@ return {
 	"folke/snacks.nvim",
 	lazy = false,
 	priority = 1000,
+	opts = {
+		explorer = {
+			replace_netrw = true,
+		},
+	},
 	config = function()
 		require("snacks").setup({
 			bigfile = { enabled = true },
 			dashboard = { enabled = true },
-
 			lazygit = {
 				configure = true,
 				config = {
@@ -80,7 +84,7 @@ return {
 			words = { enabled = true },
 		})
 
-				-- Track explorer instance
+		-- Track explorer instance
 		local explorer_instance = nil
 
 		-- Auto-open explorer when dashboard is shown
@@ -120,8 +124,15 @@ return {
 				local filepath = vim.fn.expand("%:p")
 
 				-- Debug: Show what triggered the event
-				log_debug(string.format("BufEnter: buftype='%s', filetype='%s', filename='%s', path='%s'",
-					buftype, filetype, filename, filepath))
+				log_debug(
+					string.format(
+						"BufEnter: buftype='%s', filetype='%s', filename='%s', path='%s'",
+						buftype,
+						filetype,
+						filename,
+						filepath
+					)
+				)
 
 				-- Only close for regular files (not special buffers like terminals, help, etc.)
 				if buftype == "" and filetype ~= "dashboard" and filename ~= "" then
@@ -164,8 +175,14 @@ return {
 						end
 					end
 				else
-					log_debug(string.format("✗ Skipped - buftype='%s', filetype='%s', filename='%s'",
-						buftype, filetype, filename))
+					log_debug(
+						string.format(
+							"✗ Skipped - buftype='%s', filetype='%s', filename='%s'",
+							buftype,
+							filetype,
+							filename
+						)
+					)
 				end
 				log_debug("---")
 			end,
