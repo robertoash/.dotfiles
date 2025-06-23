@@ -96,29 +96,30 @@ def execute_dcli(args, ignore_errors=False, headless=False):
                     sys.exit(EXIT_AUTH_REQUIRED)
                 print("Authentication successful. Continuing...", file=sys.stderr)
                 subprocess.run(["dunstify", "dcli login successful"])
-                # Now authenticated, proceed to run the original dcli command
-                cmd = ["dcli"] + args
-                result = subprocess.run(cmd, capture_output=True, text=True)
-                if result.returncode != 0 and not ignore_errors:
-                    print(f"Error executing dcli: {result.stderr}")
+            else:
+                print(
+                    "dcli is not authenticated. Please authenticate and re-run the command."
+                )
+                # Run in interactive mode for authentication
+                result = direct_execute_dcli(["sync"])
+                if result.returncode != 0:
+                    print("Authentication failed.")
                     sys.exit(result.returncode)
-                return result.stdout.strip()
-            print(
-                "dcli is not authenticated. Please authenticate and re-run the command."
-            )
-            # Run in interactive mode
-            result = direct_execute_dcli(args)
-            # If this was successful, return empty string to signal we handled it
-            if (
-                isinstance(result, subprocess.CompletedProcess)
-                and result.returncode == 0
-            ):
-                return ""
-            return (
-                result.returncode
-                if isinstance(result, subprocess.CompletedProcess)
-                else result
-            )
+
+                # Check if authentication was successful
+                if not is_authenticated():
+                    print("Authentication was not completed successfully.")
+                    sys.exit(1)
+
+                print("Authentication successful. Continuing...", file=sys.stderr)
+
+            # Now authenticated, proceed to run the original dcli command
+            cmd = ["dcli"] + args
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            if result.returncode != 0 and not ignore_errors:
+                print(f"Error executing dcli: {result.stderr}")
+                sys.exit(result.returncode)
+            return result.stdout.strip()
 
         # Regular execution with output capture
         cmd = ["dcli"] + args
