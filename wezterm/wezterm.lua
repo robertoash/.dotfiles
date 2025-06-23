@@ -80,6 +80,9 @@ config.colors = {
 	},
 }
 
+-- Disable ligatures
+config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
+
 -- Window appearance
 config.window_background_opacity = 0.8
 
