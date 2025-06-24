@@ -20,6 +20,8 @@ if wk_ok then
 		{ "<leader>f", group = "[F]lash", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
 		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
+		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
+		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
 		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>s/", group = "[S]earch [/] within files", mode = { "n", "v" } },
@@ -427,7 +429,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").add()
 		end,
-		{ desc = "[S]urround [A]dd" },
+		{ desc = "Surround [A]dd" },
 	},
 	{
 		"n",
@@ -435,7 +437,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").delete()
 		end,
-		{ desc = "[S]urround [D]elete" },
+		{ desc = "Surround [D]elete" },
 	},
 	{
 		"n",
@@ -443,7 +445,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").find()
 		end,
-		{ desc = "[S]urround [F]ind (right)" },
+		{ desc = "Surround [F]ind (right)" },
 	},
 	{
 		"n",
@@ -451,7 +453,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").find_left()
 		end,
-		{ desc = "[S]urround [F]ind (left)" },
+		{ desc = "Surround [F]ind (left)" },
 	},
 	{
 		"n",
@@ -459,7 +461,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").highlight()
 		end,
-		{ desc = "[S]urround [H]ighlight" },
+		{ desc = "Surround [H]ighlight" },
 	},
 	{
 		"n",
@@ -467,7 +469,7 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").replace()
 		end,
-		{ desc = "[S]urround [R]eplace" },
+		{ desc = "Surround [R]eplace" },
 	},
 	{
 		"n",
@@ -475,7 +477,90 @@ local mini_surround_mappings = {
 		function()
 			require("mini.surround").update_n_lines()
 		end,
-		{ desc = "[S]urround update [N] lines" },
+		{ desc = "Surround update [N] lines" },
+	},
+}
+
+-- Mini.splitjoin keymaps
+local mini_splitjoin_mappings = {
+	{
+		{ "n", "x" },
+		"sj",
+		function()
+			require("mini.splitjoin").join()
+		end,
+		{ desc = "Splitjoin [J]oin" },
+	},
+	{
+		{ "n", "x" },
+		"sk",
+		function()
+			require("mini.splitjoin").split()
+		end,
+		{ desc = "Splitjoin [K] split" },
+	},
+}
+
+-- Noice.nvim keymaps
+local noice_mappings = {
+	{
+		"n",
+		"<leader>nd",
+		function()
+			require("noice").cmd("dismiss")
+		end,
+		{ desc = "Noice [D]ismiss all" },
+	},
+	{
+		"n",
+		"<leader>nh",
+		function()
+			require("noice").cmd("history")
+		end,
+		{ desc = "Noice [H]istory" },
+	},
+	{
+		"n",
+		"<leader>nl",
+		function()
+			require("noice").cmd("last")
+		end,
+		{ desc = "Noice [L]ast message" },
+	},
+	{
+		"n",
+		"<leader>ne",
+		function()
+			require("noice").cmd("errors")
+		end,
+		{ desc = "Noice [E]rrors" },
+	},
+	{
+		"n",
+		"<leader>nt",
+		function()
+			require("noice").cmd("telescope")
+		end,
+		{ desc = "Noice [T]elescope" },
+	},
+}
+
+-- nvim-autopairs keymaps
+local autopairs_mappings = {
+	{
+		"n",
+		"<leader>pt",
+		function()
+			local autopairs = require("nvim-autopairs")
+			if autopairs.state.disabled then
+				autopairs.enable()
+				vim.notify("Autopairs enabled", vim.log.levels.INFO)
+			else
+				autopairs.disable()
+				vim.notify("Autopairs disabled", vim.log.levels.INFO)
+			end
+		end,
+		{ desc = "Pairs [T]oggle" },
 	},
 }
 
@@ -512,5 +597,8 @@ set_keymaps(delete_to_blackhole_mappings)
 set_keymaps(snacks_terminal_mappings)
 set_keymaps(lazygit_mappings)
 set_keymaps(mini_surround_mappings)
+set_keymaps(mini_splitjoin_mappings)
+set_keymaps(noice_mappings)
+set_keymaps(autopairs_mappings)
 
 return {}
