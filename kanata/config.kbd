@@ -1,5 +1,4 @@
-;; Kanata configuration for Nordic layout Logitech MX Keys
-;; Save this as ~/.config/kanata/config.kbd
+;; Kanata configuration
 
 (defcfg
   ;; For Wayland/Hyprland, use the default I8042 bus type
@@ -9,7 +8,7 @@
   process-unmapped-keys no
 
   ;; Enable cmd functionality for status updates
-  danger-enable-cmd yes
+  ;; danger-enable-cmd yes
 
   ;; Optional: Filter to only your MX Keys keyboard
   ;; Uncomment and adjust the device name after running 'sudo kanata --list'
@@ -41,29 +40,9 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; ===============================================
-;; CONFIGURATION: Toggle Key Settings
-;; ===============================================
-;; CURRENT TOGGLE KEY: Hyper+k
-;;
-;; TO CHANGE THE TOGGLE KEY:
-;; 1. Find the two layer definitions below: 'unified-hyper' and 'hyper-almost-unchanged'
-;; 2. In each layer, look for the current toggle position (marked with comments)
-;; 3. Move the toggle aliases to your desired key position
-;;
-;; EXAMPLE: To change from Hyper+k to Hyper+p:
-;; - In 'unified-hyper' layer: move @kanata-toggle-to-plain from 'k' position to 'p' position
-;; - In 'hyper-almost-unchanged' layer: move @kanata-toggle-to-nordic from 'k' position to 'p' position
-;; - Replace the old position with (multi @hyper-mod k) or (multi @hyper-mod p) respectively
-;; ===============================================
+
 
 ;; Define aliases for the Caps Lock behavior and home row mods
-(defalias
-  activate-kanata
-    (layer-switch nordic)
-  deactivate-kanata
-    (layer-switch almost_unchanged)
-)
 
 (defalias
       ;; Hyper layer action - simple hold for unified hyper
@@ -81,40 +60,43 @@
     caps ;; double-tap = caps lock
   ))
 
-  ;; Caps Lock for almost_unchanged layer - uses different hyper layer
+  ;; Caps Lock for almost_unchanged layer - uses same hyper layer since output is identical
   caps-multi-plain (tap-dance 175 (
-    (tap-hold-press 50 175 esc (layer-while-held hyper-almost-unchanged)) ;; tap=esc, hold=plain hyper layer
+    (tap-hold-press 50 175 esc (layer-while-held unified-hyper)) ;; tap=esc, hold=hyper layer
     caps ;; double-tap = caps lock
   ))
+
+
 
   ;; Hyper key that outputs actual hyper modifier combination (Ctrl+Shift+Alt+Meta)
   ;; This is what Hyprland will recognize as the "hyper" key
   hyper-mod (multi lctl lsft lalt lmet)
 
   ;; Home row mods with 200ms tap/hold timeouts
-  ;; Left hand
+  ;; Left hand (QWERTY/Nordic)
   a-met (tap-hold 200 200 a lmet)     ;; a = a tap, left meta hold
   s-ctl (tap-hold 200 200 s lctl)     ;; s = s tap, left ctl hold
   d-alt (tap-hold 200 200 d lalt)     ;; d = d tap, left alt hold
   f-sft (tap-hold 200 200 f lsft)     ;; f = f tap, left shift hold
-  ;; Right hand
+  ;; Right hand (QWERTY/Nordic)
   j-sft (tap-hold 200 200 j rsft)     ;; j = j tap, right shift hold
   k-alt (tap-hold 200 200 k lalt)     ;; k = k tap, right alt hold
   l-ctl (tap-hold 200 200 l rctl)     ;; l = l tap, right ctl hold
   ö-met (tap-hold 200 200 ö rmet)     ;; ö = ö tap, right meta hold (virtual)
-  ä-altgr (tap-hold 200 200 ä ralt)   ;; g = g tap, AltGr on hold
+  ä-altgr (tap-hold 200 200 ä ralt)   ;; ä = ä tap, AltGr on hold
 
-  ;; Kanata toggle actions - switches between nordic and almost_unchanged modes
-  ;; These use the toggle-key defined above
-  kanata-toggle-to-plain (multi
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-plain)
-    (layer-switch almost_unchanged)
-  )
+  ;; Colemak home row mods
+  ;; Left hand
+  r-ctl (tap-hold 200 200 r lctl)     ;; r = r tap, left ctl hold
+  s-alt (tap-hold 200 200 s lalt)     ;; s = s tap, left alt hold
+  t-sft (tap-hold 200 200 t lsft)     ;; t = t tap, left shift hold
+  ;; Right hand
+  n-sft (tap-hold 200 200 n rsft)     ;; n = n tap, right shift hold
+  e-alt (tap-hold 200 200 e lalt)     ;; e = e tap, right alt hold
+  i-ctl (tap-hold 200 200 i rctl)     ;; i = i tap, right ctl hold
+  o-met (tap-hold 200 200 o rmet)     ;; o = o tap, right meta hold
 
-  kanata-toggle-to-nordic (multi
-    (cmd /home/rash/.config/scripts/kanata/update_kanata_status.py set-to-nordic)
-    (layer-switch nordic)
-  )
+
 )
 
 ;; Main layer - Nordic QWERTY layout with home row mods
@@ -133,8 +115,7 @@
   (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
   _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-     ;; positions: a                    s                    d                    f                    g                    h                    j                    k ← TOGGLE KEY         l                    ö    ä    '
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @kanata-toggle-to-plain    (multi @hyper-mod l)    _    _    _
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    (multi @hyper-mod k)    (multi @hyper-mod l)    _    _    _
   _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
   _    _    _                  _                   _    _
 )
@@ -149,14 +130,31 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; Hyper layer for the almost_unchanged layer - allows toggling back to nordic
-(deflayer hyper-almost-unchanged
-  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
-  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-     ;; positions: a                    s                    d                    f                    g                    h                    j                    k ← TOGGLE KEY         l                    ö    ä    '
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    @kanata-toggle-to-nordic    (multi @hyper-mod l)    _    _    _
-  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
-  _    _    _                  _                   _    _
+;; ===============================================
+;; COLEMAK LAYERS
+;; ===============================================
+
+;; Colemak layer - with home row mods
+(deflayer colemak
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
+  @caps-multi @a-met @r-ctl @s-alt @t-sft d    h    @n-sft @e-alt @i-ctl @o-met @ä-altgr '
+  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
 )
+
+
+
+;; Colemak layer - without home row mods (plain)
+(deflayer colemak_plain
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
+  @caps-multi-plain a    r    s    t    d    h    n    e    i    o    ä    '
+  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
+)
+
+
 

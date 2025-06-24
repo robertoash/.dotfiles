@@ -4,10 +4,9 @@ Hyprland Swedish Layout Switcher
 Toggles between se layout with nodeadkeys and colemak variants
 """
 
-import subprocess
 import json
+import subprocess
 import sys
-import os
 
 
 def run_command(cmd):
