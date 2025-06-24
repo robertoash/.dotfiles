@@ -127,26 +127,14 @@ config.bind(",m", "spawn --detach mpv {url}")
 config.bind(",M", "hint links spawn --detach mpv {hint-url}")
 # External editing (e.g., Neovim)
 config.bind(",e", "edit-url")
-# Yank current URL/title
-config.bind(",y", "yank")
-config.bind(",Y", "yank title")
-# Open URL from clipboard
-config.bind(",p", "open -- {clipboard}")
+# Yank
+config.bind("ys", "yank selection")
 # Toggle dark mode
 config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
-# Paste & go
-config.bind("P", "open -- {primary}")
 # Toggle tab list
 config.bind("<Alt-h>", "config-cycle tabs.show always never")
 # Duplicate tab
 config.bind("D", "tab-clone")
-
-# Text expansion
-config.bind(",@", "spawn --userscript text-expand :@@")
-config.bind(",x", "spawn --userscript text-expand")
-
-# Dark mode toggle
-config.bind(",d", "config-cycle colors.webpage.darkmode.enabled true false")
 
 # = Hint Keybinds =
 # Remove defaults
