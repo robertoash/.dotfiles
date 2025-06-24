@@ -88,3 +88,8 @@ end
 for mode in insert default visual
     bind -M $mode \eg sgpt_fish
 end
+
+# Frecent triggers - ff<Tab>, dd<Tab>, aa<Tab>
+for mode in insert default visual
+    bind -M $mode \t __frecent_unified_widget
+end

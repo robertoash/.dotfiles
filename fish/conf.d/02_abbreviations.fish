@@ -64,6 +64,9 @@ abbr rsmv "rsync -ah --progress --stats --remove-source-files"
 
 ## Atuin
 abbr atuin_clean "atuin history prune"
+
+## Frecent
+abbr frecent_cleanup "~/.config/scripts/shell/frecent_cleanup.py"
 ## SVT Text
 abbr svtti "svttext -colors -interactive"
 abbr svttc "svttext -colors"
