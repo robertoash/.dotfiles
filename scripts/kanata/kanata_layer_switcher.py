@@ -37,25 +37,25 @@ LAYER_NAMES = {
     ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
 }
 
-# Status display mappings
+# Status display mappings with Pango markup for multi-colored text
 STATUS_CONFIG = {
     ("swe", "mod"): {
-        "text": "SWE",
+        "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
         "class": "normal",
         "tooltip": "Kanata: Swedish with home row mods",
     },
     ("swe", "nomod"): {
-        "text": "SWE-NOMOD",
+        "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
         "class": "plain",
         "tooltip": "Kanata: Swedish without mods",
     },
     ("cmk", "mod"): {
-        "text": "CMK",
+        "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
         "class": "colemak-mod",
         "tooltip": "Kanata: Swedish Colemak with home row mods",
     },
     ("cmk", "nomod"): {
-        "text": "CMK-NOMOD",
+        "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
         "class": "colemak-plain",
         "tooltip": "Kanata: Swedish Colemak without mods",
     },
@@ -306,7 +306,7 @@ def main():
         except Exception:
             # Fallback when Kanata/TCP is not available
             fallback_status = {
-                "text": "NORM",
+                "text": '<span color="#ffffff">NORM</span>',
                 "class": "normal",
                 "tooltip": "Kanata: Nordic mode (home row mods active)",
             }

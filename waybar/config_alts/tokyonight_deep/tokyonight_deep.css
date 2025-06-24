@@ -398,6 +398,19 @@ window#waybar.hidden {
     color: @color9;
 }
 
+#custom-kanata_mode {
+    padding: 0 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: @background;
+    margin: 0 5px;
+}
+
+/* Optional: Hover effects */
+#custom-kanata_mode:hover {
+    opacity: 0.8;
+}
+
 #network.disconnected,
 #network.disabled {
     background-color: @color16;

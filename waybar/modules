@@ -390,14 +390,14 @@
     },
 
     "custom/kanata_mode": {
-        "exec": "cat /tmp/kanata_status.json 2>/dev/null || echo '{\"text\":\"NORM\",\"class\":\"normal\",\"tooltip\":\"Kanata: Nordic mode (home row mods active)\"}'",
+        "exec": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action waybar",
         "return-type": "json",
         "interval": 1,
         "format": "{}",
-        "on-click": "/home/rash/.config/scripts/kanata/toggle_kanata.py",
+        "on-click": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action toggle",
+        "on-click-right": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action layout",
         "tooltip": true
     },
-
 
     // Separators
     "custom/separator#dot": {
