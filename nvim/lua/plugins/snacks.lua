@@ -63,6 +63,22 @@ return {
 									end
 								end,
 							},
+							-- Custom action for 5-line down movement
+							five_down = {
+								action = function(picker)
+									for _ = 1, 5 do
+										require("snacks.picker").actions.list_down(picker)
+									end
+								end,
+							},
+							-- Custom action for 5-line up movement
+							five_up = {
+								action = function(picker)
+									for _ = 1, 5 do
+										require("snacks.picker").actions.list_up(picker)
+									end
+								end,
+							},
 						},
 						win = {
 							list = {
@@ -70,6 +86,9 @@ return {
 									["<CR>"] = "open_file_and_close",
 									["<C-v>"] = "confirm", -- Keep default for splits
 									["<C-x>"] = "confirm", -- Keep default for splits
+									-- Add custom 5-line movement using vim keys
+									["<C-j>"] = "five_down",
+									["<C-k>"] = "five_up",
 								},
 							},
 						},
