@@ -2,6 +2,7 @@
 #
 # Cron wrapper for gcal_notify.py
 # Sets up the environment needed for GUI applications to work from cron
+# Uses cached approach for better efficiency and reduced API costs
 #
 
 # Set up environment variables
@@ -27,12 +28,12 @@ cd "/home/rash/.config/scripts/gcal"
     echo "WAYLAND_DISPLAY: $WAYLAND_DISPLAY"
     echo "PATH: $PATH"
     echo "PWD: $(pwd)"
-    echo "Running gcal_notify.py --cron --verbose"
+    echo "Running gcal_notify.py --query --verbose (cached mode)"
     echo "=================================="
 } >> "/home/rash/.config/gcal-notifications/cron.log" 2>&1
 
-# Run the actual script with full path and verbose output
-python3 "/home/rash/.config/scripts/gcal/gcal_notify.py" --cron --verbose >> "/home/rash/.config/gcal-notifications/cron.log" 2>&1
+# Run the actual script with --query for cached notifications (much faster)
+python3 "/home/rash/.config/scripts/gcal/gcal_notify.py" --query >> "/home/rash/.config/gcal-notifications/cron.log" 2>&1
 
 # Log completion
 echo "=== Cron job completed at $(date) ===" >> "/home/rash/.config/gcal-notifications/cron.log" 2>&1
