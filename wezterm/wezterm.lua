@@ -230,11 +230,11 @@ config.keys = {
 		action = wezterm.action.SendString("\x1b[1;6L"), -- Custom sequence for forward word (space-only)
 	},
 
-	-- Ctrl+Tab to move forward by word (same as Ctrl+Right Arrow)
+	-- Ctrl+Tab to accept autosuggestion with slashes (unique sequence)
 	{
 		key = "Tab",
 		mods = "CTRL",
-		action = wezterm.action.SendString("\x1b[1;5C"), -- Same as Ctrl+Right Arrow
+		action = wezterm.action.SendString("\x1b[27;5;9~"), -- Proper Ctrl+Tab sequence
 	},
 
 	-- ----------------------------------------

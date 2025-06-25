@@ -89,6 +89,13 @@ for mode in insert default visual
     bind -M $mode \eg sgpt_fish
 end
 
+# Ctrl+Tab for accepting autosuggestion with slashes
+bind \e\[27\;5\;9~ accept_next_path_segment
+
+for mode in insert default visual
+    bind -M $mode \e\[27\;5\;9~ accept_next_path_segment
+end
+
 # Frecent triggers - ff<Tab>, dd<Tab>, aa<Tab>
 for mode in insert default visual
     bind -M $mode \t __frecent_unified_widget
