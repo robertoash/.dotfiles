@@ -3,6 +3,7 @@
 """
 Modular profile selector for applications using rofi
 Supports multiple applications with configurable profiles
+Enhanced to handle meeting URLs from calendar notifications
 """
 
 import os
@@ -28,14 +29,12 @@ class ProfileSelector:
                     "/home/rash/.local/bin/vivaldi_launch --profile {profile}"
                 ),
             },
-            # Example of dictionary-based app (each profile has its own command)
-            # "example_app": {
-            #    "profiles": {
-            #        "dev": "example_app --env dev --debug",
-            #        "prod": "example_app --env production",
-            #        "local": "/path/to/local_version --config local.conf",
-            #    }
-            # },
+            "chromium": {
+                "profiles": ["rash", "jobhunt"],
+                "command_template": (
+                    "/home/rash/.local/bin/chromium_launch --profile {profile}"
+                ),
+            },
         }
 
     def _is_template_based(self, app_name: str) -> bool:
@@ -56,7 +55,7 @@ class ProfileSelector:
             # Dictionary-based format: profiles is a dict
             return list(config["profiles"].keys())
 
-    def get_command(self, app_name: str, profile: str) -> str:
+    def get_command(self, app_name: str, profile: str, url: str = None) -> str:
         """Generate the command for a given application and profile."""
         if app_name not in self.applications:
             raise ValueError(f"Application '{app_name}' not configured")
@@ -73,6 +72,10 @@ class ProfileSelector:
                     f"Profile '{profile}' not found for application '{app_name}'"
                 )
             command = config["profiles"][profile]
+
+        # Add URL if provided
+        if url:
+            command += f" '{url}'"
 
         # Expand tilde in the command
         return os.path.expanduser(command)
@@ -95,15 +98,22 @@ class ProfileSelector:
             # User cancelled or rofi failed
             return ""
 
-    def launch_profile(self, app_name: str, profile: str) -> bool:
+    def launch_profile(self, app_name: str, profile: str, url: str = None) -> bool:
         """Launch the specified profile for the given application."""
         if not profile:
             return False
 
         try:
-            command = self.get_command(app_name, profile)
-            # Split command into list for subprocess
-            cmd_list = command.split()
+            command = self.get_command(app_name, profile, url)
+
+            # Split command into list for subprocess, handling quoted URLs
+            if url:
+                # If URL is present, split carefully to preserve the URL as one argument
+                import shlex
+
+                cmd_list = shlex.split(command)
+            else:
+                cmd_list = command.split()
 
             # Launch in background (detached from terminal)
             subprocess.Popen(
@@ -112,6 +122,7 @@ class ProfileSelector:
                 stderr=subprocess.DEVNULL,
                 start_new_session=True,
             )
+
             return True
         except Exception as e:
             print(
@@ -119,7 +130,7 @@ class ProfileSelector:
             )
             return False
 
-    def run_selector(self, app_name: str) -> None:
+    def run_selector(self, app_name: str, url: str = None) -> None:
         """Run the complete profile selection process for an application."""
         if app_name not in self.applications:
             print(f"Error: Application '{app_name}' not configured", file=sys.stderr)
@@ -127,7 +138,7 @@ class ProfileSelector:
 
         selected_profile = self.show_profile_menu(app_name)
         if selected_profile:
-            success = self.launch_profile(app_name, selected_profile)
+            success = self.launch_profile(app_name, selected_profile, url)
             if not success:
                 sys.exit(1)
 
@@ -137,13 +148,7 @@ class ProfileSelector:
         profiles: List[str],
         command_template: str,
     ) -> None:
-        """Add a new application configuration using template format.
-
-        Args:
-            app_name: Name of the application
-            profiles: List of available profiles
-            command_template: Command template with {profile} placeholder
-        """
+        """Add a new application configuration using template format."""
         self.applications[app_name] = {
             "profiles": profiles,
             "command_template": command_template,
@@ -154,30 +159,18 @@ class ProfileSelector:
         app_name: str,
         profiles: Dict[str, str],
     ) -> None:
-        """Add a new application configuration using dictionary format.
-
-        Args:
-            app_name: Name of the application
-            profiles: Dictionary mapping profile names to commands
-        """
+        """Add a new application configuration using dictionary format."""
         self.applications[app_name] = {
             "profiles": profiles,
         }
 
-    # Backward compatibility method
     def add_application(
         self,
         app_name: str,
         profiles: Union[List[str], Dict[str, str]],
         command_template: str = None,
     ) -> None:
-        """Add a new application configuration (backward compatibility).
-
-        Args:
-            app_name: Name of the application
-            profiles: List of profiles (template mode) or dict of profile->command (dict mode)
-            command_template: Command template (only used in template mode)
-        """
+        """Add a new application configuration (backward compatibility)."""
         if isinstance(profiles, dict):
             self.add_application_dict(app_name, profiles)
         elif command_template:
@@ -190,14 +183,24 @@ class ProfileSelector:
 
 def main():
     """Main entry point."""
-    if len(sys.argv) != 2:
-        print("Usage: rofi_profile_selector.py <application_name>", file=sys.stderr)
-        print("Available applications: qutebrowser, vivaldi", file=sys.stderr)
+    if len(sys.argv) < 2:
+        print(
+            "Usage: rofi_profile_selector.py <application_name> [url]", file=sys.stderr
+        )
+        print("Available applications: qutebrowser, vivaldi, chromium", file=sys.stderr)
         sys.exit(1)
 
     app_name = sys.argv[1].lower()
+
+    # Check for URL from command line or environment variable
+    url = None
+    if len(sys.argv) > 2:
+        url = sys.argv[2]
+    elif "MEETING_URL" in os.environ:
+        url = os.environ["MEETING_URL"]
+
     selector = ProfileSelector()
-    selector.run_selector(app_name)
+    selector.run_selector(app_name, url)
 
 
 if __name__ == "__main__":

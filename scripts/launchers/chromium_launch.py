@@ -100,12 +100,17 @@ def main():
 
     # Parse arguments
     profile = None
+    url = None
     args = sys.argv[1:]
     i = 0
     while i < len(args):
         if args[i] == "--profile" and (i + 1) < len(args):
             profile = args[i + 1]
             i += 2
+        elif args[i].startswith("http"):
+            # Assume any argument starting with http is a URL
+            url = args[i]
+            i += 1
         else:
             i += 1
 
@@ -118,9 +123,18 @@ def main():
         sys.exit(1)
 
     cmd = build_command(PROFILES[profile])
+
+    # Add URL if provided
+    if url:
+        cmd.append(url)
+        log(f"Adding URL to command: {url}")
+
     try:
         subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        log(f"chromium_launch launched Ungoogled Chromium with profile {profile}")
+        log(
+            f"chromium_launch launched Ungoogled Chromium with profile {profile}"
+            + (f" and URL {url}" if url else "")
+        )
     except Exception as e:
         log(f"Error launching Ungoogled Chromium: {e}")
         sys.exit(1)
