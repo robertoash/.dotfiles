@@ -23,26 +23,15 @@ MANAGERS = {
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["pipx", "install", pkg],
     },
-    """
-    "flatpak": {
-        "retrieve": ["sh", "-c", "flatpak list --app --columns=application,version"],
-        "parse": lambda line: line.strip().split(maxsplit=1),
-        "restore": lambda pkg, ver=None: [
-            "flatpak",
-            "install",
-            "--noninteractive",
-            pkg,
-        ],
-    },
-    """
     "ya": {
         "retrieve": [
             "sh",
             "-c",
-            "ya pack -l | grep / | awk '{gsub(/\\s+\\([^)]+\\)/,\"\"); print}' | awk '{$1=$1};1'",
+            "ya pkg list | grep / | "
+            "awk '{gsub(/\\s+\\([^)]+\\)/,\"\"); print}' | awk '{$1=$1};1'",
         ],
         "parse": lambda line: (line.strip(), None),
-        "restore": lambda pkg, ver=None: ["ya", "pack", "install", pkg],
+        "restore": lambda pkg, ver=None: ["ya", "pkg", "add", pkg],
     },
     "cargo": {
         "retrieve": [
