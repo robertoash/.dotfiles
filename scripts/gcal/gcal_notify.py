@@ -48,6 +48,7 @@ NOTIFICATION_INTERVALS = [
 NOTIFICATION_ID_BASE = 7400
 ICON = "calendar"
 SOUND_FILE = "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+NOTIFICATION_TIMEOUT = 5000  # 5 seconds
 
 # Action Configuration
 PROFILE_SELECTOR_SCRIPT = "/home/rash/.config/scripts/rofi/rofi_profile_selector.py"
@@ -133,7 +134,9 @@ class CalendarNotifier:
 
     def get_timeout(self, persistent: bool) -> int:
         """Get notification timeout based on persistence setting"""
-        return 0 if persistent else 5000  # 0 = persistent, 5000 = 5 seconds
+        return (
+            0 if persistent else NOTIFICATION_TIMEOUT
+        )  # 0 = persistent, 5000 = 5 seconds
 
     def extract_conference_url(
         self, hangout_link: str, description: str
