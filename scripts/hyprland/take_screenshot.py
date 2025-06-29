@@ -106,6 +106,17 @@ def window_direct_save():
     show_save_notification(out_path.name, "Window")
 
 
+def window_clipboard():
+    geom = get_window_geometry()
+    p1 = subprocess.Popen(f'grim -g "{geom}" -', shell=True, stdout=subprocess.PIPE)
+    subprocess.run("wl-copy", shell=True, stdin=p1.stdout)
+    if p1.stdout:
+        p1.stdout.close()
+    p1.wait()
+    # Show notification for clipboard action
+    run('dunstify -a "grim" "Screenshot Copied" "Screenshot copied to clipboard"')
+
+
 def window_annotate():
     with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
         temp_path = temp_file.name
@@ -156,6 +167,7 @@ actions = {
     "region-annotate": region_annotate,
     "region-direct-save": region_direct_save,
     "clipboard": clipboard,
+    "window-clipboard": window_clipboard,
     "window-annotate": window_annotate,
     "window-direct-save": window_direct_save,
     "monitor-direct-save": monitor_direct_save,
