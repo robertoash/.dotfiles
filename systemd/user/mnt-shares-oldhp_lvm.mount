@@ -1,0 +1,12 @@
+[Unit]
+Description=SSHFS mount for oldhp_lvm
+
+[Mount]
+What=rash@oldhp:/mnt/lvm_share
+Where=/mnt/shares/oldhp_lvm
+Type=fuse.sshfs
+Options=IdentityFile=%h/.ssh/id_ed25519,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3
+
+[Install]
+WantedBy=default.target
+

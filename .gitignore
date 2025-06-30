@@ -171,3 +171,5 @@ systemd/user/default.target.wants
 systemd/user/graphical-session.target.wants
 systemd/user/sockets.target.wants
 systemd/user/timers.target.wants
+systemd/user/eos-update-notifier.service
+systemd/user/eos-update-notifier.timer
