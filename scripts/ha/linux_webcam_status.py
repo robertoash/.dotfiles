@@ -7,6 +7,10 @@ import subprocess
 import sys
 import time
 
+# Add the custom script path to PYTHONPATH
+sys.path.append("/home/rash/.config/scripts")
+from _utils import logging_utils  # noqa: E402
+
 """
 This script is launched by a systemd service.
 The service file is here:
@@ -15,10 +19,6 @@ The service file is here:
 Status can be checked with:
   systemctl --user status linux-webcam-status.service
 """
-
-# Add the custom script path to PYTHONPATH
-sys.path.append("/home/rash/.config/scripts")
-from _utils import logging_utils
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="Monitor webcam status.")

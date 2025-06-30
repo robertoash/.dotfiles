@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor webcam activity and notify Home Assistant
+
+[Service]
+ExecStart=/home/rash/.config/scripts/ha/linux_webcam_status.py
+Restart=always
+
+[Install]
+WantedBy=default.target

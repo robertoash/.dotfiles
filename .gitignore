@@ -52,6 +52,7 @@
 !swappy/
 !swayidle/
 !swaylock/
+!systemd/
 !task/
 !tgt/
 !theme_it/
@@ -105,6 +106,7 @@
 !swappy/**/*
 !swayidle/**/*
 !swaylock/**/*
+!systemd/**/*
 !tgt/**/*
 !theme_it/**/*
 !thefuck/**/*
@@ -165,3 +167,7 @@ yazi/plugins
 nvim/lazy-lock.json
 yazi/package.toml
 yazi/package.toml
+systemd/user/default.target.wants
+systemd/user/graphical-session.target.wants
+systemd/user/sockets.target.wants
+systemd/user/timers.target.wants
