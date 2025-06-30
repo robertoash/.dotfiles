@@ -38,10 +38,30 @@ status_file_path = "/tmp/mqtt/linux_webcam_status"
 
 
 def is_webcam_in_use():
+    """Check if webcam is in use by non-automated processes (excludes face detector)."""
     try:
-        subprocess.check_output(["lsof", device_file_path], stderr=subprocess.DEVNULL)
-        return True
+        # Get list of processes using the camera
+        lsof_output = subprocess.check_output(
+            ["lsof", device_file_path], stderr=subprocess.DEVNULL, text=True
+        )
+
+        for line in lsof_output.strip().split("\n"):
+            if line and not line.startswith("COMMAND"):  # Skip header
+                # Check if this line contains face detector
+                if "face_detector" in line.lower():
+                    logging.debug(f"Ignoring face detector process: {line}")
+                    continue
+
+                # If it's not a face detector process, webcam is in use by something else
+                logging.debug(f"Non-automated webcam usage detected: {line}")
+                return True
+
+        # All processes using camera are face detector - consider inactive
+        logging.debug("Only face detector using camera - considering inactive")
+        return False
+
     except subprocess.CalledProcessError:
+        # No processes using camera
         return False
 
 

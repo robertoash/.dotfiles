@@ -16,18 +16,42 @@ def setup_logging(debug=False):
         level=log_level,
         format="%(asctime)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
+        handlers=[
+            logging.FileHandler("/tmp/face_detector.log"),
+            logging.StreamHandler(),
+        ],
     )
 
 
-def report_status(status):
-    """Report status to MQTT."""
-    logging.info(f"Reporting status: {status}")
+def report_face_status(status):
+    """Report face presence status to MQTT."""
+    logging.info(f"Reporting face presence: {status}")
     status_file = Path("/tmp/mqtt/face_presence")
     status_file.parent.mkdir(parents=True, exist_ok=True)
-
-    # Write status
     status_file.write_text(status)
-    logging.debug(f"Status '{status}' written to {status_file}")
+    logging.debug(f"Face presence '{status}' written to {status_file}")
+
+
+def report_idle_status(status):
+    """Report idle detection status to MQTT."""
+    logging.info(f"Reporting idle detection: {status}")
+    status_file = Path("/tmp/mqtt/idle_detection_status")
+    status_file.parent.mkdir(parents=True, exist_ok=True)
+    status_file.write_text(status)
+    logging.debug(f"Idle detection '{status}' written to {status_file}")
+
+
+def check_user_active():
+    """Check if user has become active by monitoring linux_mini_status."""
+    try:
+        status_file = Path("/tmp/mqtt/linux_mini_status")
+        if status_file.exists():
+            content = status_file.read_text().strip()
+            return content == "active"
+        return False
+    except Exception as e:
+        logging.warning(f"Error checking user status: {e}")
+        return False
 
 
 def quick_face_check(face_cascade, profile_cascade, duration=3):
@@ -40,10 +64,15 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
     start_time = time.time()
     frames_total = 0
     face_detected_frames = 0
-    detection_threshold = 0.6
+    detection_threshold = 0.5  # Changed to 50% as per requirements
 
     try:
         while time.time() - start_time < duration:
+            # Check if user became active during quick check
+            if check_user_active():
+                logging.info("User became active during quick face check, stopping")
+                return False
+
             ret, frame = cap.read()
             if not ret:
                 logging.error("Can't receive frame during monitoring check")
@@ -70,17 +99,17 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
         cv2.destroyAllWindows()
 
 
-def check_face_presence_coordinator_running():
-    """Check if continuous face monitor should continue running (no exit flag)."""
-    exit_flag = Path("/tmp/continuous_face_monitor_exit")
-    return not exit_flag.exists()
-
-
 def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window=5):
     """Run face detection with continuous monitoring."""
+    # Report in_progress status at start
+    report_idle_status("in_progress")
+
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         logging.error("Cannot open camera")
+        # Report failure and reset statuses
+        report_face_status("not_detected")
+        report_idle_status("inactive")
         return
 
     start_time = time.time()
@@ -88,11 +117,18 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
     frames_total = 0
     face_detected_frames = 0
 
-    # Require at least 60% of frames to have faces for more reliability
-    detection_threshold = 0.6
+    # Changed to 50% threshold as per requirements
+    detection_threshold = 0.5
 
     try:
         while time.time() - start_time < max_duration:
+            # Check if user became active
+            if check_user_active():
+                logging.info("User became active, stopping face detection")
+                report_face_status("not_detected")
+                report_idle_status("inactive")
+                return
+
             ret, frame = cap.read()
             if not ret:
                 logging.error("Can't receive frame (stream end?). Exiting ...")
@@ -122,37 +158,37 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                     logging.info(
                         f"FACE DETECTED! Rate: {detection_rate:.1%} in {window_duration}s"
                     )
-                    report_status("detected")
+                    report_face_status("detected")
+                    # Keep idle_detection_status as in_progress as per requirements
 
                     # Release camera and start monitoring loop
                     cap.release()
                     cv2.destroyAllWindows()
                     logging.debug("Camera released, starting monitoring loop.")
 
-                    # Monitor every minute until face is no longer detected OR idle manager stops
+                    # Monitor every minute until face is no longer detected OR user becomes active
                     monitoring_start = time.time()
                     while True:
-                        # Check if face presence coordinator is still running
-                        # (user activity breaks this)
-                        if not check_face_presence_coordinator_running():
+                        # Check if user became active
+                        if check_user_active():
                             logging.info(
-                                "Face monitoring stopped (user activity detected). "
-                                "Resetting status."
+                                "User became active during monitoring, stopping face detection"
                             )
-                            report_status("not_detected")
+                            report_face_status("not_detected")
+                            report_idle_status("inactive")
                             return
 
                         logging.info("Waiting 60 seconds before next face check...")
 
-                        # Sleep in smaller chunks to check idle manager flag more frequently
+                        # Sleep in smaller chunks to check user activity more frequently
                         for _ in range(60):
                             time.sleep(1)
-                            if not check_face_presence_coordinator_running():
+                            if check_user_active():
                                 logging.info(
-                                    "Face monitoring stopped during wait. "
-                                    "Resetting status."
+                                    "User became active during wait, stopping face detection"
                                 )
-                                report_status("not_detected")
+                                report_face_status("not_detected")
+                                report_idle_status("inactive")
                                 return
 
                         logging.info("Performing periodic face detection check...")
@@ -166,7 +202,8 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                             logging.info(
                                 "Face no longer detected. Reporting not_detected."
                             )
-                            report_status("not_detected")
+                            report_face_status("not_detected")
+                            report_idle_status("inactive")
                             return
                     return
 
@@ -189,35 +226,37 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
 
         if final_detection_rate >= detection_threshold:
             logging.info("FINAL RESULT: FACE DETECTED")
-            report_status("detected")
+            report_face_status("detected")
+            # Keep idle_detection_status as in_progress
 
             # Release camera and start monitoring loop
             cap.release()
             cv2.destroyAllWindows()
             logging.debug("Camera released, starting monitoring loop.")
 
-            # Monitor every minute until face is no longer detected OR idle manager stops
+            # Monitor every minute until face is no longer detected OR user becomes active
             monitoring_start = time.time()
             while True:
-                # Check if face presence coordinator is still running (user activity breaks this)
-                if not check_face_presence_coordinator_running():
+                # Check if user became active
+                if check_user_active():
                     logging.info(
-                        "Face monitoring stopped (user activity detected). "
-                        "Resetting status."
+                        "User became active during monitoring, stopping face detection"
                     )
-                    report_status("not_detected")
+                    report_face_status("not_detected")
+                    report_idle_status("inactive")
                     return
 
                 logging.info("Waiting 60 seconds before next face check...")
 
-                # Sleep in smaller chunks to check idle manager flag more frequently
+                # Sleep in smaller chunks to check user activity more frequently
                 for _ in range(60):
                     time.sleep(1)
-                    if not check_face_presence_coordinator_running():
+                    if check_user_active():
                         logging.info(
-                            "Face monitoring stopped during wait. Resetting status."
+                            "User became active during wait, stopping face detection"
                         )
-                        report_status("not_detected")
+                        report_face_status("not_detected")
+                        report_idle_status("inactive")
                         return
 
                 logging.info("Performing periodic face detection check...")
@@ -229,11 +268,13 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                     )
                 else:
                     logging.info("Face no longer detected. Reporting not_detected.")
-                    report_status("not_detected")
+                    report_face_status("not_detected")
+                    report_idle_status("inactive")
                     return
         else:
             logging.info("FINAL RESULT: NO FACE DETECTED")
-            report_status("not_detected")
+            report_face_status("not_detected")
+            report_idle_status("inactive")
 
     finally:
         # Only release if not already released
@@ -251,6 +292,8 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable debug logging.")
     args = parser.parse_args()
     setup_logging(args.debug)
+
+    logging.info("Starting face detection for idle management")
 
     # Paths to cascade files
     # These paths may need to be adjusted depending on the system setup
@@ -279,6 +322,10 @@ def main():
                 logging.info("Please update the `base_path` in this script.")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             logging.error(f"Error while trying to find cascade files: {e}")
+
+        # Report failure and exit
+        report_face_status("not_detected")
+        report_idle_status("inactive")
         return
 
     face_cascade = cv2.CascadeClassifier(str(face_cascade_path))

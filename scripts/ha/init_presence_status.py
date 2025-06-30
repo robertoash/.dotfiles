@@ -57,8 +57,9 @@ def init_status_files():
     status_files = {
         "linux_mini_status": "active",  # Linux mini is active on boot
         "idle_detection_status": "inactive",  # Idle detection is not running on boot
-        # "face_presence": "not_detected",  # Disabled - face detection unplugged
+        "face_presence": "not_detected",  # Face detection starts with no face detected
         "in_office_status": "on",  # Default to in office on boot
+        "linux_webcam_status": "inactive",  # Webcam is not in use on boot
     }
 
     for filename, default_value in status_files.items():

@@ -28,18 +28,18 @@ def main():
             f.write("active")
 
         # Set idle detection to inactive (not running)
-        # with open("/tmp/mqtt/idle_detection_status", "w") as f:
-        #    f.write("inactive")
+        with open("/tmp/mqtt/idle_detection_status", "w") as f:
+            f.write("inactive")
 
     elif "--inactive" in sys.argv:
-        log_action("Setting statuses to INACTIVE")
+        log_action("Setting statuses to INACTIVE and starting presence check")
         # Set mini status to inactive
         with open("/tmp/mqtt/linux_mini_status", "w") as f:
             f.write("inactive")
 
-        # Set idle detection to in_progress (actively running)
-        # with open("/tmp/mqtt/idle_detection_status", "w") as f:
-        #    f.write("in_progress")
+        # Set idle detection to in_progress (starting presence checking phase)
+        with open("/tmp/mqtt/idle_detection_status", "w") as f:
+            f.write("in_progress")
     else:
         log_action("No valid arguments provided")
 
