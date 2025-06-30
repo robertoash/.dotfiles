@@ -38,7 +38,7 @@ def report_active_status():
     """Report active status to HA."""
     try:
         logging.info("Reporting active status to HA")
-        script = "/home/rash/.config/scripts/ha/activity_status_reporter.py"
+        script = "/home/rash/.config/scripts/hyprland/idle_management/activity_status_reporter.py"
         subprocess.run([script, "--active"], check=True)
         logging.info("Active status reported successfully")
     except subprocess.CalledProcessError as e:

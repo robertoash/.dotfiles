@@ -1,4 +1,4 @@
-# Enhanced Idle Detection System with Face Recognition
+# Enhanced Idle Management System with Face Recognition
 
 A streamlined idle management system that provides reliable timeout-based locking and display management for Hyprland, with integrated face detection and office presence detection.
 
@@ -6,20 +6,20 @@ A streamlined idle management system that provides reliable timeout-based lockin
 
 This system provides intelligent idle detection with four stages:
 
-1. **30 seconds**: Report inactive status and start presence checking phase
-2. **50 seconds**: Perform face detection to verify user presence
-3. **60 seconds**: Check office presence, lock if away from office (respects face detection)
-4. **90 seconds**: Check office presence again, turn off displays if still away
+1. **Stage 1**: Report inactive status and start presence checking phase
+2. **Stage 2**: Perform face detection to verify user presence
+3. **Stage 3**: Check office presence, lock if away from office (respects face detection)
+4. **Stage 4**: Check office presence, turn off displays if away from office (continuous monitoring)
 5. **Background**: Continuous monitoring to turn displays back on when returning to office
 
 ## Architecture
 
 ```
 hypridle.conf
-    ├── 30s: activity_status_reporter.py --inactive (starts presence checking)
-    ├── 50s: face_detector.py (face presence verification)
-    ├── 60s: idle_simple_lock.py (respects face detection results)
-    ├── 90s: idle_simple_dpms.py
+    ├── Stage 1: activity_status_reporter.py --inactive (starts presence checking)
+    ├── Stage 2: face_detector.py (face presence verification)
+    ├── Stage 3: idle_simple_lock.py (respects face detection results)
+    ├── Stage 4: idle_simple_dpms.py
     └── on-resume: idle_simple_resume.py
 
 launch.conf
@@ -30,19 +30,21 @@ launch.conf
 
 ```
 scripts/
-├── ha/
-│   ├── init_presence_status.py        # Boot-time status initialization
-│   ├── activity_status_reporter.py    # Activity status + presence checking
-│   └── linux_webcam_status.py         # Webcam monitoring (filtered)
-├── hyprland/
-│   ├── idle_simple_lock.py            # 60s: Lock if office status off
-│   ├── idle_simple_dpms.py            # 90s: DPMS off if office status still off
-│   ├── idle_simple_resume.py          # Resume: Report active, DPMS on
-│   └── in_office_monitor.py           # Background: DPMS on when office status → on
-└── hyprland/presence_detection/
-    ├── face_detector.py               # Face detection engine
-    └── debug/
-        └── debug_idle_temp_files.py   # Comprehensive system state monitor
+├── mqtt/
+│   ├── mqtt_reports.py                # Status reporting to MQTT (kept separate)
+│   └── mqtt_listener.py               # MQTT message handling (kept separate)
+└── hyprland/
+    └── idle_management/
+        ├── init_presence_status.py        # Boot-time status initialization
+        ├── activity_status_reporter.py    # Activity status + presence checking
+        ├── linux_webcam_status.py         # Webcam monitoring (filtered)
+        ├── idle_simple_lock.py            # Stage 3: Lock if office status off
+        ├── idle_simple_dpms.py            # Stage 4: DPMS off if office status off (continuous monitoring)
+        ├── idle_simple_resume.py          # Resume: Report active, DPMS on
+        ├── in_office_monitor.py           # Background: DPMS on when office status → on
+        ├── face_detector.py               # Face detection engine
+        └── debug/
+            └── debug_idle_temp_files.py   # Comprehensive system state monitor
 ```
 
 ## Script Responsibilities
@@ -62,7 +64,7 @@ scripts/
 
 #### `activity_status_reporter.py`
 - **Purpose**: Report user activity status and start presence checking phase
-- **Called**: By hypridle at 30s timeout and on resume
+- **Called**: By hypridle at Stage 1 timeout and on resume
 - **Arguments**: `--active` or `--inactive`
 - **Behavior**:
   - `--inactive`: Sets `idle_detection_status` to "in_progress" (starts presence checking phase)
@@ -73,7 +75,7 @@ scripts/
 
 #### `face_detector.py`
 - **Purpose**: Computer vision face detection for presence verification
-- **Called**: By hypridle at 50s timeout
+- **Called**: By hypridle at Stage 2 timeout
 - **Detection Logic**:
   - Starts with 5-second detection window
   - Counts frames with/without faces for detection rate
@@ -98,7 +100,7 @@ scripts/
 
 #### `idle_simple_lock.py`
 - **Purpose**: Check office status and lock if away from office, with continuous monitoring
-- **Called**: By hypridle at 60s timeout
+- **Called**: By hypridle at Stage 3 timeout
 - **Behavior**:
   - Reads `/tmp/mqtt/in_office_status` (influenced by face detection via HA automation)
   - If status is "off": Lock screen immediately with hyprlock
@@ -107,12 +109,14 @@ scripts/
 - **Integration**: Respects face detection results via Home Assistant automation
 
 #### `idle_simple_dpms.py`
-- **Purpose**: Check office status and turn off displays if still away
-- **Called**: By hypridle at 90s timeout
+- **Purpose**: Check office status and turn off displays if away from office, with continuous monitoring
+- **Called**: By hypridle at Stage 4 timeout
 - **Behavior**:
-  - Reads `/tmp/mqtt/in_office_status`
-  - If status is "off": Turn off displays (DPMS off)
-  - If status is "on": Do nothing (skip DPMS off)
+  - Reads `/tmp/mqtt/in_office_status` (influenced by face detection via HA automation)
+  - If status is "off": Turn off displays immediately (DPMS off)
+  - If status is "on": Continuously monitor for status change to "off", then turn off displays
+  - If user resumes activity during monitoring: Stop monitoring via exit flag mechanism
+- **Integration**: Respects face detection results via Home Assistant automation
 
 #### `idle_simple_resume.py`
 - **Purpose**: Handle user resume/activity detection and signal lock monitoring to stop
@@ -149,7 +153,7 @@ All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
 | File | Purpose | Created By |
 |------|---------|------------|
 | `/tmp/in_office_monitor_exit` | Stop in-office monitor | Cleanup scripts |
-| `/tmp/idle_simple_lock_exit` | Stop lock monitoring when user resumes | `idle_simple_resume.py` |
+| `/tmp/idle_simple_lock_exit` | Stop lock and DPMS monitoring when user resumes | `idle_simple_resume.py` |
 
 ## System Flow
 
@@ -162,14 +166,14 @@ All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
 ### Enhanced Idle Detection Flow
 
 ```
-User becomes idle (30s)
+User becomes idle (Stage 1)
     ↓
 activity_status_reporter.py --inactive
     ↓ (writes status files)
     ├── linux_mini_status = "inactive"
     └── idle_detection_status = "in_progress" (starts presence checking phase)
 
-User idle continues (50s)
+User idle continues (Stage 2)
     ↓
 face_detector.py
     ↓ (maintains status)
@@ -180,7 +184,7 @@ face_detector.py
     ├── If face detected → in_office_status = "on"
     └── If no face detected → in_office_status = "off"
 
-User idle continues (60s)
+User idle continues (Stage 3)
     ↓
 idle_simple_lock.py
     ↓
@@ -190,13 +194,15 @@ Check in_office_status (now influenced by face detection)
                 ├── Status changes to "off" → Lock screen
                 └── User resumes activity → Stop monitoring (exit flag)
 
-User idle continues (90s)
+User idle continues (Stage 4)
     ↓
 idle_simple_dpms.py
     ↓
-Check in_office_status
-    ├── "off" → Turn off displays (DPMS off)
-    └── "on"  → Do nothing
+Check in_office_status (now influenced by face detection)
+    ├── "off" → Turn off displays immediately (DPMS off)
+    └── "on"  → Monitor continuously for status change to "off"
+                ├── Status changes to "off" → Turn off displays
+                └── User resumes activity → Stop monitoring (exit flag)
 
 Meanwhile (CONTINUOUS)
     ↓
@@ -216,7 +222,7 @@ idle_simple_resume.py
 
 ### Decision Logic
 
-#### Face Detection Decision (50s)
+#### Face Detection Decision (Stage 2)
 ```
 face_detector.py
     ↓
@@ -236,7 +242,7 @@ During any phase:
     └── linux_mini_status becomes "active" → Stop detection immediately
 ```
 
-#### Lock Decision (60s)
+#### Lock Decision (Stage 3)
 ```
 idle_simple_lock.py
     ↓
@@ -249,13 +255,17 @@ Read /tmp/mqtt/in_office_status (influenced by face detection)
                     └── User activity detected (exit flag) → Stop monitoring
 ```
 
-#### DPMS Decision (90s)
+#### DPMS Decision (Stage 4)
 ```
 idle_simple_dpms.py
     ↓
-Read /tmp/mqtt/in_office_status
-    ├── "off" → DPMS off (still away, turn off displays)
-    └── "on"  → Skip (in office or face detected, keep displays on)
+Read /tmp/mqtt/in_office_status (influenced by face detection)
+    ├── "off" → DPMS off immediately (away from office OR no face detected)
+    └── "on"  → Start continuous monitoring (in office OR face detected)
+                    ↓
+                Monitor for status change or user activity
+                    ├── in_office changes to "off" → DPMS off
+                    └── User activity detected (exit flag) → Stop monitoring
 ```
 
 #### Continuous Monitoring
@@ -272,39 +282,39 @@ Status changed from "off" to "on"?
 
 ### Hypridle Configuration (`hypridle.conf`)
 ```conf
-# Stage 1: 30 seconds - report inactive status and start presence checking
+# Stage 1: report inactive status and start presence checking
 listener {
     timeout = 30
-    on-timeout = ~/.config/scripts/ha/activity_status_reporter.py --inactive
-    on-resume = ~/.config/scripts/hyprland/idle_simple_resume.py
+    on-timeout = ~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --inactive
+    on-resume = ~/.config/scripts/hyprland/idle_management/idle_simple_resume.py
 }
 
-# Stage 2: 50 seconds - face detection check
+# Stage 2: face detection check
 listener {
     timeout = 50
-    on-timeout = ~/.config/scripts/hyprland/presence_detection/face_detector.py
+    on-timeout = ~/.config/scripts/hyprland/idle_management/face_detector.py
 }
 
-# Stage 3: 60 seconds - check in_office and lock if off (respects face detection results)
+# Stage 3: check in_office and lock if off (respects face detection results)
 listener {
     timeout = 60
-    on-timeout = ~/.config/scripts/hyprland/idle_simple_lock.py
+    on-timeout = ~/.config/scripts/hyprland/idle_management/idle_simple_lock.py
 }
 
-# Stage 4: 90 seconds - check in_office again and dpms off if still off
+# Stage 4: check in_office and dpms off if off (continuous monitoring)
 listener {
     timeout = 90
-    on-timeout = ~/.config/scripts/hyprland/idle_simple_dpms.py
+    on-timeout = ~/.config/scripts/hyprland/idle_management/idle_simple_dpms.py
 }
 ```
 
 ### Launch Configuration (`launch.conf`)
 ```conf
-# Initialize presence detection status files
-exec-once = ~/.config/scripts/ha/init_presence_status.py
+# Initialize idle management status files
+exec-once = ~/.config/scripts/hyprland/idle_management/init_presence_status.py
 
 # Start in-office monitor continuously
-exec-once = ~/.config/scripts/hyprland/in_office_monitor.py &
+exec-once = ~/.config/scripts/hyprland/idle_management/in_office_monitor.py &
 ```
 
 ## Integration Points
@@ -355,7 +365,7 @@ elif face_presence == "not_detected":
 ### Comprehensive Debug Monitor
 ```bash
 # Use the enhanced debug logger for real-time system monitoring
-~/.config/scripts/hyprland/presence_detection/debug/debug_idle_temp_files.py
+~/.config/scripts/hyprland/idle_management/debug/debug_idle_temp_files.py
 
 # Provides:
 # - Real-time status file change detection
@@ -375,11 +385,11 @@ cat /tmp/mqtt/linux_webcam_status
 cat /tmp/mqtt/in_office_status
 
 # Test face detection
-~/.config/scripts/hyprland/presence_detection/face_detector.py --debug
+~/.config/scripts/hyprland/idle_management/face_detector.py --debug
 
 # Test activity reporting
-~/.config/scripts/ha/activity_status_reporter.py --active
-~/.config/scripts/ha/activity_status_reporter.py --inactive
+~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --active
+~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --inactive
 
 # Test webcam filtering
 # Start face detection, then check:
@@ -393,15 +403,15 @@ echo "inactive" > /tmp/mqtt/linux_mini_status
 tail -f /tmp/face_detector.log
 
 # Test complete idle flow
-echo "inactive" > /tmp/mqtt/linux_mini_status  # 30s simulation
+echo "inactive" > /tmp/mqtt/linux_mini_status  # Stage 1 simulation
 sleep 5
-~/.config/scripts/hyprland/presence_detection/face_detector.py  # 50s simulation
+~/.config/scripts/hyprland/idle_management/face_detector.py  # Stage 2 simulation
 ```
 
 **Face Detection Testing:**
 ```bash
 # Test face detection behavior
-~/.config/scripts/hyprland/presence_detection/face_detector.py
+~/.config/scripts/hyprland/idle_management/face_detector.py
 
 # Monitor detection in real-time
 tail -f /tmp/face_detector.log
@@ -459,11 +469,12 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - Logged actions for debugging and tracking
 
 ### Reliability
-- **Critical Bug Fix**: Lock monitoring no longer skips when in_office=on at 60s timeout
-- **Continuous Monitoring**: Locks screen as soon as office status changes to "off"
-- **Clean Exit Handling**: Proper shutdown of monitoring when user activity resumes
-- **No Missed Locks**: System will always attempt to lock when user leaves office, regardless of timing
-- **Face Detection Integration**: Prevents locking when user is detected via camera
+- **Continuous Lock Monitoring**: Locks screen as soon as office status changes to "off", regardless of timing
+- **Continuous DPMS Monitoring**: Turns off displays as soon as office status changes to "off", regardless of timing
+- **Clean Exit Handling**: Proper shutdown of both lock and DPMS monitoring when user activity resumes
+- **No Timing Issues**: Both lock and DPMS wait for face detection results to complete before acting
+- **Face Detection Integration**: Prevents locking and display shutdown when user is detected via camera
+- **Shared Exit Mechanism**: Both monitoring processes stop instantly when user resumes activity
 
 ### Responsive
 - Immediate display activation when returning to office

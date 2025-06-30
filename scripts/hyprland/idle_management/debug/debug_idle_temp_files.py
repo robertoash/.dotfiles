@@ -19,6 +19,7 @@ control_files = {
     "/tmp/in_office_monitor_exit": "Office Monitor Exit Flag",
     "/tmp/face_detector.log": "Face Detector Log (last 2 lines)",
     "/tmp/idle_simple_lock.log": "Lock Script Log (last 2 lines)",
+    "/tmp/idle_simple_dpms.log": "DPMS Script Log (last 2 lines)",
 }
 
 # Track previous values to detect changes
