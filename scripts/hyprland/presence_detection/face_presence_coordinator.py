@@ -218,7 +218,7 @@ def main():
             # Check final in_office status for locking decision
             if get_in_office_status() == "off":
                 logging.info("in_office is OFF. Locking session.")
-                run_command(["loginctl", "lock-session"])
+                run_command(["bash", "-c", "pidof hyprlock || hyprlock"])
 
                 # Wait 30 seconds then check again before DPMS off
                 logging.info("Waiting 30 seconds before DPMS off...")
