@@ -71,9 +71,9 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
 
 
 def check_face_presence_coordinator_running():
-    """Check if face presence coordinator is still running via flag file."""
-    flag_file = Path("/tmp/face_presence_coordinator_running")
-    return flag_file.exists()
+    """Check if continuous face monitor should continue running (no exit flag)."""
+    exit_flag = Path("/tmp/continuous_face_monitor_exit")
+    return not exit_flag.exists()
 
 
 def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window=5):
@@ -132,10 +132,12 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                     # Monitor every minute until face is no longer detected OR idle manager stops
                     monitoring_start = time.time()
                     while True:
-                        # Check if face presence coordinator is still running (user activity breaks this)
+                        # Check if face presence coordinator is still running
+                        # (user activity breaks this)
                         if not check_face_presence_coordinator_running():
                             logging.info(
-                                "Face presence coordinator stopped (user activity detected). Resetting status."
+                                "Face monitoring stopped (user activity detected). "
+                                "Resetting status."
                             )
                             report_status("not_detected")
                             return
@@ -147,7 +149,8 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                             time.sleep(1)
                             if not check_face_presence_coordinator_running():
                                 logging.info(
-                                    "Idle manager stopped during wait. Resetting status."
+                                    "Face monitoring stopped during wait. "
+                                    "Resetting status."
                                 )
                                 report_status("not_detected")
                                 return
@@ -199,7 +202,8 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                 # Check if face presence coordinator is still running (user activity breaks this)
                 if not check_face_presence_coordinator_running():
                     logging.info(
-                        "Idle manager stopped (user activity detected). Resetting status."
+                        "Face monitoring stopped (user activity detected). "
+                        "Resetting status."
                     )
                     report_status("not_detected")
                     return
@@ -211,7 +215,7 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                     time.sleep(1)
                     if not check_face_presence_coordinator_running():
                         logging.info(
-                            "Idle manager stopped during wait. Resetting status."
+                            "Face monitoring stopped during wait. Resetting status."
                         )
                         report_status("not_detected")
                         return
