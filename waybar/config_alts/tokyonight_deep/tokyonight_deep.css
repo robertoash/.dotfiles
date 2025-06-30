@@ -235,6 +235,16 @@ window#waybar.hidden {
     color: @color10;
 }
 
+/* Idle Detection Module Styles */
+
+#custom-hypridle {
+    padding: 4px 0px 0px 0px;
+    margin: 2px 2px 2px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
 #battery.critical:not(.charging) {
     background-color: @color9;
     color: @foreground;

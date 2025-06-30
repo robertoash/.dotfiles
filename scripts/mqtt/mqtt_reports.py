@@ -28,6 +28,10 @@ Status can be checked with:
 file_to_topic = {
     "/tmp/mqtt/linux_mini_status": "scripts/linux_mini/status",
     "/tmp/mqtt/linux_webcam_status": "scripts/linux_webcam/status",
+    "/tmp/mqtt/face_presence": "scripts/face_detection/presence",
+    "/tmp/mqtt/face_last_seen": "scripts/face_detection/last_seen",
+    "/tmp/mqtt/idle_detection_status": "scripts/idle_detection/status",
+    "/tmp/mqtt/manual_override_status": "scripts/idle_detection/manual_override",
 }
 
 # Store previous contents
@@ -70,6 +74,20 @@ def ensure_files_exist():
             ):
                 content = "inactive"
             elif "mini" in file_path and (
+                not content or content not in ["active", "inactive"]
+            ):
+                content = "inactive"
+            elif "face_presence" in file_path and (
+                not content or content not in ["detected", "not_detected"]
+            ):
+                content = "not_detected"
+            elif "face_last_seen" in file_path and not content:
+                content = "0"  # Default timestamp
+            elif "idle_detection_status" in file_path and (
+                not content or content not in ["in_progress", "inactive"]
+            ):
+                content = "inactive"
+            elif "manual_override_status" in file_path and (
                 not content or content not in ["active", "inactive"]
             ):
                 content = "inactive"

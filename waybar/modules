@@ -378,7 +378,7 @@
     },
     "custom/hypridle": {
         "format": "{}",
-        "exec": "cat /tmp/waybar/hypridle_status.json 2>/dev/null || echo '⚫'",
+        "exec": "jq -r '.text // \"⚫\"' /tmp/waybar/idle_status.json 2>/dev/null || echo '⚫'",
         "interval": 1,
         "on-click": "~/.config/scripts/waybar/toggle_hypridle.py",
         "tooltip": false
