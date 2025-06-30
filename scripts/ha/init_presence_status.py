@@ -11,10 +11,7 @@ def cleanup_stale_flags():
     exit_flag_patterns = [
         "/tmp/*_exit",
         "/tmp/*exit*",
-        "/tmp/face_presence_coordinator_exit",  # Legacy flag
-        "/tmp/continuous_face_monitor_exit",  # Disabled - face detection unplugged
-        "/tmp/office_status_handler_exit",  # Disabled - using simple idle management
-        "/tmp/in_office_monitor_exit",  # Current simplified system
+        "/tmp/in_office_monitor_exit",
     ]
 
     # Also explicitly clean up critical files

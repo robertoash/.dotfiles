@@ -12,27 +12,12 @@ This system provides intelligent idle detection with four stages:
 4. **90 seconds**: Check office presence again, turn off displays if still away
 5. **Background**: Continuous monitoring to turn displays back on when returning to office
 
-## Current Status
-
-**✅ ACTIVE COMPONENTS:**
-- Enhanced timeout-based idle detection with face recognition
-- Face detection system (`face_detector.py`) - **RE-ENABLED**
-- Office presence integration
-- MQTT status reporting with comprehensive state tracking
-- Smart locking and display management
-- Webcam usage filtering (excludes automated face detection)
-
-**🚫 DISABLED COMPONENTS (preserved for future use):**
-- Complex parallel face monitoring (`continuous_face_monitor.py`)
-- Advanced idle management (`office_status_handler.py`)
-- Complex parallel processing
-
 ## Architecture
 
 ```
-hypridle.conf (Enhanced)
+hypridle.conf
     ├── 30s: activity_status_reporter.py --inactive (starts presence checking)
-    ├── 50s: face_detector.py (NEW: face presence verification)
+    ├── 50s: face_detector.py (face presence verification)
     ├── 60s: idle_simple_lock.py (respects face detection results)
     ├── 90s: idle_simple_dpms.py
     └── on-resume: idle_simple_resume.py
@@ -55,17 +40,12 @@ scripts/
 │   ├── idle_simple_resume.py          # Resume: Report active, DPMS on
 │   └── in_office_monitor.py           # Background: DPMS on when office status → on
 └── hyprland/presence_detection/
-    ├── face_detector.py               # ✅ [ACTIVE] Face detection engine
-    ├── continuous_face_monitor.py     # [DISABLED] Complex face monitoring
-    ├── office_status_handler.py       # [DISABLED] Advanced office handler
-    ├── cleanup_on_resume.py           # [DISABLED] Complex cleanup
+    ├── face_detector.py               # Face detection engine
     └── debug/
         └── debug_idle_temp_files.py   # Comprehensive system state monitor
 ```
 
 ## Script Responsibilities
-
-### Active Scripts
 
 #### `init_presence_status.py`
 - **Purpose**: Initialize status files on boot and clean up stale flags
@@ -76,22 +56,22 @@ scripts/
 - **Status Files Created**:
   - `linux_mini_status`: `"active"`
   - `idle_detection_status`: `"inactive"`
-  - `face_presence`: `"not_detected"` ✨ **NEW**
-  - `linux_webcam_status`: `"inactive"` ✨ **NEW**
+  - `face_presence`: `"not_detected"`
+  - `linux_webcam_status`: `"inactive"`
   - `in_office_status`: `"on"`
 
 #### `activity_status_reporter.py`
 - **Purpose**: Report user activity status and start presence checking phase
 - **Called**: By hypridle at 30s timeout and on resume
 - **Arguments**: `--active` or `--inactive`
-- **Enhanced Behavior**: ✨ **NEW**
+- **Behavior**:
   - `--inactive`: Sets `idle_detection_status` to "in_progress" (starts presence checking phase)
   - `--active`: Sets `idle_detection_status` to "inactive" (stops presence checking)
 - **Updates**:
   - `/tmp/mqtt/linux_mini_status`
-  - `/tmp/mqtt/idle_detection_status` ✨ **ENHANCED**
+  - `/tmp/mqtt/idle_detection_status`
 
-#### `face_detector.py` ✨ **RE-ENABLED**
+#### `face_detector.py`
 - **Purpose**: Computer vision face detection for presence verification
 - **Called**: By hypridle at 50s timeout
 - **Detection Logic**:
@@ -107,7 +87,7 @@ scripts/
 - **Smart Exit**: Monitors `linux_mini_status` for user activity
 - **Logging**: Comprehensive logging to `/tmp/face_detector.log`
 
-#### `linux_webcam_status.py` ✨ **ENHANCED**
+#### `linux_webcam_status.py`
 - **Purpose**: Monitor webcam usage by non-automated processes
 - **Enhanced Filtering**: Excludes face detector processes from webcam "active" status
 - **Behavior**:
@@ -151,30 +131,16 @@ scripts/
   - When status changes from "off" → "on": Immediately turn on displays
   - Runs in background, responds instantly to office status changes
 
-### Disabled Scripts (Preserved)
-
-#### `continuous_face_monitor.py` [DISABLED]
-- **Status**: Complex face monitoring temporarily disabled
-- **Purpose**: Face detection coordination (preserved for future use)
-- **Behavior**: Early return with disabled message if accidentally called
-
-#### `office_status_handler.py` [DISABLED]
-- **Status**: Advanced office handling temporarily disabled
-- **Purpose**: Complex office-based management (preserved for future use)
-- **Behavior**: Early return with disabled message if accidentally called
-
 ## Status Files
 
 All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
-
-### Active Status Files
 
 | File | Values | Purpose | Updated By |
 |------|--------|---------|------------|
 | `linux_mini_status` | `active`, `inactive` | User activity state | `activity_status_reporter.py`, `toggle_hypridle.py` |
 | `idle_detection_status` | `inactive`, `in_progress` | Idle detection state | `activity_status_reporter.py`, `face_detector.py`, `toggle_hypridle.py` |
-| `face_presence` | `detected`, `not_detected` | ✨ Face detection results | `face_detector.py` |
-| `linux_webcam_status` | `active`, `inactive` | ✨ Non-automated webcam usage | `linux_webcam_status.py` |
+| `face_presence` | `detected`, `not_detected` | Face detection results | `face_detector.py` |
+| `linux_webcam_status` | `active`, `inactive` | Non-automated webcam usage | `linux_webcam_status.py` |
 | `in_office_status` | `on`, `off` | Office occupancy | External MQTT (influenced by face detection) |
 | `manual_override_status` | `active`, `inactive` | Manual override state | `toggle_hypridle.py` |
 
@@ -193,17 +159,17 @@ All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
 3. **`in_office_monitor.py`** → Starts continuous background monitoring
 4. **System ready** → Enhanced idle detection with face recognition active
 
-### Enhanced Idle Detection Flow ✨ **UPDATED**
+### Enhanced Idle Detection Flow
 
 ```
 User becomes idle (30s)
     ↓
 activity_status_reporter.py --inactive
-    ↓ (writes status files - ENHANCED)
+    ↓ (writes status files)
     ├── linux_mini_status = "inactive"
     └── idle_detection_status = "in_progress" (starts presence checking phase)
 
-User idle continues (50s) - NEW STAGE
+User idle continues (50s)
     ↓
 face_detector.py
     ↓ (maintains status)
@@ -250,7 +216,7 @@ idle_simple_resume.py
 
 ### Decision Logic
 
-#### Face Detection Decision (50s) ✨ **NEW**
+#### Face Detection Decision (50s)
 ```
 face_detector.py
     ↓
@@ -270,7 +236,7 @@ During any phase:
     └── linux_mini_status becomes "active" → Stop detection immediately
 ```
 
-#### Lock Decision (60s) - Enhanced
+#### Lock Decision (60s)
 ```
 idle_simple_lock.py
     ↓
@@ -304,7 +270,7 @@ Status changed from "off" to "on"?
 
 ## Configuration
 
-### Hypridle Configuration (`hypridle.conf`) ✨ **UPDATED**
+### Hypridle Configuration (`hypridle.conf`)
 ```conf
 # Stage 1: 30 seconds - report inactive status and start presence checking
 listener {
@@ -343,14 +309,14 @@ exec-once = ~/.config/scripts/hyprland/in_office_monitor.py &
 
 ## Integration Points
 
-### MQTT Integration ✨ **ENHANCED**
+### MQTT Integration
 - **Publisher**: `mqtt_reports.py` monitors `/tmp/mqtt/` files
 - **Consumer**: Home Assistant receives status updates
 - **External Input**: Office status received via MQTT from motion sensors
 - **Face Detection**: `face_presence` status influences `in_office_status` via HA automation
 - **Webcam Filtering**: Smart filtering prevents false positives from automated camera usage
 
-### Home Assistant Automation Required ✨ **NEW**
+### Home Assistant Automation Required
 The system requires HA automation to integrate face detection results:
 
 ```yaml
@@ -377,8 +343,8 @@ elif face_presence == "not_detected":
 
 ## Debugging
 
-### Log Files ✨ **ENHANCED**
-- **Face Detection**: `/tmp/face_detector.log` ✨ **NEW**
+### Log Files
+- **Face Detection**: `/tmp/face_detector.log`
 - **In-office Monitor**: `/tmp/in_office_monitor.log`
 - **Simple Lock**: `/tmp/idle_simple_lock.log`
 - **Simple DPMS**: `/tmp/idle_simple_dpms.log`
@@ -386,7 +352,7 @@ elif face_presence == "not_detected":
 - **Activity Reporter**: `/tmp/mini_status_debug.log`
 - **Manual Override**: `/tmp/hypridle_toggle.log`
 
-### Comprehensive Debug Monitor ✨ **NEW**
+### Comprehensive Debug Monitor
 ```bash
 # Use the enhanced debug logger for real-time system monitoring
 ~/.config/scripts/hyprland/presence_detection/debug/debug_idle_temp_files.py
@@ -399,19 +365,19 @@ elif face_presence == "not_detected":
 # - Millisecond-precision event timestamps
 ```
 
-### Manual Testing ✨ **ENHANCED**
+### Manual Testing
 ```bash
-# Check current status (expanded)
+# Check current status
 cat /tmp/mqtt/linux_mini_status
 cat /tmp/mqtt/idle_detection_status
-cat /tmp/mqtt/face_presence        # NEW
-cat /tmp/mqtt/linux_webcam_status  # NEW
+cat /tmp/mqtt/face_presence
+cat /tmp/mqtt/linux_webcam_status
 cat /tmp/mqtt/in_office_status
 
 # Test face detection
 ~/.config/scripts/hyprland/presence_detection/face_detector.py --debug
 
-# Test activity reporting (enhanced)
+# Test activity reporting
 ~/.config/scripts/ha/activity_status_reporter.py --active
 ~/.config/scripts/ha/activity_status_reporter.py --inactive
 
@@ -448,19 +414,19 @@ cat /tmp/mqtt/face_presence        # Should show "detected" or "not_detected"
 cat /tmp/mqtt/idle_detection_status # Should show state progression
 ```
 
-### Process Monitoring ✨ **ENHANCED**
+### Process Monitoring
 ```bash
-# Check running processes (expanded)
+# Check running processes
 ps aux | grep -E "(in_office_monitor|face_detector)"
 
 # Check for exit flags
 ls -la /tmp/*_exit 2>/dev/null || echo "No exit flags present"
 
-# Monitor status file changes (comprehensive)
+# Monitor status file changes
 watch -n1 'cat /tmp/mqtt/*_status 2>/dev/null'
 
 # Monitor specific logs
-tail -f /tmp/face_detector.log        # NEW
+tail -f /tmp/face_detector.log
 tail -f /tmp/in_office_monitor.log
 tail -f /tmp/hypridle_toggle.log
 
@@ -473,7 +439,7 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 ## Key Features
 
-### Enhanced Intelligence ✨ **NEW**
+### Intelligence
 - **Face-Based Presence Detection**: Computer vision verification before locking
 - **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
 - **Phased Presence Checking**: Clear "in_progress" state prevents premature office status changes
@@ -492,7 +458,7 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - Consistent status reporting across all systems
 - Logged actions for debugging and tracking
 
-### Enhanced Reliability
+### Reliability
 - **Critical Bug Fix**: Lock monitoring no longer skips when in_office=on at 60s timeout
 - **Continuous Monitoring**: Locks screen as soon as office status changes to "off"
 - **Clean Exit Handling**: Proper shutdown of monitoring when user activity resumes
@@ -506,49 +472,30 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - Instant manual override response
 - Real-time face detection monitoring
 
-### Office Integration ✨ **ENHANCED**
+### Office Integration
 - Respects both motion sensor AND face detection for presence
 - Smart locking (only when away from office AND no face detected)
 - Smart display management (context-aware with multiple inputs)
 - Home Assistant automation integration for complex decision logic
 
-## Disabled Components
-
-The following components are **disabled but preserved** for potential future reactivation:
-
-### Complex Face Monitoring System
-- **Files**: `continuous_face_monitor.py`
-- **Status**: Disabled via early return
-- **Reason**: Replaced with simpler direct face detection approach
-
-### Advanced Office Handler
-- **Files**: `office_status_handler.py`
-- **Status**: Disabled via early return
-- **Reason**: Replaced with Home Assistant automation integration
-
-### Complex Cleanup
-- **Files**: `cleanup_on_resume.py`
-- **Status**: Updated to handle simplified system only
-- **Reason**: Less complex state to manage
-
 ## Troubleshooting
 
 ### Common Issues
 
-**Face detection not working:** ✨ **NEW**
+**Face detection not working:**
 - Check camera permissions: `ls -la /dev/video0`
 - Verify OpenCV cascade files: Check paths in `face_detector.py`
 - Test camera access: `lsof /dev/video0` (should be empty when not running)
 - Check face detection logs: `tail -f /tmp/face_detector.log`
 - Verify detection threshold: Look for detection rate logs
 
-**Webcam status false positives:** ✨ **NEW**
+**Webcam status false positives:**
 - Check if face detector is being filtered: Look for "Ignoring face detector process" in logs
 - Verify `linux_webcam_status.py` filtering logic
 - Test manual: `lsof /dev/video0` should show face_detector when running
 - Check webcam status: `cat /tmp/mqtt/linux_webcam_status` should stay "inactive" during face detection
 
-**Idle detection status stuck:** ✨ **NEW**
+**Idle detection status stuck:**
 - Check if `idle_detection_status` is stuck in "in_progress"
 - Verify face detection completes properly
 - Ensure user activity resets status via `activity_status_reporter.py --active`
@@ -558,39 +505,29 @@ The following components are **disabled but preserved** for potential future rea
 - Check `/tmp/mqtt/in_office_status` file exists and has correct value
 - Verify hyprlock is installed and working
 - Check `idle_simple_lock.log` for errors
-- **Enhanced**: Verify face detection influences office status via HA automation
-- **Enhanced**: Check if presence checking phase is working correctly
+- Verify face detection influences office status via HA automation
+- Check if presence checking phase is working correctly
 
 **Displays not turning off:**
 - Verify in_office_status is "off" when expected
 - Check `idle_simple_dpms.log` for hyprctl errors
 - Test manual DPMS: `hyprctl dispatch dpms off`
-- **Enhanced**: Ensure face detection isn't keeping office status "on" when it should be "off"
+- Ensure face detection isn't keeping office status "on" when it should be "off"
 
 **Office status not updating:**
 - Verify MQTT connection and `mqtt_reports.py` service
 - Check file permissions on `/tmp/mqtt/in_office_status`
 - Ensure motion sensors are reporting to Home Assistant
-- **Enhanced**: Verify Home Assistant automation integrates face detection results
-- **Enhanced**: Check `face_presence` status is being published correctly
+- Verify Home Assistant automation integrates face detection results
+- Check `face_presence` status is being published correctly
 
 **Scripts not starting:**
 - Check hypridle configuration syntax
 - Verify script permissions (executable)
 - Check individual script logs for errors
-- **Enhanced**: Verify face detection dependencies (OpenCV, camera access)
+- Verify face detection dependencies (OpenCV, camera access)
 
-## Migration Notes
-
-This system evolved from a simplified idle detection system to include:
-- ✨ **Face detection integration** for improved presence verification
-- ✨ **Webcam usage filtering** to distinguish automated vs manual camera usage
-- ✨ **Enhanced status reporting** with comprehensive state tracking
-- ✨ **Home Assistant automation integration** for complex decision logic
-
-Previous disabled face detection components have been partially reactivated in a simplified, more reliable form. The system maintains the simplicity of the timeout-based approach while adding intelligent presence verification.
-
-## Home Assistant Integration Requirements ✨ **NEW**
+## Home Assistant Integration Requirements
 
 To fully utilize the enhanced face detection capabilities, Home Assistant automation should be configured to:
 
