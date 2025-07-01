@@ -97,7 +97,11 @@ def detect_motion(frame1, frame2, min_area=None):
 
 
 def detect_human_presence(
-    face_cascade, profile_cascade, upperbody_cascade, frame, previous_frame=None
+    face_cascade,
+    profile_cascade,
+    eye_cascade,
+    frame,
+    previous_frame=None,
 ):
     """Detect human presence using multiple methods."""
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -105,7 +109,8 @@ def detect_human_presence(
     # Get detection parameters from config
     scale_factor = get_detection_param("cascade_scale_factor")
     min_neighbors_face = get_detection_param("cascade_min_neighbors_face")
-    min_neighbors_upperbody = get_detection_param("cascade_min_neighbors_upperbody")
+    min_neighbors_eye = get_detection_param("cascade_min_neighbors_eye")
+    min_area_eye = get_detection_param("min_detection_area_eye")
 
     # Face detection (frontal)
     faces = face_cascade.detectMultiScale(gray, scale_factor, min_neighbors_face)
@@ -119,14 +124,18 @@ def detect_human_presence(
         logging.debug(f"Detected {len(profiles)} profile face(s)")
         return True, "profile_face"
 
-    # Upper body detection (great for when looking down at phone)
-    if upperbody_cascade is not None:
-        upperbodies = upperbody_cascade.detectMultiScale(
-            gray, scale_factor, min_neighbors_upperbody
-        )
-        if len(upperbodies) > 0:
-            logging.debug(f"Detected {len(upperbodies)} upper body/bodies")
-            return True, "upper_body"
+    # Eye detection (basic eye detection - NOT true nose-ears triangle)
+    if eye_cascade is not None:
+        eyes = eye_cascade.detectMultiScale(gray, scale_factor, min_neighbors_eye)
+        valid_eyes = []
+        for x, y, w, h in eyes:
+            area = w * h
+            if area >= min_area_eye:
+                valid_eyes.append((x, y, w, h))
+
+        if len(valid_eyes) > 0:
+            logging.debug(f"Detected {len(valid_eyes)} valid eye(s)")
+            return True, "eye_detection"
 
     # Motion detection (subtle movements while looking at phone)
     if previous_frame is not None:
@@ -138,9 +147,7 @@ def detect_human_presence(
     return False, "none"
 
 
-def quick_presence_check(
-    face_cascade, profile_cascade, upperbody_cascade, duration=None
-):
+def quick_presence_check(face_cascade, profile_cascade, eye_cascade, duration=None):
     """Quick human presence detection check for monitoring."""
     if duration is None:
         duration = FACE_DETECTION["quick_check_duration"]
@@ -172,7 +179,11 @@ def quick_presence_check(
 
             # Detect human presence using multiple methods
             detected, method = detect_human_presence(
-                face_cascade, profile_cascade, upperbody_cascade, frame, previous_frame
+                face_cascade,
+                profile_cascade,
+                eye_cascade,
+                frame,
+                previous_frame,
             )
 
             if detected:
@@ -200,7 +211,7 @@ def quick_presence_check(
 def run_detection(
     face_cascade,
     profile_cascade,
-    upperbody_cascade,
+    eye_cascade,
     max_duration=None,
     initial_window=None,
 ):
@@ -230,7 +241,7 @@ def run_detection(
     detection_methods = {
         "frontal_face": 0,
         "profile_face": 0,
-        "upper_body": 0,
+        "eye_detection": 0,
         "motion": 0,
     }
 
@@ -252,7 +263,11 @@ def run_detection(
 
             # Detect human presence using multiple methods
             detected, method = detect_human_presence(
-                face_cascade, profile_cascade, upperbody_cascade, frame, previous_frame
+                face_cascade,
+                profile_cascade,
+                eye_cascade,
+                frame,
+                previous_frame,
             )
 
             if detected:
@@ -318,7 +333,9 @@ def run_detection(
 
                         logging.info("Performing periodic human presence check...")
                         if quick_presence_check(
-                            face_cascade, profile_cascade, upperbody_cascade
+                            face_cascade,
+                            profile_cascade,
+                            eye_cascade,
                         ):
                             elapsed_monitoring = int(time.time() - monitoring_start)
                             logging.info(
@@ -393,9 +410,7 @@ def run_detection(
                         return
 
                 logging.info("Performing periodic human presence check...")
-                if quick_presence_check(
-                    face_cascade, profile_cascade, upperbody_cascade
-                ):
+                if quick_presence_check(face_cascade, profile_cascade, eye_cascade):
                     elapsed_monitoring = int(time.time() - monitoring_start)
                     logging.info(
                         f"Human presence still detected after {elapsed_monitoring}s of monitoring. "
@@ -435,7 +450,7 @@ def main():
     # Get cascade file paths from config
     face_cascade_path = get_cascade_file("frontal_face")
     profile_cascade_path = get_cascade_file("profile_face")
-    upperbody_cascade_path = get_cascade_file("upper_body")
+    eye_cascade_path = get_cascade_file("eye")
 
     # Load required cascades
     if not face_cascade_path.exists() or not profile_cascade_path.exists():
@@ -451,16 +466,16 @@ def main():
     face_cascade = cv2.CascadeClassifier(str(face_cascade_path))
     profile_cascade = cv2.CascadeClassifier(str(profile_cascade_path))
 
-    # Load optional upper body cascade
-    upperbody_cascade = None
-    if upperbody_cascade_path.exists():
-        upperbody_cascade = cv2.CascadeClassifier(str(upperbody_cascade_path))
+    # Load optional eye cascade (basic eye detection - NOT true nose-ears triangle)
+    eye_cascade = None
+    if eye_cascade_path.exists():
+        eye_cascade = cv2.CascadeClassifier(str(eye_cascade_path))
         logging.info(
-            "Upper body detection enabled - will detect humans looking down at phones"
+            "Eye detection enabled (basic eye detection - NOT true nose-ears triangle)"
         )
     else:
-        logging.warning(f"Upper body cascade not found at {upperbody_cascade_path}")
-        logging.warning("Will only use face detection methods")
+        logging.warning(f"Eye cascade not found at {eye_cascade_path}")
+        logging.warning("Eye detection disabled")
 
     # Verify cascades loaded correctly
     if face_cascade.empty() or profile_cascade.empty():
@@ -469,19 +484,17 @@ def main():
         report_idle_status("inactive")
         return
 
-    if upperbody_cascade is not None and upperbody_cascade.empty():
-        logging.warning(
-            "Failed to load upper body cascade, disabling upper body detection"
-        )
-        upperbody_cascade = None
+    if eye_cascade is not None and eye_cascade.empty():
+        logging.warning("Failed to load eye cascade, disabling eye detection")
+        eye_cascade = None
 
     logging.info("Detection methods available:")
     logging.info("- Frontal face detection: ✓")
     logging.info("- Profile face detection: ✓")
-    logging.info(f"- Upper body detection: {'✓' if upperbody_cascade else '✗'}")
+    logging.info(f"- Eye detection: {'✓' if eye_cascade else '✗'}")
     logging.info("- Motion detection: ✓")
 
-    run_detection(face_cascade, profile_cascade, upperbody_cascade)
+    run_detection(face_cascade, profile_cascade, eye_cascade)
 
 
 if __name__ == "__main__":

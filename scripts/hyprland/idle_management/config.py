@@ -96,7 +96,10 @@ EXTERNAL_SCRIPTS = {
 CASCADE_FILES = {
     "frontal_face": OPENCV_CASCADE_DIR / "haarcascade_frontalface_default.xml",
     "profile_face": OPENCV_CASCADE_DIR / "haarcascade_profileface.xml",
-    "upper_body": OPENCV_CASCADE_DIR / "haarcascade_upperbody.xml",
+    "full_body": OPENCV_CASCADE_DIR / "haarcascade_fullbody.xml",
+    "frontal_face_alt": OPENCV_CASCADE_DIR / "haarcascade_frontalface_alt.xml",
+    "eye": OPENCV_CASCADE_DIR / "haarcascade_eye.xml",
+    "eye_glasses": OPENCV_CASCADE_DIR / "haarcascade_eye_tree_eyeglasses.xml",
 }
 
 # =============================================================================
@@ -132,10 +135,13 @@ RESUME_DELAYS = {
 # Face detection parameters
 DETECTION_PARAMS = {
     "threshold": 0.5,  # 50% threshold for presence detection
-    "motion_min_area": 500,  # Minimum area for motion detection
+    "motion_min_area": 200,  # Min area for motion detection (reduced for phone usage)
     "cascade_scale_factor": 1.1,  # Scale factor for cascade detection
     "cascade_min_neighbors_face": 3,  # Min neighbors for face detection
-    "cascade_min_neighbors_upperbody": 2,  # Min neighbors for upper body detection
+    "cascade_min_neighbors_profile": 4,  # Min neighbors for profile detection
+    "cascade_min_neighbors_eye": 5,  # Min neighbors for eye detection (strict for accuracy)
+    "min_detection_area_profile": 2000,  # Min area for profiles (filters small false positives)
+    "min_detection_area_eye": 50,  # Min area for eye detection (small but filters noise)
 }
 
 # =============================================================================
