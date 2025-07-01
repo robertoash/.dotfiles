@@ -10,15 +10,15 @@ This system provides intelligent idle detection with four stages:
 2. **Stage 2**: Perform face detection (generic or person-specific) to verify user presence
 3. **Stage 3**: Check office presence, lock if away from office (respects face detection)
 4. **Stage 4**: Check office presence, turn off displays if away from office (continuous monitoring)
-5. **Background**: Continuous monitoring to turn displays back on when returning to office
+5. **Background**: Continuous monitoring to turn displays back on when returning to office (with time-based scheduling)
 
 ## Architecture
 
 ```
 hypridle.conf
     ├── Stage 1: activity_status_reporter.py --inactive (starts presence checking)
-    ├── Stage 2: face_detector.py (face presence verification + optional person recognition)
-    ├── Stage 3: idle_simple_lock.py (respects face detection results)
+    ├── Stage 2: bash -c 'pidof hyprlock || face_detector.py' (skip if already locked)
+    ├── Stage 3: bash -c 'pidof hyprlock || idle_simple_lock.py' (skip if already locked)
     ├── Stage 4: idle_simple_dpms.py
     └── on-resume: idle_simple_resume.py
 
@@ -428,14 +428,25 @@ idle_simple_resume.py
 - **🆕 Person-Specific Presence**: Recognizes specific individuals vs generic human presence
 - **🆕 Configurable Security**: From generic detection to person-only recognition
 - **🆕 Learning System**: Improves over time with additional reference images
+- **🆕 Manual Lock Awareness**: Skips unnecessary operations when already locked
+- **🆕 Race Condition Prevention**: Handles motion sensor conflicts and manual locking
 - **Face-Based Presence Detection**: Computer vision verification before locking
 - **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
 - **Phased Presence Checking**: Clear "in_progress" state prevents premature office status changes
 - **50% Detection Threshold**: Balanced sensitivity for reliable detection
 - **Adaptive Detection Windows**: 1-10 second detection windows with automatic extension
 
+### Power Management ⚡
+- **🆕 Time-Based DPMS Control**: Intelligent monitor scheduling based on work hours
+- **Smart Monitor Management**: Office status always turns on (lights), monitors conditionally
+- **Schedule Flexibility**: Configurable work days and hours
+- **Manual Override**: Keyboard/mouse activity always turns on monitors
+- **Power Optimization**: Reduces unnecessary monitor usage outside work hours
+- **Weekend Modes**: Different behavior for weekdays vs weekends
+
 ### Centralized Configuration ⚙️
 - **🆕 Facial Recognition Settings**: Complete control over person recognition behavior
+- **🆕 DPMS Scheduling**: Time-based display management configuration
 - **Single source of truth**: All settings in one `config.py` file
 - **Easy customization**: Change behavior without editing multiple scripts
 - **Built-in validation**: Ensures system compatibility and required files exist
@@ -525,6 +536,44 @@ python3 config.py
 - **Performance**: Change `face_detection_model` between "hog" (fast) and "cnn" (accurate)
 - **Behavior**: Enable/disable `fallback_to_generic_detection`
 - **Reference Management**: Add/remove images in `reference_images_dir`
+
+### 🆕 Time-Based DPMS Control
+
+The system now supports intelligent monitor management based on work schedules. The `in_office` status always turns on (triggering lights and other automations), but monitor displays only auto-turn-on during configured work hours.
+
+**DPMS Schedule Configuration (`config.py`):**
+```python
+DPMS_SCHEDULE = {
+    "enabled": True,                    # Set to False to disable time restrictions
+    "work_days": [0, 1, 2, 3, 4],      # Monday=0, Sunday=6 (weekdays only)
+    "work_hours": {
+        "start": "06:00",               # Work starts at 6 AM
+        "end": "20:00",                 # Work ends at 8 PM
+    },
+}
+```
+
+**Behavior:**
+- **Motion sensor triggers** → `in_office` turns "on" → **Lights turn on** ✅
+- **During work hours (M-F 6AM-8PM)** → Monitors also turn on ✅
+- **Outside work hours** → Monitors stay off, only lights turn on ✅
+- **Manual activity (keyboard/mouse)** → Always turns monitors on regardless of time ✅
+
+**Configuration Functions:**
+- `get_dpms_schedule_config()` - Get complete schedule configuration
+- `is_within_work_hours()` - Check if current time is within configured work hours
+
+**Customization Options:**
+- **Disable scheduling**: Set `enabled: False` - monitors always auto-turn-on
+- **Weekend work**: Add `5, 6` to `work_days` for Saturday/Sunday
+- **Different hours**: Change `start`/`end` times (24-hour format)
+- **Custom days**: Modify `work_days` array (0=Monday, 6=Sunday)
+
+**Use Cases:**
+- **Night gaming**: Monitors stay off when entering room at night
+- **Early morning**: Monitors stay off during early hours
+- **Weekend relaxation**: Different behavior on weekends vs weekdays
+- **Power saving**: Reduces unnecessary monitor usage outside work hours
 
 ## Integration Points
 

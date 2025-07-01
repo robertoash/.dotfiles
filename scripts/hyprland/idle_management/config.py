@@ -112,6 +112,16 @@ RESUME_DELAYS = {
     "exit_flag_cleanup": 2,  # How long to wait before cleaning up exit flags
 }
 
+# DPMS auto-on schedule configuration
+DPMS_SCHEDULE = {
+    "enabled": True,  # Set to False to always turn monitors on regardless of time
+    "work_days": [0, 1, 2, 3, 4],  # Monday=0, Sunday=6 (weekdays only)
+    "work_hours": {
+        "start": "06:00",  # Start time (24-hour format)
+        "end": "20:00",  # End time (24-hour format)
+    },
+}
+
 # =============================================================================
 # DETECTION PARAMETERS
 # =============================================================================
@@ -280,6 +290,33 @@ def is_detection_method_enabled(method_name):
 def get_system_command(command_name):
     """Get a system command."""
     return SYSTEM_COMMANDS.get(command_name, [])
+
+
+def get_dpms_schedule_config():
+    """Get the DPMS schedule configuration."""
+    return DPMS_SCHEDULE
+
+
+def is_within_work_hours():
+    """Check if current time is within configured work hours and days."""
+    import datetime
+
+    if not DPMS_SCHEDULE["enabled"]:
+        return True  # Always allow if scheduling is disabled
+
+    now = datetime.datetime.now()
+
+    # Check if current day is a work day
+    if now.weekday() not in DPMS_SCHEDULE["work_days"]:
+        return False
+
+    # Parse work hours
+    start_time = datetime.time.fromisoformat(DPMS_SCHEDULE["work_hours"]["start"])
+    end_time = datetime.time.fromisoformat(DPMS_SCHEDULE["work_hours"]["end"])
+    current_time = now.time()
+
+    # Check if current time is within work hours
+    return start_time <= current_time <= end_time
 
 
 def ensure_directories():

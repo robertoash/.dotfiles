@@ -12,6 +12,7 @@ from config import (
     get_log_file,
     get_status_file,
     get_system_command,
+    is_within_work_hours,
 )
 
 
@@ -40,7 +41,13 @@ def get_in_office_status():
 
 
 def turn_dpms_on():
-    """Turn DPMS on using hyprctl."""
+    """Turn DPMS on using hyprctl, but only during work hours."""
+    if not is_within_work_hours():
+        logging.info(
+            "in_office turned ON - but outside work hours, not turning displays on"
+        )
+        return True
+
     try:
         logging.info("in_office turned ON - turning displays on (DPMS on)")
         subprocess.run(get_system_command("hyprctl_dpms_on"), check=True)
