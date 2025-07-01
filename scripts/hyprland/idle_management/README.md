@@ -84,10 +84,10 @@ scripts/
     - Excellent performance in edge cases where traditional methods fail
   - **Motion Detection**: Detects subtle movements and user interactions ✨
 - **Detection Logic**:
-  - Starts with 5-second detection window
+  - Starts with 1-second detection window
   - Uses optimized detection methods simultaneously
   - 50% threshold for human presence (≥50% = detected)
-  - If not detected in 5s, extends window by 1s up to 10s total
+  - If not detected in 1s, extends window by 1s up to 10s total
   - Continuous monitoring every 60s if human presence detected
 - **Status Reporting**:
   - Reports `"in_progress"` to `idle_detection_status` at start
@@ -234,7 +234,7 @@ idle_simple_resume.py
 ```
 face_detector.py
     ↓
-Start 5-second detection window
+Start 1-second detection window
     ↓
 Count frames with faces vs total frames
     ├── ≥50% face frames → "detected"
@@ -551,7 +551,7 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - **All-Angle Detection**: Works from front, side, and intermediate angles
 - **Motion Sensitivity**: Detects subtle movements like typing or scrolling
 - **Smart Thresholds**: 50% detection rate threshold for reliable presence detection
-- **Adaptive Windows**: 5-10 second detection windows with automatic extension
+- **Adaptive Windows**: 1-10 second detection windows with automatic extension
 - **Optimized Performance**: Simplified 2-method approach for faster, more reliable detection
 
 ### Intelligence
@@ -559,7 +559,7 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
 - **Phased Presence Checking**: Clear "in_progress" state prevents premature office status changes
 - **50% Detection Threshold**: Balanced sensitivity for reliable face detection
-- **Adaptive Detection Windows**: 5-10 second detection windows with automatic extension
+- **Adaptive Detection Windows**: 1-10 second detection windows with automatic extension
 
 ### Simplicity
 - Clear 4-stage timeout progression with logical flow

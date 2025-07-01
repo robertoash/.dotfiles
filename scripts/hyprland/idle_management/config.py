@@ -19,8 +19,6 @@ TMP_DIR = Path("/tmp")
 # MQTT status files directory
 MQTT_DIR = TMP_DIR / "mqtt"
 
-# REMOVED: OPENCV_CASCADE_DIR - no longer needed with MediaPipe + Motion
-
 # Scripts directory
 SCRIPTS_DIR = Path("/home/rash/.config/scripts")
 IDLE_MANAGEMENT_DIR = SCRIPTS_DIR / "hyprland" / "idle_management"
@@ -89,11 +87,6 @@ EXTERNAL_SCRIPTS = {
 }
 
 # =============================================================================
-# REMOVED: CASCADE FILES (No longer needed - using MediaPipe + Motion)
-# =============================================================================
-# Simplified detection system now uses only MediaPipe and motion detection
-
-# =============================================================================
 # TIMING CONFIGURATION
 # =============================================================================
 
@@ -108,7 +101,7 @@ CHECK_INTERVALS = {
 
 # Face detection timeouts (in seconds)
 FACE_DETECTION = {
-    "initial_window": 5,  # Initial detection window duration
+    "initial_window": 1,  # Initial detection window duration
     "max_duration": 10,  # Maximum detection window duration
     "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring
     "quick_check_duration": 3,  # Duration for quick presence checks during monitoring
@@ -191,9 +184,6 @@ def get_status_default(status_name):
 def get_control_file(control_name):
     """Get the control file path for a given control."""
     return CONTROL_FILES.get(control_name)
-
-
-# REMOVED: get_cascade_file function - no longer needed with MediaPipe + Motion
 
 
 def get_check_interval(interval_name):
