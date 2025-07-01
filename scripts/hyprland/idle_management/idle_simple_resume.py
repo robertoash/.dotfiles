@@ -3,20 +3,28 @@
 import logging
 import subprocess
 import time
-from pathlib import Path
 
-# Configuration
-LOG_FILE = Path("/tmp/idle_simple_resume.log")
+# Import centralized configuration
+from config import (
+    EXTERNAL_SCRIPTS,
+    LOGGING_CONFIG,
+    RESUME_DELAYS,
+    get_control_file,
+    get_log_file,
+    get_system_command,
+)
 
 
 def setup_logging():
     """Set up logging."""
+    log_file = get_log_file("idle_simple_resume")
+
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOGGING_CONFIG["format"],
+        datefmt=LOGGING_CONFIG["date_format"],
         handlers=[
-            logging.FileHandler(LOG_FILE),
+            logging.FileHandler(log_file),
             logging.StreamHandler(),
         ],
     )
@@ -26,7 +34,7 @@ def turn_dpms_on():
     """Ensure displays are turned on."""
     try:
         logging.info("Ensuring displays are on (DPMS on)")
-        subprocess.run(["hyprctl", "dispatch", "dpms", "on"], check=True)
+        subprocess.run(get_system_command("hyprctl_dpms_on"), check=True)
         logging.info("DPMS on successful")
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS on: {e}")
@@ -38,7 +46,7 @@ def report_active_status():
     """Report active status to HA."""
     try:
         logging.info("Reporting active status to HA")
-        script = "/home/rash/.config/scripts/hyprland/idle_management/activity_status_reporter.py"
+        script = str(EXTERNAL_SCRIPTS["activity_status_reporter"])
         subprocess.run([script, "--active"], check=True)
         logging.info("Active status reported successfully")
     except subprocess.CalledProcessError as e:
@@ -52,8 +60,11 @@ def main():
     setup_logging()
     logging.info("Simple resume cleanup started")
 
+    # Get control file and delay from config
+    lock_exit_flag = get_control_file("idle_simple_lock_exit")
+    cleanup_delay = RESUME_DELAYS["exit_flag_cleanup"]
+
     # Signal any running lock monitoring to stop
-    lock_exit_flag = Path("/tmp/idle_simple_lock_exit")
     try:
         lock_exit_flag.write_text("resume")
         logging.info("Created exit flag for idle_simple_lock")
@@ -68,7 +79,7 @@ def main():
 
     # Clean up the exit flag after a moment
     try:
-        time.sleep(2)
+        time.sleep(cleanup_delay)
         lock_exit_flag.unlink(missing_ok=True)
         logging.info("Cleaned up lock exit flag")
     except Exception as e:

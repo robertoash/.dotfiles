@@ -3,25 +3,28 @@
 import logging
 import subprocess
 import time
-from pathlib import Path
 
-# Configuration
-LOG_FILE = Path("/tmp/idle_simple_dpms.log")
-IN_OFFICE_STATUS_FILE = Path("/tmp/mqtt/in_office_status")
-EXIT_FLAG = Path(
-    "/tmp/idle_simple_lock_exit"
-)  # Reuse the same exit flag as lock script
-CHECK_INTERVAL = 1  # seconds
+# Import centralized configuration
+from config import (
+    LOGGING_CONFIG,
+    get_check_interval,
+    get_control_file,
+    get_log_file,
+    get_status_file,
+    get_system_command,
+)
 
 
 def setup_logging():
     """Set up logging."""
+    log_file = get_log_file("idle_simple_dpms")
+
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOGGING_CONFIG["format"],
+        datefmt=LOGGING_CONFIG["date_format"],
         handlers=[
-            logging.FileHandler(LOG_FILE),
+            logging.FileHandler(log_file),
             logging.StreamHandler(),
         ],
     )
@@ -29,8 +32,9 @@ def setup_logging():
 
 def get_in_office_status():
     """Get the current in_office status."""
+    status_file = get_status_file("in_office_status")
     try:
-        return IN_OFFICE_STATUS_FILE.read_text().strip()
+        return status_file.read_text().strip()
     except FileNotFoundError:
         logging.warning("in_office_status file not found, assuming 'on'")
         return "on"
@@ -40,7 +44,7 @@ def turn_dpms_off():
     """Turn DPMS off using hyprctl."""
     try:
         logging.info("Turning displays off (DPMS off)")
-        subprocess.run(["hyprctl", "dispatch", "dpms", "off"], check=True)
+        subprocess.run(get_system_command("hyprctl_dpms_off"), check=True)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS off: {e}")
@@ -50,6 +54,12 @@ def turn_dpms_off():
 def main():
     """Check in_office status and turn dpms off if off, or wait for it to turn off."""
     setup_logging()
+
+    # Get control file and check interval from config
+    exit_flag = get_control_file(
+        "idle_simple_lock_exit"
+    )  # Reuse the same exit flag as lock script
+    check_interval = get_check_interval("dpms_monitoring")
 
     office_status = get_in_office_status()
     logging.info(f"120-second timeout reached, in_office status: {office_status}")
@@ -65,7 +75,7 @@ def main():
     try:
         while True:
             # Check for exit signal (user resumed activity)
-            if EXIT_FLAG.exists():
+            if exit_flag.exists():
                 logging.info(
                     "Exit signal received - user resumed activity, stopping DPMS monitoring"
                 )
@@ -79,7 +89,7 @@ def main():
                 turn_dpms_off()
                 return
 
-            time.sleep(CHECK_INTERVAL)
+            time.sleep(check_interval)
 
     except KeyboardInterrupt:
         logging.info("Received interrupt signal")

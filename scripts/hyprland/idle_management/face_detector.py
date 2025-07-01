@@ -8,16 +8,28 @@ from pathlib import Path
 
 import cv2
 
+# Import centralized configuration
+from config import (
+    FACE_DETECTION,
+    LOGGING_CONFIG,
+    get_cascade_file,
+    get_detection_param,
+    get_log_file,
+    get_status_file,
+)
+
 
 def setup_logging(debug=False):
     """Set up logging."""
     log_level = logging.DEBUG if debug else logging.INFO
+    log_file = get_log_file("face_detector")
+
     logging.basicConfig(
         level=log_level,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOGGING_CONFIG["format"],
+        datefmt=LOGGING_CONFIG["date_format"],
         handlers=[
-            logging.FileHandler("/tmp/face_detector.log"),
+            logging.FileHandler(log_file),
             logging.StreamHandler(),
         ],
     )
@@ -26,7 +38,7 @@ def setup_logging(debug=False):
 def report_face_status(status):
     """Report face presence status to MQTT."""
     logging.info(f"Reporting face presence: {status}")
-    status_file = Path("/tmp/mqtt/face_presence")
+    status_file = get_status_file("face_presence")
     status_file.parent.mkdir(parents=True, exist_ok=True)
     status_file.write_text(status)
     logging.debug(f"Face presence '{status}' written to {status_file}")
@@ -35,7 +47,7 @@ def report_face_status(status):
 def report_idle_status(status):
     """Report idle detection status to MQTT."""
     logging.info(f"Reporting idle detection: {status}")
-    status_file = Path("/tmp/mqtt/idle_detection_status")
+    status_file = get_status_file("idle_detection_status")
     status_file.parent.mkdir(parents=True, exist_ok=True)
     status_file.write_text(status)
     logging.debug(f"Idle detection '{status}' written to {status_file}")
@@ -44,7 +56,7 @@ def report_idle_status(status):
 def check_user_active():
     """Check if user has become active by monitoring linux_mini_status."""
     try:
-        status_file = Path("/tmp/mqtt/linux_mini_status")
+        status_file = get_status_file("linux_mini_status")
         if status_file.exists():
             content = status_file.read_text().strip()
             return content == "active"
@@ -54,8 +66,11 @@ def check_user_active():
         return False
 
 
-def quick_face_check(face_cascade, profile_cascade, duration=3):
+def quick_face_check(face_cascade, profile_cascade, duration=None):
     """Quick face detection check for monitoring."""
+    if duration is None:
+        duration = FACE_DETECTION["quick_check_duration"]
+
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         logging.error("Cannot open camera for monitoring check")
@@ -64,7 +79,7 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
     start_time = time.time()
     frames_total = 0
     face_detected_frames = 0
-    detection_threshold = 0.5  # Changed to 50% as per requirements
+    detection_threshold = get_detection_param("threshold")
 
     try:
         while time.time() - start_time < duration:
@@ -81,8 +96,13 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
             frames_total += 1
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            faces = face_cascade.detectMultiScale(gray, 1.1, 3)
-            profiles = profile_cascade.detectMultiScale(gray, 1.1, 3)
+            scale_factor = get_detection_param("cascade_scale_factor")
+            min_neighbors = get_detection_param("cascade_min_neighbors_face")
+
+            faces = face_cascade.detectMultiScale(gray, scale_factor, min_neighbors)
+            profiles = profile_cascade.detectMultiScale(
+                gray, scale_factor, min_neighbors
+            )
 
             if len(faces) > 0 or len(profiles) > 0:
                 face_detected_frames += 1
@@ -99,8 +119,15 @@ def quick_face_check(face_cascade, profile_cascade, duration=3):
         cv2.destroyAllWindows()
 
 
-def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window=5):
+def run_detection(
+    face_cascade, profile_cascade, max_duration=None, initial_window=None
+):
     """Run face detection with continuous monitoring."""
+    if max_duration is None:
+        max_duration = FACE_DETECTION["max_detection_duration"]
+    if initial_window is None:
+        initial_window = FACE_DETECTION["initial_detection_window"]
+
     # Report in_progress status at start
     report_idle_status("in_progress")
 
@@ -117,8 +144,7 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
     frames_total = 0
     face_detected_frames = 0
 
-    # Changed to 50% threshold as per requirements
-    detection_threshold = 0.5
+    detection_threshold = get_detection_param("threshold")
 
     try:
         while time.time() - start_time < max_duration:
@@ -137,9 +163,13 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
             frames_total += 1
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            # Use more sensitive parameters for better detection
-            faces = face_cascade.detectMultiScale(gray, 1.1, 3)
-            profiles = profile_cascade.detectMultiScale(gray, 1.1, 3)
+            scale_factor = get_detection_param("cascade_scale_factor")
+            min_neighbors = get_detection_param("cascade_min_neighbors_face")
+
+            faces = face_cascade.detectMultiScale(gray, scale_factor, min_neighbors)
+            profiles = profile_cascade.detectMultiScale(
+                gray, scale_factor, min_neighbors
+            )
 
             has_face = len(faces) > 0 or len(profiles) > 0
             if has_face:
@@ -168,6 +198,8 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
 
                     # Monitor every minute until face is no longer detected OR user becomes active
                     monitoring_start = time.time()
+                    monitoring_interval = FACE_DETECTION["monitoring_interval"]
+
                     while True:
                         # Check if user became active
                         if check_user_active():
@@ -178,10 +210,12 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                             report_idle_status("inactive")
                             return
 
-                        logging.info("Waiting 60 seconds before next face check...")
+                        logging.info(
+                            f"Waiting {monitoring_interval} seconds before next face check..."
+                        )
 
                         # Sleep in smaller chunks to check user activity more frequently
-                        for _ in range(60):
+                        for _ in range(monitoring_interval):
                             time.sleep(1)
                             if check_user_active():
                                 logging.info(
@@ -236,6 +270,8 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
 
             # Monitor every minute until face is no longer detected OR user becomes active
             monitoring_start = time.time()
+            monitoring_interval = FACE_DETECTION["monitoring_interval"]
+
             while True:
                 # Check if user became active
                 if check_user_active():
@@ -246,10 +282,12 @@ def run_detection(face_cascade, profile_cascade, max_duration=10, initial_window
                     report_idle_status("inactive")
                     return
 
-                logging.info("Waiting 60 seconds before next face check...")
+                logging.info(
+                    f"Waiting {monitoring_interval} seconds before next face check..."
+                )
 
                 # Sleep in smaller chunks to check user activity more frequently
-                for _ in range(60):
+                for _ in range(monitoring_interval):
                     time.sleep(1)
                     if check_user_active():
                         logging.info(
@@ -295,11 +333,9 @@ def main():
 
     logging.info("Starting face detection for idle management")
 
-    # Paths to cascade files
-    # These paths may need to be adjusted depending on the system setup
-    base_path = Path("/usr/share/opencv4/haarcascades/")
-    face_cascade_path = base_path / "haarcascade_frontalface_default.xml"
-    profile_cascade_path = base_path / "haarcascade_profileface.xml"
+    # Get cascade file paths from config
+    face_cascade_path = get_cascade_file("frontal_face")
+    profile_cascade_path = get_cascade_file("profile_face")
 
     if not face_cascade_path.exists() or not profile_cascade_path.exists():
         logging.error("Haar cascade files not found. Please check the paths.")
@@ -319,7 +355,7 @@ def main():
                 logging.info(
                     f"Found a possible location for cascade files: {found_path}"
                 )
-                logging.info("Please update the `base_path` in this script.")
+                logging.info("Please update the cascade file paths in config.py.")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             logging.error(f"Error while trying to find cascade files: {e}")
 

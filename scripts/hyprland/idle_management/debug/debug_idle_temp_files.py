@@ -1,26 +1,35 @@
 #!/usr/bin/env python3
 
+import os
+import sys
 import time
 from datetime import datetime
 from pathlib import Path
 
+from config import CONTROL_FILES, STATUS_FILES, get_all_log_files, get_check_interval
+
+# Import centralized configuration
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # Files to monitor with descriptions
 files_to_monitor = {
-    "/tmp/mqtt/linux_mini_status": "User Activity Status",
-    "/tmp/mqtt/idle_detection_status": "Idle Detection Status",
-    "/tmp/mqtt/face_presence": "Face Detection Status",
-    "/tmp/mqtt/in_office_status": "Office Presence Status",
-    "/tmp/mqtt/manual_override_status": "Manual Override Status",
+    str(STATUS_FILES["linux_mini_status"]): "User Activity Status",
+    str(STATUS_FILES["idle_detection_status"]): "Idle Detection Status",
+    str(STATUS_FILES["face_presence"]): "Face Detection Status",
+    str(STATUS_FILES["in_office_status"]): "Office Presence Status",
+    str(STATUS_FILES["manual_override_status"]): "Manual Override Status",
 }
 
 # Additional control files to monitor
 control_files = {
-    "/tmp/idle_simple_lock_exit": "Lock Exit Flag",
-    "/tmp/in_office_monitor_exit": "Office Monitor Exit Flag",
-    "/tmp/face_detector.log": "Face Detector Log (last 2 lines)",
-    "/tmp/idle_simple_lock.log": "Lock Script Log (last 2 lines)",
-    "/tmp/idle_simple_dpms.log": "DPMS Script Log (last 2 lines)",
+    str(CONTROL_FILES["idle_simple_lock_exit"]): "Lock Exit Flag",
+    str(CONTROL_FILES["in_office_monitor_exit"]): "Office Monitor Exit Flag",
 }
+
+# Add log files from config
+log_files = get_all_log_files()
+for log_file in log_files:
+    control_files[str(log_file)] = f"{log_file.name} (last 2 lines)"
 
 # Track previous values to detect changes
 previous_values = {}
@@ -59,10 +68,10 @@ def log_event(message, level="INFO"):
 
 def analyze_system_state():
     """Analyze and describe the current system state."""
-    user_status = read_file("/tmp/mqtt/linux_mini_status")
-    idle_status = read_file("/tmp/mqtt/idle_detection_status")
-    face_status = read_file("/tmp/mqtt/face_presence")
-    office_status = read_file("/tmp/mqtt/in_office_status")
+    user_status = read_file(str(STATUS_FILES["linux_mini_status"]))
+    idle_status = read_file(str(STATUS_FILES["idle_detection_status"]))
+    face_status = read_file(str(STATUS_FILES["face_presence"]))
+    office_status = read_file(str(STATUS_FILES["in_office_status"]))
 
     state_description = []
 
@@ -116,6 +125,9 @@ def monitor_files():
 
     log_event(f"System State Summary: {analyze_system_state()}", "STATE")
     log_event("--- Starting continuous monitoring ---", "SYSTEM")
+
+    # Get monitoring interval from config
+    check_interval = get_check_interval("debug_monitoring")
 
     try:
         while True:
@@ -179,7 +191,7 @@ def monitor_files():
                 log_event(f"Current State: {state_summary}", "STATE")
                 log_event("---", "STATE")
 
-            time.sleep(0.5)  # Check every 500ms for faster response
+            time.sleep(check_interval)  # Use interval from config
 
     except KeyboardInterrupt:
         log_event("=== DEBUG LOGGER STOPPED BY USER ===", "SYSTEM")

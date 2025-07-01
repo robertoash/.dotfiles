@@ -3,24 +3,28 @@
 import logging
 import subprocess
 import time
-from pathlib import Path
 
-# Configuration
-LOG_FILE = Path("/tmp/in_office_monitor.log")
-PID_FILE = Path("/tmp/in_office_monitor.pid")
-EXIT_FLAG = Path("/tmp/in_office_monitor_exit")
-IN_OFFICE_STATUS_FILE = Path("/tmp/mqtt/in_office_status")
-CHECK_INTERVAL = 1  # seconds
+# Import centralized configuration
+from config import (
+    LOGGING_CONFIG,
+    get_check_interval,
+    get_control_file,
+    get_log_file,
+    get_status_file,
+    get_system_command,
+)
 
 
 def setup_logging():
     """Set up logging."""
+    log_file = get_log_file("in_office_monitor")
+
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        format=LOGGING_CONFIG["format"],
+        datefmt=LOGGING_CONFIG["date_format"],
         handlers=[
-            logging.FileHandler(LOG_FILE),
+            logging.FileHandler(log_file),
             logging.StreamHandler(),
         ],
     )
@@ -28,8 +32,9 @@ def setup_logging():
 
 def get_in_office_status():
     """Get the current in_office status."""
+    status_file = get_status_file("in_office_status")
     try:
-        return IN_OFFICE_STATUS_FILE.read_text().strip()
+        return status_file.read_text().strip()
     except FileNotFoundError:
         return "on"  # Default to on if file doesn't exist
 
@@ -38,7 +43,7 @@ def turn_dpms_on():
     """Turn DPMS on using hyprctl."""
     try:
         logging.info("in_office turned ON - turning displays on (DPMS on)")
-        subprocess.run(["hyprctl", "dispatch", "dpms", "on"], check=True)
+        subprocess.run(get_system_command("hyprctl_dpms_on"), check=True)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS on: {e}")
@@ -48,8 +53,11 @@ def turn_dpms_on():
 def cleanup():
     """Clean up files on exit."""
     try:
-        PID_FILE.unlink(missing_ok=True)
-        EXIT_FLAG.unlink(missing_ok=True)
+        pid_file = get_control_file("in_office_monitor_pid")
+        exit_flag = get_control_file("in_office_monitor_exit")
+
+        pid_file.unlink(missing_ok=True)
+        exit_flag.unlink(missing_ok=True)
         logging.info("In-office monitor exiting")
     except Exception as e:
         logging.error(f"Error during cleanup: {e}")
@@ -59,15 +67,20 @@ def main():
     """Monitor in_office status and turn dpms on when it changes to on."""
     setup_logging()
 
+    # Get control files and check interval from config
+    exit_flag = get_control_file("in_office_monitor_exit")
+    pid_file = get_control_file("in_office_monitor_pid")
+    check_interval = get_check_interval("office_monitoring")
+
     # Clean up our own exit flag if it exists (from previous run)
-    EXIT_FLAG.unlink(missing_ok=True)
+    exit_flag.unlink(missing_ok=True)
     logging.debug("Cleaned up any existing exit flag")
 
     # Create PID file
     try:
         import os
 
-        PID_FILE.write_text(str(os.getpid()))
+        pid_file.write_text(str(os.getpid()))
         logging.info("In-office monitor started")
     except Exception as e:
         logging.error(f"Failed to create PID file: {e}")
@@ -79,7 +92,7 @@ def main():
     try:
         while True:
             # Check for exit signal
-            if EXIT_FLAG.exists():
+            if exit_flag.exists():
                 logging.info("Exit signal received - stopping monitoring")
                 break
 
@@ -91,7 +104,7 @@ def main():
                 turn_dpms_on()
 
             last_status = current_status
-            time.sleep(CHECK_INTERVAL)
+            time.sleep(check_interval)
 
     except KeyboardInterrupt:
         logging.info("Received interrupt signal")

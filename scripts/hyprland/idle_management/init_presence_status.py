@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
+import glob
+
+# Import centralized configuration
+from config import (
+    STATUS_FILES,
+    ensure_directories,
+    get_all_control_files,
+    get_status_default,
+)
 
 
 def cleanup_stale_flags():
     """Clean up any stale exit flags from previous sessions."""
-    import glob
 
     # Updated exit flag patterns for simplified system
     exit_flag_patterns = [
@@ -14,15 +21,14 @@ def cleanup_stale_flags():
         "/tmp/in_office_monitor_exit",
     ]
 
-    # Also explicitly clean up critical files
-    explicit_cleanup_files = [
-        "/tmp/in_office_monitor_exit",
-        "/tmp/idle_simple_lock_exit",
-    ]
+    # Get explicit cleanup files from config
+    explicit_cleanup_files = get_all_control_files()
 
     for pattern in exit_flag_patterns:
         for flag_file in glob.glob(pattern):
             try:
+                from pathlib import Path
+
                 Path(flag_file).unlink()
                 print(f"Cleaned up stale exit flag: {flag_file}")
             except FileNotFoundError:
@@ -30,12 +36,11 @@ def cleanup_stale_flags():
             except Exception as e:
                 print(f"Warning: Could not clean up {flag_file}: {e}")
 
-    # Explicitly clean up critical files with full paths
+    # Explicitly clean up critical files from config
     for flag_file in explicit_cleanup_files:
         try:
-            full_path = Path(flag_file).resolve()
-            full_path.unlink(missing_ok=True)
-            print(f"Explicitly cleaned up: {full_path}")
+            flag_file.unlink(missing_ok=True)
+            print(f"Explicitly cleaned up: {flag_file}")
         except Exception as e:
             print(f"Warning: Could not clean up {flag_file}: {e}")
 
@@ -46,21 +51,12 @@ def init_status_files():
     # First, clean up any stale exit flags
     cleanup_stale_flags()
 
-    # Create mqtt directory
-    mqtt_dir = Path("/tmp/mqtt")
-    mqtt_dir.mkdir(parents=True, exist_ok=True)
+    # Create directories
+    ensure_directories()
 
-    # Initialize all status files with proper default values
-    status_files = {
-        "linux_mini_status": "active",  # Linux mini is active on boot
-        "idle_detection_status": "inactive",  # Idle detection is not running on boot
-        "face_presence": "not_detected",  # Face detection starts with no face detected
-        "in_office_status": "on",  # Default to in office on boot
-        "linux_webcam_status": "inactive",  # Webcam is not in use on boot
-    }
-
-    for filename, default_value in status_files.items():
-        status_file = mqtt_dir / filename
+    # Initialize all status files with proper default values from config
+    for status_name, status_file in STATUS_FILES.items():
+        default_value = get_status_default(status_name)
         status_file.write_text(default_value)
         print(f"Initialized {status_file} = {default_value}")
 

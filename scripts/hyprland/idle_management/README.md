@@ -35,6 +35,7 @@ scripts/
 │   └── mqtt_listener.py               # MQTT message handling (kept separate)
 └── hyprland/
     └── idle_management/
+        ├── config.py                      # 🆕 Centralized configuration for all scripts
         ├── init_presence_status.py        # Boot-time status initialization
         ├── activity_status_reporter.py    # Activity status + presence checking
         ├── linux_webcam_status.py         # Webcam monitoring (filtered)
@@ -42,7 +43,7 @@ scripts/
         ├── idle_simple_dpms.py            # Stage 4: DPMS off if office status off (continuous monitoring)
         ├── idle_simple_resume.py          # Resume: Report active, DPMS on
         ├── in_office_monitor.py           # Background: DPMS on when office status → on
-        ├── face_detector.py               # Face detection engine
+        ├── face_detector.py               # Enhanced human presence detection engine
         └── debug/
             └── debug_idle_temp_files.py   # Comprehensive system state monitor
 ```
@@ -74,20 +75,26 @@ scripts/
   - `/tmp/mqtt/idle_detection_status`
 
 #### `face_detector.py`
-- **Purpose**: Computer vision face detection for presence verification
+- **Purpose**: Enhanced human presence detection for comprehensive presence verification
 - **Called**: By hypridle at Stage 2 timeout
+- **Detection Methods**:
+  - **Frontal Face**: Detects faces looking at screen
+  - **Profile Face**: Detects side profiles
+  - **Upper Body**: Detects humans looking down (e.g., at phone) ✨
+  - **Motion Detection**: Detects subtle movements indicating presence ✨
 - **Detection Logic**:
   - Starts with 5-second detection window
-  - Counts frames with/without faces for detection rate
-  - 50% threshold for face detection (≥50% = detected)
+  - Uses multiple detection methods simultaneously
+  - 50% threshold for human presence (≥50% = detected)
   - If not detected in 5s, extends window by 1s up to 10s total
-  - Continuous monitoring every 60s if face detected
+  - Continuous monitoring every 60s if human presence detected
 - **Status Reporting**:
   - Reports `"in_progress"` to `idle_detection_status` at start
   - Reports `"detected"` or `"not_detected"` to `face_presence`
+  - Logs breakdown of which detection methods were used
   - Resets both statuses if user becomes active
 - **Smart Exit**: Monitors `linux_mini_status` for user activity
-- **Logging**: Comprehensive logging to `/tmp/face_detector.log`
+- **Logging**: Comprehensive logging to `/tmp/face_detector.log` with detection method breakdown
 
 #### `linux_webcam_status.py`
 - **Purpose**: Monitor webcam usage by non-automated processes
@@ -280,6 +287,55 @@ Status changed from "off" to "on"?
 
 ## Configuration
 
+### Centralized Configuration (`config.py`)
+
+The system now uses a centralized configuration file that eliminates hardcoded values throughout all scripts. This makes the system much easier to maintain and customize.
+
+**Key Features:**
+- **Single source of truth**: All paths, timeouts, and parameters defined in one place
+- **Easy customization**: Modify behavior by editing `config.py` instead of individual scripts
+- **Validation**: Built-in validation ensures required files and directories exist
+- **Helper functions**: Convenient functions for accessing configuration values
+
+**Configuration Categories:**
+```python
+# File paths (logs, status files, control files, device files)
+LOG_FILES = {...}           # Where each script logs
+STATUS_FILES = {...}        # MQTT status file locations
+CONTROL_FILES = {...}       # Exit flags and control files
+DEVICE_FILES = {...}        # Hardware device paths
+
+# Timing configuration
+CHECK_INTERVALS = {...}     # How often to check various conditions
+FACE_DETECTION = {...}      # Face detection timing parameters
+RESUME_DELAYS = {...}       # Delays for cleanup operations
+
+# Detection parameters
+DETECTION_PARAMS = {...}    # Thresholds and sensitivity settings
+WEBCAM_CONFIG = {...}       # Webcam monitoring configuration
+CASCADE_FILES = {...}       # OpenCV cascade file locations
+
+# System commands
+SYSTEM_COMMANDS = {...}     # All external commands used by scripts
+```
+
+**Testing Configuration:**
+```bash
+# Validate configuration and check system compatibility
+cd ~/.config/scripts/hyprland/idle_management
+python3 config.py
+
+# Should output:
+# ✓ Created directories: /tmp/mqtt, /tmp
+# ✓ Configuration validation passed
+```
+
+**Customizing Behavior:**
+- **Change detection sensitivity**: Modify `DETECTION_PARAMS["threshold"]`
+- **Adjust timing**: Update values in `CHECK_INTERVALS` and `FACE_DETECTION`
+- **Add/remove excluded processes**: Edit `WEBCAM_CONFIG["excluded_processes"]`
+- **Change file locations**: Update paths in `STATUS_FILES`, `LOG_FILES`, etc.
+
 ### Hypridle Configuration (`hypridle.conf`)
 ```conf
 # Stage 1: report inactive status and start presence checking
@@ -377,19 +433,23 @@ elif face_presence == "not_detected":
 
 ### Manual Testing
 ```bash
-# Check current status
+# Validate configuration first
+cd ~/.config/scripts/hyprland/idle_management
+python3 config.py
+
+# Check current status (paths from config)
 cat /tmp/mqtt/linux_mini_status
 cat /tmp/mqtt/idle_detection_status
 cat /tmp/mqtt/face_presence
 cat /tmp/mqtt/linux_webcam_status
 cat /tmp/mqtt/in_office_status
 
-# Test face detection
-~/.config/scripts/hyprland/idle_management/face_detector.py --debug
+# Test enhanced human presence detection
+python3 face_detector.py --debug
 
 # Test activity reporting
-~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --active
-~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --inactive
+python3 activity_status_reporter.py --active
+python3 activity_status_reporter.py --inactive
 
 # Test webcam filtering
 # Start face detection, then check:
@@ -408,18 +468,24 @@ sleep 5
 ~/.config/scripts/hyprland/idle_management/face_detector.py  # Stage 2 simulation
 ```
 
-**Face Detection Testing:**
+**Human Presence Detection Testing:**
 ```bash
-# Test face detection behavior
+# Test enhanced human presence detection
 ~/.config/scripts/hyprland/idle_management/face_detector.py
 
-# Monitor detection in real-time
+# Monitor detection in real-time (shows which methods are working)
 tail -f /tmp/face_detector.log
 
-# Test user activity interruption during face detection
-echo "active" > /tmp/mqtt/linux_mini_status  # Should stop face detection
+# Test different scenarios:
+# 1. Looking at screen → Should detect via frontal_face
+# 2. Looking at phone → Should detect via upper_body
+# 3. Turned to side → Should detect via profile_face
+# 4. Small movements → Should detect via motion
 
-# Test face detection results
+# Test user activity interruption during detection
+echo "active" > /tmp/mqtt/linux_mini_status  # Should stop presence detection
+
+# Test detection results
 cat /tmp/mqtt/face_presence        # Should show "detected" or "not_detected"
 cat /tmp/mqtt/idle_detection_status # Should show state progression
 ```
@@ -449,6 +515,13 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 ## Key Features
 
+### Enhanced Detection Capabilities ✨
+- **Multiple Detection Methods**: Frontal face, profile face, upper body, and motion detection
+- **Phone Usage Detection**: Upper body detection catches users looking down at phones
+- **Motion Sensitivity**: Detects subtle movements like typing or scrolling
+- **Smart Thresholds**: 50% detection rate threshold for reliable presence detection
+- **Adaptive Windows**: 5-10 second detection windows with automatic extension
+
 ### Intelligence
 - **Face-Based Presence Detection**: Computer vision verification before locking
 - **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
@@ -461,6 +534,13 @@ tail -f /var/log/syslog | grep linux_webcam_status
 - Minimal parallel processing complexity
 - Predictable behavior and timing
 - Self-contained face detection (no external dependencies)
+
+### Centralized Configuration ⚙️
+- **Single source of truth**: All settings in one `config.py` file
+- **Easy customization**: Change behavior without editing multiple scripts
+- **Built-in validation**: Ensures system compatibility and required files exist
+- **Helper functions**: Convenient access to all configuration values
+- **Maintainable**: No more hunting through scripts for hardcoded values
 
 ### Manual Control
 - One-click disable/enable via waybar
@@ -493,12 +573,13 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 ### Common Issues
 
-**Face detection not working:**
+**Human presence detection not working:**
 - Check camera permissions: `ls -la /dev/video0`
 - Verify OpenCV cascade files: Check paths in `face_detector.py`
 - Test camera access: `lsof /dev/video0` (should be empty when not running)
-- Check face detection logs: `tail -f /tmp/face_detector.log`
+- Check detection logs: `tail -f /tmp/face_detector.log`
 - Verify detection threshold: Look for detection rate logs
+- Check which detection methods are available: Look for "Detection methods available" in logs
 
 **Webcam status false positives:**
 - Check if face detector is being filtered: Look for "Ignoring face detector process" in logs
