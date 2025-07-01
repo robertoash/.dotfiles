@@ -33,7 +33,7 @@ chafa###1.16.0-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.35-1###pacman
+claude-code###1.0.38-1###pacman
 cloudflared###2025.6.1-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
@@ -43,7 +43,7 @@ cronie###1.7.2-1###pacman
 cryptsetup###2.8.0-1###pacman
 csvq-bin###1.18.1-2###pacman
 cups###2:2.4.12-2###pacman
-cursor-bin###1.1.6-1###pacman
+cursor-bin###1.1.7-1###pacman
 device-mapper###2.03.33-1###pacman
 dhclient###4.4.3.P1-4###pacman
 diffutils###3.12-2###pacman
@@ -196,10 +196,10 @@ networkmanager-openconnect###1.2.10-3###pacman
 networkmanager-openvpn###1.12.0-1###pacman
 nfs-utils###2.8.3-2###pacman
 nilfs-utils###2.2.11-1###pacman
-noto-fonts###1:2025.06.01-1###pacman
+noto-fonts###1:2025.07.01-1###pacman
 noto-fonts-cjk###20240730-1###pacman
 noto-fonts-emoji###1:2.048-1###pacman
-noto-fonts-extra###1:2025.06.01-1###pacman
+noto-fonts-extra###1:2025.07.01-1###pacman
 npm###11.4.2-1###pacman
 nss-mdns###0.15.1-2###pacman
 ntfs-3g###2022.10.3-2###pacman
@@ -281,7 +281,7 @@ starship###1.23.0-1###pacman
 stow###2.4.1-1###pacman
 strace###6.15-1###pacman
 sublime-text###4200-1###pacman
-sudo###1.9.16.p2-2###pacman
+sudo###1.9.17.p1-1###pacman
 svttext-git###13.e076ce0-1###pacman
 swappy###1.5.1-2###pacman
 sysfsutils###2.1.1-2###pacman
@@ -325,7 +325,7 @@ waybar-git###0.13.0.r4.g8516d45-1###pacman
 wdisplays###1.1.1-1.3###pacman
 welcome###25.6-1###pacman
 wev###1.0.0-13###pacman
-wezterm-git###20250624.071246.2deb317e-1###pacman
+wezterm-git###20250701.074723.54675c9c-1###pacman
 wf-recorder###0.5.0-2###pacman
 wget###1.25.0-2###pacman
 which###2.23-1###pacman
@@ -366,10 +366,10 @@ buku-git###5.0.r33.g641024b-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.35-1###yay
+claude-code###1.0.38-1###yay
 colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###yay
 csvq-bin###1.18.1-2###yay
-cursor-bin###1.1.6-1###yay
+cursor-bin###1.1.7-1###yay
 espanso-wayland-git###2.2.3.r34.g4380dfcd-1###yay
 fselect###0.8.12-1###yay
 gcalcli###4.5.1-2###yay
@@ -415,7 +415,7 @@ urban-cli-bin###0.2.3-2###yay
 walk###1.13.0-1###yay
 waybar-git###0.13.0.r4.g8516d45-1###yay
 wdisplays###1.1.1-1.3###yay
-wezterm-git###20250624.071246.2deb317e-1###yay
+wezterm-git###20250701.074723.54675c9c-1###yay
 wl-color-picker###1.4-1###yay
 xdg-desktop-portal-hyprland-git###1.3.9.r6.g76bbf1a-1###yay
 black###25.1.0###pipx
