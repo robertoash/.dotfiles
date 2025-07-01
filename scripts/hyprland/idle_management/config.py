@@ -19,8 +19,7 @@ TMP_DIR = Path("/tmp")
 # MQTT status files directory
 MQTT_DIR = TMP_DIR / "mqtt"
 
-# Base directory for OpenCV cascade files
-OPENCV_CASCADE_DIR = Path("/usr/share/opencv4/haarcascades")
+# REMOVED: OPENCV_CASCADE_DIR - no longer needed with MediaPipe + Motion
 
 # Scripts directory
 SCRIPTS_DIR = Path("/home/rash/.config/scripts")
@@ -90,17 +89,9 @@ EXTERNAL_SCRIPTS = {
 }
 
 # =============================================================================
-# OPENCV CASCADE FILES
+# REMOVED: CASCADE FILES (No longer needed - using MediaPipe + Motion)
 # =============================================================================
-
-CASCADE_FILES = {
-    "frontal_face": OPENCV_CASCADE_DIR / "haarcascade_frontalface_default.xml",
-    "profile_face": OPENCV_CASCADE_DIR / "haarcascade_profileface.xml",
-    "full_body": OPENCV_CASCADE_DIR / "haarcascade_fullbody.xml",
-    "frontal_face_alt": OPENCV_CASCADE_DIR / "haarcascade_frontalface_alt.xml",
-    "eye": OPENCV_CASCADE_DIR / "haarcascade_eye.xml",
-    "eye_glasses": OPENCV_CASCADE_DIR / "haarcascade_eye_tree_eyeglasses.xml",
-}
+# Simplified detection system now uses only MediaPipe and motion detection
 
 # =============================================================================
 # TIMING CONFIGURATION
@@ -132,16 +123,10 @@ RESUME_DELAYS = {
 # DETECTION PARAMETERS
 # =============================================================================
 
-# Face detection parameters
+# Optimized detection parameters (MediaPipe + Motion only)
 DETECTION_PARAMS = {
     "threshold": 0.5,  # 50% threshold for presence detection
     "motion_min_area": 200,  # Min area for motion detection (reduced for phone usage)
-    "cascade_scale_factor": 1.1,  # Scale factor for cascade detection
-    "cascade_min_neighbors_face": 3,  # Min neighbors for face detection
-    "cascade_min_neighbors_profile": 4,  # Min neighbors for profile detection
-    "cascade_min_neighbors_eye": 5,  # Min neighbors for eye detection (strict for accuracy)
-    "min_detection_area_profile": 2000,  # Min area for profiles (filters small false positives)
-    "min_detection_area_eye": 50,  # Min area for eye detection (small but filters noise)
     # MediaPipe parameters
     "mediapipe_enabled": True,  # Enable MediaPipe face mesh detection
     "mediapipe_min_detection_confidence": 0.5,  # MediaPipe detection confidence
@@ -208,9 +193,7 @@ def get_control_file(control_name):
     return CONTROL_FILES.get(control_name)
 
 
-def get_cascade_file(cascade_name):
-    """Get the cascade file path for a given cascade."""
-    return CASCADE_FILES.get(cascade_name)
+# REMOVED: get_cascade_file function - no longer needed with MediaPipe + Motion
 
 
 def get_check_interval(interval_name):
@@ -259,17 +242,6 @@ def validate_config():
     """Validate that critical configuration is correct."""
     errors = []
 
-    # Check that OpenCV cascade directory exists
-    if not OPENCV_CASCADE_DIR.exists():
-        errors.append(f"OpenCV cascade directory not found: {OPENCV_CASCADE_DIR}")
-
-    # Check that required cascade files exist
-    required_cascades = ["frontal_face", "profile_face"]
-    for cascade_name in required_cascades:
-        cascade_path = get_cascade_file(cascade_name)
-        if not cascade_path.exists():
-            errors.append(f"Required cascade file not found: {cascade_path}")
-
     # Check that webcam device exists
     webcam_device = DEVICE_FILES["webcam"]
     if not webcam_device.exists():
@@ -301,5 +273,5 @@ if __name__ == "__main__":
     print(f"  Status files: {len(STATUS_FILES)}")
     print(f"  Control files: {len(CONTROL_FILES)}")
     print(f"  Log files: {len([f for f in LOG_FILES.values() if f])}")
-    print(f"  Cascade files: {len(CASCADE_FILES)}")
+    print("  Detection methods: MediaPipe + Motion")
     print(f"  Check intervals: {len(CHECK_INTERVALS)}")

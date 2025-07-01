@@ -1,6 +1,6 @@
-# Enhanced Idle Management System with Face Recognition
+# Optimized Idle Management System with Advanced Face Detection
 
-A streamlined idle management system that provides reliable timeout-based locking and display management for Hyprland, with integrated face detection and office presence detection.
+A streamlined idle management system that provides reliable timeout-based locking and display management for Hyprland, with advanced MediaPipe-based face detection and office presence detection.
 
 ## System Overview
 
@@ -43,7 +43,7 @@ scripts/
         ├── idle_simple_dpms.py            # Stage 4: DPMS off if office status off (continuous monitoring)
         ├── idle_simple_resume.py          # Resume: Report active, DPMS on
         ├── in_office_monitor.py           # Background: DPMS on when office status → on
-        ├── face_detector.py               # Enhanced human presence detection engine
+        ├── face_detector.py               # Advanced human presence detection engine
         └── debug/
             └── debug_idle_temp_files.py   # Comprehensive system state monitor
 ```
@@ -75,16 +75,17 @@ scripts/
   - `/tmp/mqtt/idle_detection_status`
 
 #### `face_detector.py`
-- **Purpose**: Enhanced human presence detection for comprehensive presence verification
+- **Purpose**: Advanced human presence detection using cutting-edge computer vision
 - **Called**: By hypridle at Stage 2 timeout
-- **Detection Methods**:
-  - **Frontal Face**: Detects faces looking at screen
-  - **Profile Face**: Detects side profiles
-  - **Upper Body**: Detects humans looking down (e.g., at phone) ✨
-  - **Motion Detection**: Detects subtle movements indicating presence ✨
+- **Detection Methods** (Optimized for reliability and edge cases):
+  - **MediaPipe Face Mesh**: State-of-the-art face detection for all angles, orientations, and lighting conditions ✨
+    - Handles looking down at phone, tilted heads, partial occlusion
+    - Uses 468 facial landmarks for precise detection
+    - Excellent performance in edge cases where traditional methods fail
+  - **Motion Detection**: Detects subtle movements and user interactions ✨
 - **Detection Logic**:
   - Starts with 5-second detection window
-  - Uses multiple detection methods simultaneously
+  - Uses optimized detection methods simultaneously
   - 50% threshold for human presence (≥50% = detected)
   - If not detected in 5s, extends window by 1s up to 10s total
   - Continuous monitoring every 60s if human presence detected
@@ -168,9 +169,9 @@ All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
 1. **Hyprland starts** → `launch.conf` executes
 2. **`init_presence_status.py`** → Creates status files with defaults
 3. **`in_office_monitor.py`** → Starts continuous background monitoring
-4. **System ready** → Enhanced idle detection with face recognition active
+4. **System ready** → Advanced idle detection with face recognition active
 
-### Enhanced Idle Detection Flow
+### Advanced Idle Detection Flow
 
 ```
 User becomes idle (Stage 1)
@@ -285,6 +286,32 @@ Status changed from "off" to "on"?
     └── YES → DPMS on immediately (returned to office or face detected)
 ```
 
+## Dependencies
+
+### Required Python Packages
+```bash
+# Core computer vision libraries
+pip install opencv-python mediapipe numpy
+
+# For the detection system
+sudo pacman -S python-opencv  # Arch Linux
+# OR
+apt install python3-opencv    # Ubuntu/Debian
+```
+
+### System Requirements
+- **Camera access**: `/dev/video0` (or primary camera device)
+- **Python 3.8+**: Required for MediaPipe compatibility
+- **Hyprland**: For display management integration
+- **Home Assistant**: For MQTT-based office presence integration
+
+### MediaPipe Setup
+MediaPipe provides superior face detection compared to traditional cascade methods:
+- **Automatic installation**: `pip install mediapipe` handles all dependencies
+- **No cascade files needed**: Self-contained face mesh detection
+- **GPU acceleration**: Automatically uses available GPU resources
+- **Cross-platform**: Works on Linux, macOS, Windows
+
 ## Configuration
 
 ### Centralized Configuration (`config.py`)
@@ -313,7 +340,6 @@ RESUME_DELAYS = {...}       # Delays for cleanup operations
 # Detection parameters
 DETECTION_PARAMS = {...}    # Thresholds and sensitivity settings
 WEBCAM_CONFIG = {...}       # Webcam monitoring configuration
-CASCADE_FILES = {...}       # OpenCV cascade file locations
 
 # System commands
 SYSTEM_COMMANDS = {...}     # All external commands used by scripts
@@ -444,7 +470,7 @@ cat /tmp/mqtt/face_presence
 cat /tmp/mqtt/linux_webcam_status
 cat /tmp/mqtt/in_office_status
 
-# Test enhanced human presence detection
+# Test optimized human presence detection
 python3 face_detector.py --debug
 
 # Test activity reporting
@@ -470,17 +496,21 @@ sleep 5
 
 **Human Presence Detection Testing:**
 ```bash
-# Test enhanced human presence detection
+# Test optimized human presence detection with visual debugging
+~/.config/scripts/hyprland/idle_management/debug/debug_face_detector_visual.py --duration 5
+
+# Test main detection script
 ~/.config/scripts/hyprland/idle_management/face_detector.py
 
 # Monitor detection in real-time (shows which methods are working)
 tail -f /tmp/face_detector.log
 
 # Test different scenarios:
-# 1. Looking at screen → Should detect via frontal_face
-# 2. Looking at phone → Should detect via upper_body
-# 3. Turned to side → Should detect via profile_face
-# 4. Small movements → Should detect via motion
+# 1. Looking at screen → Should detect via MediaPipe face mesh
+# 2. Looking down at phone → Should detect via MediaPipe face mesh (excellent angle coverage)
+# 3. Turned to side → Should detect via MediaPipe face mesh (468 landmark detection)
+# 4. Small movements → Should detect via motion detection
+# 5. Edge cases → MediaPipe handles partial occlusion, tilted heads, varied lighting
 
 # Test user activity interruption during detection
 echo "active" > /tmp/mqtt/linux_mini_status  # Should stop presence detection
@@ -515,12 +545,14 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 ## Key Features
 
-### Enhanced Detection Capabilities ✨
-- **Multiple Detection Methods**: Frontal face, profile face, upper body, and motion detection
-- **Phone Usage Detection**: Upper body detection catches users looking down at phones
+### Advanced Detection Capabilities ✨
+- **MediaPipe Face Mesh**: State-of-the-art face detection using 468 facial landmarks
+- **Superior Edge Case Handling**: Excellent detection when looking down at phones, tilted heads, partial occlusion
+- **All-Angle Detection**: Works from front, side, and intermediate angles
 - **Motion Sensitivity**: Detects subtle movements like typing or scrolling
 - **Smart Thresholds**: 50% detection rate threshold for reliable presence detection
 - **Adaptive Windows**: 5-10 second detection windows with automatic extension
+- **Optimized Performance**: Simplified 2-method approach for faster, more reliable detection
 
 ### Intelligence
 - **Face-Based Presence Detection**: Computer vision verification before locking
@@ -575,11 +607,12 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 **Human presence detection not working:**
 - Check camera permissions: `ls -la /dev/video0`
-- Verify OpenCV cascade files: Check paths in `face_detector.py`
+- Verify MediaPipe installation: `python -c "import mediapipe; print('MediaPipe OK')"`
 - Test camera access: `lsof /dev/video0` (should be empty when not running)
 - Check detection logs: `tail -f /tmp/face_detector.log`
 - Verify detection threshold: Look for detection rate logs
 - Check which detection methods are available: Look for "Detection methods available" in logs
+- Test visual debugging: `python debug/debug_face_detector_visual.py --duration 5`
 
 **Webcam status false positives:**
 - Check if face detector is being filtered: Look for "Ignoring face detector process" in logs
@@ -621,7 +654,7 @@ tail -f /var/log/syslog | grep linux_webcam_status
 
 ## Home Assistant Integration Requirements
 
-To fully utilize the enhanced face detection capabilities, Home Assistant automation should be configured to:
+To fully utilize the advanced face detection capabilities, Home Assistant automation should be configured to:
 
 1. **Monitor Presence Checking Phase**: Watch for `idle_detection_status = "in_progress"`
 2. **Wait for Face Detection Results**: Don't change `in_office_status` while presence checking is active

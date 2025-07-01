@@ -19,7 +19,6 @@ except ImportError:
 from config import (
     FACE_DETECTION,
     LOGGING_CONFIG,
-    get_cascade_file,
     get_detection_param,
     get_log_file,
     get_status_file,
@@ -104,24 +103,10 @@ def detect_motion(frame1, frame2, min_area=None):
     return False
 
 
-def detect_human_presence(
-    face_cascade,
-    profile_cascade,
-    eye_cascade,
-    frame,
-    previous_frame=None,
-    face_mesh=None,
-):
-    """Detect human presence using multiple methods."""
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+def detect_human_presence(frame, previous_frame=None, face_mesh=None):
+    """Detect human presence using MediaPipe and motion detection."""
 
-    # Get detection parameters from config
-    scale_factor = get_detection_param("cascade_scale_factor")
-    min_neighbors_face = get_detection_param("cascade_min_neighbors_face")
-    min_neighbors_eye = get_detection_param("cascade_min_neighbors_eye")
-    min_area_eye = get_detection_param("min_detection_area_eye")
-
-    # MediaPipe face detection (best for edge cases like looking down at phone)
+    # MediaPipe face detection (excellent for all angles and edge cases)
     if face_mesh is not None:
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = face_mesh.process(frame_rgb)
@@ -131,32 +116,7 @@ def detect_human_presence(
             )
             return True, "mediapipe_face"
 
-    # Face detection (frontal)
-    faces = face_cascade.detectMultiScale(gray, scale_factor, min_neighbors_face)
-    if len(faces) > 0:
-        logging.debug(f"Detected {len(faces)} frontal face(s)")
-        return True, "frontal_face"
-
-    # Profile face detection
-    profiles = profile_cascade.detectMultiScale(gray, scale_factor, min_neighbors_face)
-    if len(profiles) > 0:
-        logging.debug(f"Detected {len(profiles)} profile face(s)")
-        return True, "profile_face"
-
-    # Eye detection (basic eye detection - NOT true nose-ears triangle)
-    if eye_cascade is not None:
-        eyes = eye_cascade.detectMultiScale(gray, scale_factor, min_neighbors_eye)
-        valid_eyes = []
-        for x, y, w, h in eyes:
-            area = w * h
-            if area >= min_area_eye:
-                valid_eyes.append((x, y, w, h))
-
-        if len(valid_eyes) > 0:
-            logging.debug(f"Detected {len(valid_eyes)} valid eye(s)")
-            return True, "eye_detection"
-
-    # Motion detection (subtle movements while looking at phone)
+    # Motion detection (catches subtle movements and interactions)
     if previous_frame is not None:
         motion_detected = detect_motion(previous_frame, frame)
         if motion_detected:
@@ -166,9 +126,7 @@ def detect_human_presence(
     return False, "none"
 
 
-def quick_presence_check(
-    face_cascade, profile_cascade, eye_cascade, face_mesh=None, duration=None
-):
+def quick_presence_check(face_mesh=None, duration=None):
     """Quick human presence detection check for monitoring."""
     if duration is None:
         duration = FACE_DETECTION["quick_check_duration"]
@@ -198,11 +156,8 @@ def quick_presence_check(
 
             frames_total += 1
 
-            # Detect human presence using multiple methods
+            # Detect human presence using MediaPipe and motion
             detected, method = detect_human_presence(
-                face_cascade,
-                profile_cascade,
-                eye_cascade,
                 frame,
                 previous_frame,
                 face_mesh,
@@ -230,14 +185,7 @@ def quick_presence_check(
         cv2.destroyAllWindows()
 
 
-def run_detection(
-    face_cascade,
-    profile_cascade,
-    eye_cascade,
-    face_mesh=None,
-    max_duration=None,
-    initial_window=None,
-):
+def run_detection(face_mesh=None, max_duration=None, initial_window=None):
     """Run human presence detection with continuous monitoring."""
     if max_duration is None:
         max_duration = FACE_DETECTION["max_duration"]
@@ -263,9 +211,6 @@ def run_detection(
     previous_frame = None
     detection_methods = {
         "mediapipe_face": 0,
-        "frontal_face": 0,
-        "profile_face": 0,
-        "eye_detection": 0,
         "motion": 0,
     }
 
@@ -285,11 +230,8 @@ def run_detection(
 
             frames_total += 1
 
-            # Detect human presence using multiple methods
+            # Detect human presence using MediaPipe and motion
             detected, method = detect_human_presence(
-                face_cascade,
-                profile_cascade,
-                eye_cascade,
                 frame,
                 previous_frame,
                 face_mesh,
@@ -357,12 +299,7 @@ def run_detection(
                                 return
 
                         logging.info("Performing periodic human presence check...")
-                        if quick_presence_check(
-                            face_cascade,
-                            profile_cascade,
-                            eye_cascade,
-                            face_mesh,
-                        ):
+                        if quick_presence_check(face_mesh):
                             elapsed_monitoring = int(time.time() - monitoring_start)
                             logging.info(
                                 f"Human presence still detected after {elapsed_monitoring}s "
@@ -436,9 +373,7 @@ def run_detection(
                         return
 
                 logging.info("Performing periodic human presence check...")
-                if quick_presence_check(
-                    face_cascade, profile_cascade, eye_cascade, face_mesh
-                ):
+                if quick_presence_check(face_mesh):
                     elapsed_monitoring = int(time.time() - monitoring_start)
                     logging.info(
                         f"Human presence still detected after {elapsed_monitoring}s of monitoring. "
@@ -474,45 +409,15 @@ def run_detection(
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(
-        description="Enhanced human presence detection script for idle management."
+        description="Simplified human presence detection using MediaPipe + Motion."
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging.")
     args = parser.parse_args()
     setup_logging(args.debug)
 
-    logging.info("Starting enhanced human presence detection for idle management")
+    logging.info("Starting optimized human presence detection (MediaPipe + Motion)")
 
-    # Get cascade file paths from config
-    face_cascade_path = get_cascade_file("frontal_face")
-    profile_cascade_path = get_cascade_file("profile_face")
-    eye_cascade_path = get_cascade_file("eye")
-
-    # Load required cascades
-    if not face_cascade_path.exists() or not profile_cascade_path.exists():
-        logging.error("Required Haar cascade files not found. Please check the paths.")
-        logging.error(f"Looked for: {face_cascade_path}")
-        logging.error(f"Looked for: {profile_cascade_path}")
-
-        # Report failure and exit
-        report_face_status("not_detected")
-        report_idle_status("inactive")
-        return
-
-    face_cascade = cv2.CascadeClassifier(str(face_cascade_path))
-    profile_cascade = cv2.CascadeClassifier(str(profile_cascade_path))
-
-    # Load optional eye cascade (basic eye detection - NOT true nose-ears triangle)
-    eye_cascade = None
-    if eye_cascade_path.exists():
-        eye_cascade = cv2.CascadeClassifier(str(eye_cascade_path))
-        logging.info(
-            "Eye detection enabled (basic eye detection - NOT true nose-ears triangle)"
-        )
-    else:
-        logging.warning(f"Eye cascade not found at {eye_cascade_path}")
-        logging.warning("Eye detection disabled")
-
-    # Initialize MediaPipe face mesh (optional)
+    # Initialize MediaPipe face mesh
     face_mesh = None
     if MEDIAPIPE_AVAILABLE and get_detection_param("mediapipe_enabled"):
         try:
@@ -527,37 +432,28 @@ def main():
                     "mediapipe_min_tracking_confidence"
                 ),
             )
-            logging.info("MediaPipe face detection enabled (excellent for edge cases)")
+            logging.info("MediaPipe face detection enabled (excellent for all angles)")
         except Exception as e:
             logging.warning(f"Failed to initialize MediaPipe: {e}")
             face_mesh = None
     else:
         if not MEDIAPIPE_AVAILABLE:
-            logging.info(
+            logging.warning(
                 "MediaPipe not available (install with: pip install mediapipe)"
             )
         elif not get_detection_param("mediapipe_enabled"):
             logging.info("MediaPipe disabled in configuration")
 
-    # Verify cascades loaded correctly
-    if face_cascade.empty() or profile_cascade.empty():
-        logging.error("Failed to load face detection cascades")
-        report_face_status("not_detected")
-        report_idle_status("inactive")
-        return
-
-    if eye_cascade is not None and eye_cascade.empty():
-        logging.warning("Failed to load eye cascade, disabling eye detection")
-        eye_cascade = None
+    # Check if we have at least one detection method available
+    if face_mesh is None:
+        logging.warning("No MediaPipe available - only motion detection will be used")
+        logging.warning("Consider installing MediaPipe for better edge case detection")
 
     logging.info("Detection methods available:")
     logging.info(f"- MediaPipe face detection: {'✓' if face_mesh else '✗'}")
-    logging.info("- Frontal face detection: ✓")
-    logging.info("- Profile face detection: ✓")
-    logging.info(f"- Eye detection: {'✓' if eye_cascade else '✗'}")
     logging.info("- Motion detection: ✓")
 
-    run_detection(face_cascade, profile_cascade, eye_cascade, face_mesh)
+    run_detection(face_mesh)
 
 
 if __name__ == "__main__":

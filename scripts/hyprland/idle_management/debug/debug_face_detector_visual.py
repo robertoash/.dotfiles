@@ -20,16 +20,13 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Import centralized configuration
-from config import get_cascade_file, get_detection_param  # noqa: E402
+from config import get_detection_param  # noqa: E402
 
 
 class VisualFaceDetector:
-    """Visual debugging tool for face detection system."""
+    """Visual debugging tool for optimized face detection system."""
 
     def __init__(self):
-        self.face_cascade = None
-        self.profile_cascade = None
-        self.eye_cascade = None
         self.face_mesh = None
         self.previous_frame = None
 
@@ -37,9 +34,6 @@ class VisualFaceDetector:
         self.frame_count = 0
         self.detection_stats = {
             "mediapipe_face": 0,
-            "frontal_face": 0,
-            "profile_face": 0,
-            "eye_detection": 0,
             "motion": 0,
             "total_detections": 0,
         }
@@ -50,51 +44,17 @@ class VisualFaceDetector:
 
         # Colors for different detection types
         self.colors = {
-            "mediapipe_face": (0, 128, 255),  # Orange - NEW for edge cases!
-            "frontal_face": (0, 255, 0),  # Green
-            "profile_face": (255, 0, 0),  # Blue
-            "eye_detection": (0, 255, 255),  # Cyan
+            "mediapipe_face": (0, 128, 255),  # Orange - excellent for all angles!
             "motion": (255, 0, 255),  # Magenta
             "text": (255, 255, 255),  # White
             "background": (0, 0, 0),  # Black
         }
 
-    def load_cascades(self):
-        """Load all cascade classifiers."""
-        print("Loading cascade classifiers...")
+    def load_detection_methods(self):
+        """Load detection methods."""
+        print("Loading detection methods...")
 
-        # Load required cascades
-        face_cascade_path = get_cascade_file("frontal_face")
-        profile_cascade_path = get_cascade_file("profile_face")
-        eye_cascade_path = get_cascade_file("eye")
-
-        if not face_cascade_path.exists() or not profile_cascade_path.exists():
-            print("❌ Required cascade files not found!")
-            print(f"   Frontal face: {face_cascade_path}")
-            print(f"   Profile face: {profile_cascade_path}")
-            return False
-
-        self.face_cascade = cv2.CascadeClassifier(str(face_cascade_path))
-        self.profile_cascade = cv2.CascadeClassifier(str(profile_cascade_path))
-
-        # Load optional eye cascade
-        if eye_cascade_path.exists():
-            self.eye_cascade = cv2.CascadeClassifier(str(eye_cascade_path))
-            print(f"✓ Eye cascade loaded from {eye_cascade_path}")
-        else:
-            print(f"⚠ Eye cascade not found at {eye_cascade_path}")
-            print("  Eye detection will be disabled")
-
-        # Verify cascades loaded correctly
-        if self.face_cascade.empty() or self.profile_cascade.empty():
-            print("❌ Failed to load required face detection cascades")
-            return False
-
-        if self.eye_cascade is not None and self.eye_cascade.empty():
-            print("⚠ Failed to load eye cascade, disabling eye detection")
-            self.eye_cascade = None
-
-        # Initialize MediaPipe face mesh (optional)
+        # Initialize MediaPipe face mesh
         if MEDIAPIPE_AVAILABLE and get_detection_param("mediapipe_enabled"):
             try:
                 self.face_mesh = mp.solutions.face_mesh.FaceMesh(
@@ -108,7 +68,7 @@ class VisualFaceDetector:
                         "mediapipe_min_tracking_confidence"
                     ),
                 )
-                print("✓ MediaPipe face detection enabled (excellent for edge cases)")
+                print("✓ MediaPipe face detection enabled (excellent for all angles)")
             except Exception as e:
                 print(f"⚠ Failed to initialize MediaPipe: {e}")
                 self.face_mesh = None
@@ -118,14 +78,11 @@ class VisualFaceDetector:
             elif not get_detection_param("mediapipe_enabled"):
                 print("⚠ MediaPipe disabled in configuration")
 
-        print("✓ Cascade classifiers loaded successfully")
+        print("✓ Motion detection: enabled")
+
         print(
             f"✓ MediaPipe face detection: {'enabled' if self.face_mesh else 'disabled'}"
         )
-        print("✓ Frontal face detection: enabled")
-        print("✓ Profile face detection: enabled")
-        print(f"✓ Eye detection: {'enabled' if self.eye_cascade else 'disabled'}")
-        print("✓ Motion detection: enabled")
 
         return True
 
@@ -220,18 +177,11 @@ class VisualFaceDetector:
         return detected_count / len(self.detection_events)
 
     def detect_all_methods(self, frame):
-        """Detect using all available methods and return results with visual annotations."""
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        """Detect using MediaPipe and motion and return results with visual annotations."""
         results = {}
         annotated_frame = frame.copy()
 
-        # Get detection parameters from config
-        scale_factor = get_detection_param("cascade_scale_factor")
-        min_neighbors_face = get_detection_param("cascade_min_neighbors_face")
-        min_neighbors_eye = get_detection_param("cascade_min_neighbors_eye")
-        min_area_eye = get_detection_param("min_detection_area_eye")
-
-        # MediaPipe face detection (best for edge cases like looking down at phone)
+        # MediaPipe face detection (best for all angles and edge cases)
         results["mediapipe_face"] = False
         if self.face_mesh is not None:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -278,75 +228,6 @@ class VisualFaceDetector:
                     2,
                 )
 
-        # Frontal face detection
-        faces = self.face_cascade.detectMultiScale(
-            gray, scale_factor, min_neighbors_face
-        )
-        results["frontal_face"] = len(faces) > 0
-        for x, y, w, h in faces:
-            cv2.rectangle(
-                annotated_frame, (x, y), (x + w, y + h), self.colors["frontal_face"], 3
-            )
-            cv2.putText(
-                annotated_frame,
-                "Frontal Face",
-                (x, y - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                self.colors["frontal_face"],
-                2,
-            )
-
-        # Profile face detection
-        profiles = self.profile_cascade.detectMultiScale(
-            gray, scale_factor, min_neighbors_face
-        )
-        results["profile_face"] = len(profiles) > 0
-        for x, y, w, h in profiles:
-            cv2.rectangle(
-                annotated_frame, (x, y), (x + w, y + h), self.colors["profile_face"], 3
-            )
-            cv2.putText(
-                annotated_frame,
-                "Profile Face",
-                (x, y - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                self.colors["profile_face"],
-                2,
-            )
-
-        # Eye detection (perfect for looking at phone - nose-ears triangle)
-        results["eye_detection"] = False
-        if self.eye_cascade is not None:
-            eyes = self.eye_cascade.detectMultiScale(
-                gray, scale_factor, min_neighbors_eye
-            )
-            valid_eyes = []
-            for x, y, w, h in eyes:
-                area = w * h
-                if area >= min_area_eye:
-                    valid_eyes.append((x, y, w, h))
-
-            results["eye_detection"] = len(valid_eyes) > 0
-            for x, y, w, h in valid_eyes:
-                cv2.rectangle(
-                    annotated_frame,
-                    (x, y),
-                    (x + w, y + h),
-                    self.colors["eye_detection"],
-                    3,
-                )
-                cv2.putText(
-                    annotated_frame,
-                    f"Eye ({w*h})",
-                    (x, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.7,
-                    self.colors["eye_detection"],
-                    2,
-                )
-
         # Motion detection
         results["motion"] = False
         if self.previous_frame is not None:
@@ -365,7 +246,7 @@ class VisualFaceDetector:
         # Semi-transparent overlay for status
         overlay = frame.copy()
         cv2.rectangle(
-            overlay, (width - 320, 0), (width, 280), self.colors["background"], -1
+            overlay, (width - 320, 0), (width, 200), self.colors["background"], -1
         )
         cv2.addWeighted(overlay, 0.7, frame, 0.3, 0, frame)
 
@@ -375,7 +256,7 @@ class VisualFaceDetector:
         # Title
         cv2.putText(
             frame,
-            "Human Presence Detection",
+            "Optimized Presence Detection",
             (width - 315, y_offset),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
@@ -387,17 +268,11 @@ class VisualFaceDetector:
         # Detection status for each method
         methods = [
             ("MediaPipe Face", "mediapipe_face"),
-            ("Frontal Face", "frontal_face"),
-            ("Profile Face", "profile_face"),
-            ("Eye Detection", "eye_detection"),
             ("Motion", "motion"),
         ]
 
         for method_name, method_key in methods:
-            if method_key == "eye_detection" and self.eye_cascade is None:
-                status = "DISABLED"
-                color = (128, 128, 128)  # Gray
-            elif method_key == "mediapipe_face" and self.face_mesh is None:
+            if method_key == "mediapipe_face" and self.face_mesh is None:
                 status = "DISABLED"
                 color = (128, 128, 128)  # Gray
             else:
@@ -422,7 +297,7 @@ class VisualFaceDetector:
             cv2.putText(
                 frame,
                 status,
-                (width - 180, y_offset),
+                (width - 150, y_offset),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
                 color,
@@ -510,7 +385,7 @@ class VisualFaceDetector:
         )
 
         # Detection method legend
-        y_offset = height - 120
+        y_offset = height - 70
         cv2.putText(
             frame,
             "Legend:",
@@ -524,15 +399,10 @@ class VisualFaceDetector:
 
         legend_items = [
             ("MediaPipe Face", "mediapipe_face"),
-            ("Frontal Face", "frontal_face"),
-            ("Profile Face", "profile_face"),
-            ("Eye Detection", "eye_detection"),
             ("Motion", "motion"),
         ]
 
         for method_name, method_key in legend_items:
-            if method_key == "eye_detection" and self.eye_cascade is None:
-                continue
             if method_key == "mediapipe_face" and self.face_mesh is None:
                 continue
             cv2.rectangle(
@@ -570,12 +440,9 @@ class VisualFaceDetector:
             print("❌ Cannot open camera")
             return
 
-        print("\n🎥 Starting visual detection...")
+        print("\n🎥 Starting optimized visual detection...")
         print("📖 Legend:")
-        print("   🟠 Orange box = MediaPipe face detected (BEST for edge cases!)")
-        print("   🟢 Green box = Frontal face detected")
-        print("   🔵 Blue box = Profile face detected")
-        print("   🟡 Cyan box = Eye detected (NOT true nose-ears triangle)")
+        print("   🟠 Orange box = MediaPipe face detected (excellent for all angles!)")
         print("   🟣 Magenta = Motion detected")
         print("\n⌨️ Controls:")
         print("   ESC or 'q' = Quit")
@@ -666,7 +533,7 @@ class VisualFaceDetector:
                 self.previous_frame = frame.copy()
 
                 # Display the frame
-                window_name = "Enhanced Human Presence Detection - Debug View"
+                window_name = "Optimized Human Presence Detection - Debug View"
                 cv2.imshow(window_name, display_frame)
 
                 # Handle key presses
@@ -717,9 +584,6 @@ class VisualFaceDetector:
         self.frame_count = 0
         self.detection_stats = {
             "mediapipe_face": 0,
-            "frontal_face": 0,
-            "profile_face": 0,
-            "eye_detection": 0,
             "motion": 0,
             "total_detections": 0,
         }
@@ -743,9 +607,6 @@ class VisualFaceDetector:
         for method, count in self.detection_stats.items():
             if method == "total_detections":
                 continue
-            if method == "eye_detection" and self.eye_cascade is None:
-                print(f"  🔸 {method.replace('_', ' ').title()}: DISABLED")
-                continue
             if method == "mediapipe_face" and self.face_mesh is None:
                 print(f"  🔸 {method.replace('_', ' ').title()}: DISABLED")
                 continue
@@ -759,7 +620,7 @@ class VisualFaceDetector:
 def main():
     """Main function for visual face detection debugging."""
     parser = argparse.ArgumentParser(
-        description="Visual debugging tool for enhanced human presence detection."
+        description="Visual debugging tool for optimized human presence detection."
     )
     parser.add_argument(
         "--duration",
@@ -771,30 +632,25 @@ def main():
     parser.add_argument(
         "--test-config",
         action="store_true",
-        help="Test configuration and cascade loading only",
+        help="Test configuration and detection loading only",
     )
     args = parser.parse_args()
 
-    print("🔍 Enhanced Human Presence Detection - Visual Debug Tool")
+    print("🔍 Optimized Human Presence Detection - Visual Debug Tool")
     print("=" * 60)
 
     detector = VisualFaceDetector()
 
-    # Load cascades
-    if not detector.load_cascades():
-        print("❌ Failed to load cascade classifiers")
+    # Load detection methods
+    if not detector.load_detection_methods():
+        print("❌ Failed to load detection methods")
         return 1
 
     # Print configuration info
     print("\n⚙️ Configuration:")
     print(f"   Detection threshold: {get_detection_param('threshold'):.1%}")
-    print(f"   Scale factor: {get_detection_param('cascade_scale_factor')}")
-    print(
-        f"   Min neighbors (face): {get_detection_param('cascade_min_neighbors_face')}"
-    )
-    print(f"   Min neighbors (eye): {get_detection_param('cascade_min_neighbors_eye')}")
-    print(f"   Min eye area: {get_detection_param('min_detection_area_eye')}")
     print(f"   Motion min area: {get_detection_param('motion_min_area')}")
+    print(f"   MediaPipe enabled: {get_detection_param('mediapipe_enabled')}")
 
     if args.test_config:
         print("\n✅ Configuration test completed successfully")
