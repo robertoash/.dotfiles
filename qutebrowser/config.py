@@ -21,7 +21,7 @@ c.tabs.title.format = "{index}: {current_title}"
 c.window.title_format = f"{{current_url}} @ [qute-{profile_name}] "
 # Autosave session
 c.auto_save.session = True
-c.session.lazy_restore = False
+c.session.lazy_restore = True
 # Smooth scrolling
 c.scrolling.smooth = True
 # Download handling
@@ -122,6 +122,8 @@ config.bind("<Ctrl-h>", "scroll-page -1 0")
 config.bind("<Ctrl-l>", "scroll-page 1 0")
 config.bind("J", "tab-next")
 config.bind("K", "tab-prev")
+config.bind("<Ctrl-Shift-j>", "tab-move -")
+config.bind("<Ctrl-Shift-k>", "tab-move +")
 # mpv integration
 config.bind(",m", "spawn --detach mpv {url}")
 config.bind(",M", "hint links spawn --detach mpv {hint-url}")
