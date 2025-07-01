@@ -104,7 +104,6 @@ FACE_DETECTION = {
     "initial_window": 1,  # Initial detection window duration
     "max_duration": 10,  # Maximum detection window duration
     "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring
-    "quick_check_duration": 3,  # Duration for quick presence checks during monitoring
 }
 
 # Resume delays (in seconds)
@@ -350,6 +349,42 @@ def get_all_log_files():
     return [path for path in LOG_FILES.values() if path is not None]
 
 
+def get_enabled_detection_methods():
+    """Get a string describing detection methods that will actually be used."""
+    fallback_enabled = get_fallback_setting("fallback_to_generic_detection")
+
+    if fallback_enabled:
+        # Fallback enabled: show all enabled methods in priority order
+        enabled_methods = []
+        detection_order = get_detection_method_order()
+
+        for method in detection_order:
+            if method == "facial_recognition":
+                enabled_methods.append("Facial Recognition")
+            elif method == "mediapipe_face":
+                enabled_methods.append("MediaPipe")
+            elif method == "motion":
+                enabled_methods.append("Motion")
+
+        return " + ".join(enabled_methods) if enabled_methods else "None"
+    else:
+        # Fallback disabled: only highest priority available method runs
+        detection_order = get_detection_method_order()
+
+        if not detection_order:
+            return "None"
+
+        highest_priority = detection_order[0]
+        if highest_priority == "facial_recognition":
+            return "Facial Recognition (only)"
+        elif highest_priority == "mediapipe_face":
+            return "MediaPipe (only)"
+        elif highest_priority == "motion":
+            return "Motion (only)"
+
+        return "None"
+
+
 # =============================================================================
 # VALIDATION
 # =============================================================================
@@ -424,5 +459,5 @@ if __name__ == "__main__":
     print(f"  Status files: {len(STATUS_FILES)}")
     print(f"  Control files: {len(CONTROL_FILES)}")
     print(f"  Log files: {len([f for f in LOG_FILES.values() if f])}")
-    print("  Detection methods: MediaPipe + Motion")
+    print(f"  Detection methods: {get_enabled_detection_methods()}")
     print(f"  Check intervals: {len(CHECK_INTERVALS)}")

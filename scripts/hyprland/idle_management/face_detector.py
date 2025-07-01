@@ -364,27 +364,34 @@ def _try_detection_method(
     return False, "unknown"
 
 
-def quick_presence_check(face_mesh=None, known_encodings=None, duration=None):
-    """Quick human presence detection check for monitoring."""
-    if duration is None:
-        duration = FACE_DETECTION["quick_check_duration"]
+def periodic_presence_check(face_mesh=None, known_encodings=None):
+    """Perform the same adaptive window detection during monitoring."""
+    logging.info("Performing periodic presence check with adaptive windows...")
 
+    # Use the same detection logic as initial detection
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         logging.error("Cannot open camera for monitoring check")
         return False
 
     start_time = time.time()
+    max_duration = FACE_DETECTION["max_duration"]
+    window_duration = FACE_DETECTION["initial_window"]
     frames_total = 0
     presence_detected_frames = 0
     detection_threshold = get_detection_param("threshold")
     previous_frame = None
+    detection_methods = {
+        "facial_recognition": 0,
+        "mediapipe_face": 0,
+        "motion": 0,
+    }
 
     try:
-        while time.time() - start_time < duration:
-            # Check if user became active during quick check
+        while time.time() - start_time < max_duration:
+            # Check if user became active
             if check_user_active():
-                logging.info("User became active during quick presence check, stopping")
+                logging.info("User became active during periodic check, stopping")
                 return False
 
             ret, frame = cap.read()
@@ -404,20 +411,51 @@ def quick_presence_check(face_mesh=None, known_encodings=None, duration=None):
 
             if detected:
                 presence_detected_frames += 1
+                detection_methods[method] += 1
                 logging.debug(f"Frame {frames_total}: Human detected via {method}")
 
             # Store frame for motion detection
             previous_frame = frame.copy()
 
-        detection_rate = (
+            # Evaluate within the current window
+            if time.time() - start_time >= window_duration:
+                detection_rate = presence_detected_frames / frames_total
+                logging.info(
+                    f"Periodic window {window_duration}s: "
+                    f"{presence_detected_frames}/{frames_total} frames "
+                    f"({detection_rate:.1%}) - threshold: {detection_threshold:.1%}"
+                )
+
+                # Human presence detected if we exceed the threshold
+                if detection_rate >= detection_threshold:
+                    logging.info(
+                        f"Periodic check: HUMAN PRESENCE DETECTED! "
+                        f"Rate: {detection_rate:.1%} in {window_duration}s"
+                    )
+                    logging.info(f"Periodic detection breakdown: {detection_methods}")
+                    return True
+
+                # If we haven't reached max_duration, extend the window
+                if window_duration < max_duration:
+                    window_duration += 1
+                    logging.debug(
+                        f"Extending periodic detection window to {window_duration}s"
+                    )
+                else:
+                    # Max duration reached, make final call
+                    break
+
+        # Final evaluation after loop finishes
+        final_detection_rate = (
             presence_detected_frames / frames_total if frames_total > 0 else 0
         )
-        logging.debug(
-            f"Monitoring check: {presence_detected_frames}/{frames_total} "
-            f"frames ({detection_rate:.1%})"
+        logging.info(
+            f"Periodic final evaluation: {presence_detected_frames}/{frames_total} frames "
+            f"({final_detection_rate:.1%}) over {max_duration}s"
         )
+        logging.info(f"Periodic final detection breakdown: {detection_methods}")
 
-        return detection_rate >= detection_threshold
+        return final_detection_rate >= detection_threshold
 
     finally:
         cap.release()
@@ -542,7 +580,7 @@ def run_detection(
                                 return
 
                         logging.info("Performing periodic human presence check...")
-                        if quick_presence_check(face_mesh, known_encodings):
+                        if periodic_presence_check(face_mesh, known_encodings):
                             elapsed_monitoring = int(time.time() - monitoring_start)
                             logging.info(
                                 f"Human presence still detected after {elapsed_monitoring}s "
@@ -616,7 +654,7 @@ def run_detection(
                         return
 
                 logging.info("Performing periodic human presence check...")
-                if quick_presence_check(face_mesh, known_encodings):
+                if periodic_presence_check(face_mesh, known_encodings):
                     elapsed_monitoring = int(time.time() - monitoring_start)
                     logging.info(
                         f"Human presence still detected after {elapsed_monitoring}s of monitoring. "
