@@ -116,14 +116,44 @@ RESUME_DELAYS = {
 # DETECTION PARAMETERS
 # =============================================================================
 
-# Optimized detection parameters (MediaPipe + Motion only)
 DETECTION_PARAMS = {
     "threshold": 0.5,  # 50% threshold for presence detection
-    "motion_min_area": 200,  # Min area for motion detection (reduced for phone usage)
-    # MediaPipe parameters
-    "mediapipe_enabled": True,  # Enable MediaPipe face mesh detection
-    "mediapipe_min_detection_confidence": 0.5,  # MediaPipe detection confidence
-    "mediapipe_min_tracking_confidence": 0.5,  # MediaPipe tracking confidence
+    "fallback_settings": {
+        "fallback_to_generic_detection": False,
+        "max_unknown_detections_before_fallback": 3,
+    },
+    "facial_recognition": {
+        "enabled": True,
+        "priority": 1,
+        # Reference images configuration
+        "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
+        "supported_image_formats": [".jpg", ".jpeg", ".png", ".bmp"],
+        # Recognition parameters
+        # Lower = more strict (0.4-0.8 recommended) - optimized for higher accuracy
+        "tolerance": 0.6,
+        # Minimum confidence for positive recognition - adjusted based on self-recognition test
+        "min_recognition_confidence": 0.5,  # Lowered since self-recognition averages 0.57
+        # Performance settings - OPTIMIZED FOR REAL-TIME PERFORMANCE
+        "face_detection_model": "hog",
+        # "hog" (faster) or "cnn" (more accurate) - using HOG for real-time performance
+        "face_locations_model": "hog",
+        # Number of times to jitter when computing encoding - balanced accuracy/speed
+        # (1-100, higher = more accurate but slower) - 2 jitters for balanced performance
+        "num_jitters": 2,
+        # Security and fallback settings
+        "anti_spoofing_enabled": False,  # Enable anti-spoofing measures (experimental)
+    },
+    "mediapipe_face": {
+        "enabled": True,
+        "priority": 2,
+        "min_detection_confidence": 0.5,
+        "min_tracking_confidence": 0.5,
+    },
+    "motion": {
+        "enabled": True,
+        "priority": 3,
+        "min_area": 200,
+    },
 }
 
 # =============================================================================
@@ -196,6 +226,57 @@ def get_detection_param(param_name):
     return DETECTION_PARAMS.get(param_name)
 
 
+def get_detection_method_param(method_name, param_name):
+    """Get a parameter for a specific detection method."""
+    method_config = DETECTION_PARAMS.get(method_name, {})
+    return method_config.get(param_name)
+
+
+def get_detection_method_order():
+    """Get the configured detection method order based on priorities."""
+    methods = []
+    for method_name in ["facial_recognition", "mediapipe_face", "motion"]:
+        method_config = DETECTION_PARAMS.get(method_name, {})
+        if method_config.get("enabled", False):
+            priority = method_config.get("priority", 999)
+            methods.append((priority, method_name))
+
+    # Sort by priority (lower number = higher priority)
+    methods.sort(key=lambda x: x[0])
+    return [method_name for priority, method_name in methods]
+
+
+def get_fallback_setting(param_name):
+    """Get a fallback setting parameter."""
+    return DETECTION_PARAMS.get("fallback_settings", {}).get(param_name)
+
+
+def get_facial_recognition_param(param_name):
+    """Get a facial recognition parameter."""
+    # First check the new structure
+    facial_config = DETECTION_PARAMS.get("facial_recognition", {})
+    if param_name in facial_config:
+        return facial_config[param_name]
+
+    # Check fallback settings for backward compatibility
+    fallback_config = DETECTION_PARAMS.get("fallback_settings", {})
+    if param_name in fallback_config:
+        return fallback_config[param_name]
+
+    # Parameter not found in either location
+    return None
+
+
+def is_facial_recognition_enabled():
+    """Check if facial recognition is enabled."""
+    return DETECTION_PARAMS.get("facial_recognition", {}).get("enabled", False)
+
+
+def is_detection_method_enabled(method_name):
+    """Check if a specific detection method is enabled."""
+    return DETECTION_PARAMS.get(method_name, {}).get("enabled", False)
+
+
 def get_system_command(command_name):
     """Get a system command."""
     return SYSTEM_COMMANDS.get(command_name, [])
@@ -204,6 +285,15 @@ def get_system_command(command_name):
 def ensure_directories():
     """Ensure all required directories exist."""
     directories = [MQTT_DIR, TMP_DIR]
+
+    # Add facial recognition directory if enabled
+    if is_facial_recognition_enabled():
+        ref_dir = DETECTION_PARAMS.get("facial_recognition", {}).get(
+            "reference_images_dir"
+        )
+        if ref_dir:
+            directories.append(ref_dir)
+
     for directory in directories:
         directory.mkdir(parents=True, exist_ok=True)
 
@@ -240,6 +330,40 @@ def validate_config():
     # Check that scripts directory exists
     if not IDLE_MANAGEMENT_DIR.exists():
         errors.append(f"Scripts directory not found: {IDLE_MANAGEMENT_DIR}")
+
+    # Validate facial recognition configuration if enabled
+    if is_facial_recognition_enabled():
+        # Check if face_recognition library is available
+        try:
+            __import__("face_recognition")
+        except ImportError:
+            errors.append(
+                "Facial recognition enabled but face_recognition library not "
+                "installed (pip install face_recognition)"
+            )
+
+        # Check reference images directory
+        ref_dir = DETECTION_PARAMS.get("facial_recognition", {}).get(
+            "reference_images_dir"
+        )
+        if not ref_dir or not ref_dir.exists():
+            errors.append(
+                f"Facial recognition reference directory not found: {ref_dir}"
+            )
+        else:
+            # Check for reference images
+            supported_formats = DETECTION_PARAMS.get("facial_recognition", {}).get(
+                "supported_image_formats", []
+            )
+            reference_images = []
+            for fmt in supported_formats:
+                reference_images.extend(ref_dir.glob(f"*{fmt}"))
+
+            if not reference_images:
+                errors.append(
+                    f"No reference images found in {ref_dir}. "
+                    f"Supported formats: {supported_formats}"
+                )
 
     return errors
 

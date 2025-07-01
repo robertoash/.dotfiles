@@ -6,10 +6,16 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from config import CONTROL_FILES, STATUS_FILES, get_all_log_files, get_check_interval
+# Add parent directory to path to import config
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import centralized configuration
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import (  # noqa: E402
+    CONTROL_FILES,
+    STATUS_FILES,
+    get_all_log_files,
+    get_check_interval,
+)
 
 # Files to monitor with descriptions
 files_to_monitor = {

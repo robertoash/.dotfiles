@@ -173,3 +173,4 @@ systemd/user/sockets.target.wants
 systemd/user/timers.target.wants
 systemd/user/eos-update-notifier.service
 systemd/user/eos-update-notifier.timer
+scripts/hyprland/idle_management/reference_faces

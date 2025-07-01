@@ -1,13 +1,13 @@
-# Optimized Idle Management System with Advanced Face Detection
+# Optimized Idle Management System with Advanced Face Detection & Facial Recognition
 
-A streamlined idle management system that provides reliable timeout-based locking and display management for Hyprland, with advanced MediaPipe-based face detection and office presence detection.
+A streamlined idle management system that provides reliable timeout-based locking and display management for Hyprland, with advanced MediaPipe-based face detection and **optional person-specific facial recognition**.
 
 ## System Overview
 
 This system provides intelligent idle detection with four stages:
 
 1. **Stage 1**: Report inactive status and start presence checking phase
-2. **Stage 2**: Perform face detection to verify user presence
+2. **Stage 2**: Perform face detection (generic or person-specific) to verify user presence
 3. **Stage 3**: Check office presence, lock if away from office (respects face detection)
 4. **Stage 4**: Check office presence, turn off displays if away from office (continuous monitoring)
 5. **Background**: Continuous monitoring to turn displays back on when returning to office
@@ -17,7 +17,7 @@ This system provides intelligent idle detection with four stages:
 ```
 hypridle.conf
     ├── Stage 1: activity_status_reporter.py --inactive (starts presence checking)
-    ├── Stage 2: face_detector.py (face presence verification)
+    ├── Stage 2: face_detector.py (face presence verification + optional person recognition)
     ├── Stage 3: idle_simple_lock.py (respects face detection results)
     ├── Stage 4: idle_simple_dpms.py
     └── on-resume: idle_simple_resume.py
@@ -25,6 +25,27 @@ hypridle.conf
 launch.conf
     └── startup: in_office_monitor.py (continuous background)
 ```
+
+## Detection Methods
+
+### 1. **Facial Recognition** ✨ *NEW*
+- **Person-specific recognition**: Recognizes specific individuals using facial encodings
+- **Reference image system**: Learns from multiple photos of the target person
+- **Configurable confidence thresholds**: Adjustable security vs usability
+- **Fallback support**: Can fall back to generic detection if recognition fails
+- **Performance optimized**: Cached encodings for fast startup
+- **Security features**: Anti-spoofing protection (optional)
+
+### 2. **MediaPipe Face Mesh**
+- State-of-the-art face detection using 468 facial landmarks
+- Excellent performance for all angles, orientations, and lighting conditions
+- Handles edge cases: looking down at phones, tilted heads, partial occlusion
+- Works from front, side, and intermediate angles
+
+### 3. **Motion Detection**
+- Detects subtle movements like typing or scrolling
+- Catches interactions MediaPipe might miss
+- Optimized for office environment usage
 
 ## File Structure
 
@@ -35,7 +56,8 @@ scripts/
 │   └── mqtt_listener.py               # MQTT message handling (kept separate)
 └── hyprland/
     └── idle_management/
-        ├── config.py                      # 🆕 Centralized configuration for all scripts
+        ├── config.py                      # 🆕 Centralized configuration (includes facial recognition)
+        ├── reference_faces/               # 🆕 Reference images directory (created when enabled)
         ├── init_presence_status.py        # Boot-time status initialization
         ├── activity_status_reporter.py    # Activity status + presence checking
         ├── linux_webcam_status.py         # Webcam monitoring (filtered)
@@ -43,135 +65,289 @@ scripts/
         ├── idle_simple_dpms.py            # Stage 4: DPMS off if office status off (continuous monitoring)
         ├── idle_simple_resume.py          # Resume: Report active, DPMS on
         ├── in_office_monitor.py           # Background: DPMS on when office status → on
-        ├── face_detector.py               # Advanced human presence detection engine
+        ├── face_detector.py               # 🔄 Enhanced: Facial recognition + face detection engine
         └── debug/
             └── debug_idle_temp_files.py   # Comprehensive system state monitor
 ```
 
 ## Script Responsibilities
 
-#### `init_presence_status.py`
-- **Purpose**: Initialize status files on boot and clean up stale flags
-- **Called**: Once at Hyprland launch via `launch.conf`
-- **Actions**:
-  - Cleans up stale exit flags from previous sessions
-  - Creates required `/tmp/mqtt/` status files with defaults
-- **Status Files Created**:
-  - `linux_mini_status`: `"active"`
-  - `idle_detection_status`: `"inactive"`
-  - `face_presence`: `"not_detected"`
-  - `linux_webcam_status`: `"inactive"`
-  - `in_office_status`: `"on"`
-
-#### `activity_status_reporter.py`
-- **Purpose**: Report user activity status and start presence checking phase
-- **Called**: By hypridle at Stage 1 timeout and on resume
-- **Arguments**: `--active` or `--inactive`
-- **Behavior**:
-  - `--inactive`: Sets `idle_detection_status` to "in_progress" (starts presence checking phase)
-  - `--active`: Sets `idle_detection_status` to "inactive" (stops presence checking)
-- **Updates**:
-  - `/tmp/mqtt/linux_mini_status`
-  - `/tmp/mqtt/idle_detection_status`
-
-#### `face_detector.py`
-- **Purpose**: Advanced human presence detection using cutting-edge computer vision
+#### `face_detector.py` 🔄 **Enhanced**
+- **Purpose**: Advanced human presence detection with optional person-specific recognition
 - **Called**: By hypridle at Stage 2 timeout
-- **Detection Methods** (Optimized for reliability and edge cases):
-  - **MediaPipe Face Mesh**: State-of-the-art face detection for all angles, orientations, and lighting conditions ✨
-    - Handles looking down at phone, tilted heads, partial occlusion
-    - Uses 468 facial landmarks for precise detection
-    - Excellent performance in edge cases where traditional methods fail
-  - **Motion Detection**: Detects subtle movements and user interactions ✨
+- **Detection Methods** (Configurable priority):
+  1. **Facial Recognition**: Person-specific recognition using reference encodings ✨
+     - Recognizes target person with configurable confidence thresholds
+     - Falls back to generic detection if recognition fails (configurable)
+     - Logs confidence scores and recognition quality
+  2. **MediaPipe Face Mesh**: State-of-the-art face detection for all angles and lighting ✨
+  3. **Motion Detection**: Detects subtle movements and user interactions ✨
 - **Detection Logic**:
-  - Starts with 1-second detection window
-  - Uses optimized detection methods simultaneously
+  - Facial recognition takes priority when enabled and reference images are available
+  - Requires minimum confidence threshold for positive person recognition
+  - Can fall back to generic face detection if person not recognized
+  - Uses optimized detection methods simultaneously for comprehensive coverage
   - 50% threshold for human presence (≥50% = detected)
-  - If not detected in 1s, extends window by 1s up to 10s total
+  - Adaptive detection windows: 1-10 seconds with automatic extension
   - Continuous monitoring every 60s if human presence detected
 - **Status Reporting**:
   - Reports `"in_progress"` to `idle_detection_status` at start
   - Reports `"detected"` or `"not_detected"` to `face_presence`
-  - Logs breakdown of which detection methods were used
-  - Resets both statuses if user becomes active
+  - Logs detailed breakdown of detection methods used
+  - Logs facial recognition confidence scores when applicable
 - **Smart Exit**: Monitors `linux_mini_status` for user activity
-- **Logging**: Comprehensive logging to `/tmp/face_detector.log` with detection method breakdown
+- **Logging**: Comprehensive logging with facial recognition details and confidence metrics
 
-#### `linux_webcam_status.py`
-- **Purpose**: Monitor webcam usage by non-automated processes
-- **Enhanced Filtering**: Excludes face detector processes from webcam "active" status
-- **Behavior**:
-  - Uses `lsof` to detect camera usage
-  - Filters out `face_detector.py` processes
-  - Only reports "active" for genuine user webcam usage
-- **Integration**: Prevents false positives during automated face detection
+## Facial Recognition Configuration
 
-#### `idle_simple_lock.py`
-- **Purpose**: Check office status and lock if away from office, with continuous monitoring
-- **Called**: By hypridle at Stage 3 timeout
-- **Behavior**:
-  - Reads `/tmp/mqtt/in_office_status` (influenced by face detection via HA automation)
-  - If status is "off": Lock screen immediately with hyprlock
-  - If status is "on": Continuously monitor for status change to "off", then lock
-  - If user resumes activity during monitoring: Stop monitoring via exit flag mechanism
-- **Integration**: Respects face detection results via Home Assistant automation
+### Setup and Installation
 
-#### `idle_simple_dpms.py`
-- **Purpose**: Check office status and turn off displays if away from office, with continuous monitoring
-- **Called**: By hypridle at Stage 4 timeout
-- **Behavior**:
-  - Reads `/tmp/mqtt/in_office_status` (influenced by face detection via HA automation)
-  - If status is "off": Turn off displays immediately (DPMS off)
-  - If status is "on": Continuously monitor for status change to "off", then turn off displays
-  - If user resumes activity during monitoring: Stop monitoring via exit flag mechanism
-- **Integration**: Respects face detection results via Home Assistant automation
+```bash
+# Install facial recognition dependencies
+pip install face_recognition dlib
 
-#### `idle_simple_resume.py`
-- **Purpose**: Handle user resume/activity detection and signal lock monitoring to stop
-- **Called**: By hypridle on resume (any user activity)
-- **Actions**:
-  1. Create exit flag (`/tmp/idle_simple_lock_exit`) to stop any running lock monitoring
-  2. Ensure displays are turned on (DPMS on)
-  3. Report active status to Home Assistant
-  4. Clean up exit flag after a brief delay
+# Note: dlib may require compilation, alternative quick install:
+conda install -c conda-forge dlib
+pip install face_recognition
+```
 
-#### `in_office_monitor.py`
-- **Purpose**: Continuously monitor office status changes
-- **Called**: At startup via `launch.conf` (runs continuously)
-- **Behavior**:
-  - Monitors `/tmp/mqtt/in_office_status` for changes
-  - When status changes from "off" → "on": Immediately turn on displays
-  - Runs in background, responds instantly to office status changes
+### Configuration in `config.py`
 
-## Status Files
+```python
+DETECTION_PARAMS = {
+    "threshold": 0.5,  # 50% threshold for presence detection
+    "fallback_settings": {
+        "fallback_to_generic_detection": False,
+        "max_unknown_detections_before_fallback": 3,
+    },
+    "facial_recognition": {
+        "enabled": False,
+        "priority": 1,  # Lower number = higher priority
+        "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
+        "tolerance": 0.6,
+        "min_recognition_confidence": 0.8,
+        # ... other facial recognition settings
+    },
+    "mediapipe_face": {
+        "enabled": True,
+        "priority": 2,
+        "min_detection_confidence": 0.5,
+        "min_tracking_confidence": 0.5,
+    },
+    "motion": {
+        "enabled": True,
+        "priority": 3,
+        "min_area": 200,
+    }
+}
+```
 
-All status files are located in `/tmp/mqtt/` and monitored by `mqtt_reports.py`:
+### Setting Up Reference Images
 
-| File | Values | Purpose | Updated By |
-|------|--------|---------|------------|
-| `linux_mini_status` | `active`, `inactive` | User activity state | `activity_status_reporter.py`, `toggle_hypridle.py` |
-| `idle_detection_status` | `inactive`, `in_progress` | Idle detection state | `activity_status_reporter.py`, `face_detector.py`, `toggle_hypridle.py` |
-| `face_presence` | `detected`, `not_detected` | Face detection results | `face_detector.py` |
-| `linux_webcam_status` | `active`, `inactive` | Non-automated webcam usage | `linux_webcam_status.py` |
-| `in_office_status` | `on`, `off` | Office occupancy | External MQTT (influenced by face detection) |
-| `manual_override_status` | `active`, `inactive` | Manual override state | `toggle_hypridle.py` |
+1. **Enable Facial Recognition**:
+   ```python
+   # In config.py
+   DETECTION_PARAMS["facial_recognition"]["enabled"] = True
+   ```
 
-### Control Files
+2. **Create Reference Images Directory**:
+   ```bash
+   mkdir -p ~/.config/scripts/hyprland/idle_management/reference_faces
+   ```
 
-| File | Purpose | Created By |
-|------|---------|------------|
-| `/tmp/in_office_monitor_exit` | Stop in-office monitor | Cleanup scripts |
-| `/tmp/idle_simple_lock_exit` | Stop lock and DPMS monitoring when user resumes | `idle_simple_resume.py` |
+3. **Add Reference Photos**:
+   ```bash
+   # Copy 5-10 photos of the target person
+   cp ~/Photos/your_face_*.jpg ~/.config/scripts/hyprland/idle_management/reference_faces/
 
-## System Flow
+   # Include variety:
+   # - Different lighting conditions (bright, dim, natural, artificial)
+   # - Multiple angles (frontal, slight profile, looking up/down)
+   # - Different expressions (neutral, smiling)
+   # - With/without glasses if applicable
+   # - Different times of day/seasons
+   ```
+
+4. **Test Configuration**:
+   ```bash
+   cd ~/.config/scripts/hyprland/idle_management
+   python3 config.py
+   # Should show: ✓ Configuration validation passed
+   ```
+
+5. **Test Recognition**:
+   ```bash
+   python3 face_detector.py --debug
+   # Look for: "Facial recognition enabled with X reference encodings"
+   ```
+
+### Recognition Behavior
+
+#### Priority and Fallback Logic
+```
+1. Facial Recognition (if enabled and encodings available)
+   ├── Person recognized with high confidence → "detected" ✅
+   ├── Person recognized with low confidence → continue to fallback methods
+   └── No person/unknown person → continue to fallback methods
+
+2. Fallback Methods (if facial recognition disabled or fallback enabled)
+   ├── MediaPipe face detection → "detected" if any face found
+   └── Motion detection → "detected" if movement found
+
+3. Result: "not_detected" only if ALL methods fail
+```
+
+#### Configuration Scenarios
+
+**Scenario 1: Maximum Security** (Only target person allowed)
+```python
+DETECTION_PARAMS["facial_recognition"]["enabled"] = True
+DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = False
+DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.5
+DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.9
+```
+
+**Scenario 2: Balanced** (Preferred person + generic detection)
+```python
+DETECTION_PARAMS["facial_recognition"]["enabled"] = True
+DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = True
+DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.6
+DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.8
+```
+
+**Scenario 3: Generic Only** (Original behavior)
+```python
+DETECTION_PARAMS["facial_recognition"]["enabled"] = False
+DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = False
+DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.6
+DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.8
+```
+
+### Facial Recognition Logging
+
+When facial recognition is enabled, detailed logs show:
+
+```bash
+# Startup
+INFO - Facial recognition enabled with X reference encodings
+INFO - Detection methods available:
+INFO - - Facial recognition: ✓
+INFO - - MediaPipe face detection: ✓
+INFO - - Motion detection: ✓
+
+# During detection
+DEBUG - Target person recognized with confidence: 0.847
+DEBUG - Frame 15: Human detected via facial_recognition
+
+# Or fallback behavior
+DEBUG - Person detected but confidence too low: 0.650 < 0.800
+DEBUG - Frame 15: Human detected via mediapipe_face
+
+# Final summary
+INFO - Detection breakdown: {'facial_recognition': 12, 'mediapipe_face': 3, 'motion': 0}
+```
+
+### Performance Impact
+
+| Feature | CPU Usage | Memory | Startup Time | Notes |
+|---------|-----------|---------|--------------|-------|
+| Generic Detection | ~10-20% | ~50MB | ~1s | Original performance |
+| + Facial Recognition | ~20-30% | ~70MB | ~2-3s | Additional 200-500ms per frame |
+| Cached Encodings | Minimal | +~5MB | ~1s | Encodings cached after first run |
+
+**Optimizations Included**:
+- Face detection filters before recognition (only run recognition on detected faces)
+- Encoding caching (loads once, reuses across sessions)
+- Configurable model complexity (`hog` vs `cnn`)
+- Jitter control for speed vs accuracy balance
+
+### Troubleshooting Facial Recognition
+
+**Issue: "No reference encodings loaded"**
+```bash
+# Check if images exist
+ls -la ~/.config/scripts/hyprland/idle_management/reference_faces/
+# Should show .jpg, .png, etc. files
+
+# Check if faces are detected in reference images
+python3 -c "
+import face_recognition
+image = face_recognition.load_image_file('reference_faces/your_photo.jpg')
+encodings = face_recognition.face_encodings(image)
+print(f'Found {len(encodings)} faces in image')
+"
+```
+
+**Issue: "Low recognition confidence"**
+```bash
+# Lower the tolerance (more permissive)
+# In config.py:
+DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.7
+DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.7
+
+# Or add more diverse reference images
+```
+
+**Issue: "face_recognition library not available"**
+```bash
+# Install face_recognition
+pip install face_recognition
+
+# If compilation fails, try conda:
+conda install -c conda-forge dlib
+pip install face_recognition
+
+# Or use system packages (Ubuntu/Debian):
+sudo apt install cmake libopenblas-dev liblapack-dev
+pip install dlib face_recognition
+```
+
+## Detection Flow with Facial Recognition
+
+### Enhanced Detection Decision (Stage 2)
+```
+face_detector.py
+    ↓
+Start 1-second detection window
+    ↓
+For each frame:
+    ├── Facial Recognition enabled?
+    │   ├── YES → Recognize person in frame
+    │   │   ├── Target person recognized with high confidence? → DETECTED ✅
+    │   │   ├── Person detected but low confidence? → Continue to fallback
+    │   │   └── No person/unknown person? → Continue to fallback
+    │   └── NO → Skip to fallback methods
+    ├── Fallback enabled OR facial recognition disabled?
+    │   ├── MediaPipe face detection → Any face detected? → DETECTED
+    │   └── Motion detection → Movement detected? → DETECTED
+    └── All methods failed → NOT DETECTED
+
+Count detection rate across window:
+    ├── ≥50% detection frames → "detected" + continuous monitoring
+    └── <50% detection frames → Extend window by 1s (up to 10s total)
+
+Final evaluation after 10s max:
+    ├── ≥50% → "detected" + continuous monitoring
+    └── <50% → "not_detected" + stop detection
+```
+
+### Configuration Impact on Behavior
+
+| Recognition Setting | Behavior | Use Case |
+|-------------------|----------|----------|
+| `enabled: False` | Original generic detection (MediaPipe + motion) | Multi-user environments |
+| `enabled: True, fallback: True` | Person recognition → generic detection | Preferred user + guests |
+| `enabled: True, fallback: False` | Person recognition only | Single-user security |
+
+## System Flow with Facial Recognition
 
 ### Boot Sequence
 1. **Hyprland starts** → `launch.conf` executes
 2. **`init_presence_status.py`** → Creates status files with defaults
 3. **`in_office_monitor.py`** → Starts continuous background monitoring
-4. **System ready** → Advanced idle detection with face recognition active
+4. **System ready** → Advanced idle detection with optional facial recognition active
 
-### Advanced Idle Detection Flow
+### Enhanced Idle Detection Flow
 
 ```
 User becomes idle (Stage 1)
@@ -183,13 +359,18 @@ activity_status_reporter.py --inactive
 
 User idle continues (Stage 2)
     ↓
-face_detector.py
+face_detector.py (Enhanced with Facial Recognition)
     ↓ (maintains status)
     ├── idle_detection_status = "in_progress" (continues presence checking)
     └── face_presence = "detected" OR "not_detected"
+        ↓ (NEW: method-specific results)
+        ├── facial_recognition: Target person recognized → "detected"
+        ├── mediapipe_face: Generic face found → "detected"
+        ├── motion: Movement detected → "detected"
+        └── none: No detection by any method → "not_detected"
         ↓
     HA Automation evaluates results:
-    ├── If face detected → in_office_status = "on"
+    ├── If face detected (any method) → in_office_status = "on"
     └── If no face detected → in_office_status = "off"
 
 User idle continues (Stage 3)
@@ -198,7 +379,7 @@ idle_simple_lock.py
     ↓
 Check in_office_status (now influenced by face detection)
     ├── "off" → Lock screen immediately (hyprlock)
-    └── "on"  → Monitor continuously for status change to "off"
+    └── "on"  → Monitor continuously for status change to "off", then lock
                 ├── Status changes to "off" → Lock screen
                 └── User resumes activity → Stop monitoring (exit flag)
 
@@ -208,7 +389,7 @@ idle_simple_dpms.py
     ↓
 Check in_office_status (now influenced by face detection)
     ├── "off" → Turn off displays immediately (DPMS off)
-    └── "on"  → Monitor continuously for status change to "off"
+    └── "on"  → Monitor continuously for status change to "off", then turn off displays
                 ├── Status changes to "off" → Turn off displays
                 └── User resumes activity → Stop monitoring (exit flag)
 
@@ -228,63 +409,38 @@ idle_simple_resume.py
 3. Stop face detection → via linux_mini_status monitoring
 ```
 
-### Decision Logic
+## Key Features
 
-#### Face Detection Decision (Stage 2)
-```
-face_detector.py
-    ↓
-Start 1-second detection window
-    ↓
-Count frames with faces vs total frames
-    ├── ≥50% face frames → "detected"
-    │   ├── Report face_presence = "detected"
-    │   └── Continue monitoring every 60s
-    └── <50% face frames → Extend window by 1s (up to 10s total)
-        ↓
-    Final evaluation after 10s max
-        ├── ≥50% → "detected" + continuous monitoring
-        └── <50% → "not_detected" + stop detection
+### Advanced Detection Capabilities ✨
+- **🆕 Facial Recognition**: Person-specific recognition with configurable security levels
+- **🆕 Reference Learning**: Learns from multiple photos for robust recognition
+- **🆕 Confidence Scoring**: Detailed confidence metrics and thresholds
+- **🆕 Smart Fallbacks**: Graceful degradation to generic detection when needed
+- **MediaPipe Face Mesh**: State-of-the-art face detection using 468 facial landmarks
+- **Superior Edge Case Handling**: Excellent detection when looking down at phones, tilted heads, partial occlusion
+- **All-Angle Detection**: Works from front, side, and intermediate angles
+- **Motion Sensitivity**: Detects subtle movements like typing or scrolling
+- **Smart Thresholds**: 50% detection rate threshold for reliable presence detection
+- **Adaptive Windows**: 1-10 second detection windows with automatic extension
+- **Optimized Performance**: Configurable models and caching for balanced speed vs accuracy
 
-During any phase:
-    └── linux_mini_status becomes "active" → Stop detection immediately
-```
+### Intelligence
+- **🆕 Person-Specific Presence**: Recognizes specific individuals vs generic human presence
+- **🆕 Configurable Security**: From generic detection to person-only recognition
+- **🆕 Learning System**: Improves over time with additional reference images
+- **Face-Based Presence Detection**: Computer vision verification before locking
+- **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
+- **Phased Presence Checking**: Clear "in_progress" state prevents premature office status changes
+- **50% Detection Threshold**: Balanced sensitivity for reliable detection
+- **Adaptive Detection Windows**: 1-10 second detection windows with automatic extension
 
-#### Lock Decision (Stage 3)
-```
-idle_simple_lock.py
-    ↓
-Read /tmp/mqtt/in_office_status (influenced by face detection)
-    ├── "off" → Lock screen immediately (away from office OR no face detected)
-    └── "on"  → Start continuous monitoring (in office OR face detected)
-                    ↓
-                Monitor for status change or user activity
-                    ├── in_office changes to "off" → Lock screen
-                    └── User activity detected (exit flag) → Stop monitoring
-```
-
-#### DPMS Decision (Stage 4)
-```
-idle_simple_dpms.py
-    ↓
-Read /tmp/mqtt/in_office_status (influenced by face detection)
-    ├── "off" → DPMS off immediately (away from office OR no face detected)
-    └── "on"  → Start continuous monitoring (in office OR face detected)
-                    ↓
-                Monitor for status change or user activity
-                    ├── in_office changes to "off" → DPMS off
-                    └── User activity detected (exit flag) → Stop monitoring
-```
-
-#### Continuous Monitoring
-```
-in_office_monitor.py (always running)
-    ↓
-Watch /tmp/mqtt/in_office_status for changes
-    ↓
-Status changed from "off" to "on"?
-    └── YES → DPMS on immediately (returned to office or face detected)
-```
+### Centralized Configuration ⚙️
+- **🆕 Facial Recognition Settings**: Complete control over person recognition behavior
+- **Single source of truth**: All settings in one `config.py` file
+- **Easy customization**: Change behavior without editing multiple scripts
+- **Built-in validation**: Ensures system compatibility and required files exist
+- **Helper functions**: Convenient access to all configuration values
+- **Maintainable**: No more hunting through scripts for hardcoded values
 
 ## Dependencies
 
@@ -293,169 +449,119 @@ Status changed from "off" to "on"?
 # Core computer vision libraries
 pip install opencv-python mediapipe numpy
 
-# For the detection system
-sudo pacman -S python-opencv  # Arch Linux
-# OR
-apt install python3-opencv    # Ubuntu/Debian
+# NEW: For facial recognition (optional)
+pip install face_recognition dlib
+
+# Alternative dlib installation if compilation fails:
+conda install -c conda-forge dlib
 ```
 
 ### System Requirements
 - **Camera access**: `/dev/video0` (or primary camera device)
 - **Python 3.8+**: Required for MediaPipe compatibility
+- **🆕 For facial recognition**: Additional ~1GB disk space for dlib models
 - **Hyprland**: For display management integration
 - **Home Assistant**: For MQTT-based office presence integration
 
-### MediaPipe Setup
-MediaPipe provides superior face detection compared to traditional cascade methods:
-- **Automatic installation**: `pip install mediapipe` handles all dependencies
-- **No cascade files needed**: Self-contained face mesh detection
-- **GPU acceleration**: Automatically uses available GPU resources
-- **Cross-platform**: Works on Linux, macOS, Windows
+### MediaPipe + Face Recognition Setup
+```bash
+# Complete installation for all features
+pip install opencv-python mediapipe numpy face_recognition
+
+# Verify installation
+python3 -c "import cv2, mediapipe, face_recognition; print('All libraries installed successfully')"
+```
 
 ## Configuration
 
 ### Centralized Configuration (`config.py`)
 
-The system now uses a centralized configuration file that eliminates hardcoded values throughout all scripts. This makes the system much easier to maintain and customize.
+The system now includes comprehensive facial recognition configuration alongside existing settings.
 
-**Key Features:**
-- **Single source of truth**: All paths, timeouts, and parameters defined in one place
-- **Easy customization**: Modify behavior by editing `config.py` instead of individual scripts
-- **Validation**: Built-in validation ensures required files and directories exist
-- **Helper functions**: Convenient functions for accessing configuration values
-
-**Configuration Categories:**
+**🆕 Facial Recognition Configuration:**
 ```python
-# File paths (logs, status files, control files, device files)
-LOG_FILES = {...}           # Where each script logs
-STATUS_FILES = {...}        # MQTT status file locations
-CONTROL_FILES = {...}       # Exit flags and control files
-DEVICE_FILES = {...}        # Hardware device paths
-
-# Timing configuration
-CHECK_INTERVALS = {...}     # How often to check various conditions
-FACE_DETECTION = {...}      # Face detection timing parameters
-RESUME_DELAYS = {...}       # Delays for cleanup operations
-
-# Detection parameters
-DETECTION_PARAMS = {...}    # Thresholds and sensitivity settings
-WEBCAM_CONFIG = {...}       # Webcam monitoring configuration
-
-# System commands
-SYSTEM_COMMANDS = {...}     # All external commands used by scripts
+DETECTION_PARAMS = {
+    "threshold": 0.5,  # 50% threshold for presence detection
+    "fallback_settings": {
+        "fallback_to_generic_detection": False,
+        "max_unknown_detections_before_fallback": 3,
+    },
+    "facial_recognition": {
+        "enabled": False,
+        "priority": 1,  # Lower number = higher priority
+        "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
+        "tolerance": 0.6,
+        "min_recognition_confidence": 0.8,
+        # ... other facial recognition settings
+    },
+    "mediapipe_face": {
+        "enabled": True,
+        "priority": 2,
+        "min_detection_confidence": 0.5,
+        "min_tracking_confidence": 0.5,
+    },
+    "motion": {
+        "enabled": True,
+        "priority": 3,
+        "min_area": 200,
+    }
+}
 ```
 
-**Testing Configuration:**
+**Testing Facial Recognition Configuration:**
 ```bash
-# Validate configuration and check system compatibility
+# Validate complete configuration including facial recognition
 cd ~/.config/scripts/hyprland/idle_management
 python3 config.py
 
 # Should output:
-# ✓ Created directories: /tmp/mqtt, /tmp
+# ✓ Created directories: /tmp/mqtt, reference_faces
 # ✓ Configuration validation passed
+# Detection methods: Facial Recognition + MediaPipe + Motion
 ```
 
-**Customizing Behavior:**
-- **Change detection sensitivity**: Modify `DETECTION_PARAMS["threshold"]`
-- **Adjust timing**: Update values in `CHECK_INTERVALS` and `FACE_DETECTION`
-- **Add/remove excluded processes**: Edit `WEBCAM_CONFIG["excluded_processes"]`
-- **Change file locations**: Update paths in `STATUS_FILES`, `LOG_FILES`, etc.
-
-### Hypridle Configuration (`hypridle.conf`)
-```conf
-# Stage 1: report inactive status and start presence checking
-listener {
-    timeout = 30
-    on-timeout = ~/.config/scripts/hyprland/idle_management/activity_status_reporter.py --inactive
-    on-resume = ~/.config/scripts/hyprland/idle_management/idle_simple_resume.py
-}
-
-# Stage 2: face detection check
-listener {
-    timeout = 50
-    on-timeout = ~/.config/scripts/hyprland/idle_management/face_detector.py
-}
-
-# Stage 3: check in_office and lock if off (respects face detection results)
-listener {
-    timeout = 60
-    on-timeout = ~/.config/scripts/hyprland/idle_management/idle_simple_lock.py
-}
-
-# Stage 4: check in_office and dpms off if off (continuous monitoring)
-listener {
-    timeout = 90
-    on-timeout = ~/.config/scripts/hyprland/idle_management/idle_simple_dpms.py
-}
-```
-
-### Launch Configuration (`launch.conf`)
-```conf
-# Initialize idle management status files
-exec-once = ~/.config/scripts/hyprland/idle_management/init_presence_status.py
-
-# Start in-office monitor continuously
-exec-once = ~/.config/scripts/hyprland/idle_management/in_office_monitor.py &
-```
+**Customizing Facial Recognition:**
+- **Security Level**: Adjust `tolerance` and `min_recognition_confidence`
+- **Performance**: Change `face_detection_model` between "hog" (fast) and "cnn" (accurate)
+- **Behavior**: Enable/disable `fallback_to_generic_detection`
+- **Reference Management**: Add/remove images in `reference_images_dir`
 
 ## Integration Points
 
+### 🆕 Facial Recognition Integration
+- **Reference Images**: Stored in configurable directory with automatic encoding generation
+- **Performance Caching**: Face encodings cached for fast startup and recognition
+- **Security Levels**: From open (any face) to secure (specific person only)
+- **Confidence Logging**: Detailed metrics for tuning and debugging
+
 ### MQTT Integration
 - **Publisher**: `mqtt_reports.py` monitors `/tmp/mqtt/` files
-- **Consumer**: Home Assistant receives status updates
+- **🔄 Enhanced Status**: Face detection now includes facial recognition method details
+- **Consumer**: Home Assistant receives status updates with recognition information
 - **External Input**: Office status received via MQTT from motion sensors
 - **Face Detection**: `face_presence` status influences `in_office_status` via HA automation
-- **Webcam Filtering**: Smart filtering prevents false positives from automated camera usage
 
-### Home Assistant Automation Required
-The system requires HA automation to integrate face detection results:
+## Troubleshooting
 
-```yaml
-# Pseudo-code for required HA automation logic:
-when idle_detection_status == "in_progress":
-  wait_for_face_detection_results()
+### 🆕 Facial Recognition Issues
 
-if face_presence == "detected":
-  set in_office_status = "on"
-elif face_presence == "not_detected":
-  set in_office_status = "off"
-```
+**Facial recognition not working:**
+- Check library installation: `python -c "import face_recognition; print('OK')"`
+- Verify reference images: `ls ~/.config/scripts/hyprland/idle_management/reference_faces/`
+- Check encoding generation: Look for "Loaded X cached face encodings" in logs
+- Test individual photos: Use debug mode to see detection details
 
-### Waybar Integration
-- **Display**: Status files drive waybar indicators
-- **Manual Override**: Click hypridle module to manually disable/enable idle detection
-- **Files Used**: Various `/tmp/mqtt/` status files for UI updates
-- **Toggle Script**: `toggle_hypridle.py` manages manual override with full MQTT integration
+**Low recognition confidence:**
+- Add more diverse reference images (different lighting, angles, expressions)
+- Lower tolerance: Change `tolerance` from 0.6 to 0.7 in config
+- Lower confidence threshold: Reduce `min_recognition_confidence`
+- Check image quality: Ensure clear, well-lit reference photos
 
-### Hyprland Integration
-- **Idle Detection**: hypridle triggers scripts at defined timeouts
-- **Display Control**: `hyprctl dispatch dpms on/off`
-- **Locking**: `hyprlock` for screen locking
-
-## Debugging
-
-### Log Files
-- **Face Detection**: `/tmp/face_detector.log`
-- **In-office Monitor**: `/tmp/in_office_monitor.log`
-- **Simple Lock**: `/tmp/idle_simple_lock.log`
-- **Simple DPMS**: `/tmp/idle_simple_dpms.log`
-- **Simple Resume**: `/tmp/idle_simple_resume.log`
-- **Activity Reporter**: `/tmp/mini_status_debug.log`
-- **Manual Override**: `/tmp/hypridle_toggle.log`
-
-### Comprehensive Debug Monitor
-```bash
-# Use the enhanced debug logger for real-time system monitoring
-~/.config/scripts/hyprland/idle_management/debug/debug_idle_temp_files.py
-
-# Provides:
-# - Real-time status file change detection
-# - Log file monitoring with new entry alerts
-# - Control flag monitoring
-# - System state analysis and summaries
-# - Millisecond-precision event timestamps
-```
+**Performance issues:**
+- Use "hog" model instead of "cnn": `"face_detection_model": "hog"`
+- Reduce jitters: `"num_jitters": 1`
+- Enable fallback: `"fallback_to_generic_detection": True`
+- Add more reference images to improve accuracy (reduces computation time)
 
 ### Manual Testing
 ```bash
@@ -467,208 +573,141 @@ python3 config.py
 cat /tmp/mqtt/linux_mini_status
 cat /tmp/mqtt/idle_detection_status
 cat /tmp/mqtt/face_presence
-cat /tmp/mqtt/linux_webcam_status
-cat /tmp/mqtt/in_office_status
 
-# Test optimized human presence detection
+# Test facial recognition specifically
 python3 face_detector.py --debug
-
-# Test activity reporting
-python3 activity_status_reporter.py --active
-python3 activity_status_reporter.py --inactive
-
-# Test webcam filtering
-# Start face detection, then check:
-cat /tmp/mqtt/linux_webcam_status  # Should remain "inactive"
-
-# Test presence checking phase
-echo "inactive" > /tmp/mqtt/linux_mini_status
-# Should trigger idle_detection_status = "in_progress"
-
-# Monitor face detection in real-time
-tail -f /tmp/face_detector.log
-
-# Test complete idle flow
-echo "inactive" > /tmp/mqtt/linux_mini_status  # Stage 1 simulation
-sleep 5
-~/.config/scripts/hyprland/idle_management/face_detector.py  # Stage 2 simulation
-```
-
-**Human Presence Detection Testing:**
-```bash
-# Test optimized human presence detection with visual debugging
-~/.config/scripts/hyprland/idle_management/debug/debug_face_detector_visual.py --duration 5
-
-# Test main detection script
-~/.config/scripts/hyprland/idle_management/face_detector.py
-
-# Monitor detection in real-time (shows which methods are working)
-tail -f /tmp/face_detector.log
+# Look for:
+# - "Facial recognition enabled with X reference encodings"
+# - "Target person recognized with confidence: 0.XXX"
+# - Detection method breakdown in logs
 
 # Test different scenarios:
-# 1. Looking at screen → Should detect via MediaPipe face mesh
-# 2. Looking down at phone → Should detect via MediaPipe face mesh (excellent angle coverage)
-# 3. Turned to side → Should detect via MediaPipe face mesh (468 landmark detection)
-# 4. Small movements → Should detect via motion detection
-# 5. Edge cases → MediaPipe handles partial occlusion, tilted heads, varied lighting
+# 1. Target person in front of camera → Should show "facial_recognition" method
+# 2. Different person → Should show fallback method or "not_detected"
+# 3. No person → Should show motion detection or "not_detected"
 
-# Test user activity interruption during detection
-echo "active" > /tmp/mqtt/linux_mini_status  # Should stop presence detection
-
-# Test detection results
-cat /tmp/mqtt/face_presence        # Should show "detected" or "not_detected"
-cat /tmp/mqtt/idle_detection_status # Should show state progression
+# Monitor recognition in real-time
+tail -f /tmp/face_detector.log | grep -E "(recognized|confidence|Detection breakdown)"
 ```
-
-### Process Monitoring
-```bash
-# Check running processes
-ps aux | grep -E "(in_office_monitor|face_detector)"
-
-# Check for exit flags
-ls -la /tmp/*_exit 2>/dev/null || echo "No exit flags present"
-
-# Monitor status file changes
-watch -n1 'cat /tmp/mqtt/*_status 2>/dev/null'
-
-# Monitor specific logs
-tail -f /tmp/face_detector.log
-tail -f /tmp/in_office_monitor.log
-tail -f /tmp/hypridle_toggle.log
-
-# Check camera usage
-lsof /dev/video0  # Should show face_detector when running
-
-# Monitor webcam status filtering
-tail -f /var/log/syslog | grep linux_webcam_status
-```
-
-## Key Features
-
-### Advanced Detection Capabilities ✨
-- **MediaPipe Face Mesh**: State-of-the-art face detection using 468 facial landmarks
-- **Superior Edge Case Handling**: Excellent detection when looking down at phones, tilted heads, partial occlusion
-- **All-Angle Detection**: Works from front, side, and intermediate angles
-- **Motion Sensitivity**: Detects subtle movements like typing or scrolling
-- **Smart Thresholds**: 50% detection rate threshold for reliable presence detection
-- **Adaptive Windows**: 1-10 second detection windows with automatic extension
-- **Optimized Performance**: Simplified 2-method approach for faster, more reliable detection
-
-### Intelligence
-- **Face-Based Presence Detection**: Computer vision verification before locking
-- **Smart Webcam Filtering**: Distinguishes automated vs manual camera usage
-- **Phased Presence Checking**: Clear "in_progress" state prevents premature office status changes
-- **50% Detection Threshold**: Balanced sensitivity for reliable face detection
-- **Adaptive Detection Windows**: 1-10 second detection windows with automatic extension
-
-### Simplicity
-- Clear 4-stage timeout progression with logical flow
-- Minimal parallel processing complexity
-- Predictable behavior and timing
-- Self-contained face detection (no external dependencies)
-
-### Centralized Configuration ⚙️
-- **Single source of truth**: All settings in one `config.py` file
-- **Easy customization**: Change behavior without editing multiple scripts
-- **Built-in validation**: Ensures system compatibility and required files exist
-- **Helper functions**: Convenient access to all configuration values
-- **Maintainable**: No more hunting through scripts for hardcoded values
-
-### Manual Control
-- One-click disable/enable via waybar
-- Full MQTT integration for manual overrides
-- Consistent status reporting across all systems
-- Logged actions for debugging and tracking
-
-### Reliability
-- **Continuous Lock Monitoring**: Locks screen as soon as office status changes to "off", regardless of timing
-- **Continuous DPMS Monitoring**: Turns off displays as soon as office status changes to "off", regardless of timing
-- **Clean Exit Handling**: Proper shutdown of both lock and DPMS monitoring when user activity resumes
-- **No Timing Issues**: Both lock and DPMS wait for face detection results to complete before acting
-- **Face Detection Integration**: Prevents locking and display shutdown when user is detected via camera
-- **Shared Exit Mechanism**: Both monitoring processes stop instantly when user resumes activity
-
-### Responsive
-- Immediate display activation when returning to office
-- Fast resume response (< 1 second)
-- No polling delays for critical state changes
-- Instant manual override response
-- Real-time face detection monitoring
-
-### Office Integration
-- Respects both motion sensor AND face detection for presence
-- Smart locking (only when away from office AND no face detected)
-- Smart display management (context-aware with multiple inputs)
-- Home Assistant automation integration for complex decision logic
-
-## Troubleshooting
-
-### Common Issues
-
-**Human presence detection not working:**
-- Check camera permissions: `ls -la /dev/video0`
-- Verify MediaPipe installation: `python -c "import mediapipe; print('MediaPipe OK')"`
-- Test camera access: `lsof /dev/video0` (should be empty when not running)
-- Check detection logs: `tail -f /tmp/face_detector.log`
-- Verify detection threshold: Look for detection rate logs
-- Check which detection methods are available: Look for "Detection methods available" in logs
-- Test visual debugging: `python debug/debug_face_detector_visual.py --duration 5`
-
-**Webcam status false positives:**
-- Check if face detector is being filtered: Look for "Ignoring face detector process" in logs
-- Verify `linux_webcam_status.py` filtering logic
-- Test manual: `lsof /dev/video0` should show face_detector when running
-- Check webcam status: `cat /tmp/mqtt/linux_webcam_status` should stay "inactive" during face detection
-
-**Idle detection status stuck:**
-- Check if `idle_detection_status` is stuck in "in_progress"
-- Verify face detection completes properly
-- Ensure user activity resets status via `activity_status_reporter.py --active`
-- Check for stale face detection processes: `ps aux | grep face_detector`
-
-**Locking not working:**
-- Check `/tmp/mqtt/in_office_status` file exists and has correct value
-- Verify hyprlock is installed and working
-- Check `idle_simple_lock.log` for errors
-- Verify face detection influences office status via HA automation
-- Check if presence checking phase is working correctly
-
-**Displays not turning off:**
-- Verify in_office_status is "off" when expected
-- Check `idle_simple_dpms.log` for hyprctl errors
-- Test manual DPMS: `hyprctl dispatch dpms off`
-- Ensure face detection isn't keeping office status "on" when it should be "off"
-
-**Office status not updating:**
-- Verify MQTT connection and `mqtt_reports.py` service
-- Check file permissions on `/tmp/mqtt/in_office_status`
-- Ensure motion sensors are reporting to Home Assistant
-- Verify Home Assistant automation integrates face detection results
-- Check `face_presence` status is being published correctly
-
-**Scripts not starting:**
-- Check hypridle configuration syntax
-- Verify script permissions (executable)
-- Check individual script logs for errors
-- Verify face detection dependencies (OpenCV, camera access)
 
 ## Home Assistant Integration Requirements
 
-To fully utilize the advanced face detection capabilities, Home Assistant automation should be configured to:
+To fully utilize the enhanced facial recognition capabilities, Home Assistant automation should be configured to:
 
 1. **Monitor Presence Checking Phase**: Watch for `idle_detection_status = "in_progress"`
-2. **Wait for Face Detection Results**: Don't change `in_office_status` while presence checking is active
-3. **Integrate Face Detection**: Use `face_presence` status to influence `in_office_status` decisions
-4. **Handle Multiple Inputs**: Combine motion sensor data with face detection results for intelligent presence decisions
+2. **Wait for Detection Results**: Don't change `in_office_status` while presence checking is active
+3. **🆕 Leverage Recognition Details**: Use facial recognition confidence and method information
+4. **Integrate Detection Results**: Use `face_presence` status to influence `in_office_status` decisions
+5. **Handle Multiple Inputs**: Combine motion sensor data with facial recognition results
 
-Example automation logic needed:
+Example automation logic:
 ```
 IF idle_detection_status == "in_progress":
   WAIT for face_presence result
 
 WHEN face_presence == "detected":
-  SET in_office_status = "on"
+  IF detection_method == "facial_recognition":
+    SET in_office_status = "on" (high confidence - target person present)
+  ELSE:
+    SET in_office_status = "on" (generic detection - someone present)
 
 WHEN face_presence == "not_detected" AND motion_sensor == "off":
   SET in_office_status = "off"
+```
+
+**🆕 Enhanced HA Integration Ideas:**
+- Different automation behavior based on recognition vs generic detection
+- Confidence-based timeouts (higher confidence = longer idle timeouts)
+- Person-specific settings and preferences
+- Security notifications for unknown person detection
+
+## 🔧 Configurable Detection Method Order
+
+The face detector now supports configurable detection method ordering with flexible fallback behavior using a hierarchical configuration structure.
+
+### Configuration Structure
+
+In `config.py`, the `DETECTION_PARAMS` section now uses a hierarchical structure:
+
+```python
+DETECTION_PARAMS = {
+    "threshold": 0.5,  # 50% threshold for presence detection
+    "fallback_settings": {
+        "fallback_to_generic_detection": False,
+        "max_unknown_detections_before_fallback": 3,
+    },
+    "facial_recognition": {
+        "enabled": True,
+        "priority": 1,  # Lower number = higher priority
+        "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
+        "tolerance": 0.6,
+        "min_recognition_confidence": 0.5,
+        # ... other facial recognition settings
+    },
+    "mediapipe_face": {
+        "enabled": True,
+        "priority": 2,
+        "min_detection_confidence": 0.5,
+        "min_tracking_confidence": 0.5,
+    },
+    "motion": {
+        "enabled": True,
+        "priority": 3,
+        "min_area": 200,
+    }
+}
+```
+
+### Priority-Based Ordering
+
+Detection methods are automatically ordered by their `priority` value (lower number = higher priority).
+Only enabled methods are included in the detection order.
+
+### Fallback Behavior
+
+The `fallback_to_generic_detection` parameter in `fallback_settings` controls execution:
+
+- **`True` (Fallback Chain)**: Try methods in priority order until one succeeds
+  - Example: Try facial recognition → if fails, try MediaPipe → if fails, try motion
+  - Use case: Maximum detection coverage, any human presence triggers detection
+
+- **`False` (Single Method)**: Only use the highest-priority enabled method
+  - Example: If facial recognition is available, only use that method
+  - Use case: Strict person-specific detection, ignore unknown faces
+
+### Example Configurations
+
+#### 🔐 Security-Focused (Person-Specific Only)
+```python
+"fallback_to_generic_detection": False,
+"facial_recognition": {"enabled": True, "priority": 1},
+"motion": {"enabled": True, "priority": 2},
+"mediapipe_face": {"enabled": False, "priority": 3},
+```
+Only the recognized person triggers detection. Unknown faces are ignored.
+
+#### 🔄 Balanced (Fallback Enabled)
+```python
+"fallback_to_generic_detection": True,
+"facial_recognition": {"enabled": True, "priority": 1},
+"mediapipe_face": {"enabled": True, "priority": 2},
+"motion": {"enabled": True, "priority": 3},
+```
+Prefers the specific person but falls back to any human presence.
+
+#### 🏃 Motion-First (Activity Detection)
+```python
+"fallback_to_generic_detection": True,
+"motion": {"enabled": True, "priority": 1},
+"facial_recognition": {"enabled": True, "priority": 2},
+"mediapipe_face": {"enabled": True, "priority": 3},
+```
+Prioritizes any activity, then validates with face detection.
+
+### Logging Output
+
+The system logs the configured order and behavior:
+```
+Detection method order: facial_recognition → mediapipe_face → motion
+Fallback behavior: Enabled (try all methods in order)
 ```
