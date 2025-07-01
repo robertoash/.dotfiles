@@ -142,6 +142,10 @@ DETECTION_PARAMS = {
     "cascade_min_neighbors_eye": 5,  # Min neighbors for eye detection (strict for accuracy)
     "min_detection_area_profile": 2000,  # Min area for profiles (filters small false positives)
     "min_detection_area_eye": 50,  # Min area for eye detection (small but filters noise)
+    # MediaPipe parameters
+    "mediapipe_enabled": True,  # Enable MediaPipe face mesh detection
+    "mediapipe_min_detection_confidence": 0.5,  # MediaPipe detection confidence
+    "mediapipe_min_tracking_confidence": 0.5,  # MediaPipe tracking confidence
 }
 
 # =============================================================================

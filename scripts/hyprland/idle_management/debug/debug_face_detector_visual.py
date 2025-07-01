@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/rash/.config/scripts/hyprland/idle_management/.direnv/python-3.12/bin/python
 
 import argparse
 import sys
@@ -7,6 +7,14 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+
+# Try to import MediaPipe for enhanced detection
+try:
+    import mediapipe as mp
+
+    MEDIAPIPE_AVAILABLE = True
+except ImportError:
+    MEDIAPIPE_AVAILABLE = False
 
 # Add parent directory to path to import config
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -22,11 +30,13 @@ class VisualFaceDetector:
         self.face_cascade = None
         self.profile_cascade = None
         self.eye_cascade = None
+        self.face_mesh = None
         self.previous_frame = None
 
         # Detection statistics
         self.frame_count = 0
         self.detection_stats = {
+            "mediapipe_face": 0,
             "frontal_face": 0,
             "profile_face": 0,
             "eye_detection": 0,
@@ -40,6 +50,7 @@ class VisualFaceDetector:
 
         # Colors for different detection types
         self.colors = {
+            "mediapipe_face": (0, 128, 255),  # Orange - NEW for edge cases!
             "frontal_face": (0, 255, 0),  # Green
             "profile_face": (255, 0, 0),  # Blue
             "eye_detection": (0, 255, 255),  # Cyan
@@ -83,7 +94,34 @@ class VisualFaceDetector:
             print("⚠ Failed to load eye cascade, disabling eye detection")
             self.eye_cascade = None
 
+        # Initialize MediaPipe face mesh (optional)
+        if MEDIAPIPE_AVAILABLE and get_detection_param("mediapipe_enabled"):
+            try:
+                self.face_mesh = mp.solutions.face_mesh.FaceMesh(
+                    static_image_mode=False,
+                    max_num_faces=1,
+                    refine_landmarks=True,
+                    min_detection_confidence=get_detection_param(
+                        "mediapipe_min_detection_confidence"
+                    ),
+                    min_tracking_confidence=get_detection_param(
+                        "mediapipe_min_tracking_confidence"
+                    ),
+                )
+                print("✓ MediaPipe face detection enabled (excellent for edge cases)")
+            except Exception as e:
+                print(f"⚠ Failed to initialize MediaPipe: {e}")
+                self.face_mesh = None
+        else:
+            if not MEDIAPIPE_AVAILABLE:
+                print("⚠ MediaPipe not available (install with: pip install mediapipe)")
+            elif not get_detection_param("mediapipe_enabled"):
+                print("⚠ MediaPipe disabled in configuration")
+
         print("✓ Cascade classifiers loaded successfully")
+        print(
+            f"✓ MediaPipe face detection: {'enabled' if self.face_mesh else 'disabled'}"
+        )
         print("✓ Frontal face detection: enabled")
         print("✓ Profile face detection: enabled")
         print(f"✓ Eye detection: {'enabled' if self.eye_cascade else 'disabled'}")
@@ -193,6 +231,53 @@ class VisualFaceDetector:
         min_neighbors_eye = get_detection_param("cascade_min_neighbors_eye")
         min_area_eye = get_detection_param("min_detection_area_eye")
 
+        # MediaPipe face detection (best for edge cases like looking down at phone)
+        results["mediapipe_face"] = False
+        if self.face_mesh is not None:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            mp_results = self.face_mesh.process(frame_rgb)
+            if mp_results.multi_face_landmarks:
+                results["mediapipe_face"] = True
+                # Draw face mesh landmarks for first detected face
+                landmarks = mp_results.multi_face_landmarks[0]
+                # Draw key landmarks for visual feedback
+                h, w = frame.shape[:2]
+                key_points = [10, 151, 9, 175, 197, 196]  # Forehead, nose, chin, cheeks
+                for point_idx in key_points:
+                    if point_idx < len(landmarks.landmark):
+                        landmark = landmarks.landmark[point_idx]
+                        x = int(landmark.x * w)
+                        y = int(landmark.y * h)
+                        cv2.circle(
+                            annotated_frame,
+                            (x, y),
+                            3,
+                            self.colors["mediapipe_face"],
+                            -1,
+                        )
+
+                # Draw bounding box around face
+                xs = [int(landmark.x * w) for landmark in landmarks.landmark]
+                ys = [int(landmark.y * h) for landmark in landmarks.landmark]
+                x_min, x_max = min(xs), max(xs)
+                y_min, y_max = min(ys), max(ys)
+                cv2.rectangle(
+                    annotated_frame,
+                    (x_min - 10, y_min - 10),
+                    (x_max + 10, y_max + 10),
+                    self.colors["mediapipe_face"],
+                    3,
+                )
+                cv2.putText(
+                    annotated_frame,
+                    "MediaPipe Face",
+                    (x_min - 10, y_min - 25),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7,
+                    self.colors["mediapipe_face"],
+                    2,
+                )
+
         # Frontal face detection
         faces = self.face_cascade.detectMultiScale(
             gray, scale_factor, min_neighbors_face
@@ -301,6 +386,7 @@ class VisualFaceDetector:
 
         # Detection status for each method
         methods = [
+            ("MediaPipe Face", "mediapipe_face"),
             ("Frontal Face", "frontal_face"),
             ("Profile Face", "profile_face"),
             ("Eye Detection", "eye_detection"),
@@ -309,6 +395,9 @@ class VisualFaceDetector:
 
         for method_name, method_key in methods:
             if method_key == "eye_detection" and self.eye_cascade is None:
+                status = "DISABLED"
+                color = (128, 128, 128)  # Gray
+            elif method_key == "mediapipe_face" and self.face_mesh is None:
                 status = "DISABLED"
                 color = (128, 128, 128)  # Gray
             else:
@@ -434,6 +523,7 @@ class VisualFaceDetector:
         y_offset += 25
 
         legend_items = [
+            ("MediaPipe Face", "mediapipe_face"),
             ("Frontal Face", "frontal_face"),
             ("Profile Face", "profile_face"),
             ("Eye Detection", "eye_detection"),
@@ -442,6 +532,8 @@ class VisualFaceDetector:
 
         for method_name, method_key in legend_items:
             if method_key == "eye_detection" and self.eye_cascade is None:
+                continue
+            if method_key == "mediapipe_face" and self.face_mesh is None:
                 continue
             cv2.rectangle(
                 frame, (10, y_offset - 15), (25, y_offset), self.colors[method_key], -1
@@ -480,6 +572,7 @@ class VisualFaceDetector:
 
         print("\n🎥 Starting visual detection...")
         print("📖 Legend:")
+        print("   🟠 Orange box = MediaPipe face detected (BEST for edge cases!)")
         print("   🟢 Green box = Frontal face detected")
         print("   🔵 Blue box = Profile face detected")
         print("   🟡 Cyan box = Eye detected (NOT true nose-ears triangle)")
@@ -609,6 +702,13 @@ class VisualFaceDetector:
             cap.release()
             cv2.destroyAllWindows()
 
+            # Clean up MediaPipe resources
+            if self.face_mesh is not None:
+                try:
+                    self.face_mesh.close()
+                except Exception as e:
+                    print(f"Warning: Error closing MediaPipe face mesh: {e}")
+
             # Print final statistics
             self.print_final_stats(detection_rate, elapsed_time)
 
@@ -616,6 +716,7 @@ class VisualFaceDetector:
         """Reset detection statistics."""
         self.frame_count = 0
         self.detection_stats = {
+            "mediapipe_face": 0,
             "frontal_face": 0,
             "profile_face": 0,
             "eye_detection": 0,
@@ -643,6 +744,9 @@ class VisualFaceDetector:
             if method == "total_detections":
                 continue
             if method == "eye_detection" and self.eye_cascade is None:
+                print(f"  🔸 {method.replace('_', ' ').title()}: DISABLED")
+                continue
+            if method == "mediapipe_face" and self.face_mesh is None:
                 print(f"  🔸 {method.replace('_', ' ').title()}: DISABLED")
                 continue
             percentage = (count / self.frame_count * 100) if self.frame_count > 0 else 0
