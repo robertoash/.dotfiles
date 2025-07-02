@@ -57,6 +57,17 @@ def turn_dpms_on():
         return False
 
 
+def turn_dpms_off():
+    """Turn DPMS off using hyprctl."""
+    try:
+        logging.info("in_office turned OFF - turning displays off (DPMS off)")
+        subprocess.run(get_system_command("hyprctl_dpms_off"), check=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to turn DPMS off: {e}")
+        return False
+
+
 def cleanup():
     """Clean up files on exit."""
     try:
@@ -71,7 +82,7 @@ def cleanup():
 
 
 def main():
-    """Monitor in_office status and turn dpms on when it changes to on."""
+    """Monitor in_office status and control DPMS based on status changes."""
     setup_logging()
 
     # Get control files and check interval from config
@@ -105,10 +116,13 @@ def main():
 
             current_status = get_in_office_status()
 
-            # If status changed from off to on, turn dpms on
+            # Handle status transitions in both directions
             if last_status == "off" and current_status == "on":
                 logging.info("in_office status changed from OFF to ON")
                 turn_dpms_on()
+            elif last_status == "on" and current_status == "off":
+                logging.info("in_office status changed from ON to OFF")
+                turn_dpms_off()
 
             last_status = current_status
             time.sleep(check_interval)
