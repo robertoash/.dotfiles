@@ -26,6 +26,10 @@ PROFILES = {
         "profile_directory": "app",
         "app_url": "https://perplexity.ai",
     },
+    "tiktok": {
+        "profile_directory": "app",
+        "app_url": "https://www.tiktok.com",
+    },
     "youtube": {
         "profile_directory": "app",
         "app_url": "https://youtube.com",
