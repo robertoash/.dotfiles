@@ -17,7 +17,8 @@ if wk_ok then
 		{ "<leader>b/", group = "[B]uffer Na[V]igation", mode = { "n", "v" } },
 		{ "<leader>bc", group = "[B]uffer [C]lose", mode = { "n", "v" } },
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
-		{ "<leader>f", group = "[F]lash", mode = { "n", "v" } },
+		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
+		{ "<leader>fr", group = "Find and [R]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
 		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
 		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
@@ -116,7 +117,7 @@ local flash_mappings = {
 				flash.jump()
 			end
 		end,
-		{ desc = "[F]lash [F]ast navigation" },
+		{ desc = "Find [F]orward Flash" },
 	},
 }
 
@@ -308,6 +309,13 @@ local selectall_mappings = {
 	{ "n", "<leader>%", "<cmd>normal! ggVG<cr>", { noremap = true, desc = "[%] Select entire buffer" } },
 }
 
+-- Find and replace mappings
+local find_replace_mappings = {
+	{ "n", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace on current line [.]" } },
+	{ "v", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace in selection [.]" } },
+	{ "n", "<leader>fr%", ":%s//g<Left><Left>", { desc = "Find and replace in entire document [%]" } },
+}
+
 -- Buffer and Window Management Keybinds
 
 -- Window creation and closing using <leader>-
@@ -420,66 +428,39 @@ local snacks_terminal_mappings = {
 	},
 }
 
--- Mini.surround keymaps
-local mini_surround_mappings = {
-	-- Normal and Visual mode mappings
-	{
-		{ "n", "v" },
-		"sa",
-		function()
-			require("mini.surround").add()
-		end,
-		{ desc = "Surround [A]dd" },
-	},
-	{
-		"n",
-		"sd",
-		function()
-			require("mini.surround").delete()
-		end,
-		{ desc = "Surround [D]elete" },
-	},
-	{
-		"n",
-		"sf",
-		function()
-			require("mini.surround").find()
-		end,
-		{ desc = "Surround [F]ind (right)" },
-	},
-	{
-		"n",
-		"sF",
-		function()
-			require("mini.surround").find_left()
-		end,
-		{ desc = "Surround [F]ind (left)" },
-	},
-	{
-		"n",
-		"sh",
-		function()
-			require("mini.surround").highlight()
-		end,
-		{ desc = "Surround [H]ighlight" },
-	},
-	{
-		"n",
-		"sr",
-		function()
-			require("mini.surround").replace()
-		end,
-		{ desc = "Surround [R]eplace" },
-	},
-	{
-		"n",
-		"sn",
-		function()
-			require("mini.surround").update_n_lines()
-		end,
-		{ desc = "Surround update [N] lines" },
-	},
-}
+--[[
+=====================================================================
+MINI.SURROUND KEYMAPS (handled by plugin setup)
+=====================================================================
+These mappings are set automatically by mini.surround.setup() and 
+documented here for reference:
+
+ADDING QUOTES/BRACKETS:
+  saiw"     - surround inner word with double quotes
+  saiw'     - surround inner word with single quotes  
+  saiw)     - surround inner word with parentheses
+  saip"     - surround inner paragraph with double quotes
+  
+REPLACING QUOTES/BRACKETS:
+  sr'"      - replace single quotes with double quotes
+  sr")      - replace double quotes with parentheses
+  sr)(      - replace ) with (
+  
+DELETING QUOTES/BRACKETS:
+  sd"       - delete double quotes
+  sd'       - delete single quotes
+  sd)       - delete parentheses
+  
+VISUAL MODE:
+  Select text → sa" - surround selection with double quotes
+  
+OTHER OPERATIONS:
+  sf"       - find next double quote (right)
+  sF"       - find previous double quote (left)  
+  sh        - highlight current surrounding
+  sn        - update n_lines for search
+=====================================================================
+--]]
 
 -- Mini.splitjoin keymaps
 local mini_splitjoin_mappings = {
@@ -596,9 +577,9 @@ set_keymaps(telescope_mappings)
 set_keymaps(delete_to_blackhole_mappings)
 set_keymaps(snacks_terminal_mappings)
 set_keymaps(lazygit_mappings)
-set_keymaps(mini_surround_mappings)
 set_keymaps(mini_splitjoin_mappings)
 set_keymaps(noice_mappings)
 set_keymaps(autopairs_mappings)
+set_keymaps(find_replace_mappings)
 
 return {}

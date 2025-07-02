@@ -33,6 +33,21 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
+-- Conceallevel only for markdown
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "markdown", "md" },
+	callback = function()
+		vim.opt_local.conceallevel = 1
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "json", "jsonc" },
+	callback = function()
+		vim.opt_local.conceallevel = 0
+	end,
+})
+
 --=============================================================================
 -- CUSTOM COMMANDS
 --=============================================================================
@@ -58,4 +73,3 @@ end, {})
 
 -- Return the module
 return {}
-
