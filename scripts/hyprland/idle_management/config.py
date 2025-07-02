@@ -99,13 +99,6 @@ CHECK_INTERVALS = {
     "debug_monitoring": 0.5,  # How often to check for file changes in debug mode
 }
 
-# Face detection timeouts (in seconds)
-FACE_DETECTION = {
-    "initial_window": 1,  # Initial detection window duration
-    "max_duration": 10,  # Maximum detection window duration
-    "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring
-}
-
 # Resume delays (in seconds)
 RESUME_DELAYS = {
     "exit_flag_cleanup": 2,  # How long to wait before cleaning up exit flags
@@ -126,7 +119,16 @@ DPMS_SCHEDULE = {
 # =============================================================================
 
 DETECTION_PARAMS = {
-    "threshold": 0.5,  # 50% threshold for presence detection
+    "threshold": 0.3,  # threshold for overall presence detection (lenient fallback)
+    "timing": {
+        # Adaptive window detection timing (applies to all detection methods)
+        "initial_window": 1,  # Initial detection window duration (seconds)
+        "max_duration": 10,  # Maximum detection window duration (seconds)
+        "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring (seconds)  # noqa: E501
+        # Recency weighting parameters (applies to all detection methods)
+        "recent_window_duration": 2,  # Duration in seconds to prioritize for recency weighting
+        "recent_window_threshold": 0.5,  # Threshold for recent window (responsive detection)
+    },
     "fallback_settings": {
         "fallback_to_generic_detection": False,
         "max_unknown_detections_before_fallback": 3,
@@ -258,6 +260,11 @@ def get_detection_method_order():
 def get_fallback_setting(param_name):
     """Get a fallback setting parameter."""
     return DETECTION_PARAMS.get("fallback_settings", {}).get(param_name)
+
+
+def get_detection_timing_param(param_name):
+    """Get a detection timing parameter from DETECTION_PARAMS.timing section."""
+    return DETECTION_PARAMS.get("timing", {}).get(param_name)
 
 
 def get_facial_recognition_param(param_name):

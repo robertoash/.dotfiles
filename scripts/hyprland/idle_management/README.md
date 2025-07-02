@@ -142,6 +142,173 @@ DETECTION_PARAMS = {
 }
 ```
 
+## 🚀 Recency Weighting - Smart Detection Logic
+
+The system now implements **intelligent recency weighting** to eliminate false negatives caused by poor early detection. Instead of using simple averages that penalize recent good detection, the system prioritizes what's happening "right now" over historical poor performance.
+
+### The Problem Solved
+
+**Before (Simple Average)**:
+- 6 seconds of poor detection + 4 seconds of excellent detection = 40% average → **NOT DETECTED** ❌
+- User clearly present in recent frames but system locks due to early poor detection
+
+**After (Recency Weighting)**:
+- Last 3 seconds show 75% detection → **DETECTED** ✅ (recent window priority)
+- Recent excellent detection overrides earlier poor performance
+
+### Configuration
+
+**Unified Detection Configuration** in `config.py`:
+```python
+DETECTION_PARAMS = {
+    "threshold": 0.3,  # Overall detection threshold (lenient fallback)
+    "timing": {
+        # Adaptive window detection timing (applies to all detection methods)
+        "initial_window": 1,  # Start with 1-second detection window
+        "max_duration": 10,  # Maximum detection window duration
+        "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring
+        # Recency weighting parameters (applies to all detection methods)
+        "recent_window_duration": 2,  # Duration in seconds to prioritize for recency weighting
+        "recent_window_threshold": 0.5,  # Threshold for recent window (responsive detection)
+    },
+    "fallback_settings": {
+        "fallback_to_generic_detection": False,  # 🔐 OFFICE SECURITY: Only recognize target person
+    },
+    "facial_recognition": {"enabled": True, "priority": 1, ...},
+    "mediapipe_face": {"enabled": True, "priority": 2, ...},
+    "motion": {"enabled": True, "priority": 3, ...},
+}
+```
+
+### Detection Logic Flow
+
+**Recency-Weighted Decision Process:**
+```
+For each detection window (1s → 2s → 3s → ... → 10s):
+    ↓
+Calculate two rates:
+    ├── Overall Rate: All frames in current window
+    └── Recent Rate: Last 2 seconds only
+    ↓
+Apply recency priority:
+    ├── Recent Rate ≥ 50% → **DETECTED** ✅ (recent window priority)
+    ├── Recent Rate < 50% but Overall Rate ≥ 30% → **DETECTED** ✅ (overall threshold)
+    └── Both fail → Continue to next window or NOT DETECTED ❌
+```
+
+### Example Scenarios
+
+#### Scenario 1: Poor Start, Good Ending ✅ (Office Worker Sits Down)
+```
+Window: [0s] [1s] [2s] [3s] [4s] [5s] [6s] [7s] [8s] [9s]
+Detection: ❌   ❌   ❌   ❌   ❌   ❌   ❌   ✅   ✅   ✅
+
+Traditional: 3/10 = 30% = 30% → DETECTED ✅ (lenient threshold!)
+Recency: Last 2s = 2/2 = 100% ≥ 50% → DETECTED ✅ (immediate!)
+```
+
+#### Scenario 2: Good Start, Poor Ending ✅ (User Moves Around)
+```
+Window: [0s] [1s] [2s] [3s] [4s] [5s] [6s] [7s] [8s] [9s]
+Detection: ✅   ✅   ✅   ✅   ✅   ❌   ❌   ❌   ❌   ❌
+
+Traditional: 5/10 = 50% ≥ 30% → DETECTED ✅
+Recency: Last 2s = 0/2 = 0% < 50%, Overall = 50% ≥ 30% → DETECTED ✅
+```
+
+#### Scenario 3: Consistently Poor ❌ (User Actually Away)
+```
+Window: [0s] [1s] [2s] [3s] [4s] [5s] [6s] [7s] [8s] [9s]
+Detection: ❌   ❌   ✅   ❌   ❌   ✅   ❌   ❌   ❌   ❌
+
+Traditional: 2/10 = 20% < 30% → NOT DETECTED ❌
+Recency: Last 2s = 0/2 = 0% < 50%, Overall = 20% < 30% → NOT DETECTED ❌
+```
+
+#### Scenario 4: 🔐 Office Security - Unknown Person ❌
+```
+Someone else walks into your office while you're away:
+Facial Recognition: "Unknown person detected" → NOT DETECTED ❌
+Result: Screen locks immediately, protecting your work!
+```
+
+### Enhanced Logging
+
+With recency weighting enabled, detection logs show both metrics:
+
+```bash
+# During detection window evaluation
+INFO - Window 5s: 3/8 frames (37.5%) - Recent 2s: 2/3 (66.7%)
+INFO - Detection decision: recent window 66.7% >= 50.0%
+INFO - HUMAN PRESENCE DETECTED! Rate: 37.5% in 5s
+
+# Method breakdown shows which detection methods succeeded
+INFO - Detection breakdown: {'facial_recognition': 7, 'mediapipe_face': 0, 'motion': 0}
+```
+
+### Customization Options
+
+**🎮 Ultra-Responsive Gaming Setup**:
+```python
+"threshold": 0.2,                 # 20% overall (very lenient)
+"recent_window_duration": 1,      # Last 1 second only
+"recent_window_threshold": 0.3,   # 30% in recent window (hair trigger)
+```
+
+**🏢 Standard Office (Current Configuration)**:
+```python
+"threshold": 0.3,                 # 30% overall (lenient fallback)
+"recent_window_duration": 2,      # Last 2 seconds
+"recent_window_threshold": 0.5,   # 50% in recent window (responsive)
+```
+
+**🔒 High-Security Office**:
+```python
+"threshold": 0.4,                 # 40% overall (stricter)
+"recent_window_duration": 3,      # Last 3 seconds
+"recent_window_threshold": 0.7,   # 70% in recent window (requires sustained presence)
+```
+
+**🔧 Disable Recency (Traditional Behavior)**:
+```python
+"recent_window_threshold": 1.0,   # Set impossibly high (100%) to disable
+```
+
+### Benefits
+
+- **🚫 Eliminates False Negatives**: Recent good detection overrides poor historical average
+- **⚡ Better Responsiveness**: Prioritizes current state over past failures
+- **🎯 Improved Accuracy**: Users clearly present aren't locked out due to early detection issues
+- **🔒 Office Security**: Facial recognition prevents others from keeping your screen unlocked
+- **🔧 Configurable**: Adjust sensitivity based on your environment and preferences
+- **📊 Transparent**: Detailed logging shows exactly why detection succeeded or failed
+
+## 🏢 Office Security Use Case
+
+**Perfect for private offices where you want to prevent screen locks when YOU'RE present, but ensure locks when others enter:**
+
+### Configuration Benefits:
+- **`fallback_to_generic_detection: False`** → Only YOUR face prevents screen lock
+- **Lenient thresholds (30%/50%)** → Prevents false negatives when you're working
+- **Facial recognition priority** → Unknown faces immediately trigger "not_detected"
+
+### Scenarios Handled:
+- ✅ **You at desk**: Face recognized → Screen stays unlocked (even with poor detection)
+- ✅ **You step away**: No face detected → Screen locks normally
+- ✅ **Coworker enters while you're away**: Unknown face → Screen locks immediately
+- ✅ **Delivery person walks by**: Unknown face → Screen locks (protects your work)
+
+This ensures maximum convenience for you while maintaining security against others.
+
+### Applied Universally
+
+Recency weighting is applied consistently across:
+- **Initial Detection**: Stage 2 timeout (1-10 second adaptive windows)
+- **Periodic Monitoring**: Every 60-second checks during continuous monitoring
+- **All Detection Methods**: Facial recognition, MediaPipe, and motion detection
+
+This ensures consistent behavior throughout the entire detection lifecycle.
+
 ### Setting Up Reference Images
 
 1. **Enable Facial Recognition**:
@@ -199,28 +366,41 @@ DETECTION_PARAMS = {
 
 #### Configuration Scenarios
 
-**Scenario 1: Maximum Security** (Only target person allowed)
+**🏢 Office Security (Recommended)** - Only target person allowed
 ```python
-DETECTION_PARAMS["facial_recognition"]["enabled"] = True
-DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = False
-DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.5
-DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.9
+DETECTION_PARAMS = {
+    "threshold": 0.3,  # Lenient for you
+    "timing": {"recent_window_threshold": 0.5},  # Responsive
+    "fallback_settings": {"fallback_to_generic_detection": False},  # 🔒 Security!
+    "facial_recognition": {
+        "enabled": True,
+        "tolerance": 0.6,  # Balanced recognition
+        "min_recognition_confidence": 0.5,  # Allow for varying conditions
+    }
+}
 ```
 
-**Scenario 2: Balanced** (Preferred person + generic detection)
+**🤝 Shared Space** - Preferred person + generic detection
 ```python
-DETECTION_PARAMS["facial_recognition"]["enabled"] = True
-DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = True
-DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.6
-DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.8
+DETECTION_PARAMS = {
+    "threshold": 0.5,  # Standard threshold
+    "fallback_settings": {"fallback_to_generic_detection": True},  # Allow others
+    "facial_recognition": {
+        "enabled": True,
+        "tolerance": 0.6,
+        "min_recognition_confidence": 0.8,  # Higher confidence for primary user
+    }
+}
 ```
 
-**Scenario 3: Generic Only** (Original behavior)
+**👥 Multi-User/Generic** - Original behavior (any person)
 ```python
-DETECTION_PARAMS["facial_recognition"]["enabled"] = False
-DETECTION_PARAMS["facial_recognition"]["fallback_to_generic_detection"] = False
-DETECTION_PARAMS["facial_recognition"]["tolerance"] = 0.6
-DETECTION_PARAMS["facial_recognition"]["min_recognition_confidence"] = 0.8
+DETECTION_PARAMS = {
+    "threshold": 0.5,
+    "facial_recognition": {"enabled": False},  # Disable person-specific detection
+    "mediapipe_face": {"enabled": True},  # Generic face detection
+    "motion": {"enabled": True},  # Motion fallback
+}
 ```
 
 ### Facial Recognition Logging
@@ -302,13 +482,27 @@ sudo apt install cmake libopenblas-dev liblapack-dev
 pip install dlib face_recognition
 ```
 
-## Detection Flow with Facial Recognition
+## Detection Flow with Facial Recognition & Recency Weighting
+
+### Unified Detection Architecture
+The system now uses a single `run_detection()` function for both initial detection and periodic monitoring, eliminating code duplication and ensuring consistent behavior with recency weighting applied universally.
+
+**Function Signature:**
+```python
+run_detection(face_mesh, known_encodings, monitoring_mode=False)
+```
+
+**Calling Patterns:**
+- **Initial Detection**: `run_detection(face_mesh, known_encodings, monitoring_mode=True)`
+  - Full monitoring behavior with MQTT reporting and continuous loop
+- **Periodic Checks**: `run_detection(face_mesh, known_encodings, monitoring_mode=False)`
+  - Returns True/False for 60-second periodic presence verification
 
 ### Enhanced Detection Decision (Stage 2)
 ```
 face_detector.py
     ↓
-Start 1-second detection window
+Start 1-second detection window (adaptive 1s → 2s → ... → 10s)
     ↓
 For each frame:
     ├── Facial Recognition enabled?
@@ -322,13 +516,20 @@ For each frame:
     │   └── Motion detection → Movement detected? → DETECTED
     └── All methods failed → NOT DETECTED
 
-Count detection rate across window:
-    ├── ≥50% detection frames → "detected" + continuous monitoring
-    └── <50% detection frames → Extend window by 1s (up to 10s total)
+Apply Recency Weighting to window:
+    ├── Recent Window (last 3s): ≥70% → "detected" ✅ (recent priority)
+    ├── Overall Window: ≥50% → "detected" ✅ (overall threshold)
+    └── Both fail → Extend window by 1s (up to 10s total)
 
 Final evaluation after 10s max:
-    ├── ≥50% → "detected" + continuous monitoring
-    └── <50% → "not_detected" + stop detection
+    ├── Recent Window ≥70% OR Overall Window ≥50% → "detected" + continuous monitoring
+    └── Both fail → "not_detected" + stop detection
+
+Periodic Monitoring (every 60s):
+    ├── Same run_detection() function with monitoring_mode=False
+    ├── Same recency weighting logic applied
+    ├── Returns True → continue monitoring, False → exit to Stage 1
+    └── Consistent behavior with initial detection
 ```
 
 ### Configuration Impact on Behavior

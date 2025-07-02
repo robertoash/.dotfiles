@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import (  # noqa: E402
     get_detection_method_param,
     get_detection_param,
+    get_detection_timing_param,
     get_facial_recognition_param,
     is_detection_method_enabled,
     is_facial_recognition_enabled,
@@ -61,6 +62,11 @@ class VisualFaceDetector:
         # Rolling window for last 5 seconds detection rate
         self.detection_events = []  # List of (timestamp, detected_bool) tuples
         self.rolling_window_seconds = 5
+
+        # Frame-level detection tracking for recency weighting
+        self.frame_detections = (
+            []
+        )  # List of (timestamp, detected_bool) tuples for frame-level analysis
 
         # Performance optimization settings
         self.frame_skip = 2  # Process every Nth frame for better performance
@@ -327,6 +333,74 @@ class VisualFaceDetector:
         detected_count = sum(1 for _, detected in self.detection_events if detected)
         return detected_count / len(self.detection_events)
 
+    def update_frame_detections(self, current_time, detected):
+        """Track frame-level detection events for recency weighting."""
+        self.frame_detections.append((current_time, detected))
+
+    def evaluate_recency_weighting(self, current_time):
+        """
+        Evaluate detection using recency weighting logic.
+
+        Returns:
+            tuple: (overall_rate, recent_rate, detection_decision, decision_reason)
+        """
+        # Get recency weighting configuration
+        recent_window_duration = (
+            get_detection_timing_param("recent_window_duration") or 3
+        )
+        recent_window_threshold = (
+            get_detection_timing_param("recent_window_threshold") or 0.7
+        )
+        overall_threshold = get_detection_param("threshold") or 0.5
+
+        if not self.frame_detections:
+            return 0.0, 0.0, False, "No frame data"
+
+        # Calculate overall detection rate
+        overall_detected = sum(1 for _, detected in self.frame_detections if detected)
+        overall_rate = overall_detected / len(self.frame_detections)
+
+        # Calculate recent window detection rate
+        recent_cutoff = current_time - recent_window_duration
+        recent_frames = [
+            (timestamp, detected)
+            for timestamp, detected in self.frame_detections
+            if timestamp >= recent_cutoff
+        ]
+
+        if recent_frames:
+            recent_detected = sum(1 for _, detected in recent_frames if detected)
+            recent_rate = recent_detected / len(recent_frames)
+        else:
+            recent_rate = 0.0
+
+        # Apply recency weighting decision logic
+        if recent_rate >= recent_window_threshold:
+            return (
+                overall_rate,
+                recent_rate,
+                True,
+                f"recent window {recent_rate:.1%} >= {recent_window_threshold:.1%}",
+            )
+        elif overall_rate >= overall_threshold:
+            return (
+                overall_rate,
+                recent_rate,
+                True,
+                f"overall window {overall_rate:.1%} >= {overall_threshold:.1%}",
+            )
+        else:
+            return overall_rate, recent_rate, False, "both rates below thresholds"
+
+    def clear_old_frame_detections(self, current_time, max_window_duration=10):
+        """Remove old frame detection data beyond the maximum window."""
+        cutoff_time = current_time - max_window_duration
+        self.frame_detections = [
+            (timestamp, detected)
+            for timestamp, detected in self.frame_detections
+            if timestamp >= cutoff_time
+        ]
+
     def detect_all_methods(self, frame):
         """Detect using facial recognition, MediaPipe and motion
         and return results with visual annotations."""
@@ -481,7 +555,16 @@ class VisualFaceDetector:
         return results, annotated_frame
 
     def draw_status_overlay(
-        self, frame, results, detection_rate, elapsed_time, rolling_rate
+        self,
+        frame,
+        results,
+        detection_rate,
+        elapsed_time,
+        rolling_rate,
+        overall_rate=None,
+        recent_rate=None,
+        recency_decision=None,
+        decision_reason=None,
     ):
         """Draw status information overlay on the frame."""
         height, width = frame.shape[:2]
@@ -682,7 +765,64 @@ class VisualFaceDetector:
             self.colors["text"],
             1,
         )
-        y_offset += line_height
+        y_offset += line_height + 5
+
+        # Recency weighting information
+        if overall_rate is not None and recent_rate is not None:
+            # Recency weighting title
+            cv2.putText(
+                frame,
+                "Recency Weighting:",
+                (width - 340, y_offset),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                self.colors["text"],
+                2,
+            )
+            y_offset += line_height
+
+            # Overall and recent rates
+            cv2.putText(
+                frame,
+                f"  Window: {overall_rate:.1%} Recent: {recent_rate:.1%}",
+                (width - 335, y_offset),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.4,
+                self.colors["text"],
+                1,
+            )
+            y_offset += line_height
+
+            # Detection decision
+            if recency_decision is not None:
+                decision_text = "DETECTED" if recency_decision else "NOT DETECTED"
+                decision_color = (0, 255, 0) if recency_decision else (0, 0, 255)
+
+                cv2.putText(
+                    frame,
+                    f"  Decision: {decision_text}",
+                    (width - 335, y_offset),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.4,
+                    decision_color,
+                    1,
+                )
+                y_offset += line_height
+
+                # Decision reason
+                if decision_reason:
+                    cv2.putText(
+                        frame,
+                        f"  Reason: {decision_reason}",
+                        (width - 335, y_offset),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.35,
+                        self.colors["text"],
+                        1,
+                    )
+                    y_offset += line_height
+
+        # Display detection threshold
         cv2.putText(
             frame,
             f"Threshold: {threshold:.1%}",
@@ -926,9 +1066,18 @@ class VisualFaceDetector:
                     )
                     elapsed_time = time.time() - start_time
 
-                    # Update rolling detection rate
+                    # Update rolling detection rate (5-second window for display)
                     self.update_rolling_detection_rate(current_time, any_detected)
                     rolling_detection_rate = self.get_rolling_detection_rate()
+
+                    # Update frame-level detections for recency weighting
+                    self.update_frame_detections(current_time, any_detected)
+                    self.clear_old_frame_detections(current_time)
+
+                    # Evaluate recency weighting for detection decision
+                    overall_rate, recent_rate, recency_decision, decision_reason = (
+                        self.evaluate_recency_weighting(current_time)
+                    )
 
                     # Draw status overlay on the annotated frame before scaling
                     self.draw_status_overlay(
@@ -937,6 +1086,10 @@ class VisualFaceDetector:
                         detection_rate,
                         elapsed_time,
                         rolling_detection_rate,
+                        overall_rate,
+                        recent_rate,
+                        recency_decision,
+                        decision_reason,
                     )
 
                 # Scale frame if in fullscreen mode
@@ -1045,6 +1198,7 @@ class VisualFaceDetector:
         # Reset rolling window and confidence tracking
         self.detection_events = []
         self.recognition_confidences = []
+        self.frame_detections = []
 
     def print_final_stats(self, detection_rate, elapsed_time, processed_frames=None):
         """Print final detection statistics."""
