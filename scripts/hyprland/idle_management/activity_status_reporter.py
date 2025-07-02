@@ -47,6 +47,15 @@ def main():
         status_file = get_status_file("idle_detection_status")
         with open(status_file, "w") as f:
             f.write("in_progress")
+
+    elif "--inactive-no-detection" in sys.argv:
+        log_action("Setting mini status to INACTIVE without starting idle detection")
+        # Set mini status to inactive
+        status_file = get_status_file("linux_mini_status")
+        with open(status_file, "w") as f:
+            f.write("inactive")
+        # Don't change idle_detection_status - leave it as is
+
     else:
         log_action("No valid arguments provided")
 
