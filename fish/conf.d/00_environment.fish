@@ -22,6 +22,8 @@ set -gx GTK_THEME "tokyonight_deep"
 set -gx CURRENT_PROJECT_DIR "/home/rash/dev/apps"
 set -gx DOTFILES_DIR "/home/rash/.config"
 
+# Disable telemetry
+set -gx CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC true
 # File locations
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx ZELLIJ_CONFIG_FILE ~/.config/zellij/config.kdl
