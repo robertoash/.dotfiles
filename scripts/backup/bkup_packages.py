@@ -28,9 +28,10 @@ MANAGERS = {
             "sh",
             "-c",
             "ya pkg list | grep / | "
-            "awk '{gsub(/\\s+\\([^)]+\\)/,\"\"); print}' | awk '{$1=$1};1'",
+            "awk '{match($0, /^[[:space:]]*([^(]+)[[:space:]]*\\(([^)]+)\\)/, arr); "
+            "print arr[1] \" \" arr[2]}' | awk '{$1=$1};1'",
         ],
-        "parse": lambda line: (line.strip(), None),
+        "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["ya", "pkg", "add", pkg],
     },
     "cargo": {
@@ -44,6 +45,11 @@ MANAGERS = {
             line.split()[1][:-1] if len(line.split()) > 1 else None,
         ),
         "restore": lambda pkg, ver=None: ["cargo", "install", pkg],
+    },
+    "npm": {
+        "retrieve": ["sh", "-c", "npm list -g --depth=0 | grep '@'"],
+        "parse": lambda line: line.strip()[4:].rsplit("@", 1),
+        "restore": lambda pkg, ver=None: ["npm", "install", "-g", pkg],
     },
 }
 

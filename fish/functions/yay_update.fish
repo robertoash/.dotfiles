@@ -35,4 +35,7 @@ function yay_update
 
     # Cleanup
     rm $before $after
+
+    # Backup packages
+    /home/rash/.config/scripts/backup/bkup_packages.py
 end
