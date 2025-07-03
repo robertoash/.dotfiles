@@ -130,11 +130,11 @@ DETECTION_PARAMS = {
         "recent_window_threshold": 0.5,  # Threshold for recent window (responsive detection)
     },
     "fallback_settings": {
-        "fallback_to_generic_detection": False,
-        "max_unknown_detections_before_fallback": 3,
+        "fallback_to_generic_detection": True,
+        "max_unknown_detections_before_fallback": 2,
     },
     "facial_recognition": {
-        "enabled": True,
+        "enabled": False,
         "priority": 1,
         # Reference images configuration
         "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
