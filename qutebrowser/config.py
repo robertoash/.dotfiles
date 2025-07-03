@@ -134,7 +134,7 @@ config.bind("ys", "yank selection")
 # Toggle dark mode
 config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
 # Toggle tab list
-config.bind("<Alt-h>", "config-cycle tabs.show always never")
+config.bind("<Alt-h>", "config-cycle tabs.show never always")
 # Duplicate tab
 config.bind("D", "tab-clone")
 
