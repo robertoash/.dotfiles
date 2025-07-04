@@ -115,6 +115,15 @@ class KanataLayerSwitcher:
         except Exception as e:
             self.logger.error(f"Failed to update status file: {e}")
 
+    def write_active_layout(self):
+        """Write current layout to /tmp/active_keyboard_layout"""
+        try:
+            with open("/tmp/active_keyboard_layout", "w") as f:
+                f.write(self.current_layout)
+            self.logger.info(f"Updated active layout file to: {self.current_layout}")
+        except Exception as e:
+            self.logger.error(f"Failed to write active layout file: {e}")
+
     def connect_to_kanata(self, retries: int = 2) -> Optional[socket.socket]:
         """Establish TCP connection to Kanata with retry logic"""
         for attempt in range(retries + 1):
@@ -181,6 +190,7 @@ class KanataLayerSwitcher:
         if self.send_layer_change(layer_name):
             self.save_state()
             self.update_status_file()
+            self.write_active_layout()
         else:
             # Revert on failure
             self.current_layout = "cmk" if self.current_layout == "swe" else "swe"
@@ -226,6 +236,7 @@ class KanataLayerSwitcher:
         if self.send_layer_change(layer_name):
             self.save_state()
             self.update_status_file()
+            self.write_active_layout()
             return True
         else:
             return False
@@ -245,6 +256,7 @@ class KanataLayerSwitcher:
         if self.send_layer_change(layer_name):
             self.save_state()
             self.update_status_file()
+            self.write_active_layout()
             self.logger.info("Successfully initialized to SWE-MOD state")
             return True
         else:

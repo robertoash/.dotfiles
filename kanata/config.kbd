@@ -66,7 +66,26 @@
     caps ;; double-tap = caps lock
   ))
 
+    ;; Modifiers that switch to passthrough layer for Colemak and output the modifier
+  lctl-passthrough (multi lctl (layer-while-held colemak-passthrough))
+  lmet-passthrough (multi lmet (layer-while-held colemak-passthrough))
+  lalt-passthrough (multi lalt (layer-while-held colemak-passthrough))
+  rctl-passthrough (multi rctl (layer-while-held colemak-passthrough))
 
+      ;; Hyper key that switches to passthrough layer for Colemak
+  caps-hyper-passthrough (tap-hold 50 175
+    esc  ;; tap action
+    (multi (multi lctl lsft lalt lmet) (layer-while-held colemak-passthrough))  ;; hold action
+  )
+
+  ;; Multi-function Caps Lock for Colemak with passthrough:
+  ;; - Single tap: Escape
+  ;; - Double tap (quick): Caps Lock toggle
+  ;; - Hold: Activate hyper + passthrough layer
+  caps-multi-colemak (tap-dance 175 (
+    @caps-hyper-passthrough ;; tap=esc, hold=hyper + passthrough
+    caps ;; double-tap = caps lock
+  ))
 
   ;; Hyper key that outputs actual hyper modifier combination (Ctrl+Shift+Alt+Meta)
   ;; This is what Hyprland will recognize as the "hyper" key
@@ -95,6 +114,26 @@
   e-alt (tap-hold 200 200 e lalt)     ;; e = e tap, right alt hold
   i-ctl (tap-hold 200 200 i rctl)     ;; i = i tap, right ctl hold
   o-met (tap-hold 200 200 o rmet)     ;; o = o tap, right meta hold
+
+  ;; Home row mods for passthrough layer (same 200ms timing as main home row mods)
+  a-met-passthrough-layer (tap-hold 200 200 a lmet)       ;; a = a tap, left meta hold
+  s-ctl-passthrough-layer (tap-hold 200 200 s lctl)       ;; s = s tap, left ctl hold
+  d-alt-passthrough-layer (tap-hold 200 200 d lalt)       ;; d = d tap, left alt hold
+  f-sft-passthrough-layer (tap-hold 200 200 f lsft)       ;; f = f tap, left shift hold
+  j-sft-passthrough-layer (tap-hold 200 200 j rsft)       ;; j = j tap, right shift hold
+  k-alt-passthrough-layer (tap-hold 200 200 k lalt)       ;; k = k tap, right alt hold
+  l-ctl-passthrough-layer (tap-hold 200 200 l rctl)       ;; l = l tap, right ctl hold
+  ö-met-passthrough-layer (tap-hold 200 200 ö rmet)       ;; ö = ö tap, right meta hold
+
+  ;; Colemak home row mods with passthrough awareness
+  ;; Left hand
+  a-met-passthrough (tap-hold 200 200 a @lmet-passthrough)     ;; a = a tap, left meta hold with passthrough
+  r-ctl-passthrough (tap-hold 200 200 r @lctl-passthrough)     ;; r = r tap, left ctl hold with passthrough
+  s-alt-passthrough (tap-hold 200 200 s @lalt-passthrough)     ;; s = s tap, left alt hold with passthrough
+  ;; Right hand
+  e-alt-passthrough (tap-hold 200 200 e @lalt-passthrough)     ;; e = e tap, left alt hold with passthrough
+  i-ctl-passthrough (tap-hold 200 200 i @rctl-passthrough)     ;; i = i tap, right ctl hold with passthrough
+  o-met-passthrough (tap-hold 200 200 o @lmet-passthrough)     ;; o = o tap, meta hold with passthrough
 
 
 )
@@ -134,26 +173,35 @@
 ;; COLEMAK LAYERS
 ;; ===============================================
 
-;; Colemak layer - with home row mods
+;; Colemak layer - with home row mods and passthrough for certain modifiers
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
-  @caps-multi @a-met @r-ctl @s-alt @t-sft d    h    @n-sft @e-alt @i-ctl @o-met @ä-altgr '
+  @caps-multi-colemak @a-met-passthrough @r-ctl-passthrough @s-alt-passthrough @t-sft d    h    @n-sft @e-alt-passthrough    @i-ctl-passthrough @o-met-passthrough @ä-altgr '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
+  @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
+)
+
+;; Colemak passthrough layer - outputs original QWERTY positions for modifier combinations
+;; Home row mods in QWERTY positions, other keys are plain to avoid double-modifiers
+(deflayer colemak-passthrough
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi-plain @a-met-passthrough-layer @s-ctl-passthrough-layer @d-alt-passthrough-layer @f-sft-passthrough-layer g    h    @j-sft-passthrough-layer @k-alt-passthrough-layer @l-ctl-passthrough-layer @ö-met-passthrough-layer ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt           spc            ralt rctl
 )
 
-
-
-;; Colemak layer - without home row mods (plain)
+;; Colemak layer - without home row mods (plain) but with passthrough for certain modifiers
 (deflayer colemak_plain
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
-  @caps-multi-plain a    r    s    t    d    h    n    e    i    o    ä    '
+  @caps-multi-colemak a    r    s    t    d    h    n    e    i    o    ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  lctl lmet lalt           spc            ralt rctl
+  @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
 )
 
 

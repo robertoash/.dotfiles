@@ -116,13 +116,6 @@
         "tooltip-format": "{used} used out of {total} on {path} ({percentage_used}%)"
     },
 
-    "custom/keyboard": {
-        "exec": "~/.config/scripts/waybar/kb_layout.py",
-        "interval": 1,
-        "format": "{}",
-        "on-click": "~/.config/scripts/hyprland/se_layout_switcher.py"
-    },
-
     "hyprland/submap": {
         "format": "<span style=\"italic\">  {}</span>", // Icon: expand-arrows-alt
         "tooltip": false
