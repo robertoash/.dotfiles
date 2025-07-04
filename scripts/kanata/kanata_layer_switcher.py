@@ -31,31 +31,53 @@ STATE_FILE = Path("/tmp/kanata_layer_state.json")
 
 # Layer mappings - Only Swedish QWERTY (Kanata never changes to Colemak)
 LAYER_NAMES = {
-    ("swe", "mod"): "nordic",        # Swedish QWERTY with home row mods
+    ("swe", "mod"): "nordic",  # Swedish QWERTY with home row mods
     ("swe", "nomod"): "nordic_plain",  # Swedish QWERTY without home row mods
-    ("cmk", "mod"): "nordic",        # Swedish QWERTY with home row mods (apps handle Colemak)
-    ("cmk", "nomod"): "nordic_plain", # Swedish QWERTY without home row mods (apps handle Colemak)
+    ("cmk", "mod"): "nordic",  # Swedish QWERTY with home row mods (apps handle Colemak)
+    (
+        "cmk",
+        "nomod",
+    ): "nordic_plain",  # Swedish QWERTY without home row mods (apps handle Colemak)
 }
 
 # Status display mappings with Pango markup for multi-colored text
 STATUS_CONFIG = {
     ("swe", "mod"): {
-        "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
+        "text": (
+            '<span color="#ffffff">SWE</span>'
+            '<span color="#ffffff">-</span>'
+            '<span color="#ffffff">MOD</span>'
+        ),
         "class": "normal",
         "tooltip": "Swedish QWERTY + home row mods",
     },
     ("swe", "nomod"): {
-        "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
-        "class": "plain", 
+        "text": (
+            '<span color="#ffffff">SWE</span>'
+            '<span color="#ffffff">-</span>'
+            '<span color="#ff0000">NOMOD</span>'
+        ),
+        "class": "plain",
         "tooltip": "Swedish QWERTY without home row mods",
     },
     ("cmk", "mod"): {
-        "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
+        "text": (
+            '<span color="#a855f7">CMK</span>'
+            '<span color="#ffffff">-</span>'
+            '<span color="#ffffff">MOD</span>'
+        ),
         "class": "colemak",
-        "tooltip": "App-specific Colemak + Swedish QWERTY home row mods (Neovim insert gets Colemak)",
+        "tooltip": (
+            "App-specific Colemak + Swedish QWERTY home row mods "
+            "(Neovim insert gets Colemak)"
+        ),
     },
     ("cmk", "nomod"): {
-        "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
+        "text": (
+            '<span color="#a855f7">CMK</span>'
+            '<span color="#ffffff">-</span>'
+            '<span color="#ff0000">NOMOD</span>'
+        ),
         "class": "colemak-plain",
         "tooltip": "App-specific Colemak + Swedish QWERTY (Neovim insert gets Colemak)",
     },
@@ -118,6 +140,7 @@ class KanataLayerSwitcher:
     def write_active_layout(self):
         """Write current layout to /tmp/active_keyboard_layout"""
         try:
+            # Write to main status file
             with open("/tmp/active_keyboard_layout", "w") as f:
                 f.write(self.current_layout)
             self.logger.info(f"Updated active layout file to: {self.current_layout}")
