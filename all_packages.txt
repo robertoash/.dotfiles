@@ -33,7 +33,7 @@ chafa###1.16.0-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.41-1###pacman
+claude-code###1.0.43-1###pacman
 cloudflared###2025.6.1-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
@@ -319,13 +319,13 @@ urban-cli-bin###0.2.3-2###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
 vi###1:070224-6###pacman
-vivaldi###7.5.3735.41-1###pacman
+vivaldi###7.5.3735.44-1###pacman
 vscode-json-languageserver###1.101.0-1###pacman
 walk###1.13.0-1###pacman
 waybar-git###0.13.0.r8.gf409f53-1###pacman
 wdisplays###1.1.1-1.3###pacman
 welcome###25.6-1###pacman
-wev###1.0.0-13###pacman
+wev###1.1.0-1###pacman
 wezterm-git###20250703.070941.c7f4b081-1###pacman
 wf-recorder###0.5.0-2###pacman
 wget###1.25.0-2###pacman
@@ -367,7 +367,7 @@ buku-git###5.0.r33.g641024b-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.41-1###yay
+claude-code###1.0.43-1###yay
 colloid-catppuccin-gtk-theme-git###2024.11.16.r15.g1f09381-1###yay
 csvq-bin###1.18.1-2###yay
 cursor-bin###1.2.1-1###yay
@@ -456,7 +456,7 @@ tgt###v1.0.0###cargo
 yazi-cli###v25.5.3###cargo
 yazi-fm###v25.5.31###cargo
 zellij###v0.42.2###cargo
-@anthropic-ai/claude-code###1.0.41###npm
+@anthropic-ai/claude-code###1.0.43###npm
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
 @google/gemini-cli###0.1.9###npm
 @openai/codex###0.1.2505172129###npm
