@@ -440,7 +440,7 @@ yazi-rs/plugins:mount###e5f00e2###ya
 stelcodes/bunny###a0b4e18###ya
 dedukun/relative-motions###9d26460###ya
 yazi-rs/plugins:jump-to-char###e5f00e2###ya
-boydaihungst/mediainfo###b74b7b8###ya
+boydaihungst/mediainfo###cc12f3f###ya
 yazi-rs/flavors:catppuccin-mocha###d04a298###ya
 cargo-binstall###v1.14.1###cargo
 cargo-update###v16.3.2###cargo
