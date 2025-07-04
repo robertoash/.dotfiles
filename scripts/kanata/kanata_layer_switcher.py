@@ -29,15 +29,12 @@ KANATA_HOST = "127.0.0.1"
 STATUS_FILE = Path("/tmp/kanata_status.json")
 STATE_FILE = Path("/tmp/kanata_layer_state.json")
 
-# Layer mappings - Only Swedish QWERTY (Kanata never changes to Colemak)
+# Layer mappings - adjust these to match your Kanata config
 LAYER_NAMES = {
-    ("swe", "mod"): "nordic",  # Swedish QWERTY with home row mods
-    ("swe", "nomod"): "nordic_plain",  # Swedish QWERTY without home row mods
-    ("cmk", "mod"): "nordic",  # Swedish QWERTY with home row mods (apps handle Colemak)
-    (
-        "cmk",
-        "nomod",
-    ): "nordic_plain",  # Swedish QWERTY without home row mods (apps handle Colemak)
+    ("swe", "mod"): "nordic",  # Swedish with home row mods
+    ("swe", "nomod"): "almost_unchanged",  # Swedish without mods
+    ("cmk", "mod"): "colemak",  # Colemak with home row mods
+    ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
 }
 
 # Status display mappings with Pango markup for multi-colored text
@@ -49,7 +46,7 @@ STATUS_CONFIG = {
             '<span color="#ffffff">MOD</span>'
         ),
         "class": "normal",
-        "tooltip": "Swedish QWERTY + home row mods",
+        "tooltip": "Kanata: Swedish with home row mods",
     },
     ("swe", "nomod"): {
         "text": (
@@ -58,7 +55,7 @@ STATUS_CONFIG = {
             '<span color="#ff0000">NOMOD</span>'
         ),
         "class": "plain",
-        "tooltip": "Swedish QWERTY without home row mods",
+        "tooltip": "Kanata: Swedish without mods",
     },
     ("cmk", "mod"): {
         "text": (
@@ -67,10 +64,7 @@ STATUS_CONFIG = {
             '<span color="#ffffff">MOD</span>'
         ),
         "class": "colemak",
-        "tooltip": (
-            "App-specific Colemak + Swedish QWERTY home row mods "
-            "(Neovim insert gets Colemak)"
-        ),
+        "tooltip": "Kanata: Colemak with home row mods",
     },
     ("cmk", "nomod"): {
         "text": (
@@ -79,7 +73,7 @@ STATUS_CONFIG = {
             '<span color="#ff0000">NOMOD</span>'
         ),
         "class": "colemak-plain",
-        "tooltip": "App-specific Colemak + Swedish QWERTY (Neovim insert gets Colemak)",
+        "tooltip": "Kanata: Colemak without mods",
     },
 }
 
@@ -333,19 +327,30 @@ def main():
         print(json.dumps(status))
     elif args.action == "waybar":
         # Waybar-optimized status with fallback for when Kanata is not running
+        # Suppress all stderr output for waybar
+        import os
+        stderr_fd = os.dup(2)  # Save stderr
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, 2)  # Redirect stderr to /dev/null
+        
         try:
             layout, mod_state = switcher.get_current_state()
             key = (layout, mod_state)
             status = STATUS_CONFIG[key]
-            print(json.dumps(status))
         except Exception:
             # Fallback when Kanata/TCP is not available
-            fallback_status = {
+            status = {
                 "text": '<span color="#ffffff">NORM</span>',
                 "class": "normal",
                 "tooltip": "Kanata: Nordic mode (home row mods active)",
             }
-            print(json.dumps(fallback_status))
+        finally:
+            # Restore stderr
+            os.dup2(stderr_fd, 2)
+            os.close(devnull)
+            os.close(stderr_fd)
+        
+        print(json.dumps(status))
     elif args.action == "toggle":
         # Toggle mod state - useful for waybar click
         switcher.toggle_mod_state()
