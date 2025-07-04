@@ -29,12 +29,12 @@ KANATA_HOST = "127.0.0.1"
 STATUS_FILE = Path("/tmp/kanata_status.json")
 STATE_FILE = Path("/tmp/kanata_layer_state.json")
 
-# Layer mappings - adjust these to match your Kanata config
+# Layer mappings - Only Swedish QWERTY (Kanata never changes to Colemak)
 LAYER_NAMES = {
-    ("swe", "mod"): "nordic",  # Swedish with home row mods
-    ("swe", "nomod"): "almost_unchanged",  # Swedish without mods
-    ("cmk", "mod"): "colemak",  # Colemak with home row mods
-    ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
+    ("swe", "mod"): "nordic",        # Swedish QWERTY with home row mods
+    ("swe", "nomod"): "nordic_plain",  # Swedish QWERTY without home row mods
+    ("cmk", "mod"): "nordic",        # Swedish QWERTY with home row mods (apps handle Colemak)
+    ("cmk", "nomod"): "nordic_plain", # Swedish QWERTY without home row mods (apps handle Colemak)
 }
 
 # Status display mappings with Pango markup for multi-colored text
@@ -42,29 +42,29 @@ STATUS_CONFIG = {
     ("swe", "mod"): {
         "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
         "class": "normal",
-        "tooltip": "Kanata: Swedish with home row mods",
+        "tooltip": "Swedish QWERTY + home row mods",
     },
     ("swe", "nomod"): {
         "text": '<span color="#ffffff">SWE</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
-        "class": "plain",
-        "tooltip": "Kanata: Swedish without mods",
+        "class": "plain", 
+        "tooltip": "Swedish QWERTY without home row mods",
     },
     ("cmk", "mod"): {
         "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ffffff">MOD</span>',
-        "class": "colemak-mod",
-        "tooltip": "Kanata: Swedish Colemak with home row mods",
+        "class": "colemak",
+        "tooltip": "App-specific Colemak + Swedish QWERTY home row mods (Neovim insert gets Colemak)",
     },
     ("cmk", "nomod"): {
         "text": '<span color="#a855f7">CMK</span><span color="#ffffff">-</span><span color="#ff0000">NOMOD</span>',
         "class": "colemak-plain",
-        "tooltip": "Kanata: Swedish Colemak without mods",
+        "tooltip": "App-specific Colemak + Swedish QWERTY (Neovim insert gets Colemak)",
     },
 }
 
 
 class KanataLayerSwitcher:
     def __init__(self):
-        self.current_layout = "swe"  # swe or cmk
+        self.current_layout = "swe"  # swe or cmk - this affects Kanata layer
         self.current_mod_state = "mod"  # mod or nomod
         self.setup_logging()
         self.load_state()

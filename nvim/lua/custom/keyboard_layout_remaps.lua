@@ -1,6 +1,32 @@
--- Hybrid Colemak keyboard layout switcher for Kanata
--- Kanata sends: Colemak for single keys, QWERTY for modifiers
+-- Neovim-specific Colemak for insert mode only
+-- Kanata handles Colemak globally, but Neovim can selectively ignore it
 -- Reads layout from /tmp/active_keyboard_layout
+
+-- Colemak key mappings (QWERTY -> Colemak)
+local colemak_mappings = {
+	{'e', 'f'}, {'E', 'F'}, {'r', 'p'}, {'R', 'P'}, {'t', 'g'}, {'T', 'G'},
+	{'y', 'j'}, {'Y', 'J'}, {'u', 'l'}, {'U', 'L'}, {'i', 'u'}, {'I', 'U'},
+	{'o', 'y'}, {'O', 'Y'}, {'p', 'ö'}, {'P', 'Ö'}, {'s', 'r'}, {'S', 'R'},
+	{'d', 's'}, {'D', 'S'}, {'f', 't'}, {'F', 'T'}, {'g', 'd'}, {'G', 'D'},
+	{'j', 'n'}, {'J', 'N'}, {'k', 'e'}, {'K', 'E'}, {'l', 'i'}, {'L', 'I'},
+	{'ö', 'o'}, {'Ö', 'O'}, {'n', 'k'}, {'N', 'K'}
+}
+
+-- Apply Colemak keymaps
+local function apply_colemak_keymaps()
+	for _, mapping in ipairs(colemak_mappings) do
+		vim.keymap.set('i', mapping[1], mapping[2], { noremap = true, silent = true, buffer = true })
+	end
+	print("Colemak active")
+end
+
+-- Remove Colemak keymaps
+local function remove_colemak_keymaps()
+	for _, mapping in ipairs(colemak_mappings) do
+		pcall(vim.keymap.del, 'i', mapping[1], { buffer = true })
+	end
+	print("QWERTY active")
+end
 
 local function setup_keyboard_layout()
 	local layout = "swe" -- Default fallback
@@ -14,66 +40,28 @@ local function setup_keyboard_layout()
 			layout = content:gsub("%s+", "") -- Remove whitespace
 		end
 	end
+	
 
 	if layout == "cmk" then
-		-- HYBRID MODE: Kanata sends Colemak for single keys, QWERTY for modifiers
-		-- Perfect for keeping existing keybinds while getting Colemak movement
+		-- When Kanata is in Colemak mode, Neovim applies Colemak ONLY to insert mode
+		-- Normal mode keeps QWERTY movement keys (hjkl) for navigation
+		-- This creates the perfect hybrid: Colemak for typing, QWERTY for vim navigation
 
-		local ok, langmapper = pcall(require, "langmapper")
-		if ok then
-			langmapper.setup({
-				map_modes = { "n", "v" },
-				map_filter = function(lhs, mode)
-					-- Don't translate modifier combinations (Kanata handles those as QWERTY)
-					if lhs:match("<[%w%-]+>") then
-						return false
-					end
-					-- Only translate single character keys
-					return #lhs == 1
-				end,
-				-- Swedish Colemak to QWERTY translation
-				langmap = "fe,pr,gt,jy,lu,ui,yo,öp,rs,sd,tf,dg,nj,ek,il,oö,kn",
-			})
+		-- Clear langmap to avoid affecting normal mode
+		vim.opt.langmap = ""
 
-			-- Fix the 3 displaced keys
-			vim.keymap.set("n", "l", "i", { desc = "Insert mode (Colemak l→i)" })
-			vim.keymap.set("n", "L", "I", { desc = "Insert at line start (Colemak L→I)" })
-			vim.keymap.set("n", "j", "e", { desc = "End of word (Colemak j→e)" })
-			vim.keymap.set("n", "J", "E", { desc = "End of WORD (Colemak J→E)" })
-			vim.keymap.set("n", "k", "n", { desc = "Next search (Colemak k→n)" })
-			vim.keymap.set("n", "K", "N", { desc = "Previous search (Colemak K→N)" })
+		-- Store that we want Colemak mode
+		vim.g.colemak_mode = true
 
-			print("Colemak hybrid layout active (langmapper + displaced keys)")
-		else
-			-- Fallback without langmapper plugin
-			vim.opt.langmap = "nj,ek,il" -- Essential movement only
-
-			vim.keymap.set("n", "l", "i", { desc = "Insert mode (Colemak)" })
-			vim.keymap.set("n", "L", "I", { desc = "Insert at line start (Colemak)" })
-			vim.keymap.set("n", "k", "n", { desc = "Next search (Colemak)" })
-			vim.keymap.set("n", "K", "N", { desc = "Previous search (Colemak)" })
-			vim.keymap.set("n", "j", "e", { desc = "End of word (Colemak)" })
-			vim.keymap.set("n", "J", "E", { desc = "End of WORD (Colemak)" })
-
-			print("Colemak hybrid layout active (basic langmap fallback)")
-		end
+		print("Neovim: Colemak insert mode + QWERTY navigation")
 	elseif layout == "swe" then
 		-- Swedish QWERTY - clear everything
 		vim.opt.langmap = ""
+		
+		-- Store that we want Swedish mode
+		vim.g.colemak_mode = false
 
-		-- Remove displaced key mappings
-		local displaced_keys = { "l", "L", "j", "J", "k", "K" }
-		for _, key in ipairs(displaced_keys) do
-			pcall(vim.keymap.del, "n", key)
-		end
-
-		-- Disable langmapper
-		local ok, langmapper = pcall(require, "langmapper")
-		if ok and langmapper.disable then
-			langmapper.disable()
-		end
-
-		print("Swedish QWERTY layout active")
+		print("Neovim: Swedish QWERTY layout active")
 	else
 		print("Unknown layout: " .. layout .. ". Using Swedish QWERTY.")
 		vim.opt.langmap = ""
@@ -107,8 +95,10 @@ local function start_file_watcher()
 
 				if events.change then
 					local old_layout = vim.g.detected_keyboard_layout
+					local old_colemak_mode = vim.g.colemak_mode
 					setup_keyboard_layout()
 					local new_layout = vim.g.detected_keyboard_layout
+					local new_colemak_mode = vim.g.colemak_mode
 
 					if old_layout ~= new_layout then
 						if new_layout == "cmk" then
@@ -117,6 +107,18 @@ local function start_file_watcher()
 							print("Switched to Swedish QWERTY layout")
 						else
 							print("Switched to " .. new_layout .. " layout")
+						end
+						
+						-- If we're currently in insert mode, apply/remove keymaps immediately
+						local current_mode = vim.api.nvim_get_mode().mode
+						if current_mode == "i" or current_mode == "R" then
+							if old_colemak_mode and not new_colemak_mode then
+								-- Switching from Colemak to Swedish while in insert mode
+								remove_colemak_keymaps()
+							elseif not old_colemak_mode and new_colemak_mode then
+								-- Switching from Swedish to Colemak while in insert mode
+								apply_colemak_keymaps()
+							end
 						end
 					else
 						print("Layout reloaded: " .. new_layout)
@@ -155,15 +157,38 @@ vim.api.nvim_create_user_command("ReloadKeyboardLayout", function()
 	setup_keyboard_layout()
 end, { desc = "Reload keyboard layout from /tmp/active_keyboard_layout" })
 
+
+-- Autocmds to apply/remove Colemak keymaps on insert mode enter/leave
+local colemak_group = vim.api.nvim_create_augroup("ColemakModeHandler", { clear = true })
+
+vim.api.nvim_create_autocmd("InsertEnter", {
+	group = colemak_group,
+	callback = function()
+		if vim.g.colemak_mode then
+			apply_colemak_keymaps()
+		end
+	end,
+})
+
+vim.api.nvim_create_autocmd("InsertLeave", {
+	group = colemak_group,
+	callback = function()
+		if vim.g.colemak_mode then
+			remove_colemak_keymaps()
+		end
+	end,
+})
+
 -- Test command
 vim.api.nvim_create_user_command("TestColemakLayout", function()
 	local layout = vim.g.detected_keyboard_layout or "unknown"
 	print("Current layout: " .. layout)
+	print("Colemak mode: " .. tostring(vim.g.colemak_mode))
 
 	if layout == "cmk" then
 		print("✓ HYBRID COLEMAK ACTIVE")
-		print("Movement: n(↓), e(↑), i(→), h(←)")
-		print("Displaced: l(insert), k(next search), j(end word)")
+		print("Movement: hjkl (QWERTY navigation)")
+		print("Insert mode: Colemak layout (e->f, r->p, etc.)")
 		print("Keybinds: <leader>sf, <C-j> work as normal (QWERTY)")
 		print("Hyprland: Uses QWERTY for Super+key combinations")
 	elseif layout == "swe" then
