@@ -3,6 +3,7 @@ import argparse
 import fcntl
 import logging
 import os
+import shlex
 import subprocess
 import sys
 
@@ -22,6 +23,7 @@ secrets_files = [
     "/home/rash/.secrets/.openai_api_key",
     "/home/rash/.secrets/.linkding_envs",
     "/home/rash/.secrets/.anthropic_api_key",
+    "/home/rash/.secrets/.github_access_token",
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
@@ -155,6 +157,7 @@ def conf_decrypt(file):
             ).decode()
 
             # Normalize the content to shell-agnostic format
+            # Supports: KEY=VALUE, export KEY=VALUE, set [-flags] KEY "quoted value"
             normalized_lines = []
             for line in decrypted_content.splitlines():
                 line = line.strip()
@@ -162,6 +165,31 @@ def conf_decrypt(file):
                     # Strip 'export ' prefix if present to standardize format
                     if line.startswith("export "):
                         line = line[7:]  # Remove 'export ' prefix
+                        # Handle fish shell syntax: set [-gx|-g|-x] KEY VALUE
+                    elif line.startswith("set "):
+                        try:
+                            # Parse fish set command with proper quote handling
+                            parts = shlex.split(line)
+                            if len(parts) >= 3:
+                                # Handle flags like -gx, -g, -x
+                                key_index = 1
+                                if parts[1].startswith("-"):
+                                    key_index = 2
+
+                                if len(parts) > key_index:
+                                    key = parts[key_index]
+                                    # Join remaining parts as value, handling spaces
+                                    value = " ".join(parts[key_index + 1 :])
+                                    line = f"{key}={value}"
+                                else:
+                                    # Malformed fish command, skip
+                                    continue
+                            else:
+                                # Malformed fish command, skip
+                                continue
+                        except ValueError:
+                            # shlex.split failed (unmatched quotes, etc.), skip line
+                            continue
                     normalized_lines.append(line)
                 else:
                     # Keep comments and empty lines as-is
