@@ -1,11 +1,11 @@
-function b_zen
+function bzen
     if test (count $argv) -eq 0
-        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --app=(bk_o --url)
+        vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --app=(bko --url)
         echo "Opening Buku Fuzzy Search"
     else
         switch $argv[1]
             case --help
-                echo "Usage: b_zen [OPTION] [INDEX/STRING/URL]"
+                echo "Usage: bzen [OPTION] [INDEX/STRING/URL]"
                 echo "Open a URL or a Buku bookmark in vivaldi Browser Zen Mode."
                 echo
                 echo "Options:"
@@ -23,11 +23,11 @@ function b_zen
                 echo
                 echo "Examples:"
                 echo
-                echo "  b_zen                             # Open Buku fuzzy search."
-                echo "  b_zen 1                           # Open the Buku bookmark at index 1."
-                echo "  b_zen string                      # Fuzzy search Buku bookmarks and open the first match for 'string'."
-                echo "  b_zen --web https://example.com   # Open 'https://example.com'."
-                echo "  b_zen --web example.com           # Open 'https://example.com'."
+                echo "  bzen                             # Open Buku fuzzy search."
+                echo "  bzen 1                           # Open the Buku bookmark at index 1."
+                echo "  bzen string                      # Fuzzy search Buku bookmarks and open the first match for 'string'."
+                echo "  bzen --web https://example.com   # Open 'https://example.com'."
+                echo "  bzen --web example.com           # Open 'https://example.com'."
                 return
             case --web
                 set -l url $argv[2]
@@ -41,10 +41,10 @@ function b_zen
                 return
             case '*'
                 if string match -qr '^\d+$' $argv[1]
-                    vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=(bk_o --url "$argv[1]")
+                    vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=(bko --url "$argv[1]")
                     echo "Opening Buku index $argv[1]"
                 else
-                    vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=(bk_o --url "$argv[1]")
+                    vivaldi --enable-features=UseOzonePlatform --ozone-platform=wayland --profile-directory="app_profile" --app=(bko --url "$argv[1]")
                     echo "Opening Buku first match for string '$argv[1]'"
                 end
         end

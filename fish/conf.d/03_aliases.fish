@@ -18,10 +18,10 @@ alias dcli="~/.config/scripts/shell/dcli_wrapper.py"
 
 ## Exa File Listing
 alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
-alias lll="ll -l -a"
+alias lll="exa --all --color=always --icons --group-directories-first --git -Hah -l -a"
 alias llr="exa --color=always --icons --git -HahlTR"
-alias llrl="llr -L"
-alias lls="lll -s size"
+alias llrl="exa --color=always --icons --git -HahlTR -L"
+alias lls="exa --all --color=always --icons --group-directories-first --git -Hah -l -a -s size"
 
 ## Git Tools
 alias delete_gone_branches="git branch -vv | awk '\$0 ~ /: gone]/ {print \$1;}' | xargs -r git branch -D"
@@ -37,8 +37,6 @@ alias monitor_keys_full="wev"
 alias monitor_mouse_presses="wev -f wl_pointer:button"
 alias monitor_windows="xprop"
 
-## Nvim
-alias nv="nvim"
 ## Notes & Text
 alias note="notesh -f ~/notes/quick.json"
 

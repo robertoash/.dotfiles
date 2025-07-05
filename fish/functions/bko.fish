@@ -56,14 +56,14 @@ function extract_url_from_string
     end
 end
 
-# Main bk_o function
-function bk_o
+# Main bko function
+function bko
     if test -z "$argv[1]"
         fzf_multi_open
     else
         switch "$argv[1]"
             case --help
-                echo "Usage: bk_o [OPTION] [INDEX/STRING]"
+                echo "Usage: bko [OPTION] [INDEX/STRING]"
                 echo "A helper function to open bookmarks using Buku with optional fuzzy search."
                 echo
                 echo "Options:"
@@ -82,12 +82,12 @@ function bk_o
                 echo "  - With a string: Fuzzy search and print the first matching URL."
                 echo
                 echo "Examples:"
-                echo "  bk_o                # Open multi-select Buku fuzzy search to open multiple bookmarks."
-                echo "  bk_o 1              # Open the bookmark at index 1."
-                echo "  bk_o searchterm     # Fuzzy search and open the first match for 'searchterm'."
-                echo "  bk_o --url          # Fuzzy search and print the selected URL."
-                echo "  bk_o --url 1        # Print the URL at index 1."
-                echo "  bk_o --url string   # Fuzzy search and print the first matching URL for 'string'."
+                    echo "  bko                # Open multi-select Buku fuzzy search to open multiple bookmarks."
+    echo "  bko 1              # Open the bookmark at index 1."
+    echo "  bko searchterm     # Fuzzy search and open the first match for 'searchterm'."
+    echo "  bko --url          # Fuzzy search and print the selected URL."
+    echo "  bko --url 1        # Print the URL at index 1."
+    echo "  bko --url string   # Fuzzy search and print the first matching URL for 'string'."
                 return
             case --url
                 set argv $argv[2..-1]

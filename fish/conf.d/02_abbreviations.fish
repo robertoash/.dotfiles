@@ -7,14 +7,12 @@ abbr lg lazygit
 abbr lzd lazydocker
 
 ## Buku Bookmarks
-abbr bk "buku --suggest"
 abbr bka "buku --suggest -w" # Buku add (interactive)
 abbr bkd "buku --suggest -d" # Buku delete
 abbr bke "buku --suggest -w"
 abbr bkl "buku --suggest -p" # Buku list
 abbr bkll "buku --suggest -l" # Buku lock
 abbr bklu "buku --suggest -k" # Buku unlock
-abbr bko "buku --suggest -o" # Buku with fzf
 abbr bks "buku --suggest --np -s" # Buku search (no prompt)
 abbr bksp "buku --suggest -s" # Buku search (prompt)
 abbr bkw "buku --suggest -w --tag ''" # Buku write
@@ -70,8 +68,8 @@ abbr frecent_cleanup "~/.config/scripts/shell/frecent_cleanup.py"
 ## SVT Text
 abbr svtti "svttext -colors -interactive"
 abbr svttc "svttext -colors"
-abbr svttci "svtti"
-abbr svttic "svtti"
+abbr svttci "svttext -colors -interactive"
+abbr svttic "svttext -colors -interactive"
 # Gcalcli
 abbr gcal "gcalcli"
 abbr gcala "gcalcli agenda"
