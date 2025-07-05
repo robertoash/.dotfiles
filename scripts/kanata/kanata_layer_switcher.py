@@ -19,6 +19,7 @@ import argparse
 import json
 import logging
 import socket
+import subprocess
 import sys
 from pathlib import Path
 from typing import Optional, Tuple
@@ -28,6 +29,7 @@ KANATA_PORT = 5829
 KANATA_HOST = "127.0.0.1"
 STATUS_FILE = Path("/tmp/kanata_status.json")
 STATE_FILE = Path("/tmp/kanata_layer_state.json")
+ESPANSO_CONFIG_FILE = Path("/home/rash/.config/espanso/config/default.yml")
 
 # Layer mappings - adjust these to match your Kanata config
 LAYER_NAMES = {
@@ -35,6 +37,21 @@ LAYER_NAMES = {
     ("swe", "nomod"): "almost_unchanged",  # Swedish without mods
     ("cmk", "mod"): "colemak",  # Colemak with home row mods
     ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
+}
+
+# Espanso configuration mappings
+# Note: espanso should always use nodeadkeys since kanata handles the colemak remapping
+ESPANSO_CONFIG = {
+    "swe": {
+        "layout": "se",
+        "variant": "nodeadkeys",
+        "model": "pc105",
+    },
+    "cmk": {
+        "layout": "se",
+        "variant": "nodeadkeys",
+        "model": "pc105",
+    },
 }
 
 # Status display mappings with Pango markup for multi-colored text
@@ -80,7 +97,7 @@ STATUS_CONFIG = {
 
 class KanataLayerSwitcher:
     def __init__(self):
-        self.current_layout = "swe"  # swe or cmk - this affects Kanata layer
+        self.current_layout = "cmk"  # swe or cmk - this affects Kanata layer
         self.current_mod_state = "mod"  # mod or nomod
         self.setup_logging()
         self.load_state()
@@ -98,13 +115,13 @@ class KanataLayerSwitcher:
             if STATE_FILE.exists():
                 with open(STATE_FILE, "r") as f:
                     state = json.load(f)
-                    self.current_layout = state.get("layout", "swe")
+                    self.current_layout = state.get("layout", "cmk")
                     self.current_mod_state = state.get("mod_state", "mod")
                     self.logger.info(
                         f"Loaded state: {self.current_layout}-{self.current_mod_state}"
                     )
             else:
-                self.logger.info("No state file found, using defaults: swe-mod")
+                self.logger.info("No state file found, using defaults: cmk-mod")
         except Exception as e:
             self.logger.warning(f"Failed to load state: {e}. Using defaults.")
 
@@ -140,6 +157,33 @@ class KanataLayerSwitcher:
             self.logger.info(f"Updated active layout file to: {self.current_layout}")
         except Exception as e:
             self.logger.error(f"Failed to write active layout file: {e}")
+
+    def update_espanso_config(self):
+        """Update espanso configuration based on current layout"""
+        try:
+            # Get new keyboard layout config
+            new_config = ESPANSO_CONFIG[self.current_layout]
+            
+            # Update espanso config using sed
+            subprocess.run([
+                "sed", "-i",
+                f"s/^  layout: .*/  layout: {new_config['layout']}/",
+                str(ESPANSO_CONFIG_FILE)
+            ], check=True)
+            
+            subprocess.run([
+                "sed", "-i", 
+                f"s/^  variant: .*/  variant: {new_config['variant']}/",
+                str(ESPANSO_CONFIG_FILE)
+            ], check=True)
+            
+            # Restart espanso to apply changes
+            subprocess.run(["espanso", "restart"], check=False, capture_output=True)
+            
+            self.logger.info(f"Updated espanso config to {self.current_layout} layout")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to update espanso config: {e}")
 
     def connect_to_kanata(self, retries: int = 2) -> Optional[socket.socket]:
         """Establish TCP connection to Kanata with retry logic"""
@@ -208,6 +252,7 @@ class KanataLayerSwitcher:
             self.save_state()
             self.update_status_file()
             self.write_active_layout()
+            self.update_espanso_config()
         else:
             # Revert on failure
             self.current_layout = "cmk" if self.current_layout == "swe" else "swe"
@@ -254,6 +299,7 @@ class KanataLayerSwitcher:
             self.save_state()
             self.update_status_file()
             self.write_active_layout()
+            self.update_espanso_config()
             return True
         else:
             return False
@@ -262,8 +308,8 @@ class KanataLayerSwitcher:
         """Initialize to default SWE-MOD state, useful for boot/startup"""
         self.logger.info("Initializing to default SWE-MOD state")
 
-        # Set to SWE-MOD (Swedish with home row mods)
-        self.current_layout = "swe"
+        # Set to CMK-MOD (Colemak with home row mods)
+        self.current_layout = "cmk"
         self.current_mod_state = "mod"
 
         # Get the layer name and send to Kanata
@@ -274,6 +320,7 @@ class KanataLayerSwitcher:
             self.save_state()
             self.update_status_file()
             self.write_active_layout()
+            self.update_espanso_config()
             self.logger.info("Successfully initialized to SWE-MOD state")
             return True
         else:
