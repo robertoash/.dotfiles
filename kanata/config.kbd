@@ -141,42 +141,12 @@
 
 )
 
-;; Main layer - Nordic QWERTY layout with home row mods
-;; Can output virtual keys like rmet even if they don't exist physically
-(deflayer nordic
-  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met @ä-altgr '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt           spc            ralt rctl
-)
-
-;; Unified hyper layer - outputs actual hyper modifier combinations for Hyprland
-(deflayer unified-hyper
-  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
-  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    (multi @hyper-mod k)    (multi @hyper-mod l)    _    _    _
-  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
-  _    _    _                  _                   _    _
-)
-
-;; Unchanged layer to deactivate kanata
-(deflayer almost_unchanged
-  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi-plain a    s    d    f    g    h    j    k    l    ö    ä    '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt           spc            ralt rctl
-)
-
 ;; ===============================================
 ;; COLEMAK LAYERS
 ;; ===============================================
 
-;; Colemak layer - with home row mods and passthrough for certain modifiers
+;; Main layer - Colemak layout with home row mods and passthrough
+;; Can output virtual keys like rmet even if they don't exist physically
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
@@ -185,6 +155,7 @@
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
   @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
 )
+
 
 ;; Colemak passthrough layer - outputs original QWERTY positions for modifier combinations
 ;; Home row mods in QWERTY positions, other keys are plain to avoid double-modifiers
@@ -207,8 +178,46 @@
   @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
 )
 
+;; ===============================================
+;; NORDIC LAYERS
+;; ===============================================
+
+;; Nordic QWERTY layout with home row mods
+(deflayer nordic
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met @ä-altgr '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
+)
+
 ;; Nordic (Swedish QWERTY) without home row mods
 (deflayer nordic_plain
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi-plain a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
+)
+
+;; ===============================================
+;; UTILITY LAYERS
+;; ===============================================
+
+;; Unified hyper layer - outputs actual hyper modifier combinations for Hyprland
+(deflayer unified-hyper
+  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
+  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
+  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    (multi @hyper-mod k)    (multi @hyper-mod l)    _    _    _
+  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
+  _    _    _                  _                   _    _
+)
+
+;; Unchanged layer to deactivate kanata
+(deflayer almost_unchanged
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
