@@ -18,6 +18,7 @@ c.tabs.show = "multiple"
 c.tabs.position = "left"
 c.tabs.width = "15%"
 c.tabs.title.format = "{index}: {current_title}"
+c.tabs.select_on_remove = "prev"
 c.window.title_format = f"{{current_url}} @ [qute-{profile_name}] "
 # Autosave session
 c.auto_save.session = True
