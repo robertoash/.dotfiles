@@ -30,7 +30,7 @@ class ProfileSelector:
                 ),
             },
             "chromium": {
-                "profiles": ["rash", "jobhunt"],
+                "profiles": ["rash", "jobhunt", "app", "dash"],
                 "command_template": (
                     "/home/rash/.local/bin/chromium_launch --profile {profile}"
                 ),

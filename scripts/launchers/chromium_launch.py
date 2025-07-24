@@ -18,6 +18,14 @@ PROFILES = {
         "profile_directory": "work",
         "app_url": None,
     },
+    "app": {
+        "profile_directory": "app",
+        "app_url": None,
+    },
+    "dash": {
+        "profile_directory": "dash",
+        "app_url": None,
+    },
     "chatgpt": {
         "profile_directory": "app",
         "app_url": "https://chat.openai.com",
