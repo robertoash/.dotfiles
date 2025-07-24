@@ -43,7 +43,7 @@ cronie###1.7.2-1###pacman
 cryptsetup###2.8.0-1###pacman
 csvq-bin###1.18.1-2###pacman
 cups###2:2.4.12-2###pacman
-cursor-bin###1.2.4-1###pacman
+cursor-bin###1.3.1-1###pacman
 device-mapper###2.03.33-1###pacman
 dhclient###4.4.3.P1-4###pacman
 diffutils###3.12-2###pacman
@@ -52,7 +52,7 @@ dmraid###1.0.0.rc16.3-15###pacman
 dnsmasq###2.91-1###pacman
 docker###1:28.3.2-1###pacman
 docker-buildx###0.26.1-1###pacman
-docker-compose###2.38.2-1###pacman
+docker-compose###2.39.1-1###pacman
 dosfstools###4.2-5###pacman
 downgrade###11.5.2-1###pacman
 dracut###106-1###pacman
@@ -201,7 +201,7 @@ noto-fonts###1:2025.07.01-1###pacman
 noto-fonts-cjk###20240730-1###pacman
 noto-fonts-emoji###1:2.048-1###pacman
 noto-fonts-extra###1:2025.07.01-1###pacman
-npm###11.4.2-2###pacman
+npm###11.5.0-1###pacman
 nss-mdns###0.15.1-2###pacman
 ntfs-3g###2022.10.3-2###pacman
 ntp###4.2.8.p18-3###pacman
@@ -260,7 +260,7 @@ rofi-lbonn-wayland-git###1.7.9.wayland1.r1.gd4b16e6f-1###pacman
 rofimoji###6.5.0-2###pacman
 rsync###3.4.1-2###pacman
 rtkit###0.13-3###pacman
-ruff###0.12.4-1###pacman
+ruff###0.12.5-1###pacman
 s-nail###14.9.25-1###pacman
 samba###2:4.22.3-1###pacman
 sdcv###0.5.5-2###pacman
@@ -371,7 +371,7 @@ chromium-widevine###1:4.10.2891.0-1###yay
 claude-code###1.0.59-1###yay
 colloid-catppuccin-gtk-theme-git###2024.11.16.r22.g15f9b99-1###yay
 csvq-bin###1.18.1-2###yay
-cursor-bin###1.2.4-1###yay
+cursor-bin###1.3.1-1###yay
 espanso-wayland-git###2.2.4.r8.ga8588d02-1###yay
 fselect###0.8.12-1###yay
 gcalcli###4.5.1-2###yay
@@ -462,4 +462,4 @@ zellij###v0.42.2###cargo
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
 @openai/codex###0.9.0###npm
 corepack###0.34.0###npm
-npm###11.4.2###npm
+npm###11.5.1###npm
