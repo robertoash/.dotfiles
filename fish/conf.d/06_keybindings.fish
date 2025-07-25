@@ -89,6 +89,15 @@ for mode in insert default visual
     bind -M $mode \eg sgpt_fish
 end
 
+# Allow Alt+hjkl to pass through to Neovim (add after your existing bindings)
+for mode in insert default visual replace
+    bind -M $mode \eh ''  # Alt+h - clear command, pass through
+    bind -M $mode \ej ''  # Alt+j - clear command, pass through  
+    bind -M $mode \ek ''  # Alt+k - clear command, pass through
+    bind -M $mode \el ''  # Alt+l - clear command, pass through
+    bind -M $mode \en ''  # Alt+n - clear command, pass through
+end
+
 # Ctrl+Tab for accepting autosuggestion with slashes
 bind \e\[27\;5\;9~ accept_next_path_segment
 

@@ -59,7 +59,7 @@ local lazygit_mappings = {
 		"n",
 		"<leader>gg",
 		function()
-			require("snacks").lazygit({ cwd = vim.loop.cwd() })
+			Snacks.lazygit()
 		end,
 		{ desc = "Lazy[GG]it" },
 	},
@@ -327,7 +327,7 @@ local window_operations_mappings = {
 	{ "n", "<leader>-c", "<C-w>c", { desc = "Close current window/split" } },
 }
 
--- Window navigation using Alt+Shift+hjkl
+-- Window navigation using Alt+hjkl (fish compatible)
 local window_navigation_mappings = {
 	{ "n", "<A-h>", "<C-w>h", { desc = "Go to left window" } },
 	{ "n", "<A-j>", "<C-w>j", { desc = "Go to lower window" } },
@@ -335,6 +335,25 @@ local window_navigation_mappings = {
 	{ "n", "<A-l>", "<C-w>l", { desc = "Go to right window" } },
 	{ "n", "<A-n>", "<C-w>w", { desc = "Go to next window" } },
 }
+
+local snacks_terminal_navigation = {
+	{ "t", "<A-h>", "<C-\\><C-n><C-w>h", { desc = "Go to left window" } },
+	{ "t", "<A-j>", "<C-\\><C-n><C-w>j", { desc = "Go to lower window" } },
+	{ "t", "<A-k>", "<C-\\><C-n><C-w>k", { desc = "Go to upper window" } },
+	{ "t", "<A-l>", "<C-\\><C-n><C-w>l", { desc = "Go to right window" } },
+	{ "t", "<A-n>", "<C-\\><C-n><C-w>w", { desc = "Go to next window" } },
+}
+
+-- Apply terminal navigation keymaps to all terminal buffers (including snacks)
+vim.api.nvim_create_autocmd("TermOpen", {
+	callback = function()
+		for _, mapping in ipairs(snacks_terminal_navigation) do
+			local mode, lhs, rhs, opts = mapping[1], mapping[2], mapping[3], mapping[4]
+			vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { buffer = true }))
+		end
+	end,
+	desc = "Set window navigation keymaps for terminal buffers",
+})
 
 -- Buffer management keybinds using <leader>b
 local buffer_mappings = {
@@ -368,7 +387,7 @@ local snacks_terminal_mappings = {
 		function()
 			require("snacks.terminal").toggle()
 		end,
-		{ desc = "[T]erminal [T]oggle" },
+		{ desc = "Terminal [T]oggle" },
 	},
 
 	-- Terminal management sub-group
@@ -378,15 +397,7 @@ local snacks_terminal_mappings = {
 		function()
 			require("snacks.terminal").toggle()
 		end,
-		{ desc = "[T]erminal [/] floating" },
-	},
-	{
-		"n",
-		"<leader>t/a",
-		function()
-			require("snacks.terminal").toggle_all()
-		end,
-		{ desc = "[T]erminal [/] all terminals" },
+		{ desc = "Terminal [F]loating" },
 	},
 	{
 		"n",
