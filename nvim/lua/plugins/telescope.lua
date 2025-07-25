@@ -107,6 +107,9 @@ return {
 							},
 						},
 					},
+					frecency = {
+						auto_validate = true,
+					},
 				},
 			})
 
@@ -137,3 +140,4 @@ return {
 		end,
 	},
 }
+
