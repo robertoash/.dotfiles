@@ -50,6 +50,86 @@ return {
 						auto_close = false,
 						replace_netrw = true,
 						ignored = true,
+						-- Add exclude patterns to filter out unwanted directories
+						exclude = {
+							-- GUI apps that auto-generate configs (rarely need manual editing)
+							"Code*/",
+							"Code - Insiders/",
+							"**/Code*/globalStorage/**",
+							"**/Code-Insiders/**",
+							"BraveSoftware/",
+							"chromium/",
+							"google-chrome/",
+							"vivaldi/",
+							"opera/",
+							"Cursor/",
+							"Slack/",
+							"discord/",
+							"spotify/",
+							"vlc/",
+							"mpv/",
+							"qutebrowser/profiles",
+							"obsidian",
+							"MQTT-Explorer",
+							"Ladybird",
+							"jakoolit",
+							"ticktick",
+							"sublime-text/",
+							"Mullvad VPN",
+							"go/",
+							-- System/cache directories
+							"dconf/",
+							"pulse/",
+							"glib-2.0/",
+							"gtk-*/",
+							"configstore/",
+							"Electron/",
+							"Thunar/",
+							"pcmanfm/",
+							"spacefm/",
+							"libfm/",
+							-- Auto-generated or rarely edited
+							"fontforge/",
+							"enchant/",
+							"fcitx*/",
+							"ibus/",
+							"abiword/",
+							"libreoffice/",
+							"transmission/",
+							"qBittorrent/",
+							"balenaEtcher/",
+							"torbrowser/",
+							"Insync/",
+							"zsh/plugins",
+							"yazi/plugins",
+							-- Development build artifacts
+							"**/node_modules/**",
+							"**/.git/**",
+							"**/dist/**",
+							"**/build/**",
+							"**/target/**",
+							"**/.next/**",
+							"**/.vite/**",
+							"**/coverage/**",
+							"**/__pycache__/**",
+							"**/.direnv/**",
+							"**/venv/**",
+						},
+						-- Add matcher configuration with all bonuses
+						matcher = {
+							fuzzy = true,
+							filename_bonus = true, -- Give bonus for matching file names (last part of path)
+							cwd_bonus = true, -- Give bonus for files in current working directory
+							frecency = true, -- Frecency bonus for frequently used files
+							history_bonus = true, -- Give more weight to chronological order
+							smartcase = true, -- Smart case matching
+							sort_empty = false, -- Don't sort when search is empty
+							file_pos = true, -- Support patterns like file:line:col
+						},
+						-- Keep default sorting for explorer to maintain tree structure
+						sort = {
+							fields = { "sort" }, -- Use default sort field to maintain directory structure
+						},
 						actions = {
 							open_file_and_close = {
 								action = function(picker, item)
@@ -209,8 +289,10 @@ return {
 		})
 
 		-- Also track when explorer is manually opened
-		local original_explorer = require("snacks").explorer
-		require("snacks").explorer = function(...)
+		local snacks = require("snacks")
+		local original_explorer = snacks.explorer
+		---@diagnostic disable-next-line: assign-type-mismatch
+		snacks.explorer = function(...)
 			explorer_instance = original_explorer(...)
 			return explorer_instance
 		end
