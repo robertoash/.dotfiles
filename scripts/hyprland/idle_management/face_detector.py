@@ -40,6 +40,10 @@ from config import (
     is_facial_recognition_enabled,
 )
 
+# Fix Qt platform for Wayland/Hyprland compatibility - prevents crashes from cv2.destroyAllWindows()
+import os
+os.environ['QT_QPA_PLATFORM'] = 'xcb'
+
 
 def setup_logging(debug=False):
     """Set up logging."""
@@ -398,6 +402,19 @@ def run_detection(
         report_face_status("not_detected")
         report_idle_status("inactive")
         return
+
+    # Camera warm-up period - especially important for monitoring checks
+    # Skip first few frames to allow camera to stabilize (exposure, focus, etc.)
+    warmup_frames = (
+        5 if not monitoring_mode else 10
+    )  # More warmup for monitoring checks
+    logging.debug(f"Camera warm-up: skipping first {warmup_frames} frames")
+    for i in range(warmup_frames):
+        ret, _ = cap.read()
+        if not ret:
+            logging.warning(f"Failed to read warm-up frame {i+1}/{warmup_frames}")
+        time.sleep(0.1)  # Small delay between frames
+    logging.debug("Camera warm-up completed")
 
     start_time = time.time()
     window_duration = initial_window

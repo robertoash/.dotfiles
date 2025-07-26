@@ -1,12 +1,16 @@
 #!/home/rash/.config/scripts/hyprland/idle_management/.direnv/python-3.12/bin/python
 
 import argparse
+import os
 import sys
 import time
 from pathlib import Path
 
 import cv2
 import numpy as np
+
+# Fix Qt platform for Wayland/Hyprland compatibility - must be before OpenCV GUI
+os.environ['QT_QPA_PLATFORM'] = 'xcb'
 
 # Try to import MediaPipe for enhanced detection
 try:
