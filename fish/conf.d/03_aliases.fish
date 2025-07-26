@@ -16,12 +16,12 @@ alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(dat
 ### DCLI
 alias dcli="~/.config/scripts/shell/dcli_wrapper.py"
 
-## Exa File Listing
-alias ll="exa --all --color=always --icons --group-directories-first --git -Hah"
-alias lll="exa --all --color=always --icons --group-directories-first --git -Hah -l -a"
-alias llr="exa --color=always --icons --git -HahlTR"
-alias llrl="exa --color=always --icons --git -HahlTR -L"
-alias lls="exa --all --color=always --icons --group-directories-first --git -Hah -l -a -s size"
+## eza File Listing
+alias ll="eza --all --color=always --icons --group-directories-first --git -Hah"
+alias lll="eza --all --color=always --icons --group-directories-first --git -Hah -l -a"
+alias llr="eza --color=always --icons --git -HahlTR"
+alias llrl="eza --color=always --icons --git -HahlTR -L"
+alias lls="eza --all --color=always --icons --group-directories-first --git -Hah -l -a -s size"
 
 ## Git Tools
 alias delete_gone_branches="git branch -vv | awk '\$0 ~ /: gone]/ {print \$1;}' | xargs -r git branch -D"

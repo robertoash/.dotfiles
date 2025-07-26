@@ -81,7 +81,6 @@ ethtool###1:6.11-1###pacman
 evtest###1.35-2###pacman
 exfatprogs###1.2.9-1###pacman
 expect###5.45.4-5###pacman
-eza###0.23.0-1###pacman
 f2fs-tools###1.16.0-3###pacman
 fastfetch###2.48.1-1###pacman
 fd###10.2.0-1###pacman
@@ -447,6 +446,7 @@ yazi-rs/flavors:catppuccin-mocha###d3fd3a5###ya
 cargo-binstall###v1.14.1###cargo
 cargo-update###v17.0.0###cargo
 choose###v1.3.6###cargo
+eza###v0.23.0###cargo
 fre###v0.4.1###cargo
 git-delta###v0.18.2###cargo
 markdown-oxide###v0.25.###cargo
