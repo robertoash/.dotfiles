@@ -24,6 +24,7 @@ secrets_files = [
     "/home/rash/.secrets/.linkding_envs",
     "/home/rash/.secrets/.anthropic_api_key",
     "/home/rash/.secrets/.github_access_token",
+    "/home/rash/.secrets/.rash_gmail_pass",
 ]
 gpg_id = "j.roberto.ash@gmail.com"
 
