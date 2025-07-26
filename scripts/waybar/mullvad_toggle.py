@@ -7,7 +7,7 @@ import time
 
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
-from _utils import logging_utils
+from _utils import logging_utils  # noqa: E402
 
 # Configure logging
 logging_utils.configure_logging()

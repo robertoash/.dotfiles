@@ -5,6 +5,7 @@ import logging
 import os
 import subprocess
 import sys
+import threading
 
 import requests
 
@@ -76,7 +77,25 @@ def parse_state_from_log(line):
     return None
 
 
-def build_output(state):
+def build_output_immediate(state):
+    """Build output without IP lookup for immediate display"""
+    base = STATE_MAP.get(state, {"text": "?", "class": "vpn-error"})
+    tooltip = state
+    if state in ("Connecting", "Disconnecting"):
+        tooltip += "..."
+
+    output_data = {
+        "text": base["text"],
+        "tooltip": tooltip,
+        "class": base["class"],
+    }
+    logging.debug(f"Built immediate output data: {output_data}")
+    print(json.dumps(output_data))
+    return output_data
+
+
+def build_output_with_ip(state):
+    """Build output with IP lookup for complete information"""
     base = STATE_MAP.get(state, {"text": "?", "class": "vpn-error"})
     tooltip = state
     if state in ("Connected", "Disconnected"):
@@ -90,9 +109,28 @@ def build_output(state):
         "tooltip": tooltip,
         "class": base["class"],
     }
-    logging.debug(f"Built output data: {output_data}")
+    logging.debug(f"Built complete output data: {output_data}")
     print(json.dumps(output_data))
     return output_data
+
+
+def build_output(state):
+    """Build output with immediate update, then IP lookup in background"""
+    # First, update immediately without IP lookup
+    immediate_output = build_output_immediate(state)
+    write_to_file(immediate_output)
+
+    # For connected/disconnected states, fetch IP in background
+    if state in ("Connected", "Disconnected"):
+
+        def update_with_ip():
+            complete_output = build_output_with_ip(state)
+            write_to_file(complete_output)
+
+        # Run IP lookup in background thread
+        threading.Thread(target=update_with_ip, daemon=True).start()
+
+    return immediate_output
 
 
 def monitor_logs():
@@ -110,8 +148,7 @@ def monitor_logs():
         new_state = parse_state_from_log(line)
         if new_state and new_state != last_state:
             logging.debug(f"Detected VPN state change → {new_state}")
-            output = build_output(new_state)
-            write_to_file(output)
+            build_output(new_state)
             last_state = new_state
 
     proc.stdout.close()
@@ -127,8 +164,7 @@ def main():
         if result.returncode == 0:
             state = "Connected" if "Connected" in result.stdout else "Disconnected"
             logging.info(f"Initial VPN state: {state}")
-            output = build_output(state)
-            write_to_file(output)
+            build_output(state)
         else:
             logging.error(f"Failed to get initial state: {result.stderr}")
             write_to_file(
