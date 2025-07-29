@@ -42,6 +42,30 @@ def turn_dpms_on():
         logging.error("hyprctl command not found")
 
 
+def restore_layout():
+    """Restore the saved Kanata layout after unlock."""
+    try:
+        from pathlib import Path
+        
+        # Read saved layout
+        saved_layout_file = Path("/tmp/hypridle_saved_layout")
+        if saved_layout_file.exists():
+            saved_layout = saved_layout_file.read_text().strip()
+            saved_layout_file.unlink()  # Clean up the file
+            
+            # Restore the saved layout with mods
+            subprocess.run([
+                '/home/rash/.config/scripts/kanata/kanata_layer_switcher.py',
+                '--set-layer', saved_layout,
+                '--set-mod', 'mod'
+            ], check=True, capture_output=True)
+            logging.info(f"Restored layout to '{saved_layout}' with mods")
+        else:
+            logging.info("No saved layout found - skipping layout restoration")
+        
+    except Exception as e:
+        logging.error(f"Failed to restore layout after unlock: {e}")
+
 def report_active_status():
     """Report active status to HA."""
     try:
@@ -70,6 +94,9 @@ def main():
         logging.info("Created exit flag for idle_simple_lock")
     except Exception as e:
         logging.warning(f"Could not create lock exit flag: {e}")
+
+    # Restore Kanata layout after unlock
+    restore_layout()
 
     # Ensure displays are on (in case they were turned off)
     turn_dpms_on()

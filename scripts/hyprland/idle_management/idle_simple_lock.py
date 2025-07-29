@@ -40,6 +40,34 @@ def get_in_office_status():
         return "on"
 
 
+def save_and_switch_layout():
+    """Save current Kanata layout and switch to Swedish for lock screen."""
+    try:
+        from pathlib import Path
+        
+        # Read current layout
+        current_layout_file = Path("/tmp/active_keyboard_layout")
+        if current_layout_file.exists():
+            current_layout = current_layout_file.read_text().strip()
+        else:
+            current_layout = "cmk"  # Default fallback
+        
+        # Save current layout for restoration
+        saved_layout_file = Path("/tmp/hypridle_saved_layout")
+        saved_layout_file.write_text(current_layout)
+        logging.info(f"Saved current layout '{current_layout}' for restoration")
+        
+        # Switch to Swedish nodeadkeys for lock screen
+        subprocess.run([
+            '/home/rash/.config/scripts/kanata/kanata_layer_switcher.py',
+            '--set-layer', 'swe',
+            '--set-mod', 'nomod'
+        ], check=True, capture_output=True)
+        logging.info("Switched to Swedish layout for lock screen")
+        
+    except Exception as e:
+        logging.error(f"Failed to switch layout for lock: {e}")
+
 def lock_session():
     """Lock the session using hyprlock."""
     try:
@@ -50,6 +78,9 @@ def lock_session():
         if result.returncode == 0:
             logging.info("hyprlock already running")
             return True
+
+        # Save and switch Kanata layout before locking
+        save_and_switch_layout()
 
         # Start hyprlock
         logging.info("Locking session with hyprlock")
