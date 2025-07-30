@@ -1,7 +1,6 @@
 function last_mods --description 'List files/dirs sorted by modification time using fd'
     set -l recursive ""
     set -l type_filter ""
-    
     # Parse arguments
     for arg in $argv
         switch $arg
@@ -39,24 +38,46 @@ function last_mods --description 'List files/dirs sorted by modification time us
         end
     end
     
-    # Execute fd and sort by modification time (most recent at bottom)
+    # Build the fd command
+    set -l fd_cmd
     if test -z "$recursive"
         # Non-recursive: use --max-depth 1
         if test -z "$type_filter"
             # No type filter - show both files and dirs
-            fd -H --no-ignore --max-depth 1 --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
+            set fd_cmd fd -H --no-ignore --max-depth 1 --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
         else
             # With type filter
-            fd -H --no-ignore -t $type_filter --max-depth 1 --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
+            set fd_cmd fd -H --no-ignore -t $type_filter --max-depth 1 --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
         end
     else
         # Recursive: no max-depth limit
         if test -z "$type_filter"
             # No type filter - show both files and dirs
-            fd -H --no-ignore --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
+            set fd_cmd fd -H --no-ignore --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
         else
             # With type filter
-            fd -H --no-ignore -t $type_filter --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
+            set fd_cmd fd -H --no-ignore -t $type_filter --exec-batch eza --all --color=always --icons --group-directories-first --git -Hah -l -a -d --sort=modified
         end
+    end
+    
+    # Execute the command, reverse sort, and pipe to fzf with limited window, then xdg-open the selection
+    set -l selected_file (eval $fd_cmd | tac | fzf \
+                    --height=12 \
+                    --layout=reverse \
+                    --border \
+                    --ansi \
+                    --no-sort \
+                    --tiebreak=index \
+                    --preview-window=hidden \
+                    --bind='ctrl-/:toggle-preview' \
+                    --header='↑/↓: navigate, Enter: open with xdg-open, Ctrl-/: toggle preview, Esc: quit' \
+                    --prompt='Files > ')
+    
+    # If a file was selected, extract the filename and open it
+    if test -n "$selected_file"
+        # Extract just the filename from the eza output (last column)
+        set -l filename (echo $selected_file | awk '{print $NF}')
+        xdg-open "$filename" &
+        disown
     end
 end
