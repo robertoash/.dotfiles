@@ -18,6 +18,20 @@ return {
 			"saghen/blink.cmp",
 		},
 		config = function()
+			-- Python path detection function for direnv/asdf
+			local function get_python_path()
+				-- First check if we're in a virtual environment (direnv sets this)
+				if vim.env.VIRTUAL_ENV then
+					return vim.env.VIRTUAL_ENV .. "/bin/python"
+				end
+
+				-- Fall back to whatever python is in PATH (asdf managed)
+				return vim.fn.exepath("python") ~= "" and vim.fn.exepath("python") or "python3"
+			end
+
+			-- Set the Python path for Neovim's Python provider
+			vim.g.python3_host_prog = get_python_path()
+
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 				callback = function(event)
@@ -151,6 +165,18 @@ return {
 						Lua = {
 							completion = {
 								callSnippet = "Replace",
+							},
+						},
+					},
+				},
+				pyright = {
+					settings = {
+						python = {
+							pythonPath = get_python_path(),
+							analysis = {
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+								diagnosticMode = "workspace",
 							},
 						},
 					},
