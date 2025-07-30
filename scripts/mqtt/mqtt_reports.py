@@ -146,7 +146,8 @@ def safe_reconnect(client):
             logging.info("Reconnection attempt completed")
         except Exception as e:
             logging.error(f"Failed to reconnect: {e}", exc_info=True)
-            sys.exit(1)
+            # Don't exit on reconnection failure, let systemd handle restart
+            time.sleep(RECONNECT_DELAY)
         finally:
             reconnecting = False
             logging.debug("Reconnection state reset")

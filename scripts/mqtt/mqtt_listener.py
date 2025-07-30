@@ -89,7 +89,8 @@ def safe_reconnect(client):
         logging.info("Reconnection attempt completed")
     except Exception as e:
         logging.error(f"Failed to reconnect: {e}", exc_info=True)
-        sys.exit(1)
+        # Don't exit on reconnection failure, let systemd handle restart
+        time.sleep(RECONNECT_DELAY)
     finally:
         reconnecting = False
         logging.debug("Reconnection state reset")
@@ -183,18 +184,11 @@ def on_message(client, userdata, message):
     logging.debug(f"Received message on topic {topic}: {payload}")
 
     if topic == BROKER_STATUS_TOPIC:
-        if payload == "offline" and client.is_connected():
-            logging.warning(
-                "Received offline status while connected, updating broker status"
-            )
+        if payload == "offline" and broker_online:
+            logging.warning("Broker status changed to offline")
             broker_online = False
-            if not reconnecting:
-                logging.info(
-                    "Home Assistant broker is offline, attempting to reconnect..."
-                )
-                safe_reconnect(client)
-        elif payload == "online":
-            logging.info("Received online status from broker")
+        elif payload == "online" and not broker_online:
+            logging.info("Broker status changed to online")
             broker_online = True
     else:
         file_path = topic_to_file.get(topic)
