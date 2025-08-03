@@ -41,16 +41,31 @@ require("lazy").setup({
 	---------------------------
 	-- PLUGIN IMPORTS
 	---------------------------
-	{ import = "plugins.utility" },
-	{ import = "plugins.ai" },
 	{ import = "plugins.telescope" },
-	{ import = "plugins.lsp" },
-	{ import = "plugins.formatting" },
 	{ import = "plugins.obsidian" },
-	{ import = "plugins.ui" },
 	{ import = "plugins.treesitter" },
 	{ import = "plugins.comment" },
 	{ import = "plugins.snacks" },
+	{ import = "plugins.todo-comments" },
+	{ import = "plugins.mini" },
+	{ import = "plugins.lualine" },
+	{ import = "plugins.noice" },
+	{ import = "plugins.gitsigns" },
+	{ import = "plugins.which-key" },
+	{ import = "plugins.flash" },
+	{ import = "plugins.hardtime" },
+	{ import = "plugins.colorizer" },
+	{ import = "plugins.autopairs" },
+	{ import = "plugins.lazydev" },
+	{ import = "plugins.nvim-lspconfig" },
+	{ import = "plugins.claude-code" },
+	{ import = "plugins.avante" },
+	{ import = "plugins.conform" },
+	{ import = "plugins.blink-cmp" },
+	{ import = "plugins.yazi" },
+	{ import = "plugins.oil" },
+	{ import = "plugins.undotree" },
+	{ import = "plugins.trouble" },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

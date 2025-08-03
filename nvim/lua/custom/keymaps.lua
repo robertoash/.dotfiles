@@ -20,14 +20,17 @@ if wk_ok then
 		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
 		{ "<leader>fr", group = "Find and [R]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>e", group = "[E]xplore", mode = { "n", "v" } },
 		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
+		{ "<leader>o", group = "[O]il File Manager", mode = { "n", "v" } },
 		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
 		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>s/", group = "[S]earch [/] within files", mode = { "n", "v" } },
 		{ "<leader>t", group = "[T]erminal", mode = { "n", "v" } },
 		{ "<leader>t/", group = "[T]erminal [/] management", mode = { "n", "v" } },
+		{ "<leader>u", group = "[U]ndo Tree", mode = { "n", "v" } },
+		{ "<leader>x", group = "Trouble Diagnostics", mode = { "n", "v" } },
+		{ "<leader>y", group = "[Y]azi File Manager", mode = { "n", "v" } },
 		{ "<leader>=", group = "[=] Apply format", mode = { "n" } },
 		{ "<leader>-", group = "Window splits [|]", mode = { "n", "v" } },
 	})
@@ -80,31 +83,6 @@ local format_mappings = {
 	},
 }
 
--- Snacks.nvim explorer (replacing neo-tree)
-local snacks_explorer_mappings = {
-	{
-		"n",
-		"<leader>ee",
-		function()
-			local ok, snacks = pcall(require, "snacks")
-			if ok then
-				snacks.explorer()
-			end
-		end,
-		{ desc = "Toggle [EE]xplorer" },
-	},
-	{
-		"n",
-		"<leader>er",
-		function()
-			local ok, snacks = pcall(require, "snacks")
-			if ok then
-				snacks.explorer({ path = vim.fn.expand("%:p:h") })
-			end
-		end,
-		{ desc = "[E]xplorer [R]eveal file" },
-	},
-}
 
 -- Flash.nvim: fast navigation
 local flash_mappings = {
@@ -556,6 +534,150 @@ local autopairs_mappings = {
 	},
 }
 
+-- Yazi.nvim keymaps (based on yazi config)
+local yazi_mappings = {
+	{
+		{ "n", "v" },
+		"<leader>yy",
+		function()
+			require("yazi").yazi()
+		end,
+		{ desc = "Open [Y]azi at current file" },
+	},
+	{
+		"n",
+		"<leader>yw",
+		function()
+			require("yazi").yazi(nil, vim.fn.getcwd())
+		end,
+		{ desc = "[Y]azi in current [W]orking directory" },
+	},
+	{
+		"n",
+		"<leader>y.",
+		function()
+			require("yazi").yazi(nil, vim.fn.expand("%:p:h"))
+		end,
+		{ desc = "[Y]azi [R]eveal current file" },
+	},
+}
+
+-- Oil.nvim keymaps (yazi-like navigation)
+local oil_mappings = {
+	{
+		"n",
+		"<leader>oo",
+		function()
+			require("oil").open()
+		end,
+		{ desc = "[O]il [O]pen parent directory" },
+	},
+	{
+		"n",
+		"<leader>of",
+		function()
+			require("oil").open_float()
+		end,
+		{ desc = "[O]il [F]loating window" },
+	},
+	{
+		"n",
+		"<leader>o.",
+		function()
+			require("oil").open(vim.fn.expand("%:p:h"))
+		end,
+		{ desc = "[O]il [R]eveal current file" },
+	},
+	{
+		"n",
+		"-",
+		function()
+			require("oil").open()
+		end,
+		{ desc = "Open parent directory" },
+	},
+}
+
+-- UndoTree keymaps
+local undotree_mappings = {
+	{
+		"n",
+		"<leader>uu",
+		function()
+			vim.cmd("UndotreeToggle")
+		end,
+		{ desc = "[U]ndo tree toggle" },
+	},
+	{
+		"n",
+		"<leader>uf",
+		function()
+			vim.cmd("UndotreeFocus")
+		end,
+		{ desc = "[U]ndo tree [F]ocus" },
+	},
+	{
+		"n",
+		"<F5>",
+		function()
+			vim.cmd("UndotreeToggle")
+		end,
+		{ desc = "UndoTree toggle" },
+	},
+}
+
+-- Trouble.nvim keymaps
+local trouble_mappings = {
+	{
+		"n",
+		"<leader>xx",
+		function()
+			vim.cmd("Trouble diagnostics toggle")
+		end,
+		{ desc = "Diagnostics (Trouble)" },
+	},
+	{
+		"n",
+		"<leader>xX",
+		function()
+			vim.cmd("Trouble diagnostics toggle filter.buf=0")
+		end,
+		{ desc = "Buffer Diagnostics (Trouble)" },
+	},
+	{
+		"n",
+		"<leader>xs",
+		function()
+			vim.cmd("Trouble symbols toggle focus=false")
+		end,
+		{ desc = "Symbols (Trouble)" },
+	},
+	{
+		"n",
+		"<leader>xl",
+		function()
+			vim.cmd("Trouble lsp toggle focus=false win.position=right")
+		end,
+		{ desc = "LSP Definitions / references / ... (Trouble)" },
+	},
+	{
+		"n",
+		"<leader>xL",
+		function()
+			vim.cmd("Trouble loclist toggle")
+		end,
+		{ desc = "Location List (Trouble)" },
+	},
+	{
+		"n",
+		"<leader>xQ",
+		function()
+			vim.cmd("Trouble qflist toggle")
+		end,
+		{ desc = "Quickfix List (Trouble)" },
+	},
+}
+
 -- =====================
 -- Keymap binding section
 -- =====================
@@ -573,7 +695,6 @@ end
 
 set_keymaps(claude_mappings)
 set_keymaps(format_mappings)
-set_keymaps(snacks_explorer_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(arrow_mappings)
 set_keymaps(fastnav_mappings)
@@ -592,5 +713,9 @@ set_keymaps(mini_splitjoin_mappings)
 set_keymaps(noice_mappings)
 set_keymaps(autopairs_mappings)
 set_keymaps(find_replace_mappings)
+set_keymaps(yazi_mappings)
+set_keymaps(oil_mappings)
+set_keymaps(undotree_mappings)
+set_keymaps(trouble_mappings)
 
 return {}
