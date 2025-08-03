@@ -367,6 +367,8 @@ def should_include(name, category, group, filter_type="full"):
 
 
 def filter_epg_streaming(epg_path: Path, allowed_ids: set[str]) -> str:
+    from copy import deepcopy
+    
     # Elements to keep
     root = Element("tv")
     channels = []
@@ -374,9 +376,11 @@ def filter_epg_streaming(epg_path: Path, allowed_ids: set[str]) -> str:
 
     for event, elem in iterparse(epg_path, events=("end",)):
         if elem.tag == "channel" and elem.attrib.get("id") in allowed_ids:
-            channels.append(elem)
+            # Make a deep copy before clearing to preserve element content
+            channels.append(deepcopy(elem))
         elif elem.tag == "programme" and elem.attrib.get("channel") in allowed_ids:
-            programmes.append(elem)
+            # Make a deep copy before clearing to preserve element content
+            programmes.append(deepcopy(elem))
         elem.clear()  # Free memory early
 
     for el in channels + programmes:
