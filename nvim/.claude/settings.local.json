@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__github-server__search_repositories",
+      "mcp__github-server__get_file_contents"
+    ],
+    "deny": []
+  }
+}
