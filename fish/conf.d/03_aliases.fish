@@ -50,8 +50,3 @@ alias jless="fx"
 alias mega="mega-cmd"
 alias purge_script_logs='python3 ~/.config/scripts/shell/purge_script_logs.py'
 
-
-## Video Download
-alias sp_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best -N 16 --no-abort-on-error --legacy-server-connect --add-metadata --no-check-certificates --impersonate Edge:Windows --cookies-from-browser firefox --username \$SP_USER --password \$SP_PASS"
-alias yt_best="yt-dlp -f best"
-alias yt_d="/home/rash/.local/bin/yt-dlp -f bestvideo+bestaudio/best --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16'"
