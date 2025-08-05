@@ -25,6 +25,8 @@ prepend_keymap = [
   { on = [ ".", "1" ],   run = "plugin toggle-pane min-parent", desc = "Show or hide the parent view"},
   { on = [ ".", "2" ],   run = "plugin toggle-pane max-current", desc = "Show or hide the current view"},
   { on = [ ".", "3" ],   run = "plugin toggle-pane min-preview", desc = "Show or hide the preview"},
+  { on = [ ">" ],   run = ['shell "rotate_media --cw \"$@\"" --confirm', "refresh"], desc = "Rotate selected media clockwise"},
+  { on = [ "<" ],   run = ['shell "rotate_media --ccw \"$@\"" --confirm', "refresh"], desc = "Rotate selected media counterclockwise"},
 ]
 
 keymap = [
