@@ -166,7 +166,6 @@ yazi/flavors/catppuccin-mocha.yazi
 yazi/plugins
 nvim/lazy-lock.json
 yazi/package.toml
-yazi/package.toml
 systemd/user/default.target.wants
 systemd/user/graphical-session.target.wants
 systemd/user/sockets.target.wants
@@ -175,3 +174,4 @@ systemd/user/eos-update-notifier.service
 systemd/user/eos-update-notifier.timer
 scripts/hyprland/idle_management/reference_faces
 nvim/Session.vim
+.claude
