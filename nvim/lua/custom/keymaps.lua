@@ -83,7 +83,6 @@ local format_mappings = {
 	},
 }
 
-
 -- Flash.nvim: fast navigation
 local flash_mappings = {
 	{
@@ -697,6 +696,11 @@ set_keymaps(claude_mappings)
 set_keymaps(format_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(arrow_mappings)
+
+-- Hardtime toggle for when you need to browse/explore
+vim.keymap.set("n", "<leader>th", function()
+	require("hardtime").toggle()
+end, { desc = "[T]oggle [H]ardtime" })
 set_keymaps(fastnav_mappings)
 set_keymaps(fastedit_mappings)
 set_keymaps(window_operations_mappings)
