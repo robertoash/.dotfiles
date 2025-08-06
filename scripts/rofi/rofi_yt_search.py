@@ -45,6 +45,8 @@ def fetch_youtube_results(query, max_results):
                 "%(channel)s|||%(title)s|||%(duration_string)s|||%(is_live)s|||"
                 "https://www.youtube.com/watch?v=%(id)s",
                 "--no-warnings",
+                "--cookies-from-browser",
+                "chromium:app",
             ]
         )
         lines = output.decode().strip().split("\n")
@@ -79,7 +81,7 @@ def select_result(results):
 
 def launch_url(url, title):
     """Open URL with the configured launcher."""
-    full_cmd = LAUNCH_CMD + [f"--title=rofi_ytsearch - {title}", url]
+    full_cmd = LAUNCH_CMD + [f"--title=rofi_ytsearch - {title}", "--ytdl-raw-options=cookies-from-browser=chromium:app", url]
     subprocess.Popen(full_cmd)
 
 
