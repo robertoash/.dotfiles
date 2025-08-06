@@ -43,6 +43,7 @@ require("lazy").setup({
 	---------------------------
 	{ import = "plugins.telescope" },
 	{ import = "plugins.obsidian" },
+	{ import = "plugins.render-markdown" },
 	{ import = "plugins.treesitter" },
 	{ import = "plugins.comment" },
 	{ import = "plugins.snacks" },
