@@ -240,6 +240,7 @@ local telescope_mappings = {
 		end,
 		{ desc = "[S]earch current [W]ord" },
 	},
+	vim.keymap.set("n", "<leader>z", ":Telescope zoxide list<CR>", { desc = "Zoxide directories" }),
 }
 
 --==========================================================================

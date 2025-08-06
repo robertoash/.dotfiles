@@ -116,11 +116,10 @@ return {
 			-- Enable Telescope extensions if they are installed
 			pcall(require("telescope").load_extension, "fzf")
 			pcall(require("telescope").load_extension, "ui-select")
-
+			pcall(require("telescope").load_extension, "zoxide")
 			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
-
 	-- Telescope extensions
 	{
 		"nvim-telescope/telescope-file-browser.nvim",
@@ -130,7 +129,6 @@ return {
 			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
-
 	{
 		"nvim-telescope/telescope-frecency.nvim",
 		version = "*",
@@ -139,5 +137,12 @@ return {
 			-- All keymaps are now managed in custom/keymaps.lua
 		end,
 	},
+	{
+		"jvgrootveld/telescope-zoxide",
+		dependencies = { "nvim-telescope/telescope.nvim" },
+		config = function()
+			require("telescope").load_extension("zoxide")
+			-- All keymaps are now managed in custom/keymaps.lua
+		end,
+	},
 }
-
