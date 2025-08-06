@@ -174,3 +174,4 @@ systemd/user/timers.target.wants
 systemd/user/eos-update-notifier.service
 systemd/user/eos-update-notifier.timer
 scripts/hyprland/idle_management/reference_faces
+nvim/Session.vim
