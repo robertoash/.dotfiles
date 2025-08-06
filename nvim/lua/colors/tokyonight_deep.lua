@@ -112,6 +112,15 @@ function M.setup()
   set_hl(0, "@string",   { fg = colors.base2 })
   set_hl(0, "@number",   { fg = colors.base3 })
   set_hl(0, "@boolean",  { fg = colors.base3 })
+  
+  -- Markdown-specific fixes for render-markdown.nvim
+  -- Make comments more visible in markdown code blocks
+  set_hl(0, "@comment.markdown", { fg = colors.bright7, italic = true }) -- Much brighter for visibility
+  set_hl(0, "@comment.markdown_inline", { fg = colors.bright7, italic = true })
+  
+  -- Code block backgrounds using your theme colors
+  set_hl(0, "RenderMarkdownCode", { bg = colors.dark0, fg = colors.foreground })
+  set_hl(0, "RenderMarkdownCodeInline", { bg = colors.dark7, fg = colors.foreground })
 end
 
 return M

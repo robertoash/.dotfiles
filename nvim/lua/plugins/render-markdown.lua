@@ -18,12 +18,12 @@ return {
 		heading = {
 			enabled = true,
 			sign = true,
-			style = "full",
+			width = 'block',  -- Only color the text width, not full line
 		},
 		code = {
 			enabled = true,
 			sign = false,
-			style = "full",
+			width = 'block',  -- Only color the text width, not full line
 		},
 		bullet = {
 			enabled = true,
