@@ -106,7 +106,7 @@ function M.setup()
 	set_hl(0, "@function", { fg = colors.bright4 })
 	set_hl(0, "@constant", { fg = colors.base5 })
 	set_hl(0, "@keyword", { fg = colors.bright5 })
-	set_hl(0, "@comment", { fg = colors.bright0, italic = true }) -- consistent with Comment
+	set_hl(0, "@comment", { fg = colors.dark7, italic = true }) -- consistent with Comment
 	set_hl(0, "@type", { fg = colors.base5 })
 	set_hl(0, "@string", { fg = colors.base2 })
 	set_hl(0, "@number", { fg = colors.base3 })
@@ -115,8 +115,8 @@ function M.setup()
 	-- Markdown-specific fixes for render-markdown.nvim
 
 	-- Code block backgrounds using your theme colors
-	set_hl(0, "RenderMarkdownCode", { bg = colors.dark0, fg = colors.foreground })
-	set_hl(0, "RenderMarkdownCodeInline", { bg = colors.dark7, fg = colors.foreground })
+	set_hl(0, "RenderMarkdownCode", { bg = colors.dark0 })
+	set_hl(0, "RenderMarkdownCodeInline", { bg = colors.dark0 })
 end
 
 return M
