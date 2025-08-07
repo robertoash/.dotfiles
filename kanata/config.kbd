@@ -1,4 +1,4 @@
-;; Kanata configuration with improved home row mods (simplified version)
+;; Kanata configuration with clean same-hand mod restrictions
 
 (defcfg
   ;; For Wayland/Hyprland, use the default I8042 bus type
@@ -9,6 +9,7 @@
 
   ;; Enable cmd functionality for status updates
   danger-enable-cmd yes
+
 
   ;; Optional: Filter to only your MX Keys keyboard
   ;; Uncomment and adjust the device name after running 'sudo kanata --list'
@@ -30,7 +31,6 @@
 )
 
 ;; Define the physical keys that kanata will intercept
-;; Note: defsrc only defines INPUT keys, deflayer can output any key (including virtual ones)
 (defsrc
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
@@ -40,33 +40,95 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
+;; ===============================================
+;; MAIN LAYER - This must be first as it's the default layer
+;; ===============================================
+
+;; Nordic QWERTY layout with home row mods
+(deflayer nordic
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt           spc            ralt rctl
+)
+
+;; ===============================================
+;; SAME-HAND RESTRICTION LAYERS
+;; ===============================================
+
+;; LEFT-ONLY: When left hand mod is pressed, only left hand mods work, right hand = letters
+(deflayer left-only
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base _    _    j    k    l    ö    ä    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                  _    _
+)
+
+;; RIGHT-ONLY: When right hand mod is pressed, only right hand mods work, left hand = letters
+(deflayer right-only
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    a    s    d    f    _    _    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                  _    _
+)
+
 ;; ==============================================================================
-;; IMPROVED HOME ROW MODS - with key safety mechanisms
+;; SAME-HAND MOD RESTRICTION TEMPLATES
 ;; ==============================================================================
 
-;; Template with typing streak detection and character cooldown
-(deftemplate smart-homerow-mod (char mod tap-time hold-time)
+;; Left hand mods: when pressed, switch to left-only layer
+(deftemplate left-hand-mod (char mod tap-time hold-time)
   (switch
-    ;; Typing streak detection - disable if recent fast typing (last 3 keys within 250ms)
+    ;; Typing streak detection - disable if recent fast typing
     ((key-timing 3 less-than 250)) $char break
-    ;; Character cooldown - disable shortly after regular characters (last key within 150ms) 
+    ;; Character cooldown - disable shortly after regular characters 
     ((key-timing 1 less-than 150)) $char break
-    ;; Regular tap-hold behavior
-    () (tap-hold $tap-time $hold-time $char $mod) break
+    ;; Switch to left-only layer when left mod is held
+    () (tap-hold $tap-time $hold-time $char (multi $mod (layer-while-held left-only))) break
   )
 )
 
-;; Per-finger templates with different timings
-(deftemplate index-finger-mod (char mod)
-  (t! smart-homerow-mod $char $mod 50 120)  ;; Index fingers - fastest
+;; Right hand mods: when pressed, switch to right-only layer
+(deftemplate right-hand-mod (char mod tap-time hold-time)
+  (switch
+    ;; Typing streak detection - disable if recent fast typing
+    ((key-timing 3 less-than 250)) $char break
+    ;; Character cooldown - disable shortly after regular characters 
+    ((key-timing 1 less-than 150)) $char break
+    ;; Switch to right-only layer when right mod is held
+    () (tap-hold $tap-time $hold-time $char (multi $mod (layer-while-held right-only))) break
+  )
 )
 
-(deftemplate middle-finger-mod (char mod)
-  (t! smart-homerow-mod $char $mod 50 150)  ;; Middle/ring fingers - medium
+;; Per-finger templates using the same-hand restriction system
+(deftemplate left-index-mod (char mod)
+  (t! left-hand-mod $char $mod 50 120)  ;; Index fingers - fastest
 )
 
-(deftemplate pinky-finger-mod (char mod)
-  (t! smart-homerow-mod $char $mod 50 180)  ;; Pinky fingers - slowest
+(deftemplate left-middle-mod (char mod)
+  (t! left-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium
+)
+
+(deftemplate left-pinky-mod (char mod)
+  (t! left-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest
+)
+
+(deftemplate right-index-mod (char mod)
+  (t! right-hand-mod $char $mod 50 120)  ;; Index fingers - fastest
+)
+
+(deftemplate right-middle-mod (char mod)
+  (t! right-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium
+)
+
+(deftemplate right-pinky-mod (char mod)
+  (t! right-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest
 )
 
 ;; ==============================================================================
@@ -74,36 +136,33 @@
 ;; ==============================================================================
 
 (defalias
-  ;; Hyper layer action - simple hold for unified hyper with layout switching
+  ;; Hyper layer action
   caps-hyper-with-switch (tap-hold 50 175
-    esc  ;; tap action
-    (layer-while-held unified-hyper)  ;; hold action
+    esc
+    (layer-while-held unified-hyper)
   )
 
-  ;; Multi-function Caps Lock that uses unified hyper layer:
-  ;; - Single tap: Escape
-  ;; - Double tap (quick): Caps Lock toggle
-  ;; - Hold: Activate unified hyper layer
+  ;; Multi-function Caps Lock
   caps-multi (tap-dance 175 (
     (tap-hold-press 50 175 esc @caps-hyper-with-switch)
-    caps ;; double-tap = caps lock
+    caps
   ))
 
   ;; Caps Lock for layers without passthrough
   caps-multi-plain (tap-dance 175 (
     (tap-hold-press 50 175 esc (layer-while-held unified-hyper))
-    caps ;; double-tap = caps lock
+    caps
   ))
 
-  ;; Modifiers that switch to passthrough layer for Colemak and output the modifier
+  ;; Modifiers that switch to passthrough layer for Colemak
   lctl-passthrough (multi lctl (layer-while-held colemak-passthrough))
   lmet-passthrough (multi lmet (layer-while-held colemak-passthrough))
   lalt-passthrough (multi lalt (layer-while-held colemak-passthrough))
   rctl-passthrough (multi rctl (layer-while-held colemak-passthrough))
 
-  ;; Hyper key that switches to passthrough layer for Colemak
+  ;; Hyper key for Colemak with passthrough
   caps-hyper-passthrough (tap-hold 50 175
-    esc  ;; tap action
+    esc
     (multi 
       (multi lctl lsft lalt lmet) 
       (layer-while-held colemak-passthrough)
@@ -113,76 +172,86 @@
   ;; Multi-function Caps Lock for Colemak with passthrough
   caps-multi-colemak (tap-dance 175 (
     @caps-hyper-passthrough
-    caps ;; double-tap = caps lock
+    caps
   ))
 
-  ;; Hyper key that outputs actual hyper modifier combination
+  ;; Hyper key combination
   hyper-mod (multi lctl lsft lalt lmet)
 
-  ;; ==============================================================================
-  ;; IMPROVED HOME ROW MODS - with typing streak detection and per-finger timing
-  ;; ==============================================================================
-  
   ;; LEFT HAND - QWERTY/Nordic positions
-  a-met (t! pinky-finger-mod a lmet)        ;; Pinky - slowest timing
-  s-ctl (t! middle-finger-mod s lctl)       ;; Ring finger - medium timing
-  d-alt (t! middle-finger-mod d lalt)       ;; Middle finger - medium timing
-  f-sft (t! index-finger-mod f lsft)        ;; Index finger - fastest timing
+  a-met (t! left-pinky-mod a lmet)
+  s-ctl (t! left-middle-mod s lctl)
+  d-alt (t! left-middle-mod d lalt)
+  f-sft (t! left-index-mod f lsft)
 
   ;; RIGHT HAND - QWERTY/Nordic positions
-  j-sft (t! index-finger-mod j rsft)        ;; Index finger - fastest timing
-  k-alt (t! middle-finger-mod k lalt)       ;; Middle finger - medium timing
-  l-ctl (t! middle-finger-mod l rctl)       ;; Ring finger - medium timing
-  ö-met (t! pinky-finger-mod ö rmet)        ;; Pinky - slowest timing
-  ä-altgr (t! pinky-finger-mod ä ralt)      ;; Pinky for AltGr
+  j-sft (t! right-index-mod j rsft)
+  k-alt (t! right-middle-mod k lalt)
+  l-ctl (t! right-middle-mod l rctl)
+  ö-met (t! right-pinky-mod ö rmet)
 
   ;; COLEMAK HOME ROW MODS
-  ;; Left hand Colemak (a-r-s-t)
-  a-met-colemak (t! pinky-finger-mod a lmet)      ;; Pinky
-  r-ctl-colemak (t! middle-finger-mod r lctl)     ;; Ring finger  
-  s-alt-colemak (t! middle-finger-mod s lalt)     ;; Middle finger
-  t-sft-colemak (t! index-finger-mod t lsft)      ;; Index finger
-
-  ;; Right hand Colemak (n-e-i-o)
-  n-sft-colemak (t! index-finger-mod n rsft)      ;; Index finger
-  e-alt-colemak (t! middle-finger-mod e lalt)     ;; Middle finger  
-  i-ctl-colemak (t! middle-finger-mod i rctl)     ;; Ring finger
-  o-met-colemak (t! pinky-finger-mod o rmet)      ;; Pinky
+  a-met-colemak (t! left-pinky-mod a lmet)
+  r-ctl-colemak (t! left-middle-mod r lctl)
+  s-alt-colemak (t! left-middle-mod s lalt)
+  t-sft-colemak (t! left-index-mod t lsft)
+  n-sft-colemak (t! right-index-mod n rsft)
+  e-alt-colemak (t! right-middle-mod e lalt)
+  i-ctl-colemak (t! right-middle-mod i rctl)
+  o-met-colemak (t! right-pinky-mod o rmet)
 
   ;; PASSTHROUGH LAYER MODS
-  a-met-passthrough-layer (t! pinky-finger-mod a lmet)
-  s-ctl-passthrough-layer (t! middle-finger-mod s lctl)
-  d-alt-passthrough-layer (t! middle-finger-mod d lalt)
-  f-sft-passthrough-layer (t! index-finger-mod f lsft)
-  j-sft-passthrough-layer (t! index-finger-mod j rsft)
-  k-alt-passthrough-layer (t! middle-finger-mod k lalt)
-  l-ctl-passthrough-layer (t! middle-finger-mod l rctl)
-  ö-met-passthrough-layer (t! pinky-finger-mod ö rmet)
+  a-met-passthrough-layer (t! left-pinky-mod a lmet)
+  s-ctl-passthrough-layer (t! left-middle-mod s lctl)
+  d-alt-passthrough-layer (t! left-middle-mod d lalt)
+  f-sft-passthrough-layer (t! left-index-mod f lsft)
+  j-sft-passthrough-layer (t! right-index-mod j rsft)
+  k-alt-passthrough-layer (t! right-middle-mod k lalt)
+  l-ctl-passthrough-layer (t! right-middle-mod l rctl)
+  ö-met-passthrough-layer (t! right-pinky-mod ö rmet)
 
   ;; COLEMAK WITH PASSTHROUGH AWARENESS
-  a-met-passthrough (t! pinky-finger-mod a @lmet-passthrough)
-  r-ctl-passthrough (t! middle-finger-mod r @lctl-passthrough)
-  s-alt-passthrough (t! middle-finger-mod s @lalt-passthrough)
-  e-alt-passthrough (t! middle-finger-mod e @lalt-passthrough)
-  i-ctl-passthrough (t! middle-finger-mod i @rctl-passthrough)
-  o-met-passthrough (t! pinky-finger-mod o @lmet-passthrough)
+  a-met-passthrough (t! left-pinky-mod a @lmet-passthrough)
+  r-ctl-passthrough (t! left-middle-mod r @lctl-passthrough)
+  s-alt-passthrough (t! left-middle-mod s @lalt-passthrough)
+  e-alt-passthrough (t! right-middle-mod e @lalt-passthrough)
+  i-ctl-passthrough (t! right-middle-mod i @rctl-passthrough)
+  o-met-passthrough (t! right-pinky-mod o @lmet-passthrough)
+
+  ;; BASE LEFT-HAND MODS (for use in left-only layer to avoid circular references)
+  a-met-base (tap-hold 50 180 a lmet)
+  s-ctl-base (tap-hold 50 150 s lctl)
+  d-alt-base (tap-hold 50 150 d lalt)
+  f-sft-base (tap-hold 50 120 f lsft)
+
+  ;; BASE RIGHT-HAND MODS (for use in right-only layer to avoid circular references)
+  j-sft-base (tap-hold 50 120 j rsft)
+  k-alt-base (tap-hold 50 150 k lalt)
+  l-ctl-base (tap-hold 50 150 l rctl)
+  ö-met-base (tap-hold 50 180 ö rmet)
+
+  ;; TEMPORARY DEBUG - Simple right-hand mods without layer switching
+  j-sft-debug (tap-hold 50 120 j rsft)
+  k-alt-debug (tap-hold 50 150 k lalt)
+  l-ctl-debug (tap-hold 50 150 l rctl)
+  ö-met-debug (tap-hold 50 180 ö rmet)
 )
 
 ;; ===============================================
 ;; COLEMAK LAYERS
 ;; ===============================================
 
-;; Main Colemak layer with improved home row mods
+;; Main Colemak layer with same-hand restriction home row mods
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
-  @caps-multi-colemak @a-met-passthrough @r-ctl-passthrough @s-alt-passthrough @t-sft-colemak d    h    @n-sft-colemak @e-alt-passthrough @i-ctl-passthrough @o-met-passthrough @ä-altgr '
+  @caps-multi-colemak @a-met-passthrough @r-ctl-passthrough @s-alt-passthrough @t-sft-colemak d    h    @n-sft-colemak @e-alt-passthrough @i-ctl-passthrough @o-met-passthrough ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
   @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
 )
 
-;; Colemak passthrough layer - outputs original QWERTY positions for modifier combinations
+;; Colemak passthrough layer
 (deflayer colemak-passthrough
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
@@ -192,7 +261,7 @@
   lctl lmet lalt           spc            ralt rctl
 )
 
-;; Colemak without home row mods (plain)
+;; Colemak without home row mods
 (deflayer colemak_plain
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
@@ -203,20 +272,10 @@
 )
 
 ;; ===============================================
-;; NORDIC LAYERS
+;; ADDITIONAL LAYERS
 ;; ===============================================
 
-;; Nordic QWERTY layout with improved home row mods
-(deflayer nordic
-  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
-  @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met @ä-altgr '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt           spc            ralt rctl
-)
-
-;; Nordic without home row mods (plain)
+;; Nordic without home row mods
 (deflayer nordic_plain
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
@@ -230,7 +289,7 @@
 ;; UTILITY LAYERS
 ;; ===============================================
 
-;; Unified hyper layer - outputs actual hyper modifier combinations for Hyprland
+;; Unified hyper layer
 (deflayer unified-hyper
   (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
