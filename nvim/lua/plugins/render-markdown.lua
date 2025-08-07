@@ -4,11 +4,11 @@ return {
 		"nvim-treesitter/nvim-treesitter", 
 		"nvim-tree/nvim-web-devicons" -- or "echasnovski/mini.nvim"
 	},
-	ft = { "markdown", "Avante" },
+	ft = { "markdown" },
 	opts = {
 		-- Essential settings
 		enabled = true,
-		file_types = { "markdown", "Avante" },
+		file_types = { "markdown" },
 		render_modes = { "n", "c", "t" }, -- normal, command, and terminal modes (not insert)
 		-- Show raw markdown when cursor is on the line
 		anti_conceal = {
