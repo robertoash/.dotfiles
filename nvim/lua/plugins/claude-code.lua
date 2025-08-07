@@ -23,7 +23,7 @@ return {
 
 			-- Git settings (very handy!)
 			git = {
-				use_git_root = true, -- Start Claude in the project root
+				use_git_root = false, -- Use Neovim's cwd instead of git root
 			},
 		})
 	end,
