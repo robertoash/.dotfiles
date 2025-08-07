@@ -105,99 +105,99 @@
 ;; Left hand mods: when pressed, switch to left-only layer
 (deftemplate left-hand-mod (char mod tap-time hold-time)
   (switch
-    ;; Typing streak detection - disable if recent fast typing
-    ((key-timing 3 less-than 250)) $char break
-    ;; Character cooldown - disable shortly after regular characters 
-    ((key-timing 1 less-than 150)) $char break
+    ;; Aggressive rolling detection - prevent modifier on fast combinations
+    ((key-timing 2 less-than 200)) $char break
+    ;; Very recent key pressed - always character to prevent rolling
+    ((key-timing 1 less-than 120)) $char break
     ;; Switch to left-only layer when left mod is held
-    () (tap-hold-press $tap-time $hold-time $char (multi $mod (layer-while-held left-only))) break
+    () (tap-hold-release $tap-time $hold-time $char (multi $mod (layer-while-held left-only))) break
   )
 )
 
 ;; Right hand mods: when pressed, switch to right-only layer
 (deftemplate right-hand-mod (char mod tap-time hold-time)
   (switch
-    ;; Typing streak detection - disable if recent fast typing
-    ((key-timing 3 less-than 250)) $char break
-    ;; Character cooldown - disable shortly after regular characters 
-    ((key-timing 1 less-than 150)) $char break
+    ;; Aggressive rolling detection - prevent modifier on fast combinations
+    ((key-timing 2 less-than 200)) $char break
+    ;; Very recent key pressed - always character to prevent rolling
+    ((key-timing 1 less-than 120)) $char break
     ;; Switch to right-only layer when right mod is held
-    () (tap-hold-press $tap-time $hold-time $char (multi $mod (layer-while-held right-only))) break
+    () (tap-hold-release $tap-time $hold-time $char (multi $mod (layer-while-held right-only))) break
   )
 )
 
 ;; Colemak left hand mods: when pressed, switch to colemak-left-only layer
 (deftemplate colemak-left-hand-mod (char mod tap-time hold-time)
   (switch
-    ;; Typing streak detection - disable if recent fast typing
-    ((key-timing 3 less-than 250)) $char break
-    ;; Character cooldown - disable shortly after regular characters 
-    ((key-timing 1 less-than 150)) $char break
+    ;; Aggressive rolling detection - prevent modifier on fast combinations
+    ((key-timing 2 less-than 200)) $char break
+    ;; Very recent key pressed - always character to prevent rolling
+    ((key-timing 1 less-than 120)) $char break
     ;; Switch to colemak-left-only layer when left mod is held
-    () (tap-hold-press $tap-time $hold-time $char (multi $mod (layer-while-held colemak-left-only))) break
+    () (tap-hold-release $tap-time $hold-time $char (multi $mod (layer-while-held colemak-left-only))) break
   )
 )
 
 ;; Colemak right hand mods: when pressed, switch to colemak-right-only layer
 (deftemplate colemak-right-hand-mod (char mod tap-time hold-time)
   (switch
-    ;; Typing streak detection - disable if recent fast typing
-    ((key-timing 3 less-than 250)) $char break
-    ;; Character cooldown - disable shortly after regular characters 
-    ((key-timing 1 less-than 150)) $char break
+    ;; Aggressive rolling detection - prevent modifier on fast combinations
+    ((key-timing 2 less-than 200)) $char break
+    ;; Very recent key pressed - always character to prevent rolling
+    ((key-timing 1 less-than 120)) $char break
     ;; Switch to colemak-right-only layer when right mod is held
-    () (tap-hold-press $tap-time $hold-time $char (multi $mod (layer-while-held colemak-right-only))) break
+    () (tap-hold-release $tap-time $hold-time $char (multi $mod (layer-while-held colemak-right-only))) break
   )
 )
 
 ;; Per-finger templates using the same-hand restriction system
 (deftemplate left-index-mod (char mod)
-  (t! left-hand-mod $char $mod 50 120)  ;; Index fingers - fastest (Swedish timing)
+  (t! left-hand-mod $char $mod 75 120)  ;; Index fingers - faster tap-time to avoid rolling
 )
 
 (deftemplate left-middle-mod (char mod)
-  (t! left-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium (Swedish timing)
+  (t! left-hand-mod $char $mod 85 150)  ;; Middle/ring fingers - medium tap-time
 )
 
 (deftemplate left-pinky-mod (char mod)
-  (t! left-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest (Swedish timing)
+  (t! left-hand-mod $char $mod 100 180)  ;; Pinky fingers - longest tap-time
 )
 
 (deftemplate right-index-mod (char mod)
-  (t! right-hand-mod $char $mod 50 120)  ;; Index fingers - fastest (Swedish timing)
+  (t! right-hand-mod $char $mod 75 120)  ;; Index fingers - faster tap-time to avoid rolling
 )
 
 (deftemplate right-middle-mod (char mod)
-  (t! right-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium (Swedish timing)
+  (t! right-hand-mod $char $mod 85 150)  ;; Middle/ring fingers - medium tap-time
 )
 
 (deftemplate right-pinky-mod (char mod)
-  (t! right-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest (Swedish timing)
+  (t! right-hand-mod $char $mod 100 180)  ;; Pinky fingers - longest tap-time
 )
 
-;; Colemak-specific templates  
+;; Colemak-specific templates (more forgiving for learning, but still prevent rolling)
 (deftemplate colemak-left-index-mod (char mod)
-  (t! colemak-left-hand-mod $char $mod 100 200)  ;; Index fingers - fastest
+  (t! colemak-left-hand-mod $char $mod 100 200)  ;; Index fingers - avoid rolling
 )
 
 (deftemplate colemak-left-middle-mod (char mod)
-  (t! colemak-left-hand-mod $char $mod 100 220)  ;; Middle/ring fingers - medium
+  (t! colemak-left-hand-mod $char $mod 110 220)  ;; Middle/ring fingers - prevent rolling
 )
 
 (deftemplate colemak-left-pinky-mod (char mod)
-  (t! colemak-left-hand-mod $char $mod 100 250)  ;; Pinky fingers - slowest
+  (t! colemak-left-hand-mod $char $mod 120 250)  ;; Pinky fingers - most rolling protection
 )
 
 (deftemplate colemak-right-index-mod (char mod)
-  (t! colemak-right-hand-mod $char $mod 100 200)  ;; Index fingers - fastest
+  (t! colemak-right-hand-mod $char $mod 100 200)  ;; Index fingers - avoid rolling
 )
 
 (deftemplate colemak-right-middle-mod (char mod)
-  (t! colemak-right-hand-mod $char $mod 100 220)  ;; Middle/ring fingers - medium
+  (t! colemak-right-hand-mod $char $mod 110 220)  ;; Middle/ring fingers - prevent rolling
 )
 
 (deftemplate colemak-right-pinky-mod (char mod)
-  (t! colemak-right-hand-mod $char $mod 100 250)  ;; Pinky fingers - slowest
+  (t! colemak-right-hand-mod $char $mod 120 250)  ;; Pinky fingers - most rolling protection
 )
 
 ;; ==============================================================================
@@ -213,13 +213,13 @@
 
   ;; Multi-function Caps Lock
   caps-multi (tap-dance 175 (
-    (tap-hold-press 50 175 esc @caps-hyper-with-switch)
+    (tap-hold-release 50 175 esc @caps-hyper-with-switch)
     caps
   ))
 
   ;; Caps Lock for layers without passthrough
   caps-multi-plain (tap-dance 175 (
-    (tap-hold-press 50 175 esc (layer-while-held unified-hyper))
+    (tap-hold-release 50 175 esc (layer-while-held unified-hyper))
     caps
   ))
 
@@ -264,27 +264,27 @@
 
 
   ;; BASE LEFT-HAND MODS (for use in left-only layer to avoid circular references)
-  a-met-base (tap-hold-press 50 180 a lmet)
-  s-ctl-base (tap-hold-press 50 150 s lctl)
-  d-alt-base (tap-hold-press 50 150 d lalt)
-  f-sft-base (tap-hold-press 50 120 f lsft)
+  a-met-base (tap-hold-release 100 180 a lmet)
+  s-ctl-base (tap-hold-release 85 150 s lctl)
+  d-alt-base (tap-hold-release 85 150 d lalt)
+  f-sft-base (tap-hold-release 75 120 f lsft)
 
   ;; BASE RIGHT-HAND MODS (for use in right-only layer to avoid circular references)
-  j-sft-base (tap-hold-press 50 120 j rsft)
-  k-alt-base (tap-hold-press 50 150 k lalt)
-  l-ctl-base (tap-hold-press 50 150 l rctl)
-  ö-met-base (tap-hold-press 50 180 ö rmet)
+  j-sft-base (tap-hold-release 75 120 j rsft)
+  k-alt-base (tap-hold-release 85 150 k lalt)
+  l-ctl-base (tap-hold-release 85 150 l rctl)
+  ö-met-base (tap-hold-release 100 180 ö rmet)
 
   ;; BASE COLEMAK LEFT-HAND MODS (for use in colemak-left-only layer)
-  r-ctl-base (tap-hold-press 100 220 r lctl)
-  s-alt-base (tap-hold-press 100 220 s lalt)
-  t-sft-base (tap-hold-press 100 200 t lsft)
+  r-ctl-base (tap-hold-release 110 220 r lctl)
+  s-alt-base (tap-hold-release 110 220 s lalt)
+  t-sft-base (tap-hold-release 100 200 t lsft)
 
   ;; BASE COLEMAK RIGHT-HAND MODS (for use in colemak-right-only layer)
-  n-sft-base (tap-hold-press 100 200 n rsft)
-  e-alt-base (tap-hold-press 100 220 e lalt)
-  i-ctl-base (tap-hold-press 100 220 i rctl)
-  o-met-base (tap-hold-press 100 250 o rmet)
+  n-sft-base (tap-hold-release 100 200 n rsft)
+  e-alt-base (tap-hold-release 110 220 e lalt)
+  i-ctl-base (tap-hold-release 110 220 i rctl)
+  o-met-base (tap-hold-release 120 250 o rmet)
 
 
   ;; PHYSICAL MODIFIERS - Switch to plain layer to disable all home row mods
