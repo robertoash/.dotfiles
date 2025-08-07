@@ -14,14 +14,9 @@
         ],
         "2": [
             {
-                "name": "nvim_config",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- fish -c 'nvim; exec fish'",
+                "name": "nvim_zellij",
+                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- zellij --layout workspace2",
                 "is_master": true
-            },
-            {
-                "name": "config_terminal",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config'",
-                "is_master": false
             }
         ],
         "3": [
@@ -36,8 +31,8 @@
                 "is_master": false
             },
             {
-                "name": "pcmanfm",
-                "command": "pcmanfm -n",
+                "name": "yazi",
+                "command": "wezterm start --class yazi-term -- /home/rash/.cargo/bin/yazi",
                 "is_master": false
             }
         ],
