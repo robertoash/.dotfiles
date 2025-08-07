@@ -20,27 +20,38 @@ LAST_LAYOUT_FILE = Path("/tmp/last_translated_layout")
 
 # Swedish to Swedish Colemak key mapping
 SWEDISH_TO_COLEMAK = {
-    # Navigation cluster (hjkl) - most important
-    "h": "m",     # Swedish h -> Swedish m (Colemak position)
-    "j": "n",     # Swedish j -> Swedish n (Colemak position)
-    "k": "e",     # Swedish k -> Swedish e (Colemak position)  
-    "l": "i",     # Swedish l -> Swedish i (Colemak position)
+    # Comprehensive mapping based on your exact layout:
+    # QWERTY: q w e r t y u i o p å
+    # COLEMAK: q w f p g j l u y ö å
     
-    # Additional positional keys commonly used in navigation
-    "n": "k",     # Swedish n -> Swedish k (Colemak position)
-    "m": "h",     # Swedish m -> Swedish h (Colemak position)
-    "e": "f",     # Swedish e -> Swedish f (Colemak position)
-    "i": "l",     # Swedish i -> Swedish l (Colemak position)
-    "f": "t",     # Swedish f -> Swedish t (Colemak position)
-    "t": "g",     # Swedish t -> Swedish g (Colemak position)
-    "r": "p",     # Swedish r -> Swedish p (Colemak position)
-    "s": "r",     # Swedish s -> Swedish r (Colemak position)
-    "p": ";",     # Swedish p -> Swedish ; (Colemak position)
-    "y": "j",     # Swedish y -> Swedish j (Colemak position)
-    "u": "o",     # Swedish u -> Swedish o (Colemak position)
-    "o": "y",     # Swedish o -> Swedish y (Colemak position)
-    "d": "s",     # Swedish d -> Swedish s (Colemak position)
-    "g": "d",     # Swedish g -> Swedish d (Colemak position)
+    # TOP ROW - Only keys that moved
+    "e": "f",     # e -> f
+    "r": "p",     # r -> p  
+    "t": "g",     # t -> g
+    "y": "j",     # y -> j
+    "u": "l",     # u -> l
+    "i": "u",     # i -> u
+    "o": "y",     # o -> y
+    "p": "ö",     # p -> ö
+    
+    # MIDDLE ROW - Only keys that moved
+    # QWERTY: a s d f g h j k l ö ä
+    # COLEMAK: a r s t d h n e i o ä
+    "s": "r",     # s -> r
+    "d": "s",     # d -> s
+    "f": "t",     # f -> t
+    "g": "d",     # g -> d
+    # h -> h (stays same)
+    "j": "n",     # j -> n
+    "k": "e",     # k -> e
+    "l": "i",     # l -> i
+    "ö": "o",     # ö -> o
+    
+    # BOTTOM ROW - Only keys that moved
+    # QWERTY: z x c v b n m
+    # COLEMAK: z x c v b k m
+    "n": "k",     # n -> k
+    # m -> m (stays same)
 }
 
 
