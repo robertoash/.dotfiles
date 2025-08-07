@@ -34,7 +34,7 @@ ESPANSO_CONFIG_FILE = Path("/home/rash/.config/espanso/config/default.yml")
 # Layer mappings - adjust these to match your Kanata config
 LAYER_NAMES = {
     ("swe", "mod"): "nordic",  # Swedish with home row mods
-    ("swe", "nomod"): "almost_unchanged",  # Swedish without mods
+    ("swe", "nomod"): "nordic_plain",  # Swedish without mods
     ("cmk", "mod"): "colemak",  # Colemak with home row mods
     ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
 }

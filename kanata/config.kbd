@@ -78,6 +78,26 @@
   _    _    _                  _                  _    _
 )
 
+;; COLEMAK LEFT-ONLY: When Colemak left hand mod is pressed, only left hand mods work, right hand = letters
+(deflayer colemak-left-only
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    @a-met-base @r-ctl-base @s-alt-base @t-sft-base _    _    n    e    i    o    ä    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                  _    _
+)
+
+;; COLEMAK RIGHT-ONLY: When Colemak right hand mod is pressed, only right hand mods work, left hand = letters
+(deflayer colemak-right-only
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    a    r    s    t    _    _    @n-sft-base @e-alt-base @i-ctl-base @o-met-base ä    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                  _                  _    _
+)
+
 ;; ==============================================================================
 ;; SAME-HAND MOD RESTRICTION TEMPLATES
 ;; ==============================================================================
@@ -106,6 +126,30 @@
   )
 )
 
+;; Colemak left hand mods: when pressed, switch to colemak-left-only layer
+(deftemplate colemak-left-hand-mod (char mod tap-time hold-time)
+  (switch
+    ;; Typing streak detection - disable if recent fast typing
+    ((key-timing 3 less-than 250)) $char break
+    ;; Character cooldown - disable shortly after regular characters 
+    ((key-timing 1 less-than 150)) $char break
+    ;; Switch to colemak-left-only layer when left mod is held
+    () (tap-hold $tap-time $hold-time $char (multi $mod (layer-while-held colemak-left-only))) break
+  )
+)
+
+;; Colemak right hand mods: when pressed, switch to colemak-right-only layer
+(deftemplate colemak-right-hand-mod (char mod tap-time hold-time)
+  (switch
+    ;; Typing streak detection - disable if recent fast typing
+    ((key-timing 3 less-than 250)) $char break
+    ;; Character cooldown - disable shortly after regular characters 
+    ((key-timing 1 less-than 150)) $char break
+    ;; Switch to colemak-right-only layer when right mod is held
+    () (tap-hold $tap-time $hold-time $char (multi $mod (layer-while-held colemak-right-only))) break
+  )
+)
+
 ;; Per-finger templates using the same-hand restriction system
 (deftemplate left-index-mod (char mod)
   (t! left-hand-mod $char $mod 50 120)  ;; Index fingers - fastest
@@ -129,6 +173,31 @@
 
 (deftemplate right-pinky-mod (char mod)
   (t! right-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest
+)
+
+;; Colemak-specific templates
+(deftemplate colemak-left-index-mod (char mod)
+  (t! colemak-left-hand-mod $char $mod 50 120)  ;; Index fingers - fastest
+)
+
+(deftemplate colemak-left-middle-mod (char mod)
+  (t! colemak-left-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium
+)
+
+(deftemplate colemak-left-pinky-mod (char mod)
+  (t! colemak-left-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest
+)
+
+(deftemplate colemak-right-index-mod (char mod)
+  (t! colemak-right-hand-mod $char $mod 50 120)  ;; Index fingers - fastest
+)
+
+(deftemplate colemak-right-middle-mod (char mod)
+  (t! colemak-right-hand-mod $char $mod 50 150)  ;; Middle/ring fingers - medium
+)
+
+(deftemplate colemak-right-pinky-mod (char mod)
+  (t! colemak-right-hand-mod $char $mod 50 180)  ;; Pinky fingers - slowest
 )
 
 ;; ==============================================================================
@@ -190,15 +259,15 @@
   l-ctl (t! right-middle-mod l rctl)
   ö-met (t! right-pinky-mod ö rmet)
 
-  ;; COLEMAK HOME ROW MODS
-  a-met-colemak (t! left-pinky-mod a lmet)
-  r-ctl-colemak (t! left-middle-mod r lctl)
-  s-alt-colemak (t! left-middle-mod s lalt)
-  t-sft-colemak (t! left-index-mod t lsft)
-  n-sft-colemak (t! right-index-mod n rsft)
-  e-alt-colemak (t! right-middle-mod e lalt)
-  i-ctl-colemak (t! right-middle-mod i rctl)
-  o-met-colemak (t! right-pinky-mod o rmet)
+  ;; COLEMAK HOME ROW MODS WITH CROSS-HAND RESTRICTION
+  a-met-colemak (t! colemak-left-pinky-mod a lmet)
+  r-ctl-colemak (t! colemak-left-middle-mod r lctl)
+  s-alt-colemak (t! colemak-left-middle-mod s lalt)
+  t-sft-colemak (t! colemak-left-index-mod t lsft)
+  n-sft-colemak (t! colemak-right-index-mod n rsft)
+  e-alt-colemak (t! colemak-right-middle-mod e lalt)
+  i-ctl-colemak (t! colemak-right-middle-mod i rctl)
+  o-met-colemak (t! colemak-right-pinky-mod o rmet)
 
   ;; PASSTHROUGH LAYER MODS
   a-met-passthrough-layer (t! left-pinky-mod a lmet)
@@ -230,6 +299,17 @@
   l-ctl-base (tap-hold 50 150 l rctl)
   ö-met-base (tap-hold 50 180 ö rmet)
 
+  ;; BASE COLEMAK LEFT-HAND MODS (for use in colemak-left-only layer)
+  r-ctl-base (tap-hold 50 150 r lctl)
+  s-alt-base (tap-hold 50 150 s lalt)
+  t-sft-base (tap-hold 50 120 t lsft)
+
+  ;; BASE COLEMAK RIGHT-HAND MODS (for use in colemak-right-only layer)
+  n-sft-base (tap-hold 50 120 n rsft)
+  e-alt-base (tap-hold 50 150 e lalt)
+  i-ctl-base (tap-hold 50 150 i rctl)
+  o-met-base (tap-hold 50 180 o rmet)
+
   ;; TEMPORARY DEBUG - Simple right-hand mods without layer switching
   j-sft-debug (tap-hold 50 120 j rsft)
   k-alt-debug (tap-hold 50 150 k lalt)
@@ -244,6 +324,15 @@
   ralt-nordic (multi ralt (layer-while-held nordic_plain))
   lsft-nordic (multi lsft (layer-while-held nordic_plain))
   rsft-nordic (multi rsft (layer-while-held nordic_plain))
+
+  ;; PHYSICAL MODIFIERS FOR COLEMAK - Switch to colemak_plain instead of passthrough
+  lctl-colemak (multi lctl (layer-while-held colemak_plain))
+  lmet-colemak (multi lmet (layer-while-held colemak_plain))
+  lalt-colemak (multi lalt (layer-while-held colemak_plain))
+  rctl-colemak (multi rctl (layer-while-held colemak_plain))
+  ralt-colemak (multi ralt (layer-while-held colemak_plain))
+  lsft-colemak (multi lsft (layer-while-held colemak_plain))
+  rsft-colemak (multi rsft (layer-while-held colemak_plain))
 )
 
 ;; ===============================================
@@ -255,9 +344,9 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
-  @caps-multi-colemak @a-met-passthrough @r-ctl-passthrough @s-alt-passthrough @t-sft-colemak d    h    @n-sft-colemak @e-alt-passthrough @i-ctl-passthrough @o-met-passthrough ä    '
-  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
+  @caps-multi-colemak @a-met-colemak @r-ctl-colemak @s-alt-colemak @t-sft-colemak d    h    @n-sft-colemak @e-alt-colemak @i-ctl-colemak @o-met-colemak ä    '
+  @lsft-colemak <    z    x    c    v    b    k    m    ,    .    -    @rsft-colemak
+  @lctl-colemak @lmet-colemak @lalt-colemak           spc            @ralt-colemak @rctl-colemak
 )
 
 ;; Colemak passthrough layer
@@ -276,8 +365,8 @@
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
   @caps-multi-plain a    r    s    t    d    h    n    e    i    o    ä    '
-  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  @lctl-passthrough @lmet-passthrough @lalt-passthrough           spc            ralt @rctl-passthrough
+  @lsft-colemak <    z    x    c    v    b    k    m    ,    .    -    @rsft-colemak
+  @lctl-colemak @lmet-colemak @lalt-colemak           spc            @ralt-colemak @rctl-colemak
 )
 
 ;; ===============================================
