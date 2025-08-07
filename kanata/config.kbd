@@ -50,8 +50,8 @@
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
   @caps-multi @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt           spc            ralt rctl
+  @lsft-nordic <    z    x    c    v    b    n    m    ,    .    -    @rsft-nordic
+  @lctl-nordic @lmet-nordic @lalt-nordic           spc            @ralt-nordic @rctl-nordic
 )
 
 ;; ===============================================
@@ -235,6 +235,15 @@
   k-alt-debug (tap-hold 50 150 k lalt)
   l-ctl-debug (tap-hold 50 150 l rctl)
   ö-met-debug (tap-hold 50 180 ö rmet)
+
+  ;; PHYSICAL MODIFIERS - Switch to plain layer to disable all home row mods
+  lctl-nordic (multi lctl (layer-while-held nordic_plain))
+  lmet-nordic (multi lmet (layer-while-held nordic_plain))
+  lalt-nordic (multi lalt (layer-while-held nordic_plain))
+  rctl-nordic (multi rctl (layer-while-held nordic_plain))
+  ralt-nordic (multi ralt (layer-while-held nordic_plain))
+  lsft-nordic (multi lsft (layer-while-held nordic_plain))
+  rsft-nordic (multi rsft (layer-while-held nordic_plain))
 )
 
 ;; ===============================================
