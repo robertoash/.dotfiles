@@ -23,6 +23,9 @@ abbr bk_p "switch_buku_db rashp"
 abbr bk_r "switch_buku_db rash"
 abbr bk_s "switch_buku_db"
 
+# NZBGet
+abbr nzbget "nzbget -c ~/.config/nzbget/nzbget.conf"
+
 # Shell
 abbr fish_reload "source ~/.config/fish/config.fish"
 abbr snk_here "snake_case_all ."
