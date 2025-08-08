@@ -44,7 +44,6 @@ cronie###1.7.2-1###pacman
 cryptsetup###2.8.0-1###pacman
 csvq-bin###1.18.1-2###pacman
 cups###2:2.4.12-2###pacman
-cursor-bin###1.4.2-2###pacman
 device-mapper###2.03.34-1###pacman
 dhclient###4.4.3.P1-4###pacman
 diffutils###3.12-2###pacman
@@ -53,7 +52,7 @@ dmraid###1.0.0.rc16.3-15###pacman
 dnsmasq###2.91-1###pacman
 docker###1:28.3.3-1###pacman
 docker-buildx###0.26.1-1###pacman
-docker-compose###2.39.1-1###pacman
+docker-compose###2.39.2-1###pacman
 dosfstools###4.2-5###pacman
 downgrade###11.5.2-1###pacman
 dracut###106-1###pacman
@@ -76,7 +75,7 @@ eos-packagelist###2.3.1-2###pacman
 eos-quickstart###1.4.1-1###pacman
 eos-rankmirrors###25.7.1-1###pacman
 eos-update-notifier###24.7.1-1###pacman
-espanso-wayland-git###2.2.4.r23.g1f36401b-1###pacman
+espanso-wayland-git###2.2.4.r24.g02fabd98-1###pacman
 ethtool###1:6.11-1###pacman
 evtest###1.35-2###pacman
 exfatprogs###1.2.9-1###pacman
@@ -91,7 +90,7 @@ file-roller###44.5-1###pacman
 fish###4.0.2-1###pacman
 fsarchiver###0.8.8-1###pacman
 fselect###0.8.12-1###pacman
-fx###38.0.0-1###pacman
+fx###39.0.1-1###pacman
 fzf###0.65.1-1###pacman
 gcalcli###4.5.1-2###pacman
 ghostscript###10.05.1-2###pacman
@@ -108,10 +107,10 @@ greetd###0.10.3-1###pacman
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###pacman
 grim###1.5.0-2###pacman
 grub###2:2.12.r292.g73d1c959-1###pacman
-gst-libav###1.26.4-1###pacman
+gst-libav###1.26.5-1###pacman
 gst-plugin-pipewire###1:1.4.7-1###pacman
-gst-plugins-bad###1.26.4-1###pacman
-gst-plugins-ugly###1.26.4-1###pacman
+gst-plugins-bad###1.26.5-1###pacman
+gst-plugins-ugly###1.26.5-1###pacman
 gvfs###1.57.2-4###pacman
 gvfs-smb###1.57.2-4###pacman
 haveged###1.9.19-1###pacman
@@ -263,7 +262,7 @@ rofi-lbonn-wayland-git###1.7.9.wayland1.r1.gd4b16e6f-1###pacman
 rofimoji###6.6.0-2###pacman
 rsync###3.4.1-2###pacman
 rtkit###0.13-3###pacman
-ruff###0.12.7-1###pacman
+ruff###0.12.8-1###pacman
 s-nail###14.9.25-1###pacman
 samba###2:4.22.3-1###pacman
 sdcv###0.5.5-2###pacman
@@ -291,7 +290,7 @@ swappy###1.5.1-2###pacman
 sysfsutils###2.1.1-2###pacman
 sysstat###12.7.7-1###pacman
 system-config-printer###1.5.18-5###pacman
-systemd-sysvcompat###257.8-1###pacman
+systemd-sysvcompat###257.8-2###pacman
 tailscale###1.86.2-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
@@ -315,7 +314,7 @@ ttf-liberation###2.1.5-2###pacman
 ttf-opensans###3.003-1###pacman
 tumbler###4.20.0-3###pacman
 ufw###0.36.2-5###pacman
-ungoogled-chromium-bin###138.0.7204.183-2###pacman
+ungoogled-chromium-bin###139.0.7258.66-1###pacman
 unrar###1:7.1.10-1###pacman
 unzip###6.0-23###pacman
 upower###1.90.9-1###pacman
@@ -327,7 +326,7 @@ vi###1:070224-6###pacman
 vivaldi###7.5.3735.58-1###pacman
 vscode-json-languageserver###1.102.0-1###pacman
 walk###1.13.0-1###pacman
-waybar-git###0.13.0.r73.g6679801-1###pacman
+waybar-git###0.14.0.r0.g41de896-1###pacman
 wdisplays###1.1.3-1###pacman
 welcome###25.7-1###pacman
 wev###1.1.0-1###pacman
@@ -376,8 +375,7 @@ chromium-widevine###1:4.10.2891.0-1###yay
 claude-code###1.0.70-1###yay
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###yay
 csvq-bin###1.18.1-2###yay
-cursor-bin###1.4.2-2###yay
-espanso-wayland-git###2.2.4.r23.g1f36401b-1###yay
+espanso-wayland-git###2.2.4.r24.g02fabd98-1###yay
 fatrace###0.18.0-1###yay
 fselect###0.8.12-1###yay
 gcalcli###4.5.1-2###yay
@@ -417,10 +415,10 @@ stardict-wordnet###2.4.2-4###yay
 svttext-git###13.e076ce0-1###yay
 termux-language-server###0.0.27-1###yay
 tokyonight-gtk-theme-git###r86.006154c7-1###yay
-ungoogled-chromium-bin###138.0.7204.183-2###yay
+ungoogled-chromium-bin###139.0.7258.66-1###yay
 urban-cli-bin###0.2.3-2###yay
 walk###1.13.0-1###yay
-waybar-git###0.13.0.r73.g6679801-1###yay
+waybar-git###0.14.0.r0.g41de896-1###yay
 wdisplays###1.1.3-1###yay
 wezterm-git###20250730.195751.6a493f88-1###yay
 wl-color-picker###1.4-1###yay
@@ -467,11 +465,11 @@ tgt###v1.0.0###cargo
 topgrade###v16.0.4###cargo
 yazi-cli###v25.6.1###cargo
 yazi-fm###v25.5.31###cargo
-zellij###v0.43.0###cargo
-@anthropic-ai/claude-code###1.0.70###npm
+zellij###v0.43.1###cargo
+@anthropic-ai/claude-code###1.0.72###npm
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
 @google/gemini-cli###0.1.18###npm
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
-@openai/codex###0.16.0###npm
+@openai/codex###0.19.0###npm
 corepack###0.34.0###npm
 npm###11.5.2###npm
