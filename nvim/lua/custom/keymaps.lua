@@ -17,9 +17,11 @@ if wk_ok then
 		{ "<leader>b/", group = "[B]uffer Na[V]igation", mode = { "n", "v" } },
 		{ "<leader>bc", group = "[B]uffer [C]lose", mode = { "n", "v" } },
 		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
+		{ "<leader>d", group = "Working [D]ir", mode = { "n", "v" } },
 		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
 		{ "<leader>fr", group = "Find and [R]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
+		{ "<leader>h", group = "[H]arpoon", mode = { "n", "v" } },
 		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
 		{ "<leader>o", group = "[O]il File Manager", mode = { "n", "v" } },
 		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
@@ -36,6 +38,28 @@ if wk_ok then
 	})
 end
 
+local working_dir_mappings = {
+	{
+		"n",
+		"<leader>d.",
+		":cd %:h | pwd<CR>",
+		{ desc = "CWD here [.]" },
+	},
+	{
+		"n",
+		"<leader>dr",
+		function()
+			local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"):gsub("\n", "")
+			if vim.v.shell_error == 0 then
+				vim.cmd("cd " .. vim.fn.fnameescape(git_root))
+				print(git_root)
+			else
+				print("Not in a git repository.")
+			end
+		end,
+		{ desc = "CWD to Git [R]oot" },
+	},
+}
 -- Claude Code (AI plugin)
 local claude_mappings = {
 	{
@@ -626,6 +650,100 @@ local undotree_mappings = {
 	},
 }
 
+-- Harpoon keymaps
+local harpoon_mappings = {
+	{
+		"n",
+		"<leader>ha",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():add()
+			end
+		end,
+		{ desc = "[H]arpoon [A]dd file" },
+	},
+	{
+		"n",
+		"<leader>hh",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon.ui:toggle_quick_menu(harpoon:list())
+			end
+		end,
+		{ desc = "[H]arpoon menu" },
+	},
+	-- Quick navigation to files 1-4 using Ctrl+Shift+uiop
+	{
+		"n",
+		"<C-S-u>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():select(1)
+			end
+		end,
+		{ desc = "Harpoon file 1" },
+	},
+	{
+		"n",
+		"<C-S-i>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():select(2)
+			end
+		end,
+		{ desc = "Harpoon file 2" },
+	},
+	{
+		"n",
+		"<C-S-o>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():select(3)
+			end
+		end,
+		{ desc = "Harpoon file 3" },
+	},
+	{
+		"n",
+		"<C-S-p>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():select(4)
+			end
+		end,
+		{ desc = "Harpoon file 4" },
+	},
+	-- Navigate through the list with Ctrl+Shift+[] (brackets)
+	{
+		"n",
+		"<C-S-[>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():prev()
+			end
+		end,
+		{ desc = "Harpoon previous" },
+	},
+	{
+		"n",
+		"<C-S-]>",
+		function()
+			local ok, harpoon = pcall(require, "harpoon")
+			if ok then
+				harpoon:list():next()
+			end
+		end,
+		{ desc = "Harpoon next" },
+	},
+}
+
 -- Trouble.nvim keymaps
 local trouble_mappings = {
 	{
@@ -721,6 +839,8 @@ set_keymaps(find_replace_mappings)
 set_keymaps(yazi_mappings)
 set_keymaps(oil_mappings)
 set_keymaps(undotree_mappings)
+set_keymaps(harpoon_mappings)
 set_keymaps(trouble_mappings)
+set_keymaps(working_dir_mappings)
 
 return {}

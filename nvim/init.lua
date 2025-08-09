@@ -65,6 +65,7 @@ require("lazy").setup({
 	{ import = "plugins.yazi" },
 	{ import = "plugins.oil" },
 	{ import = "plugins.undotree" },
+	{ import = "plugins.harpoon" },
 	{ import = "plugins.trouble" },
 }, {
 	ui = {
