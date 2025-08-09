@@ -97,7 +97,7 @@ STATUS_CONFIG = {
 
 class KanataLayerSwitcher:
     def __init__(self):
-        self.current_layout = "cmk"  # swe or cmk - this affects Kanata layer
+        self.current_layout = "swe"  # swe or cmk - this affects Kanata layer
         self.current_mod_state = "mod"  # mod or nomod
         self.setup_logging()
         self.load_state()
@@ -115,13 +115,26 @@ class KanataLayerSwitcher:
             if STATE_FILE.exists():
                 with open(STATE_FILE, "r") as f:
                     state = json.load(f)
-                    self.current_layout = state.get("layout", "cmk")
+                    self.current_layout = state.get("layout", "swe")
                     self.current_mod_state = state.get("mod_state", "mod")
                     self.logger.info(
                         f"Loaded state: {self.current_layout}-{self.current_mod_state}"
                     )
             else:
-                self.logger.info("No state file found, using defaults: cmk-mod")
+                # Try to read layout from active_keyboard_layout file as fallback
+                try:
+                    active_layout_file = Path("/tmp/active_keyboard_layout")
+                    if active_layout_file.exists():
+                        layout_content = active_layout_file.read_text().strip()
+                        if layout_content in ["swe", "cmk"]:
+                            self.current_layout = layout_content
+                            self.logger.info(f"No state file found, using layout from active_keyboard_layout: {self.current_layout}-mod")
+                        else:
+                            self.logger.info("No state file found, using defaults: swe-mod")
+                    else:
+                        self.logger.info("No state file found, using defaults: swe-mod")
+                except Exception as e:
+                    self.logger.warning(f"Failed to read active_keyboard_layout: {e}. Using defaults.")
         except Exception as e:
             self.logger.warning(f"Failed to load state: {e}. Using defaults.")
 
@@ -308,8 +321,8 @@ class KanataLayerSwitcher:
         """Initialize to default SWE-MOD state, useful for boot/startup"""
         self.logger.info("Initializing to default SWE-MOD state")
 
-        # Set to CMK-MOD (Colemak with home row mods)
-        self.current_layout = "cmk"
+        # Set to SWE-MOD (Swedish with home row mods)
+        self.current_layout = "swe"
         self.current_mod_state = "mod"
 
         # Get the layer name and send to Kanata
@@ -332,9 +345,9 @@ def main():
     parser = argparse.ArgumentParser(description="Kanata Layer Switcher Client")
     parser.add_argument(
         "--action",
-        choices=["layout", "mod", "status", "waybar", "toggle"],
+        choices=["layout", "mod", "status", "toggle"],
         help="Action to perform: layout (switch layout), mod (toggle mod state), "
-        "status (show current), waybar (status with fallback), toggle (mod for waybar click)",
+        "status (show current), toggle (mod for waybar click)",
     )
     parser.add_argument(
         "--set-layer",
@@ -371,32 +384,6 @@ def main():
         layout, mod_state = switcher.get_current_state()
         key = (layout, mod_state)
         status = STATUS_CONFIG[key]
-        print(json.dumps(status))
-    elif args.action == "waybar":
-        # Waybar-optimized status with fallback for when Kanata is not running
-        # Suppress all stderr output for waybar
-        import os
-        stderr_fd = os.dup(2)  # Save stderr
-        devnull = os.open(os.devnull, os.O_WRONLY)
-        os.dup2(devnull, 2)  # Redirect stderr to /dev/null
-        
-        try:
-            layout, mod_state = switcher.get_current_state()
-            key = (layout, mod_state)
-            status = STATUS_CONFIG[key]
-        except Exception:
-            # Fallback when Kanata/TCP is not available
-            status = {
-                "text": '<span color="#ffffff">NORM</span>',
-                "class": "normal",
-                "tooltip": "Kanata: Nordic mode (home row mods active)",
-            }
-        finally:
-            # Restore stderr
-            os.dup2(stderr_fd, 2)
-            os.close(devnull)
-            os.close(stderr_fd)
-        
         print(json.dumps(status))
     elif args.action == "toggle":
         # Toggle mod state - useful for waybar click

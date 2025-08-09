@@ -2,6 +2,7 @@
 import argparse
 import datetime
 import subprocess
+import sys
 from pathlib import Path
 
 PID_FILE = Path("/tmp/waybar/hypridle.pid")
@@ -27,6 +28,7 @@ def is_hypridle_running():
 def log_action(action):
     """Log toggle actions with timestamp."""
     try:
+        LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(LOG_FILE, "a") as f:
             f.write(f"{timestamp} - {action}\n")
@@ -36,7 +38,12 @@ def log_action(action):
 
 def write_status(hypridle_is_on: bool):
     # ⚫ = running, 🔴 = off: because we want to show idle_inhibit status in waybar
-    STATUS_FILE.write_text("⚫" if hypridle_is_on else "🔴")
+    try:
+        STATUS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        STATUS_FILE.write_text("⚫" if hypridle_is_on else "🔴")
+        log_action(f"Status written: {'⚫ (running)' if hypridle_is_on else '🔴 (off)'}")
+    except Exception as e:
+        log_action(f"Failed to write status: {e}")
 
 
 def set_manual_override():
@@ -121,35 +128,70 @@ def toggle_hypridle(hypridle_is_on: bool):
         kill_all_hypridle()
         PID_FILE.unlink(missing_ok=True)
         set_manual_override()  # Set manual override when turning off
+        log_action("Hypridle turned OFF")
         return False
     else:
+        # Ensure the PID file directory exists
+        PID_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
         # Start a new hypridle process
+        log_action("Starting hypridle process")
         proc = subprocess.Popen(
             ["hypridle"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
         )
         PID_FILE.write_text(str(proc.pid))
         clear_manual_override()  # Clear manual override when turning on
+        log_action(f"Hypridle turned ON with PID {proc.pid}")
         return True
 
 
 def main():
     parser = argparse.ArgumentParser(description="Toggle hypridle on/off")
     parser.add_argument(
-        "--start-fresh",
+        "--fresh-start",
         action="store_true",
         help="Delete PID file if it exists, kill all hypridle, and turn hypridle on",
     )
     args = parser.parse_args()
 
-    if args.start_fresh:
+    # Always log the script execution for debugging
+    log_action(f"Script started with args: {' '.join(sys.argv)}")
+
+    if args.fresh_start:
+        log_action("Fresh start requested - killing all hypridle processes")
         kill_all_hypridle()
         PID_FILE.unlink(missing_ok=True)
         hypridle_is_on = False
+        log_action("Fresh start preparation complete")
     else:
         hypridle_is_on = get_status()
 
     hypridle_is_on = toggle_hypridle(hypridle_is_on)
     write_status(hypridle_is_on)
+
+    # If we just started hypridle fresh, ensure activity status is properly reported
+    if args.fresh_start and hypridle_is_on:
+        log_action("Fresh start: ensuring activity status is reported")
+        # Small delay to ensure hypridle is fully started, then verify it's running
+        import time
+        time.sleep(0.5)
+        if is_hypridle_running():
+            log_action("Fresh start: hypridle confirmed running, calling activity status reporter")
+            try:
+                subprocess.run(
+                    [
+                        str(
+                            Path(__file__).parent.parent / "hyprland" / "idle_management" / "activity_status_reporter.py"
+                        ),
+                        "--active",
+                    ],
+                    check=False,
+                )
+                log_action("Fresh start: activity status reporter called successfully")
+            except Exception as e:
+                log_action(f"Fresh start: activity status reporter failed: {e}")
+        else:
+            log_action("Fresh start: hypridle not running after toggle, skipping activity status reporter")
 
     # Update waybar status to reflect the change
     try:

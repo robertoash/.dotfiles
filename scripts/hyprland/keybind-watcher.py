@@ -104,9 +104,9 @@ class KeybindWatcher:
     def ensure_layout_file(self):
         """Create initial layout file if it doesn't exist"""
         if not LAYOUT_FILE.exists():
-            self.logger.warning("Layout file not found, creating with default 'swedish'")
+            self.logger.warning("Layout file not found, creating with default 'swe'")
             try:
-                LAYOUT_FILE.write_text("swedish\n")
+                LAYOUT_FILE.write_text("swe\n")
             except Exception as e:
                 self.logger.error(f"Failed to create layout file: {e}")
                 return False
@@ -140,10 +140,10 @@ class KeybindWatcher:
         try:
             if LAYOUT_FILE.exists():
                 return LAYOUT_FILE.read_text().strip()
-            return "swedish"
+            return "swe"
         except Exception as e:
             self.logger.error(f"Failed to read layout file: {e}")
-            return "swedish"
+            return "swe"
     
     def check_existing_instance(self) -> bool:
         """Check if another instance is already running"""

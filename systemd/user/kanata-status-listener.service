@@ -1,0 +1,30 @@
+[Unit]
+Description=Kanata Status Listener
+Documentation=https://github.com/jtroo/kanata
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/rash/.config/scripts/kanata/kanata_status_listener.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Environment
+Environment=HOME=/home/rash
+WorkingDirectory=/home/rash/.config/scripts/kanata
+
+# Security restrictions
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/tmp
+PrivateTmp=no
+
+# Allow access to /tmp for status files
+ReadWritePaths=/tmp
+
+[Install]
+WantedBy=default.target

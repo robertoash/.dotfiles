@@ -383,7 +383,7 @@
     },
 
     "custom/kanata_mode": {
-        "exec": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action waybar",
+        "exec": "cat /tmp/kanata_status.json || echo '{\"text\":\"❌ ERROR\",\"class\":\"error\",\"tooltip\":\"Kanata status file not found\"}'",
         "return-type": "json",
         "interval": 1,
         "format": "{}",
