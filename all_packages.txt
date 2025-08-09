@@ -160,7 +160,7 @@ libid3tag###0.16.3-2###pacman
 libnma###1.10.6-3###pacman
 libnma-gtk4###1.10.6-3###pacman
 libopenraw###0.3.7-2###pacman
-libreoffice-fresh###25.2.5-1###pacman
+libreoffice-fresh###25.2.5-2###pacman
 libspng###0.7.4-2###pacman
 libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
@@ -226,10 +226,10 @@ pipewire-pulse###1:1.4.7-1###pacman
 pkgfile###24-1###pacman
 plocate###1.1.23-1###pacman
 polkit-gnome###0.105-11###pacman
-poppler-glib###25.07.0-1###pacman
+poppler-glib###25.08.0-1###pacman
 power-profiles-daemon###0.30-1###pacman
 pv###1.9.34-1###pacman
-pyprland-git###r1481.058b724-1###pacman
+pyprland-git###r1483.33dc0f5-1###pacman
 python###3.13.5-1###pacman
 python-adblock###0.6.0-4###pacman
 python-appdirs###1.4.4-11###pacman
@@ -321,7 +321,7 @@ upower###1.90.9-1###pacman
 urban-cli-bin###0.2.3-2###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
-uv###0.8.6-1###pacman
+uv###0.8.8-1###pacman
 vi###1:070224-6###pacman
 vivaldi###7.5.3735.58-1###pacman
 vscode-json-languageserver###1.102.0-1###pacman
@@ -401,7 +401,7 @@ mullvad-browser-bin###14.5.5-1###yay
 mullvad-vpn###2025.7-1###yay
 open-tv-bin###1.8.3-1###yay
 otf-futura-renner###1-2###yay
-pyprland-git###r1481.058b724-1###yay
+pyprland-git###r1483.33dc0f5-1###yay
 python-qutescript-git###r34.5115bc8-1###yay
 qutebrowser-git###3.5.0.r39.g9c7a75616-1###yay
 reiserfsprogs###3.6.27-5###yay
@@ -447,7 +447,7 @@ yazi-rs/plugins:jump-to-char###de53d90###ya
 boydaihungst/mediainfo###0e2ae47###ya
 yazi-rs/plugins:toggle-pane###de53d90###ya
 yazi-rs/flavors:catppuccin-mocha###9cd2ac4###ya
-cargo-binstall###v1.14.3###cargo
+cargo-binstall###v1.14.4###cargo
 cargo-update###v17.0.0###cargo
 choose###v1.3.6###cargo
 eza###v0.23.0###cargo
@@ -470,6 +470,6 @@ zellij###v0.43.1###cargo
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
 @google/gemini-cli###0.1.18###npm
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
-@openai/codex###0.19.0###npm
+@openai/codex###0.20.0###npm
 corepack###0.34.0###npm
 npm###11.5.2###npm
