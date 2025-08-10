@@ -41,6 +41,12 @@ local function setup_keyboard_layout()
 		end
 	end
 	
+	-- Normalize layer names - treat plain variants as equivalent to their base layers
+	if layout == "colemak_plain" then
+		layout = "cmk"
+	elseif layout == "nordic_plain" then
+		layout = "swe"
+	end
 
 	if layout == "cmk" then
 		-- When Kanata is in Colemak mode, remap navigation keys to QWERTY positions
@@ -96,22 +102,17 @@ local function start_file_watcher()
 				end
 
 				if events.change then
-					local old_layout = vim.g.detected_keyboard_layout
 					local old_colemak_mode = vim.g.colemak_mode
 					setup_keyboard_layout()
-					local new_layout = vim.g.detected_keyboard_layout
 					local new_colemak_mode = vim.g.colemak_mode
 
-					if old_layout ~= new_layout then
-						if new_layout == "cmk" then
+					-- Only print if the functional mode actually changed
+					if old_colemak_mode ~= new_colemak_mode then
+						if new_colemak_mode then
 							print("Switched to Colemak with QWERTY navigation")
-						elseif new_layout == "swe" then
-							print("Switched to Swedish QWERTY layout")
 						else
-							print("Switched to " .. new_layout .. " layout")
+							print("Switched to Swedish QWERTY layout")
 						end
-					else
-						print("Layout reloaded: " .. new_layout)
 					end
 				end
 			end)
