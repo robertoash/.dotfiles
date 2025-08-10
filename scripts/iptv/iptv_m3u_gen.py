@@ -12,7 +12,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from xml.etree.ElementTree import Element, iterparse, tostring
+from xml.etree.ElementTree import Element, iterparse, tostring, indent
 
 from dotenv import load_dotenv
 
@@ -46,9 +46,6 @@ NAME_TWEAKS = {
     r"^SE:": "SWE|",
     r"^ES:": "ESP|",
     r"^IT:": "ITA|",
-    r"^DK:": "DEN|",
-    r"^NO:": "NOR|",
-    r"^FI:": "FIN|",
     r"^DE:": "GER|",
     r"^US:": "USA|",
     r"^AU:": "AUS|",
@@ -84,29 +81,29 @@ FILTER_RULES = {
                 "tv": [
                     "4K UHD",
                     "sweden",
+                    "se|",  # Swedish channels with SE| prefix
+                    "nordic",  # All NORDIC prefix channels
+                    "ppv",  # All PPV channels
                     "uk|",
                     "eu|",
                     "es|",
                     "it|",
-                    "dk|",
                     "us|",
                     "au|",
-                    "denmark",
-                    "finland",
-                    "norway",
                     "australia",
-                    "lat| el salvador",
+                    "la| el salvador",
                 ],
-                "movies": ["|se|", "|dk|", "|en|", "|es|", "top"],
+                "movies": ["|se|", "|en|", "|es|", "top"],
                 "series": ["|multi|", "|en|", "|es|", "|se|", "|la|"],
                 "spicy": ["adults"],
             },
             "mini": {
-                "tv": ["sweden", "lat| el salvador", "uk|", "us|"],
+                "tv": ["sweden", "la| el salvador", "uk|", "us|"],
                 "spicy": ["adults"],
             },
         },
-        "tvg_prefixes": ["se:", "dk:", "no:", "fi:", "it:", "se-", "swe|"],
+        "tvg_prefixes": ["se:", "it:", "se-", "swe|"],
+        "tv_group_prefixes": ["la|", "us|", "uk|", "eu|", "es|", "it|", "au|", "se|", "nordic|"],
     },
 }
 
@@ -309,10 +306,9 @@ def guess_category(group, tvg_id=None, tvg_name=None, display_name=None):
     display_name = display_name.lower() if display_name else ""
 
     if not tvg_id:
-        if "ppv" in group or any(
-            tvg_name.startswith(prefix)
-            for prefix in FILTER_RULES["include"]["tvg_prefixes"]
-        ):
+        if ("ppv" in group or 
+            any(tvg_name.startswith(prefix) for prefix in FILTER_RULES["include"]["tvg_prefixes"]) or
+            any(group.startswith(prefix) for prefix in FILTER_RULES["include"]["tv_group_prefixes"])):
             category = "tv"
         elif "adults" in group:
             category = "spicy"
@@ -368,15 +364,18 @@ def should_include(name, category, group, filter_type="full"):
 
 def filter_epg_streaming(epg_path: Path, allowed_ids: set[str]) -> str:
     from copy import deepcopy
-    
-    # Elements to keep
+
+    # Create root element with proper XMLTV attributes
     root = Element("tv")
+    root.set("generator-info-name", "iptv_m3u_gen")
+    root.set("generator-info-url", "https://github.com/user/iptv_m3u_gen")
+    
     channels = []
     programmes = []
 
     for event, elem in iterparse(epg_path, events=("end",)):
         if elem.tag == "channel" and elem.attrib.get("id") in allowed_ids:
-            # Make a deep copy before clearing to preserve element content
+            # Include all matching channels - don't filter on content
             channels.append(deepcopy(elem))
         elif elem.tag == "programme" and elem.attrib.get("channel") in allowed_ids:
             # Make a deep copy before clearing to preserve element content
@@ -386,7 +385,19 @@ def filter_epg_streaming(epg_path: Path, allowed_ids: set[str]) -> str:
     for el in channels + programmes:
         root.append(el)
 
-    return tostring(root, encoding="utf-8", xml_declaration=True).decode("utf-8")
+    # Format XML with proper indentation and line breaks
+    indent(root, space="  ")
+    
+    # Create proper XMLTV format with DOCTYPE
+    xml_str = tostring(root, encoding="utf-8", xml_declaration=True).decode("utf-8")
+    
+    # Insert DOCTYPE declaration after XML declaration
+    lines = xml_str.split('\n', 1)
+    if len(lines) == 2:
+        xml_declaration, rest = lines
+        return f"{xml_declaration}\n<!DOCTYPE tv SYSTEM \"xmltv.dtd\">\n{rest}"
+    else:
+        return f'<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE tv SYSTEM "xmltv.dtd">\n{xml_str}'
 
 
 def parse_and_filter_playlist(playlist_file, epg_path=None):
