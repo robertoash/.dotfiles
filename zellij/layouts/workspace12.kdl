@@ -1,0 +1,21 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    
+    tab name="obsidian" focus=true split_direction="horizontal" {
+        pane size="65%" command="fish" {
+            args "-c" "nvim ~/obsidian/vault/To Dos/Dev To Dos.md; exec fish"
+            cwd "/home/rash/obsidian/vault"
+        }
+        pane size="35%" {
+            cwd "/home/rash/.config/"
+        }
+    }
+}
