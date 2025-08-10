@@ -22,5 +22,9 @@ return {
 				path = "~/obsidian/vault/",
 			},
 		},
+		-- Disable obsidian UI to prevent conflict with render-markdown
+		ui = {
+			enable = false,
+		},
 	},
 }

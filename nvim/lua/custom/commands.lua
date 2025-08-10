@@ -33,7 +33,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
--- Conceallevel for markdown files and obsidian vault
+-- Conceallevel for markdown files
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "markdown",
 	callback = function()
