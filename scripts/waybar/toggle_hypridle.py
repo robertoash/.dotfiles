@@ -188,6 +188,14 @@ def main():
                     check=False,
                 )
                 log_action("Fresh start: activity status reporter called successfully")
+                
+                # Force a file modification to ensure MQTT watchdog detects the change
+                # This is needed because the watchdog might not be running yet at boot
+                status_file = Path("/tmp/mqtt/linux_mini_status")
+                if status_file.exists():
+                    # Touch the file to trigger watchdog
+                    status_file.touch()
+                    log_action("Fresh start: touched linux_mini_status to trigger MQTT watchdog")
             except Exception as e:
                 log_action(f"Fresh start: activity status reporter failed: {e}")
         else:
