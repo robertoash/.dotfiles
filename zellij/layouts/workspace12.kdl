@@ -9,12 +9,11 @@ layout {
         }
     }
     
-    tab name="obsidian" focus=true split_direction="horizontal" {
-        pane size="65%" command="fish" {
-            args "-c" "nvim ~/obsidian/vault/To Dos/Dev To Dos.md; exec fish"
+    tab name="obsidian" focus=true split_direction="vertical" {
+        pane size="50%" command="fish" {
             cwd "/home/rash/obsidian/vault"
         }
-        pane size="35%" {
+        pane size="50%" {
             cwd "/home/rash/.config/"
         }
     }
