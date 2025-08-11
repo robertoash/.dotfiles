@@ -35,7 +35,7 @@ chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
 claude-code###1.0.70-1###pacman
-cloudflared###2025.7.0-1###pacman
+cloudflared###2025.8.0-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###pacman
@@ -150,7 +150,7 @@ lazydocker###0.24.1-1###pacman
 lazygit###0.54.1-1###pacman
 less###1:679-1###pacman
 lib32-libunwind###1.8.1-1###pacman
-lib32-libxkbcommon###1.10.0-1###pacman
+lib32-libxkbcommon###1.11.0-1###pacman
 libc++###20.1.6-2###pacman
 libdvdcss###1.4.3-2###pacman
 libfido2###1.16.0-2###pacman
@@ -437,7 +437,7 @@ shell-gpt###1.4.5###pipx
 theme_it###0.1.0###pipx
 validate-pyproject###0.24.1###pipx
 wexpand###0.1.0###pipx
-yt-dlp###2025.7.21###pipx
+yt-dlp###2025.8.11###pipx
 yazi-rs/plugins:smart-enter###de53d90###ya
 KKV9/command###4762ecc###ya
 yazi-rs/plugins:mount###de53d90###ya
