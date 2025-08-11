@@ -1,0 +1,12 @@
+[Unit]
+Description=Monitor input devices and restart espanso when they change
+After=espanso.service
+
+[Service]
+Type=simple
+ExecStart=/home/rash/.config/espanso/monitor-input-devices.sh
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

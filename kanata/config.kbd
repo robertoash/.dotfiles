@@ -11,9 +11,9 @@
   danger-enable-cmd yes
 
 
-  ;; Optional: Filter to only your MX Keys keyboard
-  ;; Uncomment and adjust the device name after running 'sudo kanata --list'
-  ;; linux-dev-names-include ("Logitech MX Keys")
+  ;; Filter to only your MX Keys keyboard
+  ;; This prevents Kanata from reacting to other device changes
+  linux-dev-names-include ("Logitech MX Keys")
 )
 
 ;; Define Nordic-specific key codes for Linux
