@@ -1,4 +1,4 @@
-7zip###24.09-3###pacman
+7zip###25.01-1###pacman
 accountsservice###23.13.9-2###pacman
 aerc-git###0.20.1.r125.gabe5bb88-1###pacman
 alsa-firmware###1.2.4-4###pacman
@@ -34,7 +34,7 @@ chafa###1.16.2-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.70-1###pacman
+claude-code###1.0.73-1###pacman
 cloudflared###2025.8.0-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
@@ -102,7 +102,7 @@ glances###4.3.3-1###pacman
 gnome-font-viewer###48.0-1###pacman
 gnome-keyring###1:48.0-1###pacman
 gnu-netcat###0.7.1-11###pacman
-gocryptfs###2.6.0-1###pacman
+gocryptfs###2.6.1-1###pacman
 greetd###0.10.3-1###pacman
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###pacman
 grim###1.5.0-2###pacman
@@ -147,7 +147,7 @@ jq###1.8.1-1###pacman
 kanata-git###r1299.afb2e8ba-1###pacman
 kdotool-git###0.2.1.1ad61ac-1###pacman
 lazydocker###0.24.1-1###pacman
-lazygit###0.54.1-1###pacman
+lazygit###0.54.2-1###pacman
 less###1:679-1###pacman
 lib32-libunwind###1.8.1-1###pacman
 lib32-libxkbcommon###1.11.0-1###pacman
@@ -194,7 +194,7 @@ neovim###0.11.3-1###pacman
 netctl###1.29-2###pacman
 networkmanager###1.54.0-1###pacman
 networkmanager-openconnect###1.2.10-3###pacman
-networkmanager-openvpn###1.12.0-1###pacman
+networkmanager-openvpn###1.12.2-1###pacman
 nfs-utils###2.8.3-2###pacman
 nilfs-utils###2.2.11-1###pacman
 noto-fonts###1:2025.08.01-1###pacman
@@ -372,7 +372,7 @@ buku-git###5.0.r33.g641024b-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.70-1###yay
+claude-code###1.0.73-1###yay
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###yay
 csvq-bin###1.18.1-2###yay
 espanso-wayland-git###2.2.4.r25.g3a4be4c1-1###yay
@@ -438,14 +438,14 @@ theme_it###0.1.0###pipx
 validate-pyproject###0.24.1###pipx
 wexpand###0.1.0###pipx
 yt-dlp###2025.8.11###pipx
-yazi-rs/plugins:smart-enter###de53d90###ya
+yazi-rs/plugins:smart-enter###e95c7b3###ya
 KKV9/command###4762ecc###ya
-yazi-rs/plugins:mount###de53d90###ya
+yazi-rs/plugins:mount###e95c7b3###ya
 stelcodes/bunny###bd8a767###ya
 dedukun/relative-motions###a603d9e###ya
-yazi-rs/plugins:jump-to-char###de53d90###ya
+yazi-rs/plugins:jump-to-char###e95c7b3###ya
 boydaihungst/mediainfo###0e2ae47###ya
-yazi-rs/plugins:toggle-pane###de53d90###ya
+yazi-rs/plugins:toggle-pane###e95c7b3###ya
 yazi-rs/flavors:catppuccin-mocha###9cd2ac4###ya
 cargo-binstall###v1.14.4###cargo
 cargo-update###v17.0.0###cargo
@@ -466,10 +466,10 @@ topgrade###v16.0.4###cargo
 yazi-cli###v25.6.1###cargo
 yazi-fm###v25.5.31###cargo
 zellij###v0.43.1###cargo
-@anthropic-ai/claude-code###1.0.72###npm
+@anthropic-ai/claude-code###1.0.73###npm
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
 @google/gemini-cli###0.1.18###npm
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
-@openai/codex###0.20.0###npm
+@openai/codex###0.21.0###npm
 corepack###0.34.0###npm
 npm###11.5.2###npm
