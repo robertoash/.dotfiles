@@ -22,6 +22,7 @@ if wk_ok then
 		{ "<leader>fr", group = "Find and [R]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
 		{ "<leader>h", group = "[H]arpoon", mode = { "n", "v" } },
+		{ "<leader>m", group = "[M]ulticursor", mode = { "n", "v" } },
 		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
 		{ "<leader>o", group = "[O]il File Manager", mode = { "n", "v" } },
 		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
@@ -111,25 +112,25 @@ local format_mappings = {
 local flash_mappings = {
 	{
 		{ "n", "x", "o" },
-		"s",
-		function()
-			local ok, flash = pcall(require, "flash")
-			if ok then
-				flash.jump({ search = { mode = "search", max_length = 1 } })
-			end
-		end,
-		{ desc = "Flash single character" },
-	},
-	{
-		{ "n", "x", "o" },
-		"S",
+		"<leader>ff",
 		function()
 			local ok, flash = pcall(require, "flash")
 			if ok then
 				flash.jump()
 			end
 		end,
-		{ desc = "Flash jump" },
+		{ desc = "[F]lash jump" },
+	},
+	{
+		{ "n", "x", "o" },
+		"<leader>f.",
+		function()
+			local ok, flash = pcall(require, "flash")
+			if ok then
+				flash.jump({ search = { mode = "search", max_length = 1 } })
+			end
+		end,
+		{ desc = "Flash jump single char [.]" },
 	},
 }
 
@@ -490,19 +491,19 @@ OTHER OPERATIONS:
 local mini_splitjoin_mappings = {
 	{
 		{ "n", "x" },
-		"sj",
+		"<leader>kj",
 		function()
 			require("mini.splitjoin").join()
 		end,
-		{ desc = "Splitjoin [J]oin" },
+		{ desc = "Splitjoin [j]oin" },
 	},
 	{
 		{ "n", "x" },
-		"sk",
+		"<leader>kk",
 		function()
 			require("mini.splitjoin").split()
 		end,
-		{ desc = "Splitjoin [K] split" },
+		{ desc = "Splitjoin split [k]" },
 	},
 }
 
@@ -658,6 +659,48 @@ local undotree_mappings = {
 			vim.cmd("UndotreeToggle")
 		end,
 		{ desc = "UndoTree toggle" },
+	},
+}
+
+-- Multicursor keymaps
+local multicursor_mappings = {
+	-- Toggle and clear operations
+	{
+		{ "n", "x" },
+		"<leader>mm",
+		function()
+			local mc = require("multicursor-nvim")
+			mc.toggleCursor()
+		end,
+		{ desc = "Toggle [m]ulticursor" },
+	},
+	-- Advanced operations
+	{
+		{ "n", "x" },
+		"<leader>m*",
+		function()
+			local mc = require("multicursor-nvim")
+			mc.matchAllAddCursors()
+		end,
+		{ desc = "Match [*] all add cursors" },
+	},
+	{
+		"n",
+		"<leader>ma",
+		function()
+			local mc = require("multicursor-nvim")
+			mc.alignCursors()
+		end,
+		{ desc = "[A]lign cursors" },
+	},
+	{
+		"n",
+		"<leader>mr",
+		function()
+			local mc = require("multicursor-nvim")
+			mc.restoreCursors()
+		end,
+		{ desc = "[R]estore cursors" },
 	},
 }
 
@@ -851,6 +894,7 @@ set_keymaps(yazi_mappings)
 set_keymaps(oil_mappings)
 set_keymaps(undotree_mappings)
 set_keymaps(harpoon_mappings)
+set_keymaps(multicursor_mappings)
 set_keymaps(trouble_mappings)
 set_keymaps(working_dir_mappings)
 

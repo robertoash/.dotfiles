@@ -50,6 +50,7 @@ require("lazy").setup({
 	{ import = "plugins.todo-comments" },
 	{ import = "plugins.mini" },
 	{ import = "plugins.lualine" },
+	{ import = "plugins.multicursors" },
 	{ import = "plugins.noice" },
 	{ import = "plugins.gitsigns" },
 	{ import = "plugins.which-key" },
