@@ -108,7 +108,7 @@ return {
 						},
 					},
 					frecency = {
-						auto_validate = true,
+						db_safe_mode = false,
 					},
 				},
 			})
