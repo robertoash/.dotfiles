@@ -74,7 +74,7 @@ local claude_mappings = {
 		"n",
 		"<leader>cr",
 		function()
-			vim.cmd("ClaudeCode --continue")
+			vim.cmd("ClaudeCodeResume")
 		end,
 		{ desc = "[C]laude [R]esume" },
 	},
@@ -111,14 +111,25 @@ local format_mappings = {
 local flash_mappings = {
 	{
 		{ "n", "x", "o" },
-		"<leader>ff",
+		"s",
+		function()
+			local ok, flash = pcall(require, "flash")
+			if ok then
+				flash.jump({ search = { mode = "search", max_length = 1 } })
+			end
+		end,
+		{ desc = "Flash single character" },
+	},
+	{
+		{ "n", "x", "o" },
+		"S",
 		function()
 			local ok, flash = pcall(require, "flash")
 			if ok then
 				flash.jump()
 			end
 		end,
-		{ desc = "Find [F]orward Flash" },
+		{ desc = "Flash jump" },
 	},
 }
 

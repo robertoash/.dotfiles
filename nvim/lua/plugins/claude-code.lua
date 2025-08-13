@@ -8,7 +8,7 @@ return {
 		require("claude-code").setup({
 			-- Terminal window settings
 			window = {
-				split_ratio = 0.3, -- How much screen real estate to give Claude (height/width)
+				split_ratio = 0.4, -- How much screen real estate to give Claude (height/width)
 				position = "botright", -- Where to put the window ("botright", "topleft", etc.)
 				enter_insert = true, -- Jump right into typing mode
 				hide_numbers = true, -- Clean up the UI a bit
@@ -28,3 +28,4 @@ return {
 		})
 	end,
 }
+

@@ -176,3 +176,4 @@ scripts/hyprland/idle_management/reference_faces
 nvim/Session.vim
 .claude
 hypr/active_keybinds.conf
+nvim/.claude/settings.local.json

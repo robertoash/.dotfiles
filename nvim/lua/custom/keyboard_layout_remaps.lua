@@ -38,6 +38,8 @@ local function setup_keyboard_layout()
 		file:close()
 		if content then
 			layout = content:gsub("%s+", "") -- Remove whitespace
+			-- Remove any non-alphanumeric characters
+			layout = layout:gsub("[^%w_]", "")
 		end
 	end
 	
@@ -70,7 +72,22 @@ local function setup_keyboard_layout()
 		vim.g.colemak_mode = false
 
 	else
-		print("Unknown layout: " .. layout .. ". Using Swedish QWERTY.")
+		-- Only print error for truly unknown layouts (not empty)
+		if layout ~= "" then
+			-- Debug: show exact content and byte values
+			local bytes = {}
+			for i = 1, #layout do
+				table.insert(bytes, string.byte(layout, i))
+			end
+			local msg = "Unknown keyboard layout: '" .. layout .. "' (length=" .. #layout .. ", bytes={" .. table.concat(bytes, ",") .. "}). Using QWERTY."
+			print(msg)
+			-- Also log to file for debugging
+			local log = io.open("/tmp/nvim_keyboard_debug.log", "a")
+			if log then
+				log:write(os.date("%Y-%m-%d %H:%M:%S") .. " - " .. msg .. "\n")
+				log:close()
+			end
+		end
 		remove_navigation_keymaps()
 		vim.g.colemak_mode = false
 	end
