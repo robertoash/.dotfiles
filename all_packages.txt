@@ -34,7 +34,7 @@ chafa###1.16.2-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-1###pacman
-claude-code###1.0.73-1###pacman
+claude-code###1.0.77-1###pacman
 cloudflared###2025.8.0-1###pacman
 coin-or-clp###1.17.10-1###pacman
 coin-or-mp###1.8.4-6###pacman
@@ -133,7 +133,7 @@ inetutils###2.6-1###pacman
 inotify-tools###4.23.9.0-2###pacman
 insync###3.9.6.60027-2###pacman
 intel-media-driver###25.2.5-1###pacman
-intel-ucode###20250512-1###pacman
+intel-ucode###20250812-1###pacman
 interception-caps2esc###0.3.2-3###pacman
 interception-tools###0.6.8-8###pacman
 inxi###3.3.38.1-1###pacman
@@ -321,9 +321,9 @@ upower###1.90.9-1###pacman
 urban-cli-bin###0.2.3-2###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
-uv###0.8.8-1###pacman
+uv###0.8.9-1###pacman
 vi###1:070224-6###pacman
-vivaldi###7.5.3735.58-1###pacman
+vivaldi###7.5.3735.62-1###pacman
 vscode-json-languageserver###1.102.0-1###pacman
 walk###1.13.0-1###pacman
 waybar-git###0.14.0.r0.g41de896-1###pacman
@@ -359,7 +359,7 @@ xorg-xrandr###1.5.3-1###pacman
 yaml-language-server###1.19.0-1###pacman
 yay###12.5.0-1###pacman
 zathura###0.5.12-1###pacman
-zathura-pdf-mupdf###0.4.4-20###pacman
+zathura-pdf-mupdf###0.4.4-21###pacman
 zip###3.0-11###pacman
 zoxide###0.9.8-2###pacman
 zsh###5.9-5###pacman
@@ -372,7 +372,7 @@ buku-git###5.0.r33.g641024b-1###yay
 chaotic-keyring###20230616-1###yay
 chaotic-mirrorlist###20240724-2###yay
 chromium-widevine###1:4.10.2891.0-1###yay
-claude-code###1.0.73-1###yay
+claude-code###1.0.77-1###yay
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###yay
 csvq-bin###1.18.1-2###yay
 espanso-wayland-git###2.2.4.r25.g3a4be4c1-1###yay
@@ -466,9 +466,9 @@ topgrade###v16.0.4###cargo
 yazi-cli###v25.6.1###cargo
 yazi-fm###v25.5.31###cargo
 zellij###v0.43.1###cargo
-@anthropic-ai/claude-code###1.0.73###npm
+@anthropic-ai/claude-code###1.0.77###npm
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
-@google/gemini-cli###0.1.18###npm
+@google/gemini-cli###0.1.20###npm
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
 @openai/codex###0.21.0###npm
 corepack###0.34.0###npm
