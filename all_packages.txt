@@ -463,12 +463,13 @@ speedtest-rs###v0.2.0###cargo
 tealdeer###v1.7.2###cargo
 tgt###v1.0.0###cargo
 topgrade###v16.0.4###cargo
-yazi-cli###v25.6.1###cargo
+yazi-build###v0.1.8###cargo
+yazi-cli###v25.5.31###cargo
 yazi-fm###v25.5.31###cargo
 zellij###v0.43.1###cargo
 @anthropic-ai/claude-code###1.0.80###npm
 @fivetrandevelopers/dbt-language-server###0.33.2###npm
-@google/gemini-cli###0.1.20###npm
+@google/gemini-cli###0.1.21###npm
 @modelcontextprotocol/server-puppeteer###2025.5.12###npm
 @openai/codex###0.21.0###npm
 corepack###0.34.0###npm
