@@ -29,7 +29,6 @@ set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx ZELLIJ_CONFIG_FILE ~/.config/zellij/config.kdl
 set -gx GTK2_RC_FILES "$HOME/.config/gtk-2.0/gtkrc-2.0"
 set -gx YARN_RC_FILENAME ~/.config/yarn/.yarnrc
-set -gx ASDF_DATA_DIR "/home/rash/.asdf"
 
 # Fzf
 set -gx FZF_DEFAULT_COMMAND "fd ."

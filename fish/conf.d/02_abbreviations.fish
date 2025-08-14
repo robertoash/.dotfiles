@@ -5,6 +5,7 @@ abbr nv nvim
 abbr yz yazi
 abbr lg lazygit
 abbr lzd lazydocker
+abbr pip "uv pip"
 
 ## Buku Bookmarks
 abbr bka "buku --suggest -w" # Buku add (interactive)

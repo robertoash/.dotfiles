@@ -7,8 +7,8 @@ $git_status\
 $python\
 $rust\
 $nodejs\
-$virtualenv\
-${custom.direnv_status}
+$mise\
+$virtualenv
 ${env_var.SMART_CWD}${env_var.SECURE_SHELL}${env_var.YAZI_LEVEL}$character
 """
 
@@ -149,7 +149,17 @@ Void = " "
 Windows = "󰍲 "
 
 
-# ── Python (includes virtualenv and asdf) ───────────────
+# ── mise (tool version manager) ─────────────────────────
+[mise]
+disabled = false
+format = '\[[$symbol$health]($style)\]'
+style = "fg:color14"
+symbol = "🧰 "
+healthy_symbol = "🟢"
+unhealthy_symbol = "❌"
+detect_files = ["mise.toml", "mise.local.toml"]
+
+# ── Python (includes virtualenv and mise) ───────────────
 [python]
 disabled = false
 format = '\[[${symbol}(${version})]($style)\]'
@@ -170,7 +180,7 @@ format = '\[[$symbol$context]($style)\]'
 style = "fg:color1"
 disabled = false
 
-# ── Node.js (ASDF or nvm) ───────────────────────────────
+# ── Node.js (mise or nvm) ───────────────────────────────
 [nodejs]
 symbol = " "
 style = "fg:color8"
@@ -182,7 +192,7 @@ disabled = true
 format = '\[[$symbol$version]($style)\]'
 symbol = "󰏗 "
 
-# ── Rust (ASDF or rustup) ───────────────────────────────
+# ── Rust (mise or rustup) ───────────────────────────────
 [rust]
 symbol = " "
 style = "fg:color28"
@@ -251,29 +261,4 @@ variable = "SECURE_SHELL"
 format = "[😈 STEALTH MODE]($style) "
 style = "fg:color9"
 
-[custom.direnv_status]
-command = '''
-if test -n "$DIRENV_DIR"
-    if direnv status 2>/dev/null | grep -q "allowed 0"
-        # Get the full path to .direnv
-        set direnv_path "$DIRENV_DIR/.direnv"
-        
-        # Count the number of directory levels
-        set level_count (echo "$direnv_path" | tr "/" "\n" | wc -l)
-        
-        # If more than 3 levels, show ...+last 3 levels
-        if test "$level_count" -gt 4
-            set last_three (echo "$direnv_path" | rev | cut -d"/" -f1-3 | rev)
-            echo "A:...$last_three"
-        else
-            echo "A:$direnv_path"
-        end
-    else
-        echo "N"
-    end
-end
-'''
-when = 'test -n "$DIRENV_DIR"'
-style = "fg:color5"
-format = '\[[$output]($style)\]'
 

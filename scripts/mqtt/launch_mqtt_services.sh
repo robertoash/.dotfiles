@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Activate the dedicated venv for MQTT services
-source /home/rash/.config/scripts/mqtt/venv/bin/activate
+source /home/rash/.config/scripts/mqtt/.venv/bin/activate
 
 # Set PYTHONPATH to ensure logging_utils is available
 export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
@@ -9,8 +9,8 @@ export PYTHONPATH="$PYTHONPATH:/home/rash/.config/scripts"
 # Ensure we are in the correct working directory
 cd /home/rash/.config/scripts/mqtt || exit 1
 
-# Manually source .envrc to load secrets (since systemd won't trigger direnv)
-source /home/rash/.config/scripts/mqtt/.envrc
+# Manually source .envrc to load secrets (since systemd won't trigger mise)
+source /home/rash/.config/scripts/mqtt/.env
 
 # Initialize debug argument
 debug_arg=""

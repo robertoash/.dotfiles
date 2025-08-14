@@ -1,4 +1,4 @@
-#!/home/rash/.config/scripts/hyprland/idle_management/.direnv/python-3.12/bin/python
+#!/home/rash/.config/scripts/hyprland/idle_management/.venv/bin/python
 
 import argparse
 import os
