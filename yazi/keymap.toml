@@ -144,8 +144,8 @@ keymap = [
   { on = [ ",", "A" ],   run = "sort alphabetical --reverse",                   desc = "Sort alphabetically (reverse)" },
   { on = [ ",", "n" ],   run = "sort natural --reverse=no",                     desc = "Sort naturally" },
   { on = [ ",", "N" ],   run = "sort natural --reverse",                        desc = "Sort naturally (reverse)" },
-  { on = [ ",", "s" ],   run = [ "sort size --reverse=no", "linemode size" ],   desc = "Sort by size" },
-  { on = [ ",", "S" ],   run = [ "sort size --reverse", "linemode size" ],      desc = "Sort by size (reverse)" },
+  { on = [ ",", "s" ],   run = [ "sort size --reverse", "linemode size" ],      desc = "Sort by size (reverse)" },
+  { on = [ ",", "S" ],   run = [ "sort size --reverse=no", "linemode size" ],   desc = "Sort by size" },
   { on = [ ",", "r" ],   run = "sort random --reverse=no",                      desc = "Sort randomly" },
 
   # Goto
