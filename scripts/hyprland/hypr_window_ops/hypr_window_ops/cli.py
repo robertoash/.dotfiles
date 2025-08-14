@@ -9,6 +9,7 @@ from . import (
     monitor_movement,
     move_windows,
     snap_windows,
+    stash_manager,
     switch_ws_on_monitor,
     window_properties,
 )
@@ -250,6 +251,48 @@ Examples:
         help="Enable debug output",
     )
 
+    # Toggle both stash workspaces
+    subparsers.add_parser(
+        "toggle-stashes",
+        help="Toggle both stash workspaces intelligently",
+        description="""
+Toggle both monitor-specific stash workspaces based on current state.
+If no stashes are open, opens both. If both are open, closes both.
+If only one is open, closes just that one.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Toggle both stash workspaces
+  hypr-window-ops toggle-stashes
+        """,
+    )
+
+    # Move to monitor stash
+    stash_parser = subparsers.add_parser(
+        "move-to-stash",
+        help="Move active window to monitor's stash workspace",
+        description="""
+Move the active window to a stash workspace. By default, it moves to the stash
+workspace bound to the current monitor (stash-left or stash-right).
+You can optionally specify a specific stash to use.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Move active window to current monitor's stash
+  hypr-window-ops move-to-stash
+
+  # Move active window to a specific stash
+  hypr-window-ops move-to-stash --stash stash-left
+  hypr-window-ops move-to-stash --stash stash-right
+        """,
+    )
+    stash_parser.add_argument(
+        "--stash",
+        help="Specific stash name to use (e.g., stash-left, stash-right)",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -295,6 +338,10 @@ Examples:
         return monitor_movement.move_window_to_monitor(
             direction=args.direction, debug=args.debug
         )
+    elif args.command == "toggle-stashes":
+        return stash_manager.toggle_both_stashes()
+    elif args.command == "move-to-stash":
+        return stash_manager.move_to_monitor_stash(stash_name=args.stash)
     else:
         parser.print_help()
         return 1

@@ -1,36 +1,22 @@
 #!/usr/bin/env python3
 
-import json
+"""Stash manager for handling monitor-specific stash workspaces."""
+
 import subprocess
 import sys
 
-
-def run_hyprctl(args):
-    """Run hyprctl command and return parsed JSON output."""
-    result = subprocess.run(["hyprctl"] + args, capture_output=True, text=True)
-    if result.returncode != 0:
-        print(f"Error running hyprctl {' '.join(args)}: {result.stderr}", file=sys.stderr)
-        return None
-    return json.loads(result.stdout) if result.stdout.strip() else None
+from . import window_manager
 
 
-def dispatch(command, arg=None):
-    """Send a dispatch command to hyprctl."""
-    cmd = ["dispatch", command]
-    if arg:
-        cmd.append(arg)
-    subprocess.run(["hyprctl"] + cmd, check=True)
-
-
-def get_current_monitor():
-    """Get the currently focused monitor name."""
-    monitors = run_hyprctl(["-j", "monitors"])
+def get_active_monitor():
+    """Get the currently active monitor information."""
+    monitors = window_manager.run_hyprctl(["monitors", "-j"])
     if not monitors:
         return None
     
     for monitor in monitors:
         if monitor.get("focused", False):
-            return monitor["name"]
+            return monitor
     return None
 
 
@@ -41,7 +27,7 @@ def toggle_active_monitor():
 
 def count_open_stashes():
     """Count how many stash workspaces are currently visible and return their details."""
-    monitors = run_hyprctl(["-j", "monitors"])
+    monitors = window_manager.run_hyprctl(["monitors", "-j"])
     if not monitors:
         return 0, []
     
@@ -67,12 +53,15 @@ def get_monitor_for_stash(stash_name):
     return None
 
 
-def main():
+def toggle_both_stashes():
+    """Toggle both stash workspaces intelligently based on current state."""
     # Store original monitor to return focus later
-    original_monitor = get_current_monitor()
-    if not original_monitor:
+    original_monitor_info = get_active_monitor()
+    if not original_monitor_info:
         print("Could not determine current monitor", file=sys.stderr)
         return 1
+    
+    original_monitor = original_monitor_info["name"]
     
     # Check current state of stash workspaces
     open_count, open_stashes = count_open_stashes()
@@ -83,11 +72,11 @@ def main():
         
         # Move to opposite monitor and launch its stash
         toggle_active_monitor()
-        dispatch("togglespecialworkspace", "stash-left")
+        window_manager.toggle_special_workspace("stash-left")
         
         # Move back and launch this monitor's stash  
         toggle_active_monitor()
-        dispatch("togglespecialworkspace", "stash-right")
+        window_manager.toggle_special_workspace("stash-right")
         
     elif open_count == 2:
         # Both stashes open - close both using same process
@@ -95,11 +84,11 @@ def main():
         
         # Move to opposite monitor and toggle off its stash
         toggle_active_monitor()
-        dispatch("togglespecialworkspace", "stash-left")
+        window_manager.toggle_special_workspace("stash-left")
         
         # Move back and toggle off this monitor's stash
         toggle_active_monitor() 
-        dispatch("togglespecialworkspace", "stash-right")
+        window_manager.toggle_special_workspace("stash-right")
         
     elif open_count == 1:
         # Only one stash open - toggle only that one
@@ -110,13 +99,47 @@ def main():
         print(f"One stash open ({stash_name}), toggling it off...")
         
         # Focus the correct monitor and toggle only that stash
-        dispatch("focusmonitor", target_monitor)
-        dispatch("togglespecialworkspace", stash_name)
+        window_manager.run_hyprctl_command(["dispatch", "focusmonitor", target_monitor])
+        window_manager.toggle_special_workspace(stash_name)
     
     # Return focus to original monitor
-    dispatch("focusmonitor", original_monitor)
+    window_manager.run_hyprctl_command(["dispatch", "focusmonitor", original_monitor])
     return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+def move_to_monitor_stash(stash_name=None):
+    """Move the active window to the appropriate monitor's stash workspace.
+    
+    Args:
+        stash_name: Optional specific stash name to use (e.g., "stash-left", "stash-right").
+                   If not provided, automatically determines based on current monitor.
+    """
+    if stash_name:
+        # Use the provided stash name
+        stash = stash_name
+    else:
+        # Auto-detect based on current monitor
+        monitor = get_active_monitor()
+        if not monitor:
+            print("Could not determine active monitor")
+            return 1
+        
+        # Determine which stash to use based on monitor
+        monitor_name = monitor.get("name", "")
+        monitor_desc = monitor.get("description", "")
+        
+        # Map monitors to their stash workspaces
+        if "DP-1" in monitor_name or "L32p-30" in monitor_desc:
+            stash = "stash-right"
+        elif "DP-3" in monitor_name or "P27u-20" in monitor_desc:
+            stash = "stash-left"
+        else:
+            # Default fallback
+            print(f"Unknown monitor: {monitor_name} ({monitor_desc}), using stash-left")
+            stash = "stash-left"
+    
+    # Move the active window to the appropriate stash
+    window_manager.run_hyprctl_command(["dispatch", "movetoworkspacesilent", f"special:{stash}"])
+    
+    print(f"Moved window to {stash}")
+    return 0
