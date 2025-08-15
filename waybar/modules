@@ -387,8 +387,8 @@
         "return-type": "json",
         "interval": 1,
         "format": "{}",
-        "on-click": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action toggle",
-        "on-click-right": "/home/rash/.config/scripts/kanata/kanata_layer_switcher.py --action layout",
+        "on-click": "kanata-tools switch --mod",
+        "on-click-right": "kanata-tools switch --layout",
         "tooltip": true
     },
 

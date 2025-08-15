@@ -6,7 +6,7 @@ Wants=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/home/rash/.config/scripts/kanata/kanata_status_listener.py
+ExecStart=kanata-tools listen
 Restart=always
 RestartSec=5
 StandardOutput=journal

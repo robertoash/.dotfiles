@@ -47,21 +47,27 @@ def restore_layout():
     try:
         from pathlib import Path
         
-        # Read saved layout
+        # Read saved layout and mod state
         saved_layout_file = Path("/tmp/hypridle_saved_layout")
-        if saved_layout_file.exists():
+        saved_mod_file = Path("/tmp/hypridle_saved_mod")
+        
+        if saved_layout_file.exists() and saved_mod_file.exists():
             saved_layout = saved_layout_file.read_text().strip()
-            saved_layout_file.unlink()  # Clean up the file
+            saved_mod = saved_mod_file.read_text().strip()
             
-            # Restore the saved layout with mods
+            # Clean up the files
+            saved_layout_file.unlink()
+            saved_mod_file.unlink()
+            
+            # Restore the saved layout and mod state
             subprocess.run([
-                '/home/rash/.config/scripts/kanata/kanata_layer_switcher.py',
-                '--set-layer', saved_layout,
-                '--set-mod', 'mod'
+                'kanata-tools', 'set',
+                '--layout', saved_layout,
+                '--mod', saved_mod
             ], check=True, capture_output=True)
-            logging.info(f"Restored layout to '{saved_layout}' with mods")
+            logging.info(f"Restored layout to '{saved_layout}' with mod state '{saved_mod}'")
         else:
-            logging.info("No saved layout found - skipping layout restoration")
+            logging.info("No saved layout/mod state found - skipping layout restoration")
         
     except Exception as e:
         logging.error(f"Failed to restore layout after unlock: {e}")

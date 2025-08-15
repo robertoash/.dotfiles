@@ -44,26 +44,38 @@ def save_and_switch_layout():
     """Save current Kanata layout and switch to Swedish for lock screen."""
     try:
         from pathlib import Path
+        import json
         
-        # Read current layout
-        current_layout_file = Path("/tmp/active_keyboard_layout")
-        if current_layout_file.exists():
-            current_layout = current_layout_file.read_text().strip()
+        # Read current state from kanata state file
+        state_file = Path("/tmp/kanata_layer_state.json")
+        current_layout = "swe"  # Default
+        current_mod = "mod"  # Default
+        
+        if state_file.exists():
+            with open(state_file, "r") as f:
+                state = json.load(f)
+                current_layout = state.get("layout", "swe")
+                current_mod = state.get("mod_state", "mod")
         else:
-            current_layout = "cmk"  # Default fallback
+            # Fallback to active layout file
+            current_layout_file = Path("/tmp/active_keyboard_layout")
+            if current_layout_file.exists():
+                current_layout = current_layout_file.read_text().strip()
         
-        # Save current layout for restoration
+        # Save current layout and mod state for restoration
         saved_layout_file = Path("/tmp/hypridle_saved_layout")
+        saved_mod_file = Path("/tmp/hypridle_saved_mod")
         saved_layout_file.write_text(current_layout)
-        logging.info(f"Saved current layout '{current_layout}' for restoration")
+        saved_mod_file.write_text(current_mod)
+        logging.info(f"Saved current state '{current_layout}-{current_mod}' for restoration")
         
-        # Switch to Swedish nodeadkeys for lock screen
+        # Switch to Swedish nomod for lock screen
         subprocess.run([
-            '/home/rash/.config/scripts/kanata/kanata_layer_switcher.py',
-            '--set-layer', 'swe',
-            '--set-mod', 'nomod'
+            'kanata-tools', 'set',
+            '--layout', 'swe',
+            '--mod', 'nomod'
         ], check=True, capture_output=True)
-        logging.info("Switched to Swedish layout for lock screen")
+        logging.info("Switched to Swedish nomod layout for lock screen")
         
     except Exception as e:
         logging.error(f"Failed to switch layout for lock: {e}")

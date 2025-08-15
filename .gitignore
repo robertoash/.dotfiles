@@ -177,3 +177,4 @@ nvim/Session.vim
 .claude
 hypr/active_keybinds.conf
 nvim/.claude/settings.local.json
+kanata/last_state.json
