@@ -18,10 +18,26 @@ MANAGERS = {
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["yay", "-S", "--noconfirm", pkg],
     },
-    "pipx": {
-        "retrieve": ["sh", "-c", "pipx list --short"],
-        "parse": lambda line: line.strip().split(maxsplit=1),
-        "restore": lambda pkg, ver=None: ["pipx", "install", pkg],
+    "cargo": {
+        "retrieve": [
+            "sh",
+            "-c",
+            "cargo install --list | grep -E '^[^ ]+ v[0-9]'",
+        ],
+        "parse": lambda line: (
+            line.split()[0],
+            line.split()[1][:-1] if len(line.split()) > 1 else None,
+        ),
+        "restore": lambda pkg, ver=None: ["cargo", "install", pkg],
+    },
+    "uv": {
+        "retrieve": ["uv", "tool", "list"],
+        "parse": lambda line: (
+            line.strip().split(maxsplit=1)
+            if line.strip() and not line.startswith("-") and " v" in line
+            else None  # Return None instead of (None, None)
+        ),
+        "restore": lambda pkg, ver=None: ["uv", "tool", "install", pkg],
     },
     "ya": {
         "retrieve": [
@@ -34,17 +50,14 @@ MANAGERS = {
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["ya", "pkg", "add", pkg],
     },
-    "cargo": {
+    "fisher": {
         "retrieve": [
-            "sh",
+            "fish",
             "-c",
-            "cargo install --list | grep -E '^[^ ]+ v[0-9]'",
+            "fisher list",
         ],
-        "parse": lambda line: (
-            line.split()[0],
-            line.split()[1][:-1] if len(line.split()) > 1 else None,
-        ),
-        "restore": lambda pkg, ver=None: ["cargo", "install", pkg],
+        "parse": lambda line: (line.strip(), None),
+        "restore": lambda pkg, ver=None: ["fisher", "install", pkg],
     },
     "npm": {
         "retrieve": ["sh", "-c", "npm list -g --depth=0 | grep '@'"],
@@ -62,9 +75,11 @@ def save_packages(filename):
                     subprocess.check_output(commands["retrieve"]).decode().splitlines()
                 )
                 for package in packages:
-                    name, version = commands["parse"](package)
-                    version = version or ""
-                    f.write(f"{name}{SEPARATOR}{version}{SEPARATOR}{manager}\n")
+                    parsed = commands["parse"](package)
+                    if parsed is not None and parsed[0] is not None:
+                        name, version = parsed
+                        version = version or ""
+                        f.write(f"{name}{SEPARATOR}{version}{SEPARATOR}{manager}\n")
             except subprocess.CalledProcessError:
                 print(f"Warning: Failed to retrieve packages for {manager}")
 
