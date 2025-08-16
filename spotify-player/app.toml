@@ -1,6 +1,5 @@
 theme = "~/.config/spotify-player/themes/tokyonight_deep.toml"
-client_id = "e4bf566d8aa54e61ab035f7fdd6886cc"
-client_port = 8989
+client_id = "bd2c5ca79206484181b74666a839553b"
 login_redirect_uri = "http://127.0.0.1:8989/login"
 playback_format = """
 {status} {track} • {artists}
@@ -16,9 +15,9 @@ liked_icon = "♥"
 border_type = "Plain"
 progress_bar_type = "Rectangle"
 enable_cover_image_cache = true
-default_device = "Spotify@rash-linuxmini"
 seek_duration_secs = 5
-enable_streaming="Never"
+enable_streaming = "Always"
+default_device = "spt_cli"
 
 [layout]
 playback_window_position = "Top"
@@ -28,11 +27,8 @@ playback_window_height = 6
 playlist_percent = 40
 album_percent = 40
 
-#[device]
-#name = "spt_cli"
-#device_type = "speaker"
-#volume = 70
-#bitrate = 320
-#audio_cache = false
-#normalization = false
-#autoplay = false
+[device]
+name = "spt_cli"
+device_type = "speaker"
+volume = 50
+autoplay = false
