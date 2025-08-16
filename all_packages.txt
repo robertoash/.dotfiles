@@ -23,7 +23,7 @@ bluez###5.83-1###pacman
 bluez-utils###5.83-1###pacman
 brother-dcp-l2530dw###4.0.0-1###pacman
 btop###1.4.4-1###pacman
-btrfs-progs###6.15-1###pacman
+btrfs-progs###6.16-1###pacman
 buku-git###5.0.r33.g641024b-1###pacman
 caligula###0.4.8-2###pacman
 cantarell-fonts###1:0.303.1-2###pacman
@@ -75,7 +75,7 @@ evtest###1.35-2###pacman
 exfatprogs###1.2.9-1###pacman
 expect###5.45.4-5###pacman
 f2fs-tools###1.16.0-3###pacman
-fastfetch###2.49.0-1###pacman
+fastfetch###2.50.2-1###pacman
 fatrace###0.18.0-1###pacman
 fd###10.2.0-1###pacman
 feh###3.10.3-1###pacman
@@ -111,7 +111,7 @@ hdparm###9.65-2###pacman
 hunspell-en_us###2020.12.07-5###pacman
 hunspell-es_sv###1:2.9-1###pacman
 hunspell-sv###1:2.42-2###pacman
-hwdetect###2025.03.06.1935-1###pacman
+hwdetect###2025.08.16.1333-1###pacman
 hwinfo###25.0-2###pacman
 hyprgraphics-git###0.1.3.r1.g6075491-1###pacman
 hypridle-git###0.1.6.r4.gecf2a36-1###pacman
@@ -158,13 +158,13 @@ libspng###0.7.4-2###pacman
 libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
 libwnck3###43.2-1###pacman
-libxfce4ui###4.20.1-2###pacman
+libxfce4ui###4.20.2-1###pacman
 linkding-cli###2024.09.0-1###pacman
 linux###6.16.arch2-1###pacman
 linux-firmware###20250808-1###pacman
 linux-firmware-nvidia###20250808-1###pacman
 linux-headers###6.16.arch2-1###pacman
-linux-lts###6.12.41-2###pacman
+linux-lts###6.12.42-1###pacman
 logrotate###3.22.0-1###pacman
 lsb-release###2.0.r55.a25a4fc-1###pacman
 lsix###1.9.1-1###pacman
@@ -222,7 +222,7 @@ poppler-glib###25.08.0-1###pacman
 power-profiles-daemon###0.30-1###pacman
 pv###1.9.34-1###pacman
 pyprland-git###r1483.33dc0f5-1###pacman
-python###3.13.6-1###pacman
+python###3.13.7-1###pacman
 python-adblock###0.6.0-4###pacman
 python-appdirs###1.4.4-11###pacman
 python-capng###0.8.5-3###pacman
