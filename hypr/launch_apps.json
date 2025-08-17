@@ -39,7 +39,7 @@
         "11": [
             {
                 "name": "claude_zen",
-                "command": "chromium_launch --profile claude",
+                "command": "claude-desktop-native --force-device-scale-factor=1.4",
                 "is_master": true
             },
             {
