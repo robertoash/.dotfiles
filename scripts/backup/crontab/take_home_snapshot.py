@@ -11,14 +11,14 @@ from _utils import logging_utils
 logging_utils.configure_logging()
 
 # Define the locations
-home_dir = Path("/home/rash/")
-local_snapshot_dir = home_dir / ".local" / ".snapshots"
+home_subvolume = Path("/home")
+local_snapshot_dir = Path("/.snapshots")
 external_drive_dir = Path("/mnt/.snapshots")
 
 
 def create_snapshot(snapshot_name):
     try:
-        # Create a read-only local snapshot
+        # Create a read-only local snapshot of the home directory
         subprocess.run(
             [
                 "sudo",
@@ -26,18 +26,18 @@ def create_snapshot(snapshot_name):
                 "subvolume",
                 "snapshot",
                 "-r",
-                "/",
+                str(home_subvolume),
                 str(local_snapshot_dir.joinpath(snapshot_name)),
             ],
             check=True,
         )
         logging.info(
-            f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}"
+            f"Home snapshot {snapshot_name} created successfully in {local_snapshot_dir}"
         )
-        print(f"Snapshot {snapshot_name} created successfully in {local_snapshot_dir}")
+        print(f"Home snapshot {snapshot_name} created successfully in {local_snapshot_dir}")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error creating snapshot: {e}")
-        print(f"Error creating snapshot: {e}", file=sys.stderr)
+        logging.error(f"Error creating home snapshot: {e}")
+        print(f"Error creating home snapshot: {e}", file=sys.stderr)
         sys.exit(1)
 
 
@@ -68,10 +68,17 @@ def send_snapshot(snapshot_name):
         if send_proc.stdout is not None:
             # Use the output of 'btrfs send' as input for 'btrfs receive'
             subprocess.run(receive_command, stdin=send_proc.stdout, check=True)
+            
+            # Make the received snapshot read-only
+            subprocess.run([
+                "sudo", "btrfs", "property", "set", "-ts", 
+                str(external_drive_dir.joinpath(snapshot_name)), "ro", "true"
+            ], check=True)
+            
             logging.info(
-                f"Snapshot {snapshot_name} sent to external drive successfully."
+                f"Home snapshot {snapshot_name} sent to external drive successfully."
             )
-            print(f"Snapshot {snapshot_name} sent to external drive successfully.")
+            print(f"Home snapshot {snapshot_name} sent to external drive successfully.")
 
 
 def receive_snapshot(snapshot_name):
@@ -85,18 +92,18 @@ def receive_snapshot(snapshot_name):
             stdin=send_proc.stdout,
             check=True,
         )
-    print(f"Snapshot {snapshot_name} received from external drive successfully.")
+    print(f"Home snapshot {snapshot_name} received from external drive successfully.")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Manage Btrfs snapshots between local system and external drive."
+        description="Manage Btrfs snapshots of home directory between local system and external drive."
     )
     parser.add_argument(
         "-s",
         "--save",
         action="store_true",
-        help="Save a snapshot of the root filesystem to an external drive.",
+        help="Save a snapshot of the home directory to an external drive.",
     )
     parser.add_argument(
         "-r",

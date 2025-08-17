@@ -14,13 +14,19 @@ script_mapping = {
     "oldhp": "bkup_oldhp.py",
     "buku": "bkup_buku.py",
     "snapshot-keep": "snapshot_keep_policy.py",
-    "take-snapshot": "take_linuxmini_snapshot.py",
+    "take-root-snapshot": "take_root_snapshot.py",
+    "take-home-snapshot": "take_home_snapshot.py",
+    "take-all-snapshots": "all",
 }
 
 additional_args = {
-    "take-snapshot": [
+    "take-root-snapshot": [
         "-s",
-        f"backup_{subprocess.check_output(['date', '+%Y%m%d_%H%M']).decode().strip()}",
+        f"backup_root_{subprocess.check_output(['date', '+%Y%m%d_%H%M']).decode().strip()}",
+    ],
+    "take-home-snapshot": [
+        "-s",
+        f"backup_home_{subprocess.check_output(['date', '+%Y%m%d_%H%M']).decode().strip()}",
     ]
 }
 
@@ -48,6 +54,42 @@ def main():
         help="Script to run",
     )
     args = parser.parse_args()
+
+    # Handle special case for running all snapshots
+    if args.script == "take-all-snapshots":
+        # Set PYTHONPATH in the environment
+        env = set_pythonpath()
+        
+        # Run root snapshot first
+        root_script_path = backup_scripts_dir / script_mapping["take-root-snapshot"]
+        print("Taking root snapshot...")
+        try:
+            subprocess.run(
+                [sys.executable, root_script_path, *additional_args.get("take-root-snapshot", [])],
+                env=env,
+                check=True,
+            )
+            print("Root snapshot completed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error: Root snapshot failed with exit code {e.returncode}", file=sys.stderr)
+            sys.exit(e.returncode)
+        
+        # Run home snapshot second
+        home_script_path = backup_scripts_dir / script_mapping["take-home-snapshot"]
+        print("Taking home snapshot...")
+        try:
+            subprocess.run(
+                [sys.executable, home_script_path, *additional_args.get("take-home-snapshot", [])],
+                env=env,
+                check=True,
+            )
+            print("Home snapshot completed successfully.")
+            print("All snapshots completed successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"Error: Home snapshot failed with exit code {e.returncode}", file=sys.stderr)
+            sys.exit(e.returncode)
+        
+        return
 
     script_path = backup_scripts_dir / script_mapping[args.script]
 

@@ -11,7 +11,7 @@ from _utils import logging_utils
 logging_utils.configure_logging()
 
 # Define possible snapshot locations
-LOCAL_SNAPSHOT_DIR = "/home/rash/.local/.snapshots"
+LOCAL_SNAPSHOT_DIR = "/.snapshots"
 EXTERNAL_SNAPSHOT_DIRS = ["/media/sda1/.snapshots", "/mnt/.snapshots"]
 
 # Retention policy
@@ -54,7 +54,7 @@ def process_snapshot_dir(snapshot_dir):
 
     for snapshot in dir_contents:
         try:
-            if not snapshot.startswith("backup_"):
+            if not (snapshot.startswith("backup_root_") or snapshot.startswith("backup_home_") or snapshot.startswith("backup_")):
                 logging.warning(f"Skipping non-backup item: {snapshot}")
                 skipped_items.append((snapshot, "Not a backup_ prefix"))
                 continue
@@ -67,7 +67,19 @@ def process_snapshot_dir(snapshot_dir):
                 skipped_items.append((snapshot, "Insufficient name parts"))
                 continue
 
-            snapshot_date_str = parts[1] + "_" + parts[2]
+            # Handle both new format (backup_root_YYYYMMDD_HHMM, backup_home_YYYYMMDD_HHMM) 
+            # and old format (backup_YYYYMMDD_HHMM)
+            if snapshot.startswith("backup_root_") or snapshot.startswith("backup_home_"):
+                if len(parts) < 4:
+                    logging.warning(
+                        f"Skipping malformed snapshot name: {snapshot} (insufficient parts for new format)"
+                    )
+                    skipped_items.append((snapshot, "Insufficient name parts for new format"))
+                    continue
+                snapshot_date_str = parts[2] + "_" + parts[3]
+            else:
+                # Old format: backup_YYYYMMDD_HHMM
+                snapshot_date_str = parts[1] + "_" + parts[2]
             try:
                 snapshot_date = datetime.datetime.strptime(
                     snapshot_date_str, "%Y%m%d_%H%M"
