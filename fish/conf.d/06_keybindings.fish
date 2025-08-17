@@ -50,6 +50,10 @@ bind \e\[5C custom_forward_word             # Alternative Ctrl+Right
 # Alternative binding for Ctrl+Delete in some terminals
 bind \e\[M custom_delete_forward_word       # Alternative Ctrl+Delete
 
+# Ctrl+Shift+Left/Right arrow keys for space-only word movement
+bind \e\[1\;6D custom_backward_word_space   # Ctrl+Shift+Left
+bind \e\[1\;6C custom_forward_word_space    # Ctrl+Shift+Right
+
 set -l modes insert default visual replace
 
 for mode in $modes
@@ -58,6 +62,8 @@ for mode in $modes
         bind -M $mode \e\[1\;5L custom_forward_word
         bind -M $mode \e\[1\;6H custom_backward_word_space
         bind -M $mode \e\[1\;6L custom_forward_word_space
+        bind -M $mode \e\[1\;6D custom_backward_word_space
+        bind -M $mode \e\[1\;6C custom_forward_word_space
 
     else if test $mode = insert
         bind -M $mode \e\[1\;5H custom_backward_word
@@ -66,6 +72,8 @@ for mode in $modes
         bind -M $mode \e\[127\;5u custom_delete_backward_word
         bind -M $mode \e\[1\;6H custom_backward_word_space
         bind -M $mode \e\[1\;6L custom_forward_word_space
+        bind -M $mode \e\[1\;6D custom_backward_word_space
+        bind -M $mode \e\[1\;6C custom_forward_word_space
         bind -M $mode \e\[3\;6~ custom_delete_forward_word_space
         bind -M $mode \e\[127\;6u custom_delete_backward_word_space
 
@@ -75,6 +83,8 @@ for mode in $modes
         bind -M $mode \e\[1\;5L custom_forward_word
         bind -M $mode \e\[1\;6H custom_backward_word_space
         bind -M $mode \e\[1\;6L custom_forward_word_space
+        bind -M $mode \e\[1\;6D custom_backward_word_space
+        bind -M $mode \e\[1\;6C custom_forward_word_space
     end
 end
 

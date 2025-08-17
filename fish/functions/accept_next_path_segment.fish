@@ -4,7 +4,21 @@ function accept_next_path_segment
         return
     end
 
+    # Get the current cursor position and command line
+    set -l initial_cursor (commandline --cursor)
+    set -l current_line (commandline)
+    
+    # Get the autosuggestion
+    set -l suggestion (commandline --current-token)
+    
+    # If we're at the beginning of a token or after a space, accept the next word
+    set -l char_at_cursor ""
+    if test $initial_cursor -gt 0
+        set char_at_cursor (string sub --start $initial_cursor --length 1 "$current_line")
+    end
+    
     # Accept characters one by one until we hit a delimiter
+    set -l found_word false
     while commandline --showing-suggestion
         # Get current state before accepting a character
         set -l cursor_before (commandline --cursor)
@@ -30,9 +44,9 @@ function accept_next_path_segment
             break
         end
 
-        # If we just accepted a space, we've gone too far - back up and stop
+        # If we just accepted a space, stop here (include the space)
         if test "$just_accepted" = " "
-            commandline -f backward-char
+            set found_word true
             break
         end
 
