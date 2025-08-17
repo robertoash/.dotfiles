@@ -265,7 +265,6 @@ smartmontools###7.5-1###pacman
 smem###1.5-8###pacman
 sof-firmware###2025.05-1###pacman
 solaar###1.1.14-2###pacman
-spacedrive-bin###1:0.4.3-1###pacman
 sqls###0.2.27-1###pacman
 sshfs###3.7.3-3###pacman
 stardict-dictd-moby-thesaurus###2.4.2-3###pacman
@@ -396,7 +395,6 @@ qutebrowser-git###3.5.0.r39.g9c7a75616-1###yay
 reiserfsprogs###3.6.27-5###yay
 rofi-lbonn-wayland-git###1.7.9.wayland1.r1.gd4b16e6f-1###yay
 smem###1.5-8###yay
-spacedrive-bin###1:0.4.3-1###yay
 sqls###0.2.27-1###yay
 stardict-dictd-moby-thesaurus###2.4.2-3###yay
 stardict-urban###2.4.2-3###yay
@@ -440,6 +438,7 @@ speedtest-rs###v0.2.0###cargo
 spotify_player###v0.20.7###cargo
 tealdeer###v1.7.2###cargo
 tgt###v1.0.0###cargo
+thoth-cli###v0.1.84###cargo
 topgrade###v16.0.4###cargo
 trashy###v2.0.0###cargo
 watchexec-cli###v2.3.2###cargo
@@ -468,6 +467,7 @@ dedukun/relative-motions###a603d9e###ya
 yazi-rs/plugins:jump-to-char###e95c7b3###ya
 boydaihungst/mediainfo###0e2ae47###ya
 yazi-rs/plugins:toggle-pane###e95c7b3###ya
+equals03/wl-clipboard###8b8c2f4###ya
 yazi-rs/flavors:catppuccin-mocha###9cd2ac4###ya
 jorgebucaran/fisher######fisher
 aohorodnyk/fish-autovenv######fisher
