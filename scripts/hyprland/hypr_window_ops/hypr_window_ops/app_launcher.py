@@ -17,7 +17,7 @@ def configure_logging(debug=False):
     )
 
 
-def launch_and_manage(workspace, name, command, is_master):
+def launch_and_manage(workspace, name, command, is_master, launch_delay=None, no_focus=False):
     """Switch workspace, launch application, and set as master if needed."""
     print(f"Switching to workspace {workspace}")
     window_manager.switch_to_workspace(workspace)
@@ -43,12 +43,22 @@ def launch_and_manage(workspace, name, command, is_master):
 
     # Wait specifically for this window
     address = window_manager.wait_for_window(existing_windows)
-    time.sleep(config.WINDOW_CREATION_DELAY)
+    
+    # Use custom launch_delay if provided, otherwise use default
+    window_delay = launch_delay if launch_delay is not None else config.WINDOW_CREATION_DELAY
+    time.sleep(window_delay)
     if not address:
         logging.warning(f"No window detected for {name} in workspace {workspace}")
         return None  # Return None if window did not appear
 
     print(f"New window detected at {address}")
+
+    # If no_focus is set, apply nofocus property to this specific window
+    if no_focus:
+        window_manager.run_hyprctl_command(
+            ["dispatch", "setprop", f"address:{address}", "nofocus", "1"]
+        )
+        logging.debug(f"Set nofocus property for window {address}")
 
     # If the window is supposed to be master and it's not already, swap it
     if is_master and not window_manager.is_window_master(address, workspace):
@@ -83,21 +93,37 @@ def launch_profile_apps(
         logging.error(f"Profile '{profile_name}' not found in APP_PROFILES")
         return
 
+    # Track window addresses that have nofocus set to remove it later
+    no_focus_addresses = []
+
     for workspace, apps in profile_data.items():
         # Skip non-workspace keys like "staging_ws"
         if not isinstance(workspace, str) or not workspace.isdigit():
             continue
 
         for app in apps:
-            launch_and_manage(
+            address = launch_and_manage(
                 workspace,
                 app["name"],
                 app["command"],
                 app["is_master"],
+                app.get("launch_delay"),
+                app.get("no_focus", False),
             )
+            
+            # Track addresses with nofocus for later removal
+            if app.get("no_focus", False) and address:
+                no_focus_addresses.append(address)
 
         # Ensure focus stays on the master window for this workspace
         focus_workspace_master(workspace)
+
+    # Remove nofocus property from windows that had it set
+    for address in no_focus_addresses:
+        window_manager.run_hyprctl_command(
+            ["dispatch", "setprop", f"address:{address}", "nofocus", "0"]
+        )
+        logging.debug(f"Removed nofocus property from window {address}")
 
     # Return to default workspaces and focus master windows
     # Switch to monitor 2 (DP-2) workspace

@@ -32,7 +32,7 @@
             },
             {
                 "name": "yazi",
-                "command": "wezterm start --class yazi-term -- /home/rash/.cargo/bin/yazi",
+                "command": "wezterm start --always-new-process --class yazi-term -- /home/rash/.cargo/bin/yazi '/home/rash/insync/j.roberto.ash@gmail.com/Google Drive/job_search'",
                 "is_master": false
             }
         ],
@@ -40,7 +40,9 @@
             {
                 "name": "claude_zen",
                 "command": "claude-desktop-native --force-device-scale-factor=1.4",
-                "is_master": true
+                "is_master": true,
+                "launch_delay": 1.0,
+                "no_focus": true
             },
             {
                 "name": "claude_terminal",
