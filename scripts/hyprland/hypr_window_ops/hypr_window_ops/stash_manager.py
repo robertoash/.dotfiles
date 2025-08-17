@@ -45,11 +45,24 @@ def count_open_stashes():
 
 
 def get_monitor_for_stash(stash_name):
-    """Get the monitor name that should have the specified stash."""
+    """Get the monitor name that should have the specified stash based on description."""
+    monitors = window_manager.run_hyprctl(["monitors", "-j"])
+    if not monitors:
+        return None
+    
+    target_desc = None
     if stash_name == "stash-left":
-        return "DP-3"  # P27u-20 monitor
+        target_desc = "Lenovo Group Limited P27u-20 V90CHVAB"
     elif stash_name == "stash-right":
-        return "DP-1"  # L32p-30 monitor
+        target_desc = "Lenovo Group Limited L32p-30 U51250AL"
+    
+    if not target_desc:
+        return None
+    
+    for monitor in monitors:
+        if monitor.get("description") == target_desc:
+            return monitor.get("name")
+    
     return None
 
 
@@ -70,25 +83,33 @@ def toggle_both_stashes():
         # No stashes open - open both
         print("No stashes open, opening both...")
         
-        # Move to opposite monitor and launch its stash
-        toggle_active_monitor()
-        window_manager.toggle_special_workspace("stash-left")
+        # Focus correct monitor for stash-left and open it
+        left_monitor = get_monitor_for_stash("stash-left")
+        if left_monitor:
+            window_manager.run_hyprctl_command(["dispatch", "focusmonitor", left_monitor])
+            window_manager.toggle_special_workspace("stash-left")
         
-        # Move back and launch this monitor's stash  
-        toggle_active_monitor()
-        window_manager.toggle_special_workspace("stash-right")
+        # Focus correct monitor for stash-right and open it
+        right_monitor = get_monitor_for_stash("stash-right")
+        if right_monitor:
+            window_manager.run_hyprctl_command(["dispatch", "focusmonitor", right_monitor])
+            window_manager.toggle_special_workspace("stash-right")
         
     elif open_count == 2:
         # Both stashes open - close both using same process
         print("Both stashes open, closing both...")
         
-        # Move to opposite monitor and toggle off its stash
-        toggle_active_monitor()
-        window_manager.toggle_special_workspace("stash-left")
+        # Focus correct monitor for stash-left and close it
+        left_monitor = get_monitor_for_stash("stash-left")
+        if left_monitor:
+            window_manager.run_hyprctl_command(["dispatch", "focusmonitor", left_monitor])
+            window_manager.toggle_special_workspace("stash-left")
         
-        # Move back and toggle off this monitor's stash
-        toggle_active_monitor() 
-        window_manager.toggle_special_workspace("stash-right")
+        # Focus correct monitor for stash-right and close it
+        right_monitor = get_monitor_for_stash("stash-right")
+        if right_monitor:
+            window_manager.run_hyprctl_command(["dispatch", "focusmonitor", right_monitor])
+            window_manager.toggle_special_workspace("stash-right")
         
     elif open_count == 1:
         # Only one stash open - toggle only that one
@@ -129,9 +150,9 @@ def move_to_monitor_stash(stash_name=None):
         monitor_desc = monitor.get("description", "")
         
         # Map monitors to their stash workspaces
-        if "DP-1" in monitor_name or "L32p-30" in monitor_desc:
+        if "DP-2" in monitor_name or "L32p-30" in monitor_desc:
             stash = "stash-right"
-        elif "DP-3" in monitor_name or "P27u-20" in monitor_desc:
+        elif "DP-1" in monitor_name or "P27u-20" in monitor_desc:
             stash = "stash-left"
         else:
             # Default fallback
