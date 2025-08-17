@@ -8,5 +8,6 @@ function big_files --description 'List files recursively sorted by size with fzf
         --tiebreak=index \
         --header='Files by size (Enter: open, Ctrl-D: delete, Esc: quit)' \
         --prompt='Size ranked > ' \
-        --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r rm -f)+reload(dust -d 999 -p -b -P -X .git -r -F)'
+        --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r rm -f)+reload(dust -d 999 -p -b -P -X .git -r -F)' \
+        --bind='enter:execute-silent(echo {} | awk "{print \$NF}" | xargs -r xdg-open)'
 end

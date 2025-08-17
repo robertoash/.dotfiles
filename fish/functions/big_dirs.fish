@@ -8,5 +8,6 @@ function big_dirs --description 'List directories recursively sorted by size wit
         --tiebreak=index \
         --header='Dirs by size (Enter: open, Ctrl-D: delete, Esc: quit)' \
         --prompt='Size ranked > ' \
-        --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r rm -rf)+reload(dust -d 999 -p -b -P -X .git -r -D)'
+        --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r rm -rf)+reload(dust -d 999 -p -b -P -X .git -r -D)' \
+        --bind='enter:execute(echo {} | awk "{print \$NF}" | xargs -r yazi)'
 end
