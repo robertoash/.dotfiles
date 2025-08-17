@@ -124,11 +124,11 @@ def main():
                     continue
                 else:
                     output_lines.append(line)
-            # If process exited, print any remaining output as message
-            if output_lines:
-                rofi_error("\n".join(output_lines))
+            # If process exited, check for errors
             proc.wait()
-            break
+            
+            # Exit with the same code as the subprocess
+            sys.exit(proc.returncode)
     finally:
         if proc.poll() is None:
             proc.terminate()
