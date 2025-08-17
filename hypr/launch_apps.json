@@ -56,7 +56,7 @@
             },
             {
                 "name": "nvim_obsidian_zellij",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/obsidian/vault' -- zellij --layout workspace12",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
                 "is_master": false
             }
         ]
