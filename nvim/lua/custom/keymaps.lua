@@ -26,6 +26,7 @@ if wk_ok then
 		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
 		{ "<leader>o", group = "[O]il File Manager", mode = { "n", "v" } },
 		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
+		{ "<leader>P", group = "[P]rint", mode = { "n", "v" } },
 		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
 		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
 		{ "<leader>s/", group = "[S]earch [/] within files", mode = { "n", "v" } },
@@ -328,6 +329,49 @@ local find_replace_mappings = {
 	{ "n", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace on current line [.]" } },
 	{ "v", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace in selection [.]" } },
 	{ "n", "<leader>fr%", ":%s//g<Left><Left>", { desc = "Find and replace in entire document [%]" } },
+}
+
+-- Printing mappings
+local print_mappings = {
+	{
+		"n",
+		"<leader>Pp",
+		function()
+			local filepath = vim.fn.expand("%:p")
+			if filepath == "" then
+				vim.notify("No file to print", vim.log.levels.ERROR)
+				return
+			end
+			local cmd = string.format("lp -d Brother_DCP-L2530DW '%s'", filepath)
+			local result = vim.fn.system(cmd)
+			if vim.v.shell_error == 0 then
+				vim.notify("Sent to printer: " .. vim.fn.expand("%:t"), vim.log.levels.INFO)
+			else
+				vim.notify("Print failed: " .. result, vim.log.levels.ERROR)
+			end
+		end,
+		{ desc = "[P]rint current file" },
+	},
+	{
+		"v",
+		"<leader>Pp",
+		function()
+			-- Save selection to temp file and print
+			local lines = vim.fn.getregion(vim.fn.getpos("v"), vim.fn.getpos("."))
+			local tmpfile = vim.fn.tempname() .. ".txt"
+			vim.fn.writefile(lines, tmpfile)
+			local cmd = string.format("lp -d Brother_DCP-L2530DW '%s'", tmpfile)
+			local result = vim.fn.system(cmd)
+			if vim.v.shell_error == 0 then
+				vim.notify("Sent selection to printer", vim.log.levels.INFO)
+			else
+				vim.notify("Print failed: " .. result, vim.log.levels.ERROR)
+			end
+			-- Clean up temp file
+			vim.fn.delete(tmpfile)
+		end,
+		{ desc = "[P]rint selection" },
+	},
 }
 
 -- Buffer and Window Management Keybinds
@@ -890,6 +934,7 @@ set_keymaps(mini_splitjoin_mappings)
 set_keymaps(noice_mappings)
 set_keymaps(autopairs_mappings)
 set_keymaps(find_replace_mappings)
+set_keymaps(print_mappings)
 set_keymaps(yazi_mappings)
 set_keymaps(oil_mappings)
 set_keymaps(undotree_mappings)
