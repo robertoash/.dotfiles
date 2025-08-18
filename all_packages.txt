@@ -8,7 +8,6 @@ ansible-language-server###1.2.3-1###pacman
 aquamarine-git###0.8.0.r4.ga19cf76-1###pacman
 aria2###1.37.0-2###pacman
 aspell-en###2020.12.07-2###pacman
-atool###0.39.0-10###pacman
 atuin###18.8.0-1###pacman
 axel###2.17.14-1###pacman
 b43-fwcutter###019-6###pacman
@@ -81,7 +80,6 @@ fatrace###0.18.0-1###pacman
 fd###10.2.0-1###pacman
 feh###3.10.3-1###pacman
 ffmpegthumbnailer###2.2.3-3###pacman
-file-roller###44.5-1###pacman
 fish###4.0.2-1###pacman
 fsarchiver###0.8.8-1###pacman
 fx###39.0.1-1###pacman
@@ -222,7 +220,7 @@ polkit-gnome###0.105-11###pacman
 poppler-glib###25.08.0-1###pacman
 power-profiles-daemon###0.30-1###pacman
 pv###1.9.34-1###pacman
-pyprland-git###r1483.33dc0f5-1###pacman
+pyprland-git###r1485.9319751-1###pacman
 python###3.13.7-1###pacman
 python-adblock###0.6.0-4###pacman
 python-appdirs###1.4.4-11###pacman
@@ -390,7 +388,7 @@ mullvad-browser-bin###14.5.5-1###yay
 mullvad-vpn###2025.8-1###yay
 open-tv-bin###1.8.3-1###yay
 otf-futura-renner###1-2###yay
-pyprland-git###r1483.33dc0f5-1###yay
+pyprland-git###r1485.9319751-1###yay
 python-qutescript-git###r34.5115bc8-1###yay
 python-sounddevice###0.5.2-1###yay
 qutebrowser-git###3.5.0.r39.g9c7a75616-1###yay
@@ -419,7 +417,7 @@ cargo-update###v17.0.0###cargo
 choose###v1.3.6###cargo
 du-dust###v1.2.3###cargo
 dua-cli###v2.31.0###cargo
-dysk###v2.10.1###cargo
+dysk###v3.0.0###cargo
 eza###v0.23.0###cargo
 fre###v0.4.1###cargo
 fselect###v0.9.0###cargo
@@ -444,11 +442,12 @@ thoth-cli###v0.1.84###cargo
 topgrade###v16.0.4###cargo
 trashy###v2.0.0###cargo
 watchexec-cli###v2.3.2###cargo
+xcp###v0.24.1###cargo
 yazi-build###v0.1.8###cargo
 yazi-cli###v25.5.31###cargo
 yazi-fm###v25.5.31###cargo
 zellij###v0.43.1###cargo
-zenith###v0.0.2###cargo
+zenith###v0.14.###cargo
 black###v25.1.0###uv
 cambridge###v3.14.1###uv
 cjar###v0.1.0###uv
