@@ -36,7 +36,7 @@ abbr yay_total "yay -Syu --devel"
 abbr Syu "yay_update"
 
 # System
-abbr free_space "lsblk -o NAME,SIZE,FSAVAIL,MOUNTPOINT"
+abbr free_space "dysk"
 abbr mem "smem -t -k -c 'name rss' | tail -25"
 
 ### SGPT
