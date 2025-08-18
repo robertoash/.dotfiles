@@ -251,20 +251,20 @@ Examples:
         help="Enable debug output",
     )
 
-    # Toggle both stash workspaces
+    # Toggle monitor stash (per-monitor toggle)
     subparsers.add_parser(
-        "toggle-stashes",
-        help="Toggle both stash workspaces intelligently",
+        "toggle-stash",
+        help="Toggle the stash workspace for the current monitor",
         description="""
-Toggle both monitor-specific stash workspaces based on current state.
-If no stashes are open, opens both. If both are open, closes both.
-If only one is open, closes just that one.
+Toggle the stash workspace for the currently active monitor only.
+This is a simpler alternative to toggle-stashes that only affects
+the stash on the monitor you're currently using.
         """,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Toggle both stash workspaces
-  hypr-window-ops toggle-stashes
+  # Toggle stash on current monitor
+  hypr-window-ops toggle-stash
         """,
     )
 
@@ -338,8 +338,8 @@ Examples:
         return monitor_movement.move_window_to_monitor(
             direction=args.direction, debug=args.debug
         )
-    elif args.command == "toggle-stashes":
-        return stash_manager.toggle_both_stashes()
+    elif args.command == "toggle-stash":
+        return stash_manager.toggle_monitor_stash()
     elif args.command == "move-to-stash":
         return stash_manager.move_to_monitor_stash(stash_name=args.stash)
     else:
