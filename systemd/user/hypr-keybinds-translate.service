@@ -1,0 +1,13 @@
+[Unit]
+Description=Translate Hyprland keybinds when source file changes
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.config/scripts/hyprland/translate-keybinds.py --force
+ExecStartPost=/usr/bin/dunstify -i keyboard "Keybinds Updated" "Hyprland keybinds have been retranslated" -t 3000
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
