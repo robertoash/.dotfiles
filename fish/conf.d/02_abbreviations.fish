@@ -6,6 +6,9 @@ abbr yz yazi
 abbr lg lazygit
 abbr lzd lazydocker
 abbr pip "uv pip"
+abbr del "trash put"
+abbr note thoth
+abbr br broot
 
 ## Buku Bookmarks
 abbr bka "buku --suggest -w" # Buku add (interactive)

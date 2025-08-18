@@ -99,6 +99,11 @@ for mode in insert default visual
     bind -M $mode \eg sgpt_fish
 end
 
+# Pipr
+for mode in insert default visual
+    bind \e\ca 'commandline -i (commandline -b | pipr)' # Ctrl+Alt+a
+end
+
 # Allow Alt+hjkl to pass through to Neovim (add after your existing bindings)
 for mode in insert default visual replace
     bind -M $mode \eh ''  # Alt+h - clear command, pass through
