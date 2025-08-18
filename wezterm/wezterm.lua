@@ -168,12 +168,6 @@ config.keys = {
 	-- UTILITY SHORTCUTS
 	-- ----------------------------------------
 
-	-- Clear screen (like kitty's f5)
-	{
-		key = "F5",
-		action = wezterm.action.SendString("clear\n"),
-	},
-
 	-- Quick open URLs (like kitty's hints)
 	{
 		key = "e",
