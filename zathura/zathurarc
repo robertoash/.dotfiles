@@ -1,4 +1,4 @@
-include tokyonight_deep
+#include tokyonight_deep
 set selection-clipboard clipboard
 
 # Adobe PDF viewer-like experience settings
