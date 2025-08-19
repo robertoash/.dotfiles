@@ -69,7 +69,7 @@ eos-packagelist###2.3.1-2###pacman
 eos-quickstart###1.4.1-1###pacman
 eos-rankmirrors###25.7.1-1###pacman
 eos-update-notifier###24.7.1-1###pacman
-espanso-wayland-git###2.2.4.r26.g2e81c815-1###pacman
+espanso-wayland-git###2.2.4.r27.gadd6eafd-1###pacman
 ethtool###1:6.11-1###pacman
 evtest###1.35-2###pacman
 exfatprogs###1.2.9-1###pacman
@@ -363,7 +363,7 @@ claude-code###1.0.83-1###yay
 claude-desktop-native###0.12.55-1###yay
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###yay
 csvq-bin###1.18.1-2###yay
-espanso-wayland-git###2.2.4.r26.g2e81c815-1###yay
+espanso-wayland-git###2.2.4.r27.gadd6eafd-1###yay
 fatrace###0.18.0-1###yay
 gcalcli###4.5.1-2###yay
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###yay
@@ -440,7 +440,6 @@ tealdeer###v1.7.2###cargo
 tgt###v1.0.0###cargo
 thoth-cli###v0.1.84###cargo
 topgrade###v16.0.4###cargo
-trashy###v2.0.0###cargo
 watchexec-cli###v2.3.2###cargo
 xcp###v0.24.1###cargo
 yazi-build###v0.1.8###cargo
@@ -458,6 +457,7 @@ jc###v1.25.5###uv
 kanata-tools###v0.1.0###uv
 python-lsp-server###v1.13.0###uv
 shell-gpt###v1.4.5###uv
+trash-cli###v0.24.5.26###uv
 validate-pyproject###v0.24.1###uv
 yt-dlp###v2025.8.11###uv
 yazi-rs/plugins:smart-enter###e95c7b3###ya
