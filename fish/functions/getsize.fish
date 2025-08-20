@@ -26,42 +26,42 @@ function getsize --description 'List files/directories recursively sorted by siz
     
     switch $mode
         case dirs
-            dust -d 999 -p -b -P -X .git -r -D | \
+            dust -d 999 -X .git -r -D -j | jq -r '.children[] | select(.children | length > 0) | "\(.size) \(.name)"' | \
             fzf --height=12 \
                 --layout=reverse \
                 --border \
-                --ansi \
                 --no-sort \
                 --tiebreak=index \
-                --header='Dirs by size (Enter: open, Ctrl-D: delete, Esc: quit)' \
+                --header='Dirs by size (Enter: open, Ctrl-D: delete, Ctrl-Shift-C: copy path, Esc: quit)' \
                 --prompt='Size ranked > ' \
-                --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r trash put)+reload(dust -d 999 -p -b -P -X .git -r -D)' \
-                --bind='enter:execute(echo {} | awk "{print \$NF}" | xargs -r yazi)'
+                --bind='ctrl-d:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' trash put)+reload(dust -d 999 -X .git -r -D -j | jq -r '"'"'.children[] | select(.children | length > 0) | "\(.size) \(.name)"'"'"')' \
+                --bind='ctrl-shift-c:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | wl-copy)' \
+                --bind='enter:execute(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' yazi)'
                 
         case files
-            dust -d 999 -p -b -P -X .git -r -F | \
+            dust -d 999 -X .git -r -F -j | jq -r '.children[] | "\(.size) \(.name)"' | \
             fzf --height=12 \
                 --layout=reverse \
                 --border \
-                --ansi \
                 --no-sort \
                 --tiebreak=index \
-                --header='Files by size (Enter: open, Ctrl-D: delete, Esc: quit)' \
+                --header='Files by size (Enter: open, Ctrl-D: delete, Ctrl-Shift-C: copy path, Esc: quit)' \
                 --prompt='Size ranked > ' \
-                --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r trash put)+reload(dust -d 999 -p -b -P -X .git -r -F)' \
-                --bind='enter:execute-silent(echo {} | awk "{print \$NF}" | xargs -r xdg-open)'
+                --bind='ctrl-d:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' trash put)+reload(dust -d 999 -X .git -r -F -j | jq -r '"'"'.children[] | "\(.size) \(.name)"'"'"')' \
+                --bind='ctrl-shift-c:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | wl-copy)' \
+                --bind='enter:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' xdg-open)'
                 
         case all
-            dust -d 999 -p -b -P -X .git -r | \
+            dust -d 999 -X .git -r -j | jq -r '.children[] | "\(.size) \(.name)"' | \
             fzf --height=12 \
                 --layout=reverse \
                 --border \
-                --ansi \
                 --no-sort \
                 --tiebreak=index \
-                --header='All items by size (Enter: open, Ctrl-D: delete, Esc: quit)' \
+                --header='All items by size (Enter: open, Ctrl-D: delete, Ctrl-Shift-C: copy path, Esc: quit)' \
                 --prompt='Size ranked > ' \
-                --bind='ctrl-d:execute-silent(echo {} | awk "{print \$NF}" | xargs -r trash put)+reload(dust -d 999 -p -b -P -X .git -r)' \
-                --bind='enter:execute(echo {} | awk "{print \$NF}" | xargs -r -I {} sh -c "test -d \"{}\" && yazi \"{}\" || xdg-open \"{}\"")'
+                --bind='ctrl-d:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' trash put)+reload(dust -d 999 -X .git -r -j | jq -r '"'"'.children[] | "\(.size) \(.name)"'"'"')' \
+                --bind='ctrl-shift-c:execute-silent(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | wl-copy)' \
+                --bind='enter:execute(echo {} | awk "{for(i=2;i<=NF;i++) printf \"%s%s\", \$i, (i<NF?\" \":\"\")}" | xargs -r -d '"'"'\n'"'"' -I {} sh -c "test -d \"{}\" && yazi \"{}\" || xdg-open \"{}\"")'
     end
 end
