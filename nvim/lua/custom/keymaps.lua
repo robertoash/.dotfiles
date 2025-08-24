@@ -648,9 +648,14 @@ local oil_mappings = {
 		"n",
 		"<leader>oo",
 		function()
-			require("oil").open()
+			-- Toggle Oil: close if in Oil buffer, open otherwise
+			if vim.bo.filetype == "oil" then
+				require("oil").close()
+			else
+				require("oil").open()
+			end
 		end,
-		{ desc = "[O]il [O]pen parent directory" },
+		{ desc = "[O]il [O]pen/toggle" },
 	},
 	{
 		"n",
@@ -943,4 +948,44 @@ set_keymaps(multicursor_mappings)
 set_keymaps(trouble_mappings)
 set_keymaps(working_dir_mappings)
 
-return {}
+-- Oil keymaps (for Oil's setup function)
+local oil_keymaps = {
+	["g?"] = "actions.show_help",
+	["<CR>"] = "actions.select",
+	["<C-s>"] = "actions.select_vsplit",
+	["<C-h>"] = "actions.select_split",
+	["<C-t>"] = "actions.select_tab",
+	["<C-p>"] = "actions.preview",
+	["<C-c>"] = "actions.close",
+	["q"] = "actions.close",
+	["<C-l>"] = "actions.refresh",
+	["-"] = "actions.parent",
+	["_"] = "actions.open_cwd",
+	["`"] = "actions.cd",
+	["~"] = "actions.tcd",
+	["gs"] = "actions.change_sort",
+	["gx"] = "actions.open_external",
+	["g."] = "actions.toggle_hidden",
+	["g\\"] = "actions.toggle_trash",
+	-- Custom additions for more intuitive navigation
+	["H"] = "actions.parent",
+	["<BS>"] = "actions.parent",
+}
+
+-- Function to get Oil keymaps for the setup
+local M = {}
+function M.get_oil_keymaps()
+	return oil_keymaps
+end
+
+-- Workaround for Noice cmdline issues in Oil buffers
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "oil",
+	callback = function()
+		-- This prevents the space key from being intercepted in command mode
+		vim.b.noice_cmdline_disabled = true
+	end,
+	desc = "Disable Noice cmdline in Oil buffers",
+})
+
+return M
