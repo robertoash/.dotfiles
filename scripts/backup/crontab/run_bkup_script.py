@@ -13,7 +13,7 @@ backup_scripts_dir = scripts_dir / "backup" / "crontab"
 status_dir = scripts_dir / "_cache"
 
 script_mapping = {
-    "proxmox": "bkup_proxmox.py",
+    "oden": "bkup_oden.py",
     "oldhp": "bkup_oldhp.py",
     "buku": "bkup_buku.py",
     "snapshot-keep": "snapshot_keep_policy.py",
