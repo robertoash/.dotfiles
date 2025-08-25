@@ -113,7 +113,7 @@ hunspell-sv###1:2.42-2###pacman
 hwdetect###2025.08.16.1333-1###pacman
 hwinfo###25.0-2###pacman
 hyprgraphics-git###0.1.5.r2.g157cc52-1###pacman
-hypridle-git###0.1.6.r4.gecf2a36-1###pacman
+hypridle-git###0.1.6.r11.gdda793b-1###pacman
 hyprkeys###1.0.3-1###pacman
 hyprland-git###0.50.0.r113.gb329ea8-1###pacman
 hyprland-protocols-git###0.6.4.r1.g613878c-1###pacman
@@ -221,7 +221,7 @@ polkit-gnome###0.105-11###pacman
 poppler-glib###25.08.0-1###pacman
 power-profiles-daemon###0.30-1###pacman
 pv###1.9.34-1###pacman
-pyprland-git###r1485.9319751-1###pacman
+pyprland-git###r1487.1ddb67c-1###pacman
 python###3.13.7-1###pacman
 python-adblock###0.6.0-4###pacman
 python-appdirs###1.4.4-11###pacman
@@ -370,7 +370,7 @@ gcalcli###4.5.1-2###paru
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###paru
 hunspell-sv###1:2.42-2###paru
 hyprgraphics-git###0.1.5.r2.g157cc52-1###paru
-hypridle-git###0.1.6.r4.gecf2a36-1###paru
+hypridle-git###0.1.6.r11.gdda793b-1###paru
 hyprkeys###1.0.3-1###paru
 hyprland-git###0.50.0.r113.gb329ea8-1###paru
 hyprland-protocols-git###0.6.4.r1.g613878c-1###paru
@@ -388,7 +388,7 @@ mullvad-browser-bin###14.5.6-1###paru
 mullvad-vpn###2025.8-1###paru
 open-tv-bin###1.8.3-1###paru
 otf-futura-renner###1-2###paru
-pyprland-git###r1485.9319751-1###paru
+pyprland-git###r1487.1ddb67c-1###paru
 python-qutescript-git###r34.5115bc8-1###paru
 python-sounddevice###0.5.2-1###paru
 qutebrowser-git###3.5.0.r39.g9c7a75616-1###paru
