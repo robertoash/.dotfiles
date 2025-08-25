@@ -8,12 +8,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from _utils import logging_utils
-
-# Configure logging
-logging_utils.configure_logging()
-logger = logging_utils.get_logger(__name__)
-
 scripts_dir = Path("/home/rash/.config/scripts")
 backup_scripts_dir = scripts_dir / "backup" / "crontab"
 status_dir = scripts_dir / "_cache"
@@ -94,6 +88,8 @@ def verify_snapshot_completion(snapshot_path):
 
 def run_script_with_continue_on_failure(script_name, script_path, args, env, interactive=False):
     """Run script and continue on failure if specified."""
+    import logging
+    logger = logging.getLogger(__name__)
     operation_name = f"backup_{script_name}"
     
     if interactive:
@@ -120,12 +116,8 @@ def run_script_with_continue_on_failure(script_name, script_path, args, env, int
                     break
             
             if snapshot_name:
-                if "root" in script_name:
-                    snapshot_path = f"/.snapshots/{snapshot_name}"
-                elif "home" in script_name:
-                    snapshot_path = f"/home/.snapshots/{snapshot_name}"
-                else:
-                    snapshot_path = None
+                # Both root and home snapshots are stored in /.snapshots
+                snapshot_path = f"/.snapshots/{snapshot_name}"
                 
                 if snapshot_path:
                     verified, verify_msg = verify_snapshot_completion(snapshot_path)
@@ -170,7 +162,21 @@ def set_pythonpath():
     return env
 
 
+def setup_logging():
+    """Setup logging after PYTHONPATH is configured."""
+    sys.path.insert(0, str(scripts_dir))
+    from _utils import logging_utils
+    import logging
+    
+    # Configure logging
+    logging_utils.configure_logging()
+    return logging.getLogger(__name__)
+
+
 def main():
+    # Setup logging first
+    logger = setup_logging()
+    
     parser = argparse.ArgumentParser(
         description="Run backup scripts",
         formatter_class=argparse.RawDescriptionHelpFormatter,
