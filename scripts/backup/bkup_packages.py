@@ -13,10 +13,10 @@ MANAGERS = {
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["sudo", "pacman", "-S", "--noconfirm", pkg],
     },
-    "yay": {
+    "paru": {
         "retrieve": ["sh", "-c", "pacman -Qme"],
         "parse": lambda line: line.strip().split(maxsplit=1),
-        "restore": lambda pkg, ver=None: ["yay", "-S", "--noconfirm", pkg],
+        "restore": lambda pkg, ver=None: ["paru", "-S", "--noconfirm", pkg],
     },
     "cargo": {
         "retrieve": [
