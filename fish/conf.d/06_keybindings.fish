@@ -5,9 +5,7 @@
 # You can change this to fish_default_key_bindings for emacs mode
 fish_vi_key_bindings
 
-# Navigation - emacs style bindings
-bind \ca beginning-of-line
-bind \ce end-of-line
+# Bind delete key
 bind \e\[3~ delete-char
 
 # Home and End keys
