@@ -11,7 +11,8 @@ abbr note thoth
 abbr br broot
 
 ## Buku Bookmarks
-abbr bka "buku --suggest -w" # Buku add (interactive)
+abbr bkw "buku --suggest -w --tag ''" # Buku write
+abbr bka "buku --suggest -w --tag ''" # Buku write
 abbr bkd "buku --suggest -d" # Buku delete
 abbr bke "buku --suggest -w"
 abbr bkl "buku --suggest -p" # Buku list
@@ -19,13 +20,6 @@ abbr bkll "buku --suggest -l" # Buku lock
 abbr bklu "buku --suggest -k" # Buku unlock
 abbr bks "buku --suggest --np -s" # Buku search (no prompt)
 abbr bksp "buku --suggest -s" # Buku search (prompt)
-abbr bkw "buku --suggest -w --tag ''" # Buku write
-
-### Buku Database Functions
-abbr bk_c "switch_buku_db current"
-abbr bk_p "switch_buku_db rashp"
-abbr bk_r "switch_buku_db rash"
-abbr bk_s "switch_buku_db"
 
 # NZBGet
 abbr nzbget "nzbget -c ~/.config/nzbget/nzbget.conf"

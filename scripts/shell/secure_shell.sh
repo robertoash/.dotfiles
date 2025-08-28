@@ -37,8 +37,16 @@ EOF
 
 # Wait for fish copy to complete (needed for shell startup)
 wait $FISH_COPY_PID
+# Ensure all fish config files are fully written to disk
+sync
+
+# Link buku database directory to real location
+ln -s ~/.local/share/buku "$SECURE_XDG_DATA_HOME/buku"
 
 cleanup() {
+    # Switch back to rash if we're on rashp (encrypts using password from db)
+    python3 ~/.config/scripts/shell/switch_buku.py rash 2>/dev/null || true
+    
     # Clean up all temp dirs/files, including ephemeral fish history
     rm -rf "$SECURE_XDG_CONFIG_HOME"
     rm -rf "$SECURE_XDG_DATA_HOME"

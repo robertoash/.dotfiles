@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import fcntl
+import getpass
+import json
 import os
-import shutil
 import subprocess
-import tempfile
+import sys
 from pathlib import Path
 
 
@@ -13,276 +13,158 @@ class BukuDBSwitcher:
         self.db_dir = Path.home() / ".local" / "share" / "buku"
         self.backup_dir = self.db_dir / "bkups"
         self.current_db_file = self.db_dir / "current_db.txt"
-        self.is_switch_startup = True
-        self.original_browser = os.environ.get("BROWSER", "/home/rash/.local/bin/qute_profile rash")
-        os.environ["ORIGINAL_BROWSER"] = self.original_browser
-        # Create a temporary lock file path
-        self.lock_file_path = Path(tempfile.gettempdir()) / "switch_buku.lock"
-        self.lock_file = None
-
-    def acquire_lock(self):
-        self.lock_file = open(self.lock_file_path, "w")
-        try:
-            fcntl.flock(self.lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except IOError:
-            # Print error if launched manually and not via .zshrc
-            if not self.is_switch_startup:
-                print("Another instance is running. Exiting.")
-            sys.exit(1)
-
-    def release_lock(self):
-        if self.lock_file:
-            fcntl.flock(self.lock_file, fcntl.LOCK_UN)
-            self.lock_file.close()
-
-    def set_browser_mode(self):
-        os.environ["BROWSER"] = str(
-            Path.home() / ".config" / "scripts" / "shell" / "buku_browser_wrapper.py"
-        )
-
-    def monitor_bookmarks_db(self, target_db):
-        while True:
-            if list(self.db_dir.glob("bookmarks.db*")):
-                self.current_db_file.write_text(target_db)
-                self.set_browser_mode()
-                break
-
-    def get_suffix(self, file):
-        return file.suffix[3:] if file.suffix.startswith(".db") else ""
-
-    def get_current_db_path(self):
-        current_db = self.get_current_db()
-        real_location = next(
-            self.db_dir.glob("bookmarks.db*"),
-            "nonexistent and waiting for its creation",
-        )
-        substituted_location = self.db_dir / f"{current_db}{real_location.suffix}"
-        print(f"Real location: {real_location}")
-        print(f"Substituted location: {substituted_location}")
-
-    def create_or_update_backup(self, file):
-        from datetime import datetime
-
-        # Get todays date
-        today = datetime.now().strftime("%Y%m%d")
-
-        file_path = Path(file)  # Convert to Path object
-        base_name = file_path.stem  # Get the base name without extension
-        extension = file_path.suffix  # Get the file extension
-        backup = ""
-
-        # Remove .db suffix if present
-        base_name = base_name.rstrip(".db")
-
-        if extension == ".gpg":
-            backup = self.backup_dir / f"{base_name}_{today}.backup.gpg"
-        else:
-            backup = self.backup_dir / f"{base_name}_{today}.backup"
-
+        self.db_dir.mkdir(parents=True, exist_ok=True)
         self.backup_dir.mkdir(parents=True, exist_ok=True)
-        backup.unlink(missing_ok=True)  # Remove existing backup if it exists
-        shutil.copy(file, backup)  # Copy the original file to the backup location
-
-    def switch_db(self, target_db, encrypt_flag=False):
-        target_db = Path(target_db).with_suffix(".db")
-        current_db = self.get_current_db()
-
-        if self.check_startup_scenario(target_db, current_db):
-            return
-
-        if target_db.name == "bookmarks.db":
-            print("Error: target_db cannot be bookmarks.db")
-            return
-
-        current_suffix = self.get_current_suffix()
-        target_suffix = self.get_target_suffix(target_db)
-
-        if not self.rename_current_db(current_db, current_suffix):
-            return
-
-        self.encrypt_current_db_if_needed(current_db, current_suffix, encrypt_flag)
-
-        if not self.handle_target_db(target_db, target_suffix):
-            self.rollback_changes(
-                True, False, current_db, current_suffix, target_db, target_suffix
-            )
-            return
-
-        self.simulate_rashp_error(target_db)
-
-        self.finalize_switch(target_db)
-
-    def check_startup_scenario(self, target_db, current_db):
-        return (
-            (self.db_dir / "bookmarks.db").exists()
-            and not (self.db_dir / target_db).exists()
-            and target_db == current_db
-        )
-
-    def simulate_rashp_error(self, target_db):
-        if target_db.name == "rashp.db":
-            print("Database 'rashp.db' is corrupted and cannot be loaded.")
-
-    def get_current_suffix(self):
-        for file in self.db_dir.glob("bookmarks.db*"):
-            return self.get_suffix(file)
-        return ""
-
-    def get_target_suffix(self, target_db):
-        for file in self.db_dir.glob(f"{target_db.stem}*"):
-            return self.get_suffix(file)
-        return ""
-
-    def rename_current_db(self, current_db, current_suffix):
-        current_file = self.db_dir / f"bookmarks.db{current_suffix}"
-        if current_file.exists():
-            new_file = self.db_dir / f"{current_db}{current_suffix}"
-            if new_file.exists():
-                print(
-                    f"Error: Cannot rename current db. File {new_file} already exists."
-                )
-                return False
-            try:
-                current_file.rename(new_file)
-            except OSError:
-                print("Error: Failed to rename current database.")
-                return False
-        return True
-
-    def encrypt_current_db_if_needed(self, current_db, current_suffix, encrypt_flag):
-        if current_db == "rashp.db" or encrypt_flag:
-            file = self.db_dir / f"{current_db}{current_suffix}"
-            subprocess.run(
-                ["gpg", "-c", "--cipher-algo", "AES256", str(file)], check=True
-            )
-            file.unlink()
-            print(f"Current database encrypted: {file}.gpg")
-
-    def handle_target_db(self, target_db, target_suffix):
-        target_file = self.db_dir / f"{target_db}{target_suffix}"
-        gpg_file = self.db_dir / f"{target_db}.gpg"
-
-        if (
-            not target_file.exists()
-            and not gpg_file.exists()
-            and self.is_switch_startup
-        ):
-            target_file.touch()
-            print(f"Created empty database: {target_file}")
-
-        if target_file.exists() or gpg_file.exists():
-            return self.handle_existing_target_db(target_db, target_suffix)
-        else:
-            print(f"Error: Target database {target_db} not found.")
-            return False
-
-    def handle_existing_target_db(self, target_db, target_suffix):
-        gpg_file = self.db_dir / f"{target_db}.gpg"
-        if gpg_file.exists():
-            self.create_or_update_backup(gpg_file)
-            try:
-                subprocess.run(
-                    [
-                        "gpg",
-                        "--decrypt",
-                        "--output",
-                        str(self.db_dir / target_db),
-                        str(gpg_file),
-                    ],
-                    check=True,
-                )
-            except subprocess.CalledProcessError:
-                print("Decryption failed. Aborting database switch.")
-                return False
-        else:
-            self.create_or_update_backup(self.db_dir / f"{target_db}{target_suffix}")
-
-        if (self.db_dir / f"{target_db}.gpg").exists():
-            subprocess.run(
-                ["gpg", "-d", str(self.db_dir / f"{target_db}.gpg")],
-                stdout=open(str(self.db_dir / target_db), "wb"),
-                check=True,
-            )
-            (self.db_dir / f"{target_db}.gpg").unlink()
-            target_suffix = ""
-
-        new_file = self.db_dir / f"bookmarks.db{target_suffix}"
-        if new_file.exists():
-            print(
-                f"Error: Cannot rename target database. File {new_file} already exists."
-            )
-            return False
-        try:
-            (self.db_dir / f"{target_db}{target_suffix}").rename(new_file)
-        except OSError:
-            print("Error: Failed to rename target database.")
-            return False
-
-        if not self.is_switch_startup and target_db != "rashp.db":
-            pass  # Commented out: print(f"Database '{target_db}' loaded successfully.")
-        return True
-
-    def finalize_switch(self, target_db):
-        self.current_db_file.write_text(str(target_db))
-        self.set_browser_mode()
-
-    def rollback_changes(
-        self,
-        renamed_current,
-        renamed_target,
-        current_db,
-        current_suffix,
-        target_db,
-        target_suffix,
-    ):
-        if renamed_current:
-            (self.db_dir / f"{current_db}{current_suffix}").rename(
-                self.db_dir / f"bookmarks.db{current_suffix}"
-            )
-        if renamed_target:
-            (self.db_dir / f"bookmarks.db{target_suffix}").rename(
-                self.db_dir / f"{target_db}{target_suffix}"
-            )
-        print("Changes rolled back due to an error.")
 
     def get_current_db(self):
-        return (
-            self.current_db_file.read_text().strip()
-            if self.current_db_file.exists()
-            else "rash.db"
-        )
+        if self.current_db_file.exists():
+            return self.current_db_file.read_text().strip()
+        return "rash"
 
-    def run(self, target_db=None, encrypt_flag=False, is_switch_startup=True):
-        self.acquire_lock()
-        try:
-            if not self.current_db_file.exists():
-                self.current_db_file.write_text("rash.db")
+    def switch_db(self, target_db):
+        target_db = target_db.replace(".db", "")
+        
+        if target_db == "bookmarks":
+            print("Error: target_db cannot be bookmarks")
+            return False
+        
+        current_db = self.get_current_db()
+        
+        # Handle encrypted database (rashp)
+        if target_db == "rashp":
+            gpg_file = self.db_dir / "rashp.db.gpg"
+            if gpg_file.exists():
+                # Decrypt rashp.db
+                try:
+                    subprocess.run(
+                        ["gpg", "--decrypt", "--output", str(self.db_dir / "rashp.db"), str(gpg_file)],
+                        check=True
+                    )
+                    gpg_file.unlink()
+                except subprocess.CalledProcessError:
+                    print("Decryption failed. Aborting database switch.")
+                    return False
+        
+        # Check if current database should be encrypted (has bookmark #1 with title "Pass")
+        if current_db != "bookmarks" and (self.db_dir / f"{current_db}.db").exists():
+            # Check if bookmark #1 has title "Pass"
+            password = None
+            try:
+                # Get bookmark #1 as JSON with minimal fields
+                result = subprocess.run(
+                    ["buku", "--db", str(self.db_dir / f"{current_db}.db"), "-f", "40", "-j", "-p", "1"],
+                    capture_output=True,
+                    text=True
+                )
+                if result.returncode == 0 and result.stdout.strip():
+                    bookmark = json.loads(result.stdout)
+                    if bookmark.get("title") == "Pass":
+                        password = bookmark.get("uri", "")
+            except:
+                pass
+            
+            if password:
+                # Use extracted password to encrypt
+                subprocess.run(
+                    ["gpg", "-c", "--batch", "--yes", "--passphrase", password, 
+                     "--cipher-algo", "AES256", str(self.db_dir / f"{current_db}.db")],
+                    capture_output=True
+                )
+                (self.db_dir / f"{current_db}.db").unlink()
+            # If no "Pass" entry found, leave unencrypted
+        
+        # Create target database file if it doesn't exist
+        target_file = self.db_dir / f"{target_db}.db"
+        if not target_file.exists() and not (self.db_dir / f"{target_db}.db.gpg").exists():
+            target_file.touch()
+            print(f"Created empty database: {target_file}")
+        
+        # Update symlink
+        symlink = self.db_dir / "bookmarks.db"
+        symlink.unlink(missing_ok=True)
+        symlink.symlink_to(target_file.name)
+        
+        # Save current database name
+        self.current_db_file.write_text(target_db)
+        
+        # Set BROWSER environment variable for buku integration
+        os.environ["BROWSER"] = str(Path.home() / ".config" / "scripts" / "shell" / "buku_browser_wrapper.py")
+        
+        return True
 
-            current_db = self.get_current_db()
+    def get_current_db_info(self):
+        current_db = self.get_current_db()
+        symlink = self.db_dir / "bookmarks.db"
+        
+        if symlink.exists() and symlink.is_symlink():
+            real_target = symlink.resolve()
+            print(f"Current database: {current_db}")
+            print(f"Symlink points to: {real_target}")
+        else:
+            print(f"Current database (from file): {current_db}")
+            print("Warning: bookmarks.db symlink does not exist")
 
-            if current_db == "rashp.db":
-                encrypt_flag = True
 
-            # Set the startup state
-            self.is_switch_startup = is_switch_startup
+def main():
+    switcher = BukuDBSwitcher()
+    
+    if len(sys.argv) < 2:
+        target_db = "rash"
+    else:
+        target_db = sys.argv[1]
+    
+    if target_db in ["--help", "-h", "help"]:
+        print("""bk_swap - Switch between buku bookmark databases
 
-            if target_db == "current":
-                self.get_current_db_path()
-            else:
-                self.switch_db(target_db, encrypt_flag)
+Usage:
+    bk_swap [database_name]    Switch to database
+    bk_swap current            Show current database info
+    bk_swap --help             Show this help
 
-            self.is_switch_startup = False
-        finally:
-            self.release_lock()
+Examples:
+    bk_swap rash              Switch to rash database
+    bk_swap rashp             Switch to encrypted rashp database
+    bk_swap work              Switch to work database (creates if missing)
+    
+Notes:
+- Databases with bookmark #1 titled "Pass" are auto-encrypted
+- Password stored in the URL field of the "Pass" bookmark
+- Exit handlers automatically encrypt on shell exit""")
+        return
+    
+    if target_db == "current":
+        switcher.get_current_db_info()
+        return
+    
+    # Check if database exists
+    target_db = target_db.replace(".db", "")
+    db_file = switcher.db_dir / f"{target_db}.db"
+    gpg_file = switcher.db_dir / f"{target_db}.db.gpg"
+    
+    if not db_file.exists() and not gpg_file.exists() and target_db != "rash":
+        # Database doesn't exist, offer to create encrypted version
+        response = input(f"Database '{target_db}' doesn't exist. Create new encrypted database? (y/N): ")
+        if response.lower() == 'y':
+            # Switch to new empty database
+            switcher.switch_db(target_db)
+            
+            # Prompt for password and add as bookmark #1
+            password = getpass.getpass(f"Enter encryption password for {target_db}: ")
+            subprocess.run([
+                "buku", "--db", str(db_file),
+                "-a", password, 
+                "--title", "Pass"
+            ], capture_output=True)
+            
+            # Switch back to rash (this will encrypt the new db)
+            switcher.switch_db("rash")
+            print(f"Created encrypted database: {target_db}.db.gpg")
+        return
+    
+    if switcher.switch_db(target_db):
+        if target_db != "rashp":
+            print(f"Switched to database: {target_db}")
 
 
 if __name__ == "__main__":
-    import sys
-
-    switcher = BukuDBSwitcher()
-    encrypt_flag = "--enc" in sys.argv
-    target_db = next(
-        (arg for arg in sys.argv[1:] if arg != "--enc" and arg != "--startup"), "rash"
-    )
-    is_switch_startup = "--startup" in sys.argv
-    switcher.run(target_db, encrypt_flag, is_switch_startup)
+    main()
