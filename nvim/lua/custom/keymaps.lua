@@ -12,31 +12,32 @@
 local wk_ok, wk = pcall(require, "which-key")
 if wk_ok then
 	wk.add({
-		{ "<leader>a", group = "[A]vante AI", mode = { "n", "v" } },
-		{ "<leader>b", group = "[B]uffer Operations", mode = { "n", "v" } },
-		{ "<leader>b/", group = "[B]uffer Na[V]igation", mode = { "n", "v" } },
-		{ "<leader>bc", group = "[B]uffer [C]lose", mode = { "n", "v" } },
-		{ "<leader>c", group = "[C]laude Code", mode = { "n", "v" } },
-		{ "<leader>d", group = "Working [D]ir", mode = { "n", "v" } },
-		{ "<leader>f", group = "[F]ind", mode = { "n", "v" } },
-		{ "<leader>fr", group = "Find and [R]eplace", mode = { "n", "v" } },
-		{ "<leader>g", group = "[G]it", mode = { "n", "v" } },
-		{ "<leader>h", group = "[H]arpoon", mode = { "n", "v" } },
-		{ "<leader>m", group = "[M]ulticursor", mode = { "n", "v" } },
-		{ "<leader>n", group = "[N]oice UI", mode = { "n", "v" } },
-		{ "<leader>o", group = "[O]il File Manager", mode = { "n", "v" } },
-		{ "<leader>p", group = "[P]airs Toggle", mode = { "n", "v" } },
+		{ "<leader>a", group = "[a]vante AI", mode = { "n", "v" } },
+		{ "<leader>b", group = "[b]uffer Operations", mode = { "n", "v" } },
+		{ "<leader>b/", group = "Buffer Navigation [/]", mode = { "n", "v" } },
+		{ "<leader>bc", group = "Buffer [c]lose", mode = { "n", "v" } },
+		{ "<leader>c", group = "[c]laude Code", mode = { "n", "v" } },
+		{ "<leader>d", group = "Working [d]ir", mode = { "n", "v" } },
+		{ "<leader>f", group = "[f]ind", mode = { "n", "v" } },
+		{ "<leader>fr", group = "Find and [r]eplace", mode = { "n", "v" } },
+		{ "<leader>g", group = "[g]it", mode = { "n", "v" } },
+		{ "<leader>h", group = "[h]arpoon", mode = { "n", "v" } },
+		{ "<leader>m", group = "[m]ulticursor", mode = { "n", "v" } },
+		{ "<leader>n", group = "[n]oice UI", mode = { "n", "v" } },
+		{ "<leader>o", group = "[o]il File Manager", mode = { "n", "v" } },
+
 		{ "<leader>P", group = "[P]rint", mode = { "n", "v" } },
-		{ "<leader>q", group = "[Q]uickfix", mode = { "n", "v" } },
-		{ "<leader>s", group = "[S]earch", mode = { "n", "v" } },
-		{ "<leader>s/", group = "[S]earch [/] within files", mode = { "n", "v" } },
-		{ "<leader>t", group = "[T]erminal", mode = { "n", "v" } },
-		{ "<leader>t/", group = "[T]erminal [/] management", mode = { "n", "v" } },
-		{ "<leader>u", group = "[U]ndo Tree", mode = { "n", "v" } },
-		{ "<leader>x", group = "Trouble Diagnostics", mode = { "n", "v" } },
-		{ "<leader>y", group = "[Y]azi File Manager", mode = { "n", "v" } },
-		{ "<leader>=", group = "[=] Apply format", mode = { "n" } },
-		{ "<leader>-", group = "Window splits [|]", mode = { "n", "v" } },
+		{ "<leader>q", group = "[q]uickfix", mode = { "n", "v" } },
+		{ "<leader>s", group = "[s]earch", mode = { "n", "v" } },
+		{ "<leader>s/", group = "Search [/] within files", mode = { "n", "v" } },
+		{ "<leader>0", group = "T[0]ggle", mode = { "n", "v" } },
+		{ "<leader>t", group = "[t]erminal", mode = { "n", "v" } },
+		{ "<leader>t/", group = "Terminal [/] management", mode = { "n", "v" } },
+		{ "<leader>u", group = "[u]ndo Tree", mode = { "n", "v" } },
+		{ "<leader>x", group = "Trouble Diagnostics [x]", mode = { "n", "v" } },
+		{ "<leader>y", group = "[y]azi File Manager", mode = { "n", "v" } },
+		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
+		{ "<leader>-", group = "Window splits [-]", mode = { "n", "v" } },
 	})
 end
 
@@ -59,7 +60,7 @@ local working_dir_mappings = {
 				print("Not in a git repository.")
 			end
 		end,
-		{ desc = "CWD to Git [R]oot" },
+		{ desc = "CWD to Git [r]oot" },
 	},
 }
 -- Claude Code (AI plugin)
@@ -70,7 +71,7 @@ local claude_mappings = {
 		function()
 			vim.cmd("ClaudeCode")
 		end,
-		{ desc = "[C]laude [C]ode" },
+		{ desc = "[c]laude Code" },
 	},
 	{
 		"n",
@@ -78,7 +79,7 @@ local claude_mappings = {
 		function()
 			vim.cmd("ClaudeCodeResume")
 		end,
-		{ desc = "[C]laude [R]esume" },
+		{ desc = "Claude [r]esume" },
 	},
 }
 
@@ -90,7 +91,7 @@ local lazygit_mappings = {
 		function()
 			Snacks.lazygit()
 		end,
-		{ desc = "Lazy[GG]it" },
+		{ desc = "Lazy[g]it" },
 	},
 }
 
@@ -105,7 +106,7 @@ local format_mappings = {
 				conform.format({ async = true, lsp_format = "fallback" })
 			end
 		end,
-		{ desc = "Apply [=] format" },
+		{ desc = "[=] Apply Format" },
 	},
 }
 
@@ -120,7 +121,7 @@ local flash_mappings = {
 				flash.jump()
 			end
 		end,
-		{ desc = "[F]lash jump" },
+		{ desc = "[f]lash jump" },
 	},
 	{
 		{ "n", "x", "o" },
@@ -146,7 +147,7 @@ local telescope_mappings = {
 				builtin.buffers()
 			end
 		end,
-		{ desc = "[S]earch [B]uffers" },
+		{ desc = "Search [b]uffers" },
 	},
 	{
 		"n",
@@ -157,7 +158,7 @@ local telescope_mappings = {
 				ext.extensions.frecency.frecency({ hidden = true, no_ignore = true })
 			end
 		end,
-		{ desc = "[S]earch [F]recency" },
+		{ desc = "Search [f]recency" },
 	},
 	{
 		"n",
@@ -168,7 +169,7 @@ local telescope_mappings = {
 				builtin.diagnostics()
 			end
 		end,
-		{ desc = "[S]earch [D]iagnostics" },
+		{ desc = "Search [d]iagnostics" },
 	},
 	{
 		"n",
@@ -179,7 +180,7 @@ local telescope_mappings = {
 				builtin.find_files()
 			end
 		end,
-		{ desc = "[SS]earch files" },
+		{ desc = "[s]earch files" },
 	},
 	{
 		"n",
@@ -190,7 +191,7 @@ local telescope_mappings = {
 				builtin.live_grep()
 			end
 		end,
-		{ desc = "[S]earch [G]rep" },
+		{ desc = "Search [g]rep" },
 	},
 	{
 		"n",
@@ -201,7 +202,7 @@ local telescope_mappings = {
 				builtin.help_tags()
 			end
 		end,
-		{ desc = "[S]earch [H]elp" },
+		{ desc = "Search [h]elp" },
 	},
 	{
 		"n",
@@ -212,7 +213,7 @@ local telescope_mappings = {
 				builtin.keymaps()
 			end
 		end,
-		{ desc = "[S]earch [K]eymaps" },
+		{ desc = "Search [k]eymaps" },
 	},
 	{
 		"n",
@@ -229,7 +230,7 @@ local telescope_mappings = {
 				})
 			end
 		end,
-		{ desc = "[S]earch [N]eovim files" },
+		{ desc = "Search [n]eovim files" },
 	},
 	{
 		"n",
@@ -240,7 +241,7 @@ local telescope_mappings = {
 				builtin.resume()
 			end
 		end,
-		{ desc = "[S]earch [R]esume" },
+		{ desc = "Search [r]esume" },
 	},
 	{
 		"n",
@@ -251,7 +252,7 @@ local telescope_mappings = {
 				builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
 			end
 		end,
-		{ desc = "[S]earch [/] [A]ll Open Files" },
+		{ desc = "Search [a]ll open files" },
 	},
 	{
 		"n",
@@ -264,7 +265,7 @@ local telescope_mappings = {
 				)
 			end
 		end,
-		{ desc = "Fuzzy [S]earch [/] current buffer [.]" },
+		{ desc = "Fuzzy search current buffer [.]" },
 	},
 	{
 		"n",
@@ -275,9 +276,9 @@ local telescope_mappings = {
 				builtin.grep_string()
 			end
 		end,
-		{ desc = "[S]earch current [W]ord" },
+		{ desc = "Search current [w]ord" },
 	},
-	vim.keymap.set("n", "<leader>z", ":Telescope zoxide list<CR>", { desc = "Zoxide directories" }),
+	vim.keymap.set("n", "<leader>z", ":Telescope zoxide list<CR>", { desc = "[z]oxide directories" }),
 }
 
 --==========================================================================
@@ -316,12 +317,12 @@ local fastedit_mappings = {
 
 -- Diagnostics
 local diagnostic_mappings = {
-	{ "n", "<leader>qd", vim.diagnostic.setloclist, { desc = "Open [Q]uickfix [D]iagnostic list" } },
+	{ "n", "<leader>qd", vim.diagnostic.setloclist, { desc = "[q]uickfix diagnostics" } },
 }
 
 -- Select whole document
 local selectall_mappings = {
-	{ "n", "<leader>%", "<cmd>normal! ggVG<cr>", { noremap = true, desc = "[%] Select entire buffer" } },
+	{ "n", "<leader>%", "<cmd>normal! ggVG<cr>", { noremap = true, desc = "Select entire buffer [%]" } },
 }
 
 -- Find and replace mappings
@@ -350,7 +351,7 @@ local print_mappings = {
 				vim.notify("Print failed: " .. result, vim.log.levels.ERROR)
 			end
 		end,
-		{ desc = "[P]rint current file" },
+		{ desc = "[p]rint current file" },
 	},
 	{
 		"v",
@@ -370,7 +371,7 @@ local print_mappings = {
 			-- Clean up temp file
 			vim.fn.delete(tmpfile)
 		end,
-		{ desc = "[P]rint selection" },
+		{ desc = "[p]rint selection" },
 	},
 }
 
@@ -379,10 +380,10 @@ local print_mappings = {
 -- Window creation and closing using <leader>-
 local window_operations_mappings = {
 	-- Window creation (splits)
-	{ "n", "<leader>-s", "<C-w>s", { desc = "Split window horizontally" } },
-	{ "n", "<leader>-v", "<C-w>v", { desc = "Split window vertically" } },
+	{ "n", "<leader>-s", "<C-w>s", { desc = "[s]plit window horizontally" } },
+	{ "n", "<leader>-v", "<C-w>v", { desc = "Split window [v]ertically" } },
 	-- Window closing
-	{ "n", "<leader>-c", "<C-w>c", { desc = "Close current window/split" } },
+	{ "n", "<leader>-c", "<C-w>c", { desc = "[c]lose current window/split" } },
 }
 
 -- Window navigation using Alt+hjkl (fish compatible)
@@ -416,18 +417,18 @@ vim.api.nvim_create_autocmd("TermOpen", {
 -- Buffer management keybinds using <leader>b
 local buffer_mappings = {
 	-- Common operations (direct access)
-	{ "n", "<leader>bn", ":enew<CR>", { desc = "[B]uffer [N]ew" } },
-	{ "n", "<leader>bl", ":ls<CR>", { desc = "[B]uffer [L]ist" } },
+	{ "n", "<leader>bn", ":enew<CR>", { desc = "[n]ew buffer" } },
+	{ "n", "<leader>bl", ":ls<CR>", { desc = "[l]ist buffers" } },
 
 	-- Navigation sub-group
-	{ "n", "<leader>bvj", ":bnext<CR>", { desc = "[B]uffer Na[V]igation: Next [J]" } },
-	{ "n", "<leader>bvk", ":bprev<CR>", { desc = "[B]uffer Na[V]igation: Previous [K]" } },
-	{ "n", "<leader>bvl", ":blast<CR>", { desc = "[B]uffer Na[V]igation: [L]ast" } },
-	{ "n", "<leader>bvf", ":bfirst<CR>", { desc = "[B]uffer Na[V]igation: [F]irst" } },
+	{ "n", "<leader>bvj", ":bnext<CR>", { desc = "Next buffer [j]" } },
+	{ "n", "<leader>bvk", ":bprev<CR>", { desc = "Previous buffer [k]" } },
+	{ "n", "<leader>bvl", ":blast<CR>", { desc = "Last buffer [l]" } },
+	{ "n", "<leader>bvf", ":bfirst<CR>", { desc = "First buffer [f]" } },
 
 	-- Closing sub-group
-	{ "n", "<leader>bcc", ":bd<CR>", { desc = "[B]uffer [C]lose" } },
-	{ "n", "<leader>bc!", ":bd!<CR>", { desc = "[B]uffer [C]lose force" } },
+	{ "n", "<leader>bcc", ":bd<CR>", { desc = "[c]lose buffer" } },
+	{ "n", "<leader>bc!", ":bd!<CR>", { desc = "Close buffer force [!]" } },
 }
 
 -- Delete to blackhole mappings
@@ -435,6 +436,11 @@ local delete_to_blackhole_mappings = {
 	{ "n", "<leader>D", '"_d', { desc = "Delete to blackhole" } },
 	{ "v", "<leader>D", '"_d', { desc = "Delete to blackhole" } },
 	{ "n", "<leader>DD", '"_dd', { desc = "Delete line to blackhole" } },
+}
+
+-- Clipboard operations - paste from yank register
+local clipboard_mappings = {
+	{ { "n", "x" }, "<leader>p", '"0p', { desc = "Paste from yank register" } },
 }
 
 local snacks_terminal_mappings = {
@@ -445,7 +451,7 @@ local snacks_terminal_mappings = {
 		function()
 			require("snacks.terminal").toggle()
 		end,
-		{ desc = "Terminal [T]oggle" },
+		{ desc = "Terminal [t]oggle" },
 	},
 
 	-- Terminal management sub-group
@@ -455,7 +461,7 @@ local snacks_terminal_mappings = {
 		function()
 			require("snacks.terminal").toggle()
 		end,
-		{ desc = "Terminal [F]loating" },
+		{ desc = "Terminal [f]loating" },
 	},
 	{
 		"n",
@@ -493,42 +499,49 @@ local snacks_terminal_mappings = {
 				})
 				:find()
 		end,
-		{ desc = "[T]erminal [/] pick" },
+		{ desc = "Terminal [p]ick" },
+	},
+}
+
+local hardtime_mappings = {
+	{
+		"n",
+		"<leader>0h",
+		function()
+			require("hardtime").toggle()
+		end,
+		{ desc = "Toggle [h]ardtime" },
 	},
 }
 
 --[[
-=====================================================================
-MINI.SURROUND KEYMAPS (handled by plugin setup)
-=====================================================================
-These mappings are set automatically by mini.surround.setup() and 
-documented here for reference:
+    =====================================================================
+    MINI.SURROUND KEYMAPS (handled by plugin setup)
+    =====================================================================
+    These mappings are set automatically by mini.surround.setup() and 
+    documented here for reference:
 
-ADDING QUOTES/BRACKETS:
-  saiw"     - surround inner word with double quotes
-  saiw'     - surround inner word with single quotes  
-  saiw)     - surround inner word with parentheses
-  saip"     - surround inner paragraph with double quotes
-  
-REPLACING QUOTES/BRACKETS:
-  sr'"      - replace single quotes with double quotes
-  sr")      - replace double quotes with parentheses
-  sr)(      - replace ) with (
-  
-DELETING QUOTES/BRACKETS:
-  sd"       - delete double quotes
-  sd'       - delete single quotes
-  sd)       - delete parentheses
-  
-VISUAL MODE:
-  Select text → sa" - surround selection with double quotes
-  
-OTHER OPERATIONS:
-  sf"       - find next double quote (right)
-  sF"       - find previous double quote (left)  
-  sh        - highlight current surrounding
-  sn        - update n_lines for search
-=====================================================================
+    ADDING QUOTES/BRACKETS:
+      saiw"     - surround inner word with double quotes
+      saiw'     - surround inner word with single quotes  
+      saiw)     - surround inner word with parentheses
+      saip"     - surround inner paragraph with double quotes
+    REPLACING QUOTES/BRACKETS:
+      sr'"      - replace single quotes with double quotes
+      sr")      - replace double quotes with parentheses
+      sr)(      - replace ) with (
+    DELETING QUOTES/BRACKETS:
+      sd"       - delete double quotes
+      sd'       - delete single quotes
+      sd)       - delete parentheses
+    VISUAL MODE:
+      Select text → sa" - surround selection with double quotes
+    OTHER OPERATIONS:
+      sf"       - find next double quote (right)
+      sF"       - find previous double quote (left)  
+      sh        - highlight current surrounding
+      sn        - update n_lines for search
+    =====================================================================
 --]]
 
 -- Mini.splitjoin keymaps
@@ -559,7 +572,7 @@ local noice_mappings = {
 		function()
 			require("noice").cmd("dismiss")
 		end,
-		{ desc = "Noice [D]ismiss all" },
+		{ desc = "[d]ismiss all" },
 	},
 	{
 		"n",
@@ -567,7 +580,7 @@ local noice_mappings = {
 		function()
 			require("noice").cmd("history")
 		end,
-		{ desc = "Noice [H]istory" },
+		{ desc = "[h]istory" },
 	},
 	{
 		"n",
@@ -575,7 +588,7 @@ local noice_mappings = {
 		function()
 			require("noice").cmd("last")
 		end,
-		{ desc = "Noice [L]ast message" },
+		{ desc = "[l]ast message" },
 	},
 	{
 		"n",
@@ -583,7 +596,7 @@ local noice_mappings = {
 		function()
 			require("noice").cmd("errors")
 		end,
-		{ desc = "Noice [E]rrors" },
+		{ desc = "[e]rrors" },
 	},
 	{
 		"n",
@@ -591,7 +604,7 @@ local noice_mappings = {
 		function()
 			require("noice").cmd("telescope")
 		end,
-		{ desc = "Noice [T]elescope" },
+		{ desc = "[t]elescope" },
 	},
 }
 
@@ -599,7 +612,7 @@ local noice_mappings = {
 local autopairs_mappings = {
 	{
 		"n",
-		"<leader>pt",
+		"<leader>0p",
 		function()
 			local autopairs = require("nvim-autopairs")
 			if autopairs.state.disabled then
@@ -610,7 +623,7 @@ local autopairs_mappings = {
 				vim.notify("Autopairs disabled", vim.log.levels.INFO)
 			end
 		end,
-		{ desc = "Pairs [T]oggle" },
+		{ desc = "Toggle [p]airs" },
 	},
 }
 
@@ -622,7 +635,7 @@ local yazi_mappings = {
 		function()
 			require("yazi").yazi()
 		end,
-		{ desc = "Open [Y]azi at current file" },
+		{ desc = "Open [y]azi" },
 	},
 	{
 		"n",
@@ -630,7 +643,7 @@ local yazi_mappings = {
 		function()
 			require("yazi").yazi(nil, vim.fn.getcwd())
 		end,
-		{ desc = "[Y]azi in current [W]orking directory" },
+		{ desc = "Yazi in current [w]orking directory" },
 	},
 	{
 		"n",
@@ -638,7 +651,7 @@ local yazi_mappings = {
 		function()
 			require("yazi").yazi(nil, vim.fn.expand("%:p:h"))
 		end,
-		{ desc = "[Y]azi [R]eveal current file" },
+		{ desc = "Yazi reveal current file [.]" },
 	},
 }
 
@@ -655,7 +668,7 @@ local oil_mappings = {
 				require("oil").open()
 			end
 		end,
-		{ desc = "[O]il [O]pen/toggle" },
+		{ desc = "Oil [o]pen/toggle" },
 	},
 	{
 		"n",
@@ -663,7 +676,7 @@ local oil_mappings = {
 		function()
 			require("oil").open_float()
 		end,
-		{ desc = "[O]il [F]loating window" },
+		{ desc = "Oil [f]loating window" },
 	},
 	{
 		"n",
@@ -671,7 +684,7 @@ local oil_mappings = {
 		function()
 			require("oil").open(vim.fn.expand("%:p:h"))
 		end,
-		{ desc = "[O]il [R]eveal current file" },
+		{ desc = "Oil reveal current file [.]" },
 	},
 	{
 		"n",
@@ -679,7 +692,7 @@ local oil_mappings = {
 		function()
 			require("oil").open()
 		end,
-		{ desc = "Open parent directory" },
+		{ desc = "Open parent directory [-]" },
 	},
 }
 
@@ -691,7 +704,7 @@ local undotree_mappings = {
 		function()
 			vim.cmd("UndotreeToggle")
 		end,
-		{ desc = "[U]ndo tree toggle" },
+		{ desc = "[u]ndo tree toggle" },
 	},
 	{
 		"n",
@@ -699,7 +712,7 @@ local undotree_mappings = {
 		function()
 			vim.cmd("UndotreeFocus")
 		end,
-		{ desc = "[U]ndo tree [F]ocus" },
+		{ desc = "Undo tree [f]ocus" },
 	},
 	{
 		"n",
@@ -707,7 +720,7 @@ local undotree_mappings = {
 		function()
 			vim.cmd("UndotreeToggle")
 		end,
-		{ desc = "UndoTree toggle" },
+		{ desc = "Undo tree toggle" },
 	},
 }
 
@@ -731,7 +744,7 @@ local multicursor_mappings = {
 			local mc = require("multicursor-nvim")
 			mc.matchAllAddCursors()
 		end,
-		{ desc = "Match [*] all add cursors" },
+		{ desc = "Match all add cursors [*]" },
 	},
 	{
 		"n",
@@ -740,7 +753,7 @@ local multicursor_mappings = {
 			local mc = require("multicursor-nvim")
 			mc.alignCursors()
 		end,
-		{ desc = "[A]lign cursors" },
+		{ desc = "[a]lign cursors" },
 	},
 	{
 		"n",
@@ -749,7 +762,7 @@ local multicursor_mappings = {
 			local mc = require("multicursor-nvim")
 			mc.restoreCursors()
 		end,
-		{ desc = "[R]estore cursors" },
+		{ desc = "[r]estore cursors" },
 	},
 }
 
@@ -764,7 +777,7 @@ local harpoon_mappings = {
 				harpoon:list():add()
 			end
 		end,
-		{ desc = "[H]arpoon [A]dd file" },
+		{ desc = "Harpoon [a]dd file" },
 	},
 	{
 		"n",
@@ -775,7 +788,7 @@ local harpoon_mappings = {
 				harpoon.ui:toggle_quick_menu(harpoon:list())
 			end
 		end,
-		{ desc = "[H]arpoon menu" },
+		{ desc = "[h]arpoon menu" },
 	},
 	-- Quick navigation to files 1-4 using Ctrl+Shift+uiop
 	{
@@ -855,7 +868,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble diagnostics toggle")
 		end,
-		{ desc = "Diagnostics (Trouble)" },
+		{ desc = "Diagnostics (Trouble) [x]" },
 	},
 	{
 		"n",
@@ -863,7 +876,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble diagnostics toggle filter.buf=0")
 		end,
-		{ desc = "Buffer Diagnostics (Trouble)" },
+		{ desc = "Buffer Diagnostics (Trouble) [X]" },
 	},
 	{
 		"n",
@@ -871,7 +884,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble symbols toggle focus=false")
 		end,
-		{ desc = "Symbols (Trouble)" },
+		{ desc = "[s]ymbols (Trouble)" },
 	},
 	{
 		"n",
@@ -879,7 +892,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble lsp toggle focus=false win.position=right")
 		end,
-		{ desc = "LSP Definitions / references / ... (Trouble)" },
+		{ desc = "[l]sp definitions / references / ... (Trouble)" },
 	},
 	{
 		"n",
@@ -887,7 +900,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble loclist toggle")
 		end,
-		{ desc = "Location List (Trouble)" },
+		{ desc = "[L]ocation list (Trouble)" },
 	},
 	{
 		"n",
@@ -895,7 +908,7 @@ local trouble_mappings = {
 		function()
 			vim.cmd("Trouble qflist toggle")
 		end,
-		{ desc = "Quickfix List (Trouble)" },
+		{ desc = "[q]uickfix list (Trouble)" },
 	},
 }
 
@@ -918,11 +931,7 @@ set_keymaps(claude_mappings)
 set_keymaps(format_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(arrow_mappings)
-
--- Hardtime toggle for when you need to browse/explore
-vim.keymap.set("n", "<leader>th", function()
-	require("hardtime").toggle()
-end, { desc = "[T]oggle [H]ardtime" })
+set_keymaps(hardtime_mappings)
 set_keymaps(fastnav_mappings)
 set_keymaps(fastedit_mappings)
 set_keymaps(window_operations_mappings)
@@ -933,6 +942,7 @@ set_keymaps(selectall_mappings)
 set_keymaps(flash_mappings)
 set_keymaps(telescope_mappings)
 set_keymaps(delete_to_blackhole_mappings)
+set_keymaps(clipboard_mappings)
 set_keymaps(snacks_terminal_mappings)
 set_keymaps(lazygit_mappings)
 set_keymaps(mini_splitjoin_mappings)
