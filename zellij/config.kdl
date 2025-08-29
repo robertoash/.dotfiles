@@ -172,12 +172,14 @@ keybinds {
         bind "Alt f" { ToggleFloatingPanes; }
         bind "Alt n" { NewPane; }
         bind "Alt x" { CloseFocus; SwitchToMode "Normal"; }
-        bind "Alt i" { MoveTab "Left"; }
-        bind "Alt o" { MoveTab "Right"; }
-        bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
-        bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
-        bind "Alt j" "Alt Down" { MoveFocus "Down"; }
-        bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+        bind "Ctrl 8" { MoveTab "Left"; }
+        bind "Ctrl 9" { MoveTab "Right"; }
+        bind "Alt y" { MoveFocus "Left"; }
+        bind "Alt u" { MoveFocus "Down"; }
+        bind "Alt i" { MoveFocus "Up"; }
+        bind "Alt o" { MoveFocus "Right"; }
+        bind "Alt 8" { GoToPreviousTab; }
+        bind "Alt 9" { GoToNextTab; }
         bind "Alt =" "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt [" { PreviousSwapLayout; }
