@@ -613,35 +613,16 @@ class CalendarNotifier:
                 raw_action = result.stdout.strip()
                 logger.debug(f"Raw dunstify output: '{result.stdout}'")
 
-                # Handle action index mapping (workaround for dunst returning indices)
-                # Build action map based on the actions we added
-                action_map = {}
-                action_index = 0
-
-                if urgency != "critical":
-                    action_map[str(action_index)] = "snooze"
-                    action_index += 1
-
-                action_map[str(action_index)] = "dismiss"
-                action_index += 1
-
-                if event.get("event_url"):
-                    action_map[str(action_index)] = "open_event"
-                    action_index += 1
-
-                if event.get("conference_url"):
-                    action_map[str(action_index)] = "open_conference"
-                    action_index += 1
-
-                if event.get("maps_url"):
-                    action_map[str(action_index)] = "open_location"
-                    action_index += 1
-
-                # Map action index to action name if needed
-                action = action_map.get(raw_action, raw_action)
-                logger.debug(f"Mapped action: '{raw_action}' -> '{action}'")
-
-                self.handle_notification_action(action, event, remind_minutes)
+                # WORKAROUND: Dunst bug - right-click dismiss returns numeric indices
+                # When using context menu (left/middle click), dunst returns action names
+                # When right-clicking to dismiss, it returns numbers
+                # We only process non-numeric responses (actual action names)
+                if raw_action.isdigit():
+                    logger.debug(f"Ignoring numeric response '{raw_action}' - likely a right-click dismiss")
+                else:
+                    # This is a real action selection from the context menu
+                    logger.debug(f"Processing action: '{raw_action}'")
+                    self.handle_notification_action(raw_action, event, remind_minutes)
 
             logger.debug(f"Notification sent: {title} - {message}")
 
