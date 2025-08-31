@@ -1,6 +1,73 @@
 import os
+import sqlite3
+from datetime import datetime, timedelta
+from pathlib import Path
 
 config.load_autoconfig()
+
+
+# === HISTORY CLEANUP ===
+def cleanup_old_history(days=30):
+    """Delete history entries older than specified days."""
+    from qutebrowser.api import message
+
+    try:
+        # Get the data directory
+        data_dir = Path(config.datadir) / "data"
+        history_db = data_dir / "history.sqlite"
+
+        if not history_db.exists():
+            return
+
+        # Calculate cutoff timestamp (qutebrowser uses milliseconds since epoch)
+        cutoff_date = datetime.now() - timedelta(days=days)
+        cutoff_timestamp = int(cutoff_date.timestamp())
+
+        # Connect to database
+        conn = sqlite3.connect(str(history_db))
+        cursor = conn.cursor()
+
+        # Delete old entries from both tables
+        cursor.execute("DELETE FROM History WHERE atime < ?", (cutoff_timestamp,))
+        deleted_history = cursor.rowcount
+
+        cursor.execute(
+            "DELETE FROM CompletionHistory WHERE last_atime < ?", (cutoff_timestamp,)
+        )
+        deleted_completion = cursor.rowcount
+
+        conn.commit()
+        conn.close()
+
+        if deleted_history > 0 or deleted_completion > 0:
+            msg = f"History cleanup: Removed {deleted_history + deleted_completion} entries older than {days} days"
+            message.info(msg)
+
+    except Exception as e:
+        message.error(f"History cleanup failed: {e}")
+
+
+# Run cleanup on startup with a slight delay to ensure qutebrowser is fully initialized
+from qutebrowser.api import cmdutils
+
+
+@cmdutils.register(name="history-cleanup")
+def history_cleanup_command(days: int = 30):
+    """Clean up history entries older than specified days."""
+    cleanup_old_history(days)
+
+
+# Schedule cleanup to run after startup
+from qutebrowser.misc import objects
+from PyQt6.QtCore import QTimer
+
+
+def run_startup_cleanup():
+    cleanup_old_history(30)
+
+
+# Use a timer to run cleanup after qutebrowser is fully loaded
+QTimer.singleShot(1000, run_startup_cleanup)
 # Get the directory of the *symlink*, not the resolved file
 symlink_path = os.path.abspath(__file__)
 profile_path = os.path.dirname(os.path.dirname(symlink_path))
