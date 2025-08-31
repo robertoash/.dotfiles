@@ -209,6 +209,17 @@ config.bind(",d", "config-cycle colors.webpage.darkmode.enabled")
 config.bind("<Alt-h>", "config-cycle tabs.show never always")
 # Duplicate tab
 config.bind("D", "tab-clone")
+# Unbind existing bindings
+config.unbind("pP")
+config.unbind("Pp")
+config.unbind("PP")
+
+# Reorganize clipboard bindings
+config.bind("pp", "open -- {clipboard}")  # clipboard -> current tab
+config.bind("pP", "open -t -- {clipboard}")  # clipboard -> new tab
+
+# Add P for prefill private browsing
+config.bind("P", "cmd-set-text -s :open -p ")
 
 # Rofi Domain History Browser Bindings
 # Ctrl+o: Domain-only history, open in current tab
