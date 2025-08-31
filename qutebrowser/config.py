@@ -143,6 +143,12 @@ config.bind("<Alt-h>", "config-cycle tabs.show never always")
 # Duplicate tab
 config.bind("D", "tab-clone")
 
+# Rofi Domain History Browser Bindings
+# Ctrl+o: Domain-only history, open in current tab
+config.bind("<Ctrl+o>", "spawn --userscript rofi_domain_history.py current")
+# Ctrl+Shift+o: Domain-only history, open in new tab
+config.bind("<Ctrl+Shift+o>", "spawn --userscript rofi_domain_history.py new")
+
 # = Hint Keybinds =
 # Remove defaults
 config.unbind(";i")
@@ -177,10 +183,11 @@ c.aliases["cs"] = "config-source"
 # === USERSCRIPTS ===
 
 # Path to scripts
+# Note: userscripts are now accessed via "spawn --userscript" which automatically
+# looks in the profile's userscripts directory (symlinked to the main one)
 
 PASTE_DELAY = 500
 rofi_dcli_script = "/home/rash/.config/scripts/qutebrowser/rofi_dcli.py"
-run_with_paste_script = "/home/rash/.config/qutebrowser/userscripts/run_with_paste.py"
 
 # = Rofi password manager
 run_with_paste_cmd = f"spawn --userscript run_with_paste.py --script {rofi_dcli_script} --paste-delay {PASTE_DELAY}"
