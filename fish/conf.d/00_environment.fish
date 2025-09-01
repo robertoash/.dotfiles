@@ -53,6 +53,10 @@ set -gx WALK_STATUS_BAR "Size() + ' ' + Mode()"
 # Docker
 set -gx DOCKER_BUILDKIT 1
 
+# Ansible
+set -gx ANSIBLE_CONFIG ~/.config/ansible/ansible.cfg
+set -gx ANSIBLE_INVENTORY ~/.config/ansible/inventory.yml
+
 # Starship config
 set -gx STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
 
