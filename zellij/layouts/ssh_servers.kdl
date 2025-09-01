@@ -1,0 +1,54 @@
+layout {
+    name "ssh_servers"
+    
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=1 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+    
+    tab name="SSH Servers" focus=true {
+        pane split_direction="vertical" {
+            pane split_direction="horizontal" {
+                pane {
+                    command "ssh"
+                    args "oden-server"
+                    name "oden-server"
+                }
+                pane {
+                    command "ssh"
+                    args "oldhp"
+                    name "oldhp"
+                }
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    command "ssh"
+                    args "dockerlab"
+                    name "dockerlab"
+                }
+                pane {
+                    command "ssh"
+                    args "offlinelab"
+                    name "offlinelab"
+                }
+            }
+            pane split_direction="horizontal" {
+                pane {
+                    command "ssh"
+                    args "cloudflare-tunnel"
+                    name "cloudflare-tunnel"
+                }
+                pane {
+                    command "fish"
+                    cwd "/home/rash/.config/"
+                    name "shell"
+                }
+            }
+        }
+    }
+}

@@ -78,3 +78,6 @@ abbr gcala "gcalcli agenda"
 abbr spt "spotify_player"
 abbr xeyes "xprop"
 
+## Zellij
+abbr zj "zellij"
+abbr zj_ssh_servers "zellij --new-session-with-layout ssh_servers --session ssh_servers" 
