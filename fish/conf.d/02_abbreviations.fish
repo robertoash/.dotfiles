@@ -43,9 +43,9 @@ abbr gd "sgpt -d"
 abbr gtc "sgpt -c"
 
 # Fd
-abbr fd "fd -H"
-abbr fdf "fd -H -t f"
-abbr fdd "fd -H -t d"
+abbr fd "fd -Hi"
+abbr fdf "fd -Hi -t f"
+abbr fdd "fd -Hi -t d"
 
 # Jc
 abbr jc "jc -p"
