@@ -51,7 +51,7 @@ docker###1:28.3.3-1###pacman
 docker-buildx###0.27.0-1###pacman
 docker-compose###2.39.2-1###pacman
 dosfstools###4.2-5###pacman
-downgrade###11.5.3-1###pacman
+downgrade###11.5.4-1###pacman
 dracut###108_eos-1###pacman
 duf###0.8.1-3###pacman
 dunst###1.13.0-1###pacman
@@ -308,7 +308,7 @@ upower###1.90.10-1###pacman
 urban-cli-bin###0.2.3-2###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
-uv###0.8.14-1###pacman
+uv###0.8.15-1###pacman
 vi###1:070224-6###pacman
 vivaldi###7.5.3735.66-1###pacman
 vscode-json-languageserver###1.102.0-1###pacman
@@ -469,7 +469,7 @@ yazi-rs/plugins:jump-to-char###d7588f6###ya
 boydaihungst/mediainfo###2093ab7###ya
 yazi-rs/plugins:toggle-pane###d7588f6###ya
 equals03/wl-clipboard###8b8c2f4###ya
-yazi-rs/flavors:catppuccin-mocha###9cd2ac4###ya
+yazi-rs/flavors:catppuccin-mocha###26fac8f###ya
 jorgebucaran/fisher######fisher
 aohorodnyk/fish-autovenv######fisher
 @anthropic-ai/claude-code###1.0.102###npm
