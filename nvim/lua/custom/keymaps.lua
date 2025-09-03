@@ -327,9 +327,8 @@ local selectall_mappings = {
 
 -- Find and replace mappings
 local find_replace_mappings = {
-	{ "n", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace on current line [.]" } },
-	{ "v", "<leader>fr.", ":s//g<Left><Left>", { desc = "Find and replace in selection [.]" } },
-	{ "n", "<leader>fr%", ":%s//g<Left><Left>", { desc = "Find and replace in entire document [%]" } },
+	{ "n", "<leader>fr", ":%s//g<Left><Left>", { desc = "Find and replace in entire document" } },
+	{ "v", "<leader>fr", ":s//g<Left><Left>", { desc = "Find and replace in selection" } },
 }
 
 -- Printing mappings
