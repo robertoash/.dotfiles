@@ -5,7 +5,7 @@ set -euo pipefail
 
 # ========== CONFIG ==========
 SOURCE_DIR="/home/rash/.config/scripts/_cache/iptv/server_files/"
-DESTINATION="root@dockerlab:/root/dev/docker_data/iptv_server/html/"
+DESTINATION="dockerlab:/home/rash/docker/docker_data/iptv_server/html/"
 
 LOG_FILE="/home/rash/.config/scripts/_logs/iptv/last_rsync_to_server.log"
 
