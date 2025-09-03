@@ -22,6 +22,7 @@
 
 search_shortcut: CTRL+INSERT
 toggle_key: OFF
+show_notifications: false
 
 # --- Injection Backend
 
