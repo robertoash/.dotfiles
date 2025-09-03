@@ -164,6 +164,17 @@ config.mouse_bindings = {
 -- ========================================
 
 config.keys = {
+
+	-- ----------------------------------------
+	-- DISABLE DEFAULTS
+	-- ----------------------------------------
+
+	{
+		key = "Enter",
+		mods = "ALT",
+		action = wezterm.action.DisableDefaultAssignment,
+	},
+
 	-- ----------------------------------------
 	-- UTILITY SHORTCUTS
 	-- ----------------------------------------
