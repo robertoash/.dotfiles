@@ -43,9 +43,9 @@ abbr gd "sgpt -d"
 abbr gtc "sgpt -c"
 
 # Fd
-abbr fd "fd -Hi"
-abbr fdf "fd -Hi -t f"
-abbr fdd "fd -Hi -t d"
+abbr fd "fd -HIi --ignore-file=~/.config/fd/.fdignore"
+abbr fdf "fd -HIi --ignore-file=~/.config/fd/.fdignore -t f"
+abbr fdd "fd -HIi --ignore-file=~/.config/fd/.fdignore -t d"
 
 # Jc
 abbr jc "jc -p"
