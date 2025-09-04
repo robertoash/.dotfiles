@@ -10,7 +10,7 @@ from _utils import logging_utils
 
 def backup_oden():
     remote_host = "rash@oden-server"
-    remote_backup_dir = "/home/rash/bkup/.snapshots"
+    remote_backup_dir = "/mnt/bkups/.snapshots"
     local_backup_dir = "/media/sda1/server_bkups/oden"
 
     logging_utils.configure_logging()
