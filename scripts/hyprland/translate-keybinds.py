@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Hyprland Keybind Translation Script
-Translates keybinds between Swedish (swe) and Colemak (cmk) layouts
+Translates keybinds between QWERTY (qwe) and Colemak (cmk) layouts
 """
 
 import argparse
@@ -18,8 +18,8 @@ TARGET_CONFIG = Path.home() / ".config" / "hypr" / "active_keybinds.conf"
 LAYOUT_FILE = Path("/tmp/active_keyboard_layout")
 LAST_LAYOUT_FILE = Path("/tmp/last_translated_layout")
 
-# Swedish (swe) to Colemak (cmk) key mapping
-SWEDISH_TO_COLEMAK = {
+# QWERTY (qwe) to Colemak (cmk) key mapping
+QWERTY_TO_COLEMAK = {
     # Comprehensive mapping based on your exact layout:
     # QWERTY: q w e r t y u i o p å
     # COLEMAK: q w f p g j l u y ö å
@@ -81,21 +81,26 @@ def get_current_layout() -> str:
     try:
         if LAYOUT_FILE.exists():
             layout = LAYOUT_FILE.read_text().strip()
-            # Layout should be either 'swe' or 'cmk'
+            # Handle old format migration
+            if layout == "swe":
+                return "qwe"
+            # Layout should be either 'qwe' or 'cmk'
             if layout in ["cmk"]:
                 return "cmk"
+            elif layout in ["qwe"]:
+                return "qwe"
             else:
-                return "swe"
-        return "swe"
+                return "qwe"  # Default to QWERTY
+        return "cmk"  # Default to Colemak if no file exists
     except Exception as e:
         error(f"Failed to read layout file: {e}")
-        return "swe"
+        return "cmk"
 
 
 def translate_key(key: str, layout: str) -> str:
     """Translate a single key based on layout"""
     if layout == "cmk":
-        return SWEDISH_TO_COLEMAK.get(key, key)
+        return QWERTY_TO_COLEMAK.get(key, key)
     return key
 
 
