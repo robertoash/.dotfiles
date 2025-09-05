@@ -46,11 +46,11 @@
 ;; Colemak without home row mods
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  @tab-hyper q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
+  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
+  @tab-hyper q    w    f    p    g    j    l    u    y    ö    å    S-¨ ret
   @caps-multi a    r    s    t    d    h    n    e    i    o    ä    '
-  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  lctl lmet lalt           @spc-mods                    ralt        rctl
+  @lsft-layer <    z    x    c    v    b    k    m    ,    .    -    @rsft-layer
+  lctl lmet lalt           @spc-mods                    @ralt-layer        rctl
 )
 
 ;; ===============================================
@@ -60,11 +60,11 @@
 ;; QWERTY without home row mods
 (deflayer qwerty
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  @tab-hyper q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
+  @tab-hyper q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
   @caps-multi a    s    d    f    g    h    j    k    l    ö    ä    '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt              @spc-mods                 ralt        rctl
+  @lsft-layer <    z    x    c    v    b    n    m    ,    .    -    @rsft-layer
+  lctl lmet lalt              @spc-mods                 @ralt-layer        rctl
 )
 
 ;; ===============================================
@@ -82,14 +82,42 @@
 )
 
 ;; ===============================================
+;; NUMBER LAYER (AltGr-activated)
+;; ===============================================
+
+;; Number layer - activated by holding AltGr on number row
+(deflayer numbers
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    (multi (release-key ralt) 1) (multi (release-key ralt) 2) (multi (release-key ralt) 3) (multi (release-key ralt) 4) (multi (release-key ralt) 5) (multi (release-key ralt) 6) (multi (release-key ralt) 7) (multi (release-key ralt) 8) (multi (release-key ralt) 9) (multi (release-key ralt) 0) _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    (multi (release-key ralt) ¨)    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                       _                    _         _
+)
+
+;; ===============================================
+;; SHIFTED SYMBOLS LAYER (Shift-activated on number row)
+;; ===============================================
+
+;; Shifted symbols layer - activated by holding Shift on number row
+(deflayer shifted-symbols
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    (multi (release-key lsft) (release-key rsft) AG-1) (multi (release-key lsft) (release-key rsft) AG-2) (multi (release-key lsft) (release-key rsft) AG-3) S-4 (multi (release-key lsft) (release-key rsft) AG-5) (multi (release-key lsft) (release-key rsft) AG-6) (multi (release-key lsft) (release-key rsft) AG-7) (multi (release-key lsft) (release-key rsft) AG-8) (multi (release-key lsft) (release-key rsft) AG-9) (multi (release-key lsft) (release-key rsft) AG-0) _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    (multi (release-key lsft) (release-key rsft) AG-¨)  _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _                       _                    _         _
+)
+
+;; ===============================================
 ;; HOME ROW MODS LAYER (Space-activated)
 ;; ===============================================
 
 ;; Mods layer activated by holding space - outputs QWERTY for all keys
 (deflayer mods-base
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
   _    @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
@@ -102,8 +130,8 @@
 ;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand outputs QWERTY
 (deflayer mods-left-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
   _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    j    k    l    ö    ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
@@ -112,8 +140,8 @@
 ;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand outputs QWERTY
 (deflayer mods-right-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
   _    a    s    d    f    g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
@@ -166,10 +194,10 @@
   a-met (tap-hold-release 100 180 a (multi lmet (layer-while-held mods-left-only)))
   s-ctl (tap-hold-release 85 150 s (multi lctl (layer-while-held mods-left-only)))
   d-alt (tap-hold-release 85 150 d (multi lalt (layer-while-held mods-left-only)))
-  f-sft (tap-hold-release 75 120 f (multi lsft (layer-while-held mods-left-only)))
+  f-sft (tap-hold-release 75 120 f (multi lsft (layer-while-held mods-left-only) (layer-while-held shifted-symbols)))
 
   ;; Right hand mods that activate right-only restriction
-  j-sft (tap-hold-release 75 120 j (multi rsft (layer-while-held mods-right-only)))
+  j-sft (tap-hold-release 75 120 j (multi rsft (layer-while-held mods-right-only) (layer-while-held shifted-symbols)))
   k-alt (tap-hold-release 85 150 k (multi lalt (layer-while-held mods-right-only)))
   l-ctl (tap-hold-release 85 150 l (multi rctl (layer-while-held mods-right-only)))
   ö-met (tap-hold-release 100 180 ö (multi rmet (layer-while-held mods-right-only)))
@@ -183,4 +211,10 @@
   k-alt-base (tap-hold-release 85 150 k lalt)
   l-ctl-base (tap-hold-release 85 150 l rctl)
   ö-met-base (tap-hold-release 100 180 ö rmet)
+
+  ;; Layer-switching modifiers
+  lsft-layer (multi lsft (layer-while-held shifted-symbols))
+  rsft-layer (multi rsft (layer-while-held shifted-symbols))
+  ralt-layer (multi ralt (layer-while-held numbers))
+  
 )
