@@ -7,9 +7,13 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
+Type=forking
 ExecStart=/home/rash/.cargo/bin/spotify_player --daemon
-Restart=always
-RestartSec=12
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=10
 
 [Install]
 WantedBy=default.target

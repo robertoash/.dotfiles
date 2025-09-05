@@ -16,8 +16,8 @@ border_type = "Plain"
 progress_bar_type = "Rectangle"
 enable_cover_image_cache = true
 seek_duration_secs = 5
-enable_streaming = "Always"
-default_device = "spt_cli"
+enable_streaming = "DaemonOnly"
+default_device = "spt_linuxmini"
 
 [layout]
 playback_window_position = "Top"
@@ -28,7 +28,10 @@ playlist_percent = 40
 album_percent = 40
 
 [device]
-name = "spt_cli"
+name = "spt_linuxmini"
 device_type = "speaker"
-volume = 50
+volume = 70
+bitrate = 320
+audio_cache = false
+normalization = false
 autoplay = false
