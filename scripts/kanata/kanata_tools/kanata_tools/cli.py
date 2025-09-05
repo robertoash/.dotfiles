@@ -38,7 +38,7 @@ def main():
     init_parser.add_argument(
         "--fresh-start",
         action="store_true",
-        help="Force default state (SWE-MOD) ignoring saved state"
+        help="Force default state (Colemak) ignoring saved state"
     )
     
     # Listen command
