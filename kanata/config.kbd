@@ -85,38 +85,38 @@
 ;; HOME ROW MODS LAYER (Space-activated)
 ;; ===============================================
 
-;; Mods layer activated by holding space - no same-hand restriction yet
+;; Mods layer activated by holding space - outputs QWERTY for all keys
 (deflayer mods-base
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    @a-met @s-ctl @d-alt @f-sft _    _    @j-sft @k-alt @l-ctl @ö-met _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                  _                  _    _
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  _    @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 _                    ralt        rctl
 )
 
 ;; ===============================================
 ;; SAME-HAND RESTRICTION LAYERS FOR MODS
 ;; ===============================================
 
-;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work
+;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand outputs QWERTY
 (deflayer mods-left-only
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base _    _    j    k    l    ö    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                  _                  _    _
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 _                    ralt        rctl
 )
 
-;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work
+;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand outputs QWERTY
 (deflayer mods-right-only
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    a    s    d    f    _    _    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                  _                  _    _
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  _    a    s    d    f    g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 _                    ralt        rctl
 )
 
 ;; ===============================================
@@ -150,8 +150,13 @@
     caps
   ))
 
-  ;; Space with mods layer on hold
-  spc-mods (tap-hold 50 175 spc (layer-while-held mods-base))
+  ;; Space with mods layer on hold - with double-tap-and-hold repeat
+  spc-mods (switch
+    ;; If a key was pressed very recently, output space (allows double-tap-and-hold repeat)
+    ((key-timing 1 less-than 120)) spc break
+    ;; Otherwise, use tap-hold for space/mods layer
+    () (tap-hold-release 50 175 spc (layer-while-held mods-base)) break
+  )
 
   ;; ==============================================================================
   ;; HOME ROW MODS WITH SAME-HAND RESTRICTION
