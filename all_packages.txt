@@ -30,7 +30,7 @@ chafa###1.16.2-1###pacman
 chaotic-keyring###20230616-1###pacman
 chaotic-mirrorlist###20240724-2###pacman
 chromium-widevine###1:4.10.2891.0-3###pacman
-claude-code###1.0.107-1###pacman
+claude-code###1.0.108-1###pacman
 claude-desktop-native###0.12.55-1###pacman
 cloudflared###2025.8.1-1###pacman
 coin-or-clp###1.17.10-1###pacman
@@ -244,7 +244,7 @@ qbittorrent###5.1.2-1###pacman
 qt5-wayland###5.15.17+kde+r57-1###pacman
 qt6-multimedia###6.9.2-3###pacman
 qt6-quick3d###6.9.2-1###pacman
-qutebrowser-git###3.5.1.r58.g7f532f69d-1###pacman
+qutebrowser-git###3.5.1.r59.g78b55f84c-1###pacman
 rebuild-detector###4.4.5-1###pacman
 reflector###2023-3###pacman
 reflector-simple###2024.8.1-1###pacman
@@ -265,6 +265,7 @@ smartmontools###7.5-1###pacman
 smem###1.5-8###pacman
 sof-firmware###2025.05.1-1###pacman
 solaar###1.1.14-2###pacman
+spotifyd###0.4.1-1###pacman
 sqls###0.2.27-1###pacman
 sshfs###3.7.3-3###pacman
 stardict-dictd-moby-thesaurus###2.4.2-3###pacman
@@ -359,7 +360,7 @@ buku-git###5.0.r33.g641024b-1###paru
 chaotic-keyring###20230616-1###paru
 chaotic-mirrorlist###20240724-2###paru
 chromium-widevine###1:4.10.2891.0-3###paru
-claude-code###1.0.107-1###paru
+claude-code###1.0.108-1###paru
 claude-desktop-native###0.12.55-1###paru
 colloid-catppuccin-gtk-theme-git###2025.07.31.r6.g20dcc6d-1###paru
 csvq-bin###1.18.1-2###paru
@@ -390,7 +391,7 @@ otf-futura-renner###1-2###paru
 pyprland-git###r1487.1ddb67c-1###paru
 python-qutescript-git###r34.5115bc8-1###paru
 python-sounddevice###0.5.2-1###paru
-qutebrowser-git###3.5.1.r58.g7f532f69d-1###paru
+qutebrowser-git###3.5.1.r59.g78b55f84c-1###paru
 reiserfsprogs###3.6.27-5###paru
 rofi-lbonn-wayland-git###1.7.9.wayland1.r1.gd4b16e6f-1###paru
 smem###1.5-8###paru
@@ -460,7 +461,7 @@ python-lsp-server###v1.13.1###uv
 shell-gpt###v1.4.5###uv
 trash-cli###v0.24.5.26###uv
 validate-pyproject###v0.24.1###uv
-yt-dlp###v2025.8.27###uv
+yt-dlp###v2025.9.5###uv
 yazi-rs/plugins:smart-enter###d7588f6###ya
 KKV9/command###4762ecc###ya
 yazi-rs/plugins:mount###d7588f6###ya
@@ -470,10 +471,10 @@ yazi-rs/plugins:jump-to-char###d7588f6###ya
 boydaihungst/mediainfo###2093ab7###ya
 yazi-rs/plugins:toggle-pane###d7588f6###ya
 equals03/wl-clipboard###8b8c2f4###ya
-yazi-rs/flavors:catppuccin-mocha###26fac8f###ya
+yazi-rs/flavors:catppuccin-mocha###3e6da98###ya
 jorgebucaran/fisher######fisher
 aohorodnyk/fish-autovenv######fisher
-@anthropic-ai/claude-code###1.0.107###npm
+@anthropic-ai/claude-code###1.0.108###npm
 ansible-language-server@npm:@ansible/ansible-language-server###1.2.3###npm
 bash-language-server###5.6.0###npm
 corepack###0.34.0###npm
