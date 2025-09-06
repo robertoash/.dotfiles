@@ -75,9 +75,9 @@
 (deflayer vim-nav
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
   _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    C-d  C-u  _    _    _    _    _
+  _    _    _    _    _    _    pgdn C-down C-up pgup _    _    _    _
   _    _    _    _    _    _    left down up   rght _    _    _
-  _    _    _    _    _    _    _    _    home end  _    _         _
+  _    _    _    C-S-x _    _    _    _    home end  _    _         _
   _    _    _                       _                    _         _
 )
 
