@@ -291,20 +291,12 @@ local basic_mappings = {
 	{ "t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" } },
 }
 
--- Disable arrow keys in normal mode
-local arrow_mappings = {
-	{ "n", "<left>", "<cmd>echo 'Use h to move!!'<CR>", { desc = nil } },
-	{ "n", "<right>", "<cmd>echo 'Use l to move!!'<CR>", { desc = nil } },
-	{ "n", "<up>", "<cmd>echo 'Use k to move!!'<CR>", { desc = nil } },
-	{ "n", "<down>", "<cmd>echo 'Use j to move!!'<CR>", { desc = nil } },
-}
-
 -- Faster navigation
 local fastnav_mappings = {
-	{ "n", "<C-j>", "10j", { desc = "Move down 10 times" } },
-	{ "v", "<C-j>", "10j", { desc = "Move down 10 times" } },
-	{ "n", "<C-k>", "10k", { desc = "Move up 10 times" } },
-	{ "v", "<C-k>", "10k", { desc = "Move up 10 times" } },
+	{ "n", "<C-down>", "10j", { desc = "Move down 10 times" } },
+	{ "v", "<C-down>", "10j", { desc = "Move down 10 times" } },
+	{ "n", "<C-up>", "10k", { desc = "Move up 10 times" } },
+	{ "v", "<C-up>", "10k", { desc = "Move up 10 times" } },
 }
 
 -- Fast edit mappings
@@ -929,7 +921,6 @@ end
 set_keymaps(claude_mappings)
 set_keymaps(format_mappings)
 set_keymaps(basic_mappings)
-set_keymaps(arrow_mappings)
 set_keymaps(hardtime_mappings)
 set_keymaps(fastnav_mappings)
 set_keymaps(fastedit_mappings)

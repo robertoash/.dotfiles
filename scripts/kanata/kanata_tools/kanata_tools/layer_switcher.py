@@ -26,8 +26,8 @@ class KanataLayerSwitcher:
     """Handles layer switching and state management for Kanata."""
     
     def __init__(self):
-        self.current_layout = "swe"
-        self.current_mod_state = "mod"
+        self.current_layout = "cmk"
+        self.current_mod_state = "base"
         self.setup_logging()
         self.state_manager = StateManager(self.logger)
         self.load_state()
@@ -45,19 +45,30 @@ class KanataLayerSwitcher:
             # First try temp state file
             state = self.state_manager.load_temp_state()
             if state:
-                self.current_layout = state.get("layout", "swe")
-                self.current_mod_state = state.get("mod_state", "mod")
-                self.logger.info(f"Loaded state: {self.current_layout}-{self.current_mod_state}")
+                # Handle migration from old state format
+                layout = state.get("layout", "cmk")
+                if layout == "swe":
+                    layout = "qwe"  # Map old Swedish to QWERTY
+                elif layout not in ["cmk", "qwe"]:
+                    layout = "cmk"  # Default to Colemak
+                    
+                self.current_layout = layout
+                self.current_mod_state = "base"  # Always base in new config
+                self.logger.info(f"Loaded state: {self.current_layout}")
             else:
                 # Fallback to active layout file
                 try:
                     if ACTIVE_LAYOUT_FILE.exists():
                         layout_content = ACTIVE_LAYOUT_FILE.read_text().strip()
-                        if layout_content in ["swe", "cmk"]:
+                        if layout_content == "swe":
+                            self.current_layout = "qwe"  # Map old Swedish to QWERTY
+                        elif layout_content in ["qwe", "cmk"]:
                             self.current_layout = layout_content
-                            self.logger.info(f"Using layout from active_keyboard_layout: {self.current_layout}-mod")
+                        else:
+                            self.current_layout = "cmk"  # Default
+                        self.logger.info(f"Using layout from active_keyboard_layout: {self.current_layout}")
                     else:
-                        self.logger.info("No state file found, using defaults: swe-mod")
+                        self.logger.info("No state file found, using defaults: cmk")
                 except Exception as e:
                     self.logger.warning(f"Failed to read active_keyboard_layout: {e}")
         except Exception as e:
@@ -153,8 +164,8 @@ class KanataLayerSwitcher:
             sock.close()
     
     def switch_layout(self):
-        """Switch between Swedish and Colemak layouts."""
-        self.current_layout = "cmk" if self.current_layout == "swe" else "swe"
+        """Switch between Colemak and QWERTY layouts."""
+        self.current_layout = "qwe" if self.current_layout == "cmk" else "cmk"
         
         key = (self.current_layout, self.current_mod_state)
         layer_name = LAYER_NAMES[key]
@@ -168,37 +179,25 @@ class KanataLayerSwitcher:
             self.update_espanso_config()
         else:
             # Revert on failure
-            self.current_layout = "cmk" if self.current_layout == "swe" else "swe"
+            self.current_layout = "qwe" if self.current_layout == "cmk" else "cmk"
     
     def toggle_mod_state(self):
-        """Toggle between mod and nomod states."""
-        self.current_mod_state = "nomod" if self.current_mod_state == "mod" else "mod"
-        
-        key = (self.current_layout, self.current_mod_state)
-        layer_name = LAYER_NAMES[key]
-        
-        self.logger.info(f"Toggling mod state to: {self.current_mod_state}")
-        
-        if self.send_layer_change(layer_name):
-            self.save_state()
-            self.update_status_file()
-        else:
-            # Revert on failure
-            self.current_mod_state = "nomod" if self.current_mod_state == "mod" else "mod"
+        """Toggle mod state - not used in new configuration but kept for compatibility."""
+        self.logger.info("Mod state toggle not applicable in new configuration (mods are on space-hold)")
     
-    def set_specific_layer(self, layout: str, mod_state: str) -> bool:
+    def set_specific_layer(self, layout: str, mod_state: str = "base") -> bool:
         """Set specific layer combination."""
-        if layout not in ["swe", "cmk"] or mod_state not in ["mod", "nomod"]:
-            self.logger.error(f"Invalid layer combination: {layout}-{mod_state}")
+        if layout not in ["qwe", "cmk"]:
+            self.logger.error(f"Invalid layout: {layout}")
             return False
         
         self.current_layout = layout
-        self.current_mod_state = mod_state
+        self.current_mod_state = "base"  # Always base in new config
         
-        key = (layout, mod_state)
+        key = (layout, "base")
         layer_name = LAYER_NAMES[key]
         
-        self.logger.info(f"Setting layer to: {layout}-{mod_state}")
+        self.logger.info(f"Setting layer to: {layout}")
         
         if self.send_layer_change(layer_name):
             self.save_state()
@@ -213,11 +212,18 @@ class KanataLayerSwitcher:
         """Initialize Kanata with appropriate state based on reboot detection."""
         state = self.state_manager.get_initial_state()
         
-        self.current_layout = state["layout"]
-        self.current_mod_state = state["mod_state"]
+        # Handle migration from old state format
+        layout = state.get("layout", "cmk")
+        if layout == "swe":
+            layout = "qwe"  # Map old Swedish to QWERTY
+        elif layout not in ["cmk", "qwe"]:
+            layout = "cmk"  # Default to Colemak
+            
+        self.current_layout = layout
+        self.current_mod_state = "base"  # Always base in new config
         
-        key = (self.current_layout, self.current_mod_state)
-        layer_name = LAYER_NAMES[key]
+        key = (self.current_layout, "base")
+        layer_name = LAYER_NAMES.get(key, "colemak")  # Default to colemak if key not found
         
         if self.send_layer_change(layer_name):
             self.save_state()

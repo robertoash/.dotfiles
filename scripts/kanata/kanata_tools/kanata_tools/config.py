@@ -14,25 +14,21 @@ BOOT_TIME_FILE = Path("/tmp/kanata_last_boot_time")
 ACTIVE_LAYOUT_FILE = Path("/tmp/active_keyboard_layout")
 ESPANSO_CONFIG_FILE = Path("/home/rash/.config/espanso/config/default.yml")
 
-# Layer mappings - adjust these to match your Kanata config
+# Layer mappings - simplified for new config (no home row mods in base layers)
 LAYER_NAMES = {
-    ("swe", "mod"): "nordic",  # Swedish with home row mods
-    ("swe", "nomod"): "nordic_plain",  # Swedish without mods
-    ("cmk", "mod"): "colemak",  # Colemak with home row mods
-    ("cmk", "nomod"): "colemak_plain",  # Colemak without mods
+    ("cmk", "base"): "colemak",  # Colemak (default)
+    ("qwe", "base"): "qwerty",   # QWERTY
 }
 
 # Reverse mapping from Kanata layer names to our format
 LAYER_TO_STATE = {
-    "nordic": ("swe", "mod"),
-    "nordic_plain": ("swe", "nomod"),
-    "colemak": ("cmk", "mod"),
-    "colemak_plain": ("cmk", "nomod"),
+    "colemak": ("cmk", "base"),
+    "qwerty": ("qwe", "base"),
 }
 
 # Espanso configuration mappings
 ESPANSO_CONFIG = {
-    "swe": {
+    "qwe": {
         "layout": "se",
         "variant": "nodeadkeys",
         "model": "pc105",
@@ -46,46 +42,20 @@ ESPANSO_CONFIG = {
 
 # Status display mappings with Pango markup for multi-colored text
 STATUS_CONFIG = {
-    ("swe", "mod"): {
-        "text": (
-            '<span color="#ffffff">SWE</span>'
-            '<span color="#ffffff">-</span>'
-            '<span color="#ffffff">MOD</span>'
-        ),
-        "class": "normal",
-        "tooltip": "Kanata: Swedish with home row mods",
-    },
-    ("swe", "nomod"): {
-        "text": (
-            '<span color="#ffffff">SWE</span>'
-            '<span color="#ffffff">-</span>'
-            '<span color="#ff0000">NOMOD</span>'
-        ),
-        "class": "plain",
-        "tooltip": "Kanata: Swedish without mods",
-    },
-    ("cmk", "mod"): {
-        "text": (
-            '<span color="#a855f7">CMK</span>'
-            '<span color="#ffffff">-</span>'
-            '<span color="#ffffff">MOD</span>'
-        ),
+    ("cmk", "base"): {
+        "text": '<span color="#a855f7">COLEMAK</span>',
         "class": "colemak",
-        "tooltip": "Kanata: Colemak with home row mods",
+        "tooltip": "Kanata: Colemak layout",
     },
-    ("cmk", "nomod"): {
-        "text": (
-            '<span color="#a855f7">CMK</span>'
-            '<span color="#ffffff">-</span>'
-            '<span color="#ff0000">NOMOD</span>'
-        ),
-        "class": "colemak-plain",
-        "tooltip": "Kanata: Colemak without mods",
+    ("qwe", "base"): {
+        "text": '<span color="#ffffff">QWERTY</span>',
+        "class": "qwerty",
+        "tooltip": "Kanata: QWERTY layout",
     },
 }
 
-# Default state after reboot
+# Default state after reboot (Colemak as default)
 DEFAULT_STATE = {
-    "layout": "swe",
-    "mod_state": "mod"
+    "layout": "cmk",
+    "mod_state": "base"
 }
