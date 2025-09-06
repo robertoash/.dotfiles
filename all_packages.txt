@@ -75,7 +75,7 @@ evtest###1.36-1###pacman
 exfatprogs###1.2.9-1###pacman
 expect###5.45.4-5###pacman
 f2fs-tools###1.16.0-3###pacman
-fastfetch###2.51.1-1###pacman
+fastfetch###2.52.0-1###pacman
 fatrace###0.19.1-1###pacman
 fd###10.3.0-1###pacman
 feh###3.11.1-1###pacman
@@ -99,7 +99,7 @@ gocryptfs###2.6.1-1###pacman
 greetd###0.10.3-1###pacman
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###pacman
 grim###1.5.0-2###pacman
-grub###2:2.12.r292.g73d1c959-1###pacman
+grub###2:2.12.r359.g19c698d12-1###pacman
 gst-libav###1.26.5-2###pacman
 gst-plugin-pipewire###1:1.4.7-1###pacman
 gst-plugins-bad###1.26.5-2###pacman
@@ -160,10 +160,10 @@ libva-utils###2.22.0-1###pacman
 libwnck3###43.3-1###pacman
 libxfce4ui###4.20.2-1###pacman
 linkding-cli###2024.09.0-1###pacman
-linux###6.16.4.arch1-1###pacman
+linux###6.16.5.arch1-1###pacman
 linux-firmware###20250808-1###pacman
 linux-firmware-nvidia###20250808-1###pacman
-linux-headers###6.16.4.arch1-1###pacman
+linux-headers###6.16.5.arch1-1###pacman
 linux-lts###6.12.45-1###pacman
 logrotate###3.22.0-1###pacman
 lsb-release###2.0.r55.a25a4fc-1###pacman
@@ -210,7 +210,7 @@ pacman-contrib###1.13.0-1###pacman
 papirus-icon-theme###20250501-1###pacman
 paru###2.1.0-1###pacman
 pavucontrol###1:6.1-1###pacman
-pdfjs###5.4.54-1###pacman
+pdfjs###5.4.149-1###pacman
 perl###5.42.0-1###pacman
 pinentry-bemenu###0.14.0-1###pacman
 pipewire-alsa###1:1.4.7-1###pacman
