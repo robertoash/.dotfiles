@@ -127,22 +127,22 @@
 ;; SAME-HAND RESTRICTION LAYERS FOR MODS
 ;; ===============================================
 
-;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand outputs QWERTY
+;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand uses immediate mods
 (deflayer mods-left-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
   _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
-  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    j    k    l    ö    ä    '
+  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
 
-;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand outputs QWERTY
+;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand uses immediate mods
 (deflayer mods-right-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
   _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
-  _    a    s    d    f    g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
+  _    @a-immediate @s-immediate @d-immediate @f-immediate g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
@@ -211,6 +211,16 @@
   k-alt-base (tap-hold-release 85 150 k lalt)
   l-ctl-base (tap-hold-release 85 150 l rctl)
   ö-met-base (tap-hold-release 100 180 ö rmet)
+  
+  ;; Immediate regular keys for opposite hand (no mod behavior, just the key)
+  j-immediate j
+  k-immediate k
+  l-immediate l
+  ö-immediate ö
+  a-immediate a
+  s-immediate s
+  d-immediate d
+  f-immediate f
 
   ;; Layer-switching modifiers
   lsft-layer (multi lsft (layer-while-held shifted-symbols))
