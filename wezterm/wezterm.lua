@@ -272,6 +272,42 @@ config.keys = {
 }
 
 -- ========================================
+-- COPY MODE KEY TABLE
+-- ========================================
+
+config.key_tables = {
+	copy_mode = {
+		-- Move 10 lines up with Ctrl+UpArrow
+		{
+			key = "UpArrow",
+			mods = "CTRL",
+			action = wezterm.action.CopyMode({ MoveByPage = -0.25 }),
+		},
+		-- Move 10 lines down with Ctrl+DownArrow
+		{
+			key = "DownArrow",
+			mods = "CTRL",
+			action = wezterm.action.CopyMode({ MoveByPage = 0.25 }),
+		},
+		-- Exit copy mode with Escape
+		{
+			key = "Escape",
+			mods = "NONE",
+			action = wezterm.action.CopyMode("Close"),
+		},
+		-- Copy selection and exit
+		{
+			key = "Enter",
+			mods = "NONE",
+			action = wezterm.action.Multiple({
+				wezterm.action.CopyTo("ClipboardAndPrimarySelection"),
+				wezterm.action.CopyMode("Close"),
+			}),
+		},
+	},
+}
+
+-- ========================================
 -- RETURN CONFIG
 -- ========================================
 
