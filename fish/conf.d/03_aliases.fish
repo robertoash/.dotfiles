@@ -23,9 +23,6 @@ alias llr="eza --color=always --icons --git -HahlTR"
 alias llrl="eza --color=always --icons --git -HahlTR -L"
 alias lls="eza --all --color=always --icons --group-directories-first --git -Hah -l -a -s size"
 
-## Git Tools
-alias delete_gone_branches="git branch -vv | awk '\$0 ~ /: gone]/ {print \$1;}' | xargs -r git branch -D"
-
 ## Media
 alias cnn="~/scripts/secrets/launch_iptv.py --cnn"
 alias zathura="zathura --fork --config-dir ~/.config/zathura"
