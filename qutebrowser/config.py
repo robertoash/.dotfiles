@@ -50,11 +50,14 @@ def cleanup_old_history(days=30):
 # Run cleanup on startup with a slight delay to ensure qutebrowser is fully initialized
 from qutebrowser.api import cmdutils
 
-
-@cmdutils.register(name="history-cleanup")
-def history_cleanup_command(days: int = 30):
-    """Clean up history entries older than specified days."""
-    cleanup_old_history(days)
+# Only register if not already registered (to handle config reloads)
+try:
+    @cmdutils.register(name="history-cleanup")
+    def history_cleanup_command(days: int = 30):
+        """Clean up history entries older than specified days."""
+        cleanup_old_history(days)
+except:
+    pass  # Command already registered, ignore on config reload
 
 
 # Schedule cleanup to run after startup
@@ -196,6 +199,18 @@ config.bind("J", "tab-next")
 config.bind("K", "tab-prev")
 config.bind("<Ctrl-Shift-j>", "tab-move +")
 config.bind("<Ctrl-Shift-k>", "tab-move -")
+
+# Arrow key navigation (for kanata vim-nav layer)
+config.bind("<Down>", "cmd-repeat 15 scroll down")
+config.bind("<Up>", "cmd-repeat 15 scroll up")
+config.bind("<Left>", "scroll-page -1 0")
+config.bind("<Right>", "scroll-page 1 0")
+config.bind("<Ctrl-Down>", "scroll-page 0 1")
+config.bind("<Ctrl-Up>", "scroll-page 0 -1")
+config.bind("<PgDown>", "scroll-page 0 1")
+config.bind("<PgUp>", "scroll-page 0 -1")
+config.bind("<Home>", "scroll-to-perc 0")
+config.bind("<End>", "scroll-to-perc 100")
 # mpv integration
 config.bind(",m", "spawn --detach mpv {url}")
 config.bind(",M", "hint links spawn --detach mpv {hint-url}")

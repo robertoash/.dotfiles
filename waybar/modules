@@ -387,7 +387,6 @@
         "return-type": "json",
         "interval": 1,
         "format": "{}",
-        "on-click": "kanata-tools switch --mod",
         "on-click-right": "kanata-tools switch --layout",
         "tooltip": true
     },

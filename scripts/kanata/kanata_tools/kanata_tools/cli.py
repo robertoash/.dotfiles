@@ -38,7 +38,7 @@ def main():
     init_parser.add_argument(
         "--fresh-start",
         action="store_true",
-        help="Force default state (SWE-MOD) ignoring saved state"
+        help="Force default state (Colemak) ignoring saved state"
     )
     
     # Listen command
@@ -72,8 +72,8 @@ def main():
     elif args.command == "init":
         switcher = KanataLayerSwitcher()
         if args.fresh_start:
-            # Force default state
-            if not switcher.set_specific_layer("swe", "mod"):
+            # Force default state (Colemak)
+            if not switcher.set_specific_layer("cmk", "base"):
                 sys.exit(1)
         else:
             # Smart init based on reboot detection
