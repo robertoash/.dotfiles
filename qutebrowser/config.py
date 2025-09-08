@@ -5,6 +5,37 @@ from pathlib import Path
 
 config.load_autoconfig()
 
+# Tokyo Night Deep palette colors
+background = "#010111"
+foreground = "#ffffff"
+accent = "#8bffff"
+cursor = "#7dcfff"
+selection_bg = "#515c7e"
+
+# Base colors
+color0 = "#363b54"  # Dark gray
+color1 = "#f7768e"  # Red
+color2 = "#41a6b5"  # Cyan
+color3 = "#e6c100"  # Yellow
+color4 = "#7aa2f7"  # Blue
+color5 = "#bb9af7"  # Purple
+color6 = "#7dcfff"  # Light cyan
+color7 = "#b9bdcc"  # Light gray
+
+# Bright variants
+color8 = "#454c6d"  # Bright dark gray
+color9 = "#ff5f8f"  # Bright red
+color10 = "#00ffbb"  # Bright green
+color11 = "#ffee00"  # Bright yellow
+color12 = "#82aaff"  # Bright blue
+color13 = "#d5a6ff"  # Bright purple
+color14 = "#8bffff"  # Bright cyan
+color15 = "#d0d6e3"  # Bright white
+
+# Dark variants
+color16 = "#1d1d2c"  # Very dark gray
+color24 = "#0b0c19"  # Really dark gray
+
 
 # === HISTORY CLEANUP ===
 def cleanup_old_history(days=30):
@@ -52,10 +83,12 @@ from qutebrowser.api import cmdutils
 
 # Only register if not already registered (to handle config reloads)
 try:
+
     @cmdutils.register(name="history-cleanup")
     def history_cleanup_command(days: int = 30):
         """Clean up history entries older than specified days."""
         cleanup_old_history(days)
+
 except:
     pass  # Command already registered, ignore on config reload
 
@@ -83,13 +116,23 @@ c.editor.command = ["wezterm", "start", "--", "nvim", "{}"]
 # Start page and homepage
 c.url.start_pages = "https://startpage.com"
 c.url.default_page = "https://startpage.com"
-# Tabs and windows
+# Windows
+c.window.title_format = f"{{current_url}} @ [qute-{profile_name}] "
+
+# Tabs
 c.tabs.show = "multiple"
 c.tabs.position = "left"
 c.tabs.width = "15%"
 c.tabs.title.format = "{index}: {current_title}"
 c.tabs.select_on_remove = "prev"
-c.window.title_format = f"{{current_url}} @ [qute-{profile_name}] "
+
+# Additional tab styling for better pinned tab distinction
+c.tabs.padding = {"left": 5, "right": 5, "top": 3, "bottom": 3}
+c.tabs.indicator.width = 2
+c.tabs.favicons.scale = 1.2
+# Optional: Custom format for pinned tabs to make them more distinct
+c.tabs.title.format_pinned = "📌 {audio}{current_title}"
+
 # Autosave session
 c.auto_save.session = True
 c.session.lazy_restore = True
@@ -153,20 +196,42 @@ c.hints.border = "1px solid #e0af68"
 c.hints.padding = {"top": 2, "bottom": 2, "left": 5, "right": 5}
 # Color overrides (Tokyo Night Deep vibes)
 c.colors.completion.fg = "#c0caf5"
-c.colors.completion.even.bg = "#1a1b26"
-c.colors.completion.odd.bg = "#1a1b26"
+c.colors.completion.even.bg = background
+c.colors.completion.odd.bg = background
 c.colors.completion.category.bg = "#1f2335"
 c.colors.completion.match.fg = "#e0af68"
-c.colors.statusbar.normal.bg = "#1a1b26"
+c.colors.statusbar.normal.bg = background
 c.colors.statusbar.command.bg = "#292e42"
 c.colors.statusbar.insert.bg = "#9ece6a"
 c.colors.statusbar.url.fg = "#7dcfff"
-c.colors.tabs.bar.bg = "#1a1b26"
-c.colors.tabs.odd.bg = "#1a1b26"
-c.colors.tabs.even.bg = "#1a1b26"
-c.colors.tabs.selected.odd.bg = "#7aa2f7"
-c.colors.tabs.selected.even.bg = "#7aa2f7"
-c.colors.webpage.bg = "#1a1b26"
+c.colors.webpage.bg = background
+
+# Tab bar background
+c.colors.tabs.bar.bg = background
+# Regular tabs (unselected)
+c.colors.tabs.odd.bg = color16  # Very dark gray background
+c.colors.tabs.odd.fg = color7  # Light gray text
+c.colors.tabs.even.bg = color0  # Dark gray background
+c.colors.tabs.even.fg = color7  # Light gray text
+# Regular tabs (selected)
+c.colors.tabs.selected.odd.bg = accent  # Bright cyan background
+c.colors.tabs.selected.odd.fg = background  # Dark text for contrast
+c.colors.tabs.selected.even.bg = accent  # Bright cyan background
+c.colors.tabs.selected.even.fg = background  # Dark text for contrast
+# Pinned tabs (unselected) - Using purple theme for distinction
+c.colors.tabs.pinned.odd.bg = color5  # Purple background
+c.colors.tabs.pinned.odd.fg = background  # Dark text for contrast
+c.colors.tabs.pinned.even.bg = color5  # Purple background
+c.colors.tabs.pinned.even.fg = background  # Dark text for contrast
+# Pinned tabs (selected) - Using accent cyan for active pinned tabs
+c.colors.tabs.pinned.selected.odd.bg = accent  # Bright cyan background
+c.colors.tabs.pinned.selected.odd.fg = background  # Dark text for contrast
+c.colors.tabs.pinned.selected.even.bg = accent  # Bright cyan background
+c.colors.tabs.pinned.selected.even.fg = background  # Dark text for contrast
+# Tab indicators
+c.colors.tabs.indicator.start = color4  # Blue gradient start
+c.colors.tabs.indicator.stop = color6  # Light cyan gradient end
+c.colors.tabs.indicator.error = color1  # Red for errors
 
 # === POWER TOOLS ===
 
@@ -300,22 +365,3 @@ elif profile_name == "jobhunt":
     c.url.start_pages = "https://www.linkedin.com"
     c.content.autoplay = False
     c.content.cookies.accept = "no-3rdparty"
-
-# === PER-SITE HINT CUSTOMIZATION ===
-
-# hint_mapping = {
-#     "https://mail.google.com/*": {
-#         "hints.mode": "word",
-#         "colors.hints.bg": "yellow",
-#         "colors.hints.fg": "black",
-#     },
-#     "https://*.linkedin.com/*": {
-#         "hints.mode": "number",
-#         "colors.hints.bg": "yellow",
-#         "colors.hints.fg": "black",
-#     },
-# }
-#
-# for domain, settings in hint_mapping.items():
-#     for setting, value in settings.items():
-#         config.set(setting, value, domain)
