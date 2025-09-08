@@ -40,74 +40,35 @@
 )
 
 ;; ===============================================
-;; MAIN LAYER - Colemak (default)
-;; ===============================================
-
-;; Colemak without home row mods
-(deflayer colemak
-  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
-  @tab-hyper q    w    f    p    g    j    l    u    y    ö    å    S-¨ ret
-  @caps-multi a    r    s    t    d    h    n    e    i    o    ä    '
-  @lsft-layer <    z    x    c    v    b    k    m    ,    .    -    @rsft-layer
-  lctl lmet lalt           @spc-mods                    @ralt-layer        rctl
-)
-
-;; ===============================================
-;; QWERTY LAYER
+;; MAIN LAYER - QWERTY (default)
 ;; ===============================================
 
 ;; QWERTY without home row mods
 (deflayer qwerty
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
-  @tab-hyper q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
-  @caps-multi a    s    d    f    g    h    j    k    l    ö    ä    '
-  @lsft-layer <    z    x    c    v    b    n    m    ,    .    -    @rsft-layer
-  lctl lmet lalt              @spc-mods                 @ralt-layer        rctl
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  @tab-multi q    w    e    r    t    y    u    i    o    p    å    ¨ ret
+  @caps-multi-qwerty a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt              @spc-mods                 ralt        rctl
 )
 
 ;; ===============================================
-;; VIM NAVIGATION LAYER
+;; COLEMAK LAYER
 ;; ===============================================
 
-;; Vim navigation on caps hold - using physical key positions
-(deflayer vim-nav
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    pgdn C-down C-up pgup _    _    _    _
-  _    _    _    _    _    _    left down up   rght _    _    _
-  _    _    _    C-S-x _    _    _    _    home end  _    _         _
-  _    _    _                       _                    _         _
+;; Colemak without home row mods
+(deflayer colemak
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  @tab-multi q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
+  @caps-multi-colemak a    r    s    t    d    h    n    e    i    o    ä    '
+  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
+  lctl lmet lalt           @spc-mods                    ralt        rctl
 )
 
-;; ===============================================
-;; NUMBER LAYER (AltGr-activated)
-;; ===============================================
 
-;; Number layer - activated by holding AltGr on number row
-(deflayer numbers
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    (multi (release-key ralt) 1) (multi (release-key ralt) 2) (multi (release-key ralt) 3) (multi (release-key ralt) 4) (multi (release-key ralt) 5) (multi (release-key ralt) 6) (multi (release-key ralt) 7) (multi (release-key ralt) 8) (multi (release-key ralt) 9) (multi (release-key ralt) 0) _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    (multi (release-key ralt) ¨)    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                       _                    _         _
-)
 
-;; ===============================================
-;; SHIFTED SYMBOLS LAYER (Shift-activated on number row)
-;; ===============================================
-
-;; Shifted symbols layer - activated by holding Shift on number row
-(deflayer shifted-symbols
-  _    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    (multi (release-key lsft) (release-key rsft) AG-1) (multi (release-key lsft) (release-key rsft) AG-2) (multi (release-key lsft) (release-key rsft) AG-3) S-4 (multi (release-key lsft) (release-key rsft) AG-5) (multi (release-key lsft) (release-key rsft) AG-6) (multi (release-key lsft) (release-key rsft) AG-7) (multi (release-key lsft) (release-key rsft) AG-8) (multi (release-key lsft) (release-key rsft) AG-9) (multi (release-key lsft) (release-key rsft) AG-0) _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    (multi (release-key lsft) (release-key rsft) AG-¨)  _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    _    _                       _                    _         _
-)
 
 ;; ===============================================
 ;; HOME ROW MODS LAYER (Space-activated)
@@ -116,8 +77,8 @@
 ;; Mods layer activated by holding space - outputs QWERTY for all keys
 (deflayer mods-base
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   _    @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
@@ -130,8 +91,8 @@
 ;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand uses immediate mods
 (deflayer mods-left-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
@@ -140,42 +101,37 @@
 ;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand uses immediate mods
 (deflayer mods-right-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  S-1  S-2  S-3  AG-4  S-5  S-6  S-7  S-8  S-9  S-0  +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    S-¨ ret
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   _    @a-immediate @s-immediate @d-immediate @f-immediate g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
 
-;; ===============================================
-;; HYPER LAYER
-;; ===============================================
-
-;; Hyper layer activated by holding Tab
-(deflayer hyper
-  (multi @hyper-mod esc)    _    _    _    _    _    _    _    _    _    _    _    _    _
-  _    (multi @hyper-mod 1)    (multi @hyper-mod 2)    (multi @hyper-mod 3)    (multi @hyper-mod 4)    (multi @hyper-mod 5)    (multi @hyper-mod 6)    (multi @hyper-mod 7)    (multi @hyper-mod 8)    (multi @hyper-mod 9)    (multi @hyper-mod 0)    _    _    _
-  _    (multi @hyper-mod q)    (multi @hyper-mod w)    (multi @hyper-mod e)    (multi @hyper-mod r)    (multi @hyper-mod t)    (multi @hyper-mod y)    (multi @hyper-mod u)    (multi @hyper-mod i)    (multi @hyper-mod o)    (multi @hyper-mod p)    _    _    _
-  _    (multi @hyper-mod a)    (multi @hyper-mod s)    (multi @hyper-mod d)    (multi @hyper-mod f)    (multi @hyper-mod g)    (multi @hyper-mod h)    (multi @hyper-mod j)    (multi @hyper-mod k)    (multi @hyper-mod l)    _    _    _
-  _    _    (multi @hyper-mod z)    (multi @hyper-mod x)    (multi @hyper-mod c)    (multi @hyper-mod v)    (multi @hyper-mod b)    (multi @hyper-mod n)    (multi @hyper-mod m)    _    _    _    _
-  _    _    _                  _                   _    _
-)
 
 ;; ===============================================
 ;; ALIASES
 ;; ===============================================
 
 (defalias
-  ;; Hyper key combination
-  hyper-mod (multi lctl lsft lalt lmet)
 
-  ;; Tab with hyper on hold
-  tab-hyper (tap-hold 50 175 tab (layer-while-held hyper))
+  ;; Tab: tap=tab, double-tap=caps
+  tab-multi (tap-dance 175 (tab caps))
 
-  ;; Multi-function Caps Lock: tap=esc, double-tap=caps, hold=vim-nav
-  caps-multi (tap-dance 175 (
-    (tap-hold-release 50 175 esc (layer-while-held vim-nav))
-    caps
+  ;; Layer switching aliases
+  switch-to-colemak (layer-switch colemak)
+  switch-to-qwerty (layer-switch qwerty)
+  
+  ;; Multi-function Caps Lock for colemak: tap=esc, double-tap=switch-to-qwerty, hold=hyper
+  caps-multi-colemak (tap-dance 175 (
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
+    @switch-to-qwerty
+  ))
+  
+  ;; Multi-function Caps Lock for qwerty: tap=esc, double-tap=switch-to-colemak, hold=hyper
+  caps-multi-qwerty (tap-dance 175 (
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
+    @switch-to-colemak
   ))
 
   ;; Space with mods layer on hold - with double-tap-and-hold repeat
@@ -194,10 +150,10 @@
   a-met (tap-hold-release 100 180 a (multi lmet (layer-while-held mods-left-only)))
   s-ctl (tap-hold-release 85 150 s (multi lctl (layer-while-held mods-left-only)))
   d-alt (tap-hold-release 85 150 d (multi lalt (layer-while-held mods-left-only)))
-  f-sft (tap-hold-release 75 120 f (multi lsft (layer-while-held mods-left-only) (layer-while-held shifted-symbols)))
+  f-sft (tap-hold-release 75 120 f (multi lsft (layer-while-held mods-left-only)))
 
   ;; Right hand mods that activate right-only restriction
-  j-sft (tap-hold-release 75 120 j (multi rsft (layer-while-held mods-right-only) (layer-while-held shifted-symbols)))
+  j-sft (tap-hold-release 75 120 j (multi rsft (layer-while-held mods-right-only)))
   k-alt (tap-hold-release 85 150 k (multi lalt (layer-while-held mods-right-only)))
   l-ctl (tap-hold-release 85 150 l (multi rctl (layer-while-held mods-right-only)))
   ö-met (tap-hold-release 100 180 ö (multi rmet (layer-while-held mods-right-only)))
@@ -222,9 +178,5 @@
   d-immediate d
   f-immediate f
 
-  ;; Layer-switching modifiers
-  lsft-layer (multi lsft (layer-while-held shifted-symbols))
-  rsft-layer (multi rsft (layer-while-held shifted-symbols))
-  ralt-layer (multi ralt (layer-while-held numbers))
   
 )

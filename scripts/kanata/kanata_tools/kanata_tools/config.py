@@ -54,8 +54,8 @@ STATUS_CONFIG = {
     },
 }
 
-# Default state after reboot (Colemak as default)
+# Default state after reboot (QWERTY as default)
 DEFAULT_STATE = {
-    "layout": "cmk",
+    "layout": "qwe",
     "mod_state": "base"
 }
