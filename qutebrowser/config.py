@@ -344,15 +344,6 @@ c.aliases["cs"] = "config-source"
 # Note: userscripts are now accessed via "spawn --userscript" which automatically
 # looks in the profile's userscripts directory (symlinked to the main one)
 
-PASTE_DELAY = 500
-rofi_dcli_script = "/home/rash/.config/scripts/qutebrowser/rofi_dcli.py"
-
-# = Rofi password manager
-run_with_paste_cmd = f"spawn --userscript run_with_paste.py --script {rofi_dcli_script} --paste-delay {PASTE_DELAY}"
-
-config.bind("<Alt-p>u", f"{run_with_paste_cmd} username", mode="insert")
-config.bind("<Alt-p>p", f"{run_with_paste_cmd} password", mode="insert")
-config.bind("<Alt-p>o", f"{run_with_paste_cmd} otp", mode="insert")
 
 # === PER-PROFILE BEHAVIOR ===
 

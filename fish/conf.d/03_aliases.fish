@@ -13,8 +13,6 @@ alias bkup_proxmox="bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
 alias bkup_servers="bash ~/.config/scripts/backup/run_oldhp_bkup.sh && bash ~/.config/scripts/backup/run_proxmox_bkup.sh"
 alias bkup_system='~/.config/scripts/backup/snapshot_storage.py -s "backup_$(date +%Y%m%d_%H%M)"'
 
-### DCLI
-alias dcli="~/.config/scripts/shell/dcli_wrapper.py"
 
 ## eza File Listing
 alias ll="eza --all --color=always --icons --group-directories-first --git -Hah"

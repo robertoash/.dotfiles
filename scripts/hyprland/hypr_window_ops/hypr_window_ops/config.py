@@ -11,8 +11,28 @@ CONFIG_DIR = os.environ.get("DOTFILES_DIR", str(HOME / ".config"))
 CURRENT_PROJECT_DIR = os.environ.get("CURRENT_PROJECT_DIR", str(HOME / "dev/apps/"))
 
 # App profiles config
-APP_PROFILES_PATH = HOME / ".config" / "hypr" / "launch_apps.json"
+APP_PROFILES_PATH = HOME / ".config" / "hypr" / "script_configs" / "launch_apps.json"
 DEFAULT_PROFILE = "personal"
+
+# Browser profile launchers (used by rofi_profile_selector.py)
+BROWSER_PROFILES = {
+    "rash": {
+        "profile_directory": "rash",
+        "app_url": None
+    },
+    "jobhunt": {
+        "profile_directory": "work",
+        "app_url": None
+    },
+    "app": {
+        "profile_directory": "app",
+        "app_url": None
+    },
+    "dash": {
+        "profile_directory": "dash",
+        "app_url": None
+    }
+}
 
 # Delays
 # INITIAL_DELAY: Time to wait before starting to launch any apps.

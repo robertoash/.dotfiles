@@ -18,6 +18,9 @@ class ProfileSelector:
 
     def __init__(self):
         """Initialize the profile selector with application configurations."""
+        # Load chromium profiles from hypr_window_ops config
+        chromium_profiles = self._load_chromium_profiles()
+        
         self.applications = {
             "qutebrowser": {
                 "profiles": ["rash", "jobhunt"],
@@ -30,12 +33,29 @@ class ProfileSelector:
                 ),
             },
             "chromium": {
-                "profiles": ["rash", "jobhunt", "app", "dash"],
+                "profiles": chromium_profiles,
                 "command_template": (
                     "/home/rash/.local/bin/chromium_launch --profile {profile}"
                 ),
             },
         }
+
+    def _load_chromium_profiles(self):
+        """Load chromium profiles from hypr_window_ops config."""
+        try:
+            import sys
+            from pathlib import Path
+            
+            # Add the config module path to sys.path temporarily
+            config_dir = Path.home() / ".config/scripts/hyprland/hypr_window_ops"
+            sys.path.insert(0, str(config_dir))
+            
+            from hypr_window_ops import config
+            
+            return list(config.BROWSER_PROFILES.keys())
+        except Exception as e:
+            print(f"Warning: Could not load chromium profiles from config, using defaults: {e}")
+            return ["rash", "jobhunt", "app", "dash"]
 
     def _is_template_based(self, app_name: str) -> bool:
         """Check if application uses template-based configuration."""
