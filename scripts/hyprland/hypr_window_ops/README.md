@@ -67,7 +67,7 @@ hypr-window-ops focus_location right slave2
 
 ## Configuration
 
-Configuration is stored in `~/.config/hypr/launch_apps.json`. Here's an example structure:
+Configuration is stored in `~/.config/hypr/script_configs/launch_apps.json`. Here's an example structure:
 
 ```json
 {
