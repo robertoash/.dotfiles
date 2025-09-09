@@ -293,10 +293,10 @@ local basic_mappings = {
 
 -- Faster navigation
 local fastnav_mappings = {
-	{ "n", "<C-down>", "10j", { desc = "Move down 10 times" } },
-	{ "v", "<C-down>", "10j", { desc = "Move down 10 times" } },
-	{ "n", "<C-up>", "10k", { desc = "Move up 10 times" } },
-	{ "v", "<C-up>", "10k", { desc = "Move up 10 times" } },
+	{ "n", "<C-j>", "10j", { desc = "Move down 10 times" } },
+	{ "v", "<C-j>", "10j", { desc = "Move down 10 times" } },
+	{ "n", "<C-k>", "10k", { desc = "Move up 10 times" } },
+	{ "v", "<C-k>", "10k", { desc = "Move up 10 times" } },
 }
 
 -- Fast edit mappings

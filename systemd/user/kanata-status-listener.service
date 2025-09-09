@@ -6,7 +6,7 @@ Wants=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=kanata-tools listen
+ExecStart=/home/rash/.local/bin/kanata-tools listen
 Restart=always
 RestartSec=5
 StandardOutput=journal
@@ -23,8 +23,8 @@ ProtectHome=read-only
 ReadWritePaths=/tmp
 PrivateTmp=no
 
-# Allow access to /tmp for status files
-ReadWritePaths=/tmp
+# Allow access to /tmp for status files and kanata config for persistent state
+ReadWritePaths=/tmp /home/rash/.config/kanata
 
 [Install]
 WantedBy=default.target

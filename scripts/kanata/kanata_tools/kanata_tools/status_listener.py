@@ -24,8 +24,8 @@ class KanataStatusListener:
     
     def __init__(self):
         self.setup_logging()
-        self.current_layout = "swe"
-        self.current_mod_state = "mod"
+        self.current_layout = "qwe"
+        self.current_mod_state = "base"
         self.state_manager = StateManager(self.logger)
     
     def setup_logging(self):
