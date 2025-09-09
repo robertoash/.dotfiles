@@ -1,5 +1,9 @@
 function delete_gone_branches --wraps='git branch -vv | awk \'$0 ~ /: gone]/ {print $1;}\' | xargs -r git branch -D' --description 'Delete local branches that track deleted remote branches'
-    # First show what will be deleted
+    # First fetch and prune to get current remote state
+    echo "Fetching latest remote state..."
+    git fetch --prune
+    
+    # Then show what will be deleted
     set branches_to_delete (git branch -vv | grep ': gone]' | awk '{print $1}')
     
     if test (count $branches_to_delete) -eq 0
