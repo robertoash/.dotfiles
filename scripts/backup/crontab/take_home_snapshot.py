@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import argparse
+import json
 import logging
 import shutil
 import subprocess
@@ -15,11 +16,28 @@ logging_utils.configure_logging()
 home_subvolume = Path("/home")
 local_snapshot_dir = Path("/.snapshots")
 external_drive_dir = Path("/mnt/.snapshots")
+exclusions_config = "/home/rash/.config/bkup/snapshots_exclude.json"
+
+
+def load_exclusions():
+    """Load exclusion patterns from config file."""
+    try:
+        with open(exclusions_config, 'r') as f:
+            config = json.load(f)
+        return config.get("home_exclusions", [])
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logging.warning(f"Could not load exclusions config: {e}")
+        return []
 
 
 def create_snapshot(snapshot_name):
     try:
-        # Create a read-only local snapshot of the home directory
+        # Load exclusion patterns from config file
+        exclusions = load_exclusions()
+        
+        snapshot_path = local_snapshot_dir.joinpath(snapshot_name)
+        
+        # Create a read-only snapshot of home directory first
         subprocess.run(
             [
                 "sudo",
@@ -28,10 +46,41 @@ def create_snapshot(snapshot_name):
                 "snapshot",
                 "-r",
                 str(home_subvolume),
-                str(local_snapshot_dir.joinpath(snapshot_name)),
+                str(snapshot_path),
             ],
             check=True,
         )
+        
+        # Make it writable temporarily to remove excluded directories
+        subprocess.run([
+            "sudo", "btrfs", "property", "set", "-ts",
+            str(snapshot_path), "ro", "false"
+        ], check=True)
+        
+        # Remove excluded directories from the snapshot
+        # For home directory, we need to look inside user directories
+        home_users = [d for d in snapshot_path.iterdir() if d.is_dir() and not d.name.startswith('.')]
+        
+        for user_dir in home_users:
+            for exclusion in exclusions:
+                excluded_path = user_dir / exclusion
+                if excluded_path.exists():
+                    try:
+                        if excluded_path.is_dir():
+                            subprocess.run(["sudo", "rm", "-rf", str(excluded_path)], check=True)
+                            logging.info(f"Removed excluded directory: {user_dir.name}/{exclusion}")
+                        else:
+                            subprocess.run(["sudo", "rm", "-f", str(excluded_path)], check=True)
+                            logging.info(f"Removed excluded file: {user_dir.name}/{exclusion}")
+                    except subprocess.CalledProcessError as e:
+                        logging.warning(f"Could not remove {user_dir.name}/{exclusion}: {e}")
+        
+        # Make the snapshot read-only again
+        subprocess.run([
+            "sudo", "btrfs", "property", "set", "-ts",
+            str(snapshot_path), "ro", "true"
+        ], check=True)
+        
         logging.info(
             f"Home snapshot {snapshot_name} created successfully in {local_snapshot_dir}"
         )
