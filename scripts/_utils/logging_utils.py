@@ -2,6 +2,7 @@
 
 import inspect
 import logging
+import os
 import sys
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
@@ -9,7 +10,12 @@ from pathlib import Path
 
 def configure_logging(quiet=False):
     base_scripts_dir = "/home/rash/.config/scripts"
-    base_log_dir = "/home/rash/.config/scripts/_logs"
+    
+    # Use different log directories for root and user to avoid permission conflicts
+    if os.geteuid() == 0:  # Running as root
+        base_log_dir = "/home/rash/.config/scripts/_logs/root"
+    else:  # Running as regular user
+        base_log_dir = "/home/rash/.config/scripts/_logs"
     log_limit = 30  # Number of log files to keep (one daily)
 
     # Expand the base directories
