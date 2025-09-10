@@ -6,6 +6,9 @@ complete -c frecent -s a -l all -d "Show both directories and files"
 complete -c frecent -s i -l interactive -d "Use fzf for interactive selection"
 complete -c frecent -s h -l help -d "Show help"
 
+## Hass-cli (dynamically generated)
+eval (_HASS_CLI_COMPLETE=fish_source hass-cli)
+
 # Enhanced completions for existing commands removed to preserve normal Tab behavior
 # Normal Tab behavior (including history suggestion acceptance) is now preserved
 # Use triggers (ff<Tab>, dd<Tab>, aa<Tab>) for frecent functionality with any command
