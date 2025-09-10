@@ -8,11 +8,11 @@ $python\
 $rust\
 $nodejs\
 $mise\
-$virtualenv
-${env_var.SMART_CWD}${env_var.SECURE_SHELL}${env_var.YAZI_LEVEL}$character
-"""
+$virtualenv\
+${env_var.SECURE_SHELL}${env_var.YAZI_LEVEL}$fill$cmd_duration$status$username$hostname$time
+${env_var.SMART_CWD}$character"""
 
-right_format = """$cmd_duration$status$username$hostname$time"""
+right_format = ""
 
 palette = "tokyonight_deep"
 add_newline = true
