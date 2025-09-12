@@ -12,6 +12,10 @@
 local wk_ok, wk = pcall(require, "which-key")
 if wk_ok then
 	wk.add({
+		{ "<leader>-", group = "Window splits [-]", mode = { "n", "v" } },
+		{ "<leader>0", group = "T[0]ggle", mode = { "n", "v" } },
+		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
+		{ "<leader>P", group = "[P]rint", mode = { "n", "v" } },
 		{ "<leader>a", group = "[a]vante AI", mode = { "n", "v" } },
 		{ "<leader>b", group = "[b]uffer Operations", mode = { "n", "v" } },
 		{ "<leader>b/", group = "Buffer Navigation [/]", mode = { "n", "v" } },
@@ -25,19 +29,14 @@ if wk_ok then
 		{ "<leader>m", group = "[m]ulticursor", mode = { "n", "v" } },
 		{ "<leader>n", group = "[n]oice UI", mode = { "n", "v" } },
 		{ "<leader>o", group = "[o]il File Manager", mode = { "n", "v" } },
-
-		{ "<leader>P", group = "[P]rint", mode = { "n", "v" } },
 		{ "<leader>q", group = "[q]uickfix", mode = { "n", "v" } },
 		{ "<leader>s", group = "[s]earch", mode = { "n", "v" } },
 		{ "<leader>s/", group = "Search [/] within files", mode = { "n", "v" } },
-		{ "<leader>0", group = "T[0]ggle", mode = { "n", "v" } },
 		{ "<leader>t", group = "[t]erminal", mode = { "n", "v" } },
 		{ "<leader>t/", group = "Terminal [/] management", mode = { "n", "v" } },
 		{ "<leader>u", group = "[u]ndo Tree", mode = { "n", "v" } },
 		{ "<leader>x", group = "Trouble Diagnostics [x]", mode = { "n", "v" } },
 		{ "<leader>y", group = "[y]azi File Manager", mode = { "n", "v" } },
-		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
-		{ "<leader>-", group = "Window splits [-]", mode = { "n", "v" } },
 	})
 end
 
@@ -63,23 +62,43 @@ local working_dir_mappings = {
 		{ desc = "CWD to Git [r]oot" },
 	},
 }
--- Claude Code (AI plugin)
-local claude_mappings = {
+
+local claudecode_mappings = {
 	{
 		"n",
 		"<leader>cc",
-		function()
-			vim.cmd("ClaudeCode")
-		end,
-		{ desc = "[c]laude Code" },
+		"<cmd>ClaudeCode<cr>",
+		{ desc = "Claude [C]ode Inline" },
 	},
 	{
 		"n",
-		"<leader>cr",
-		function()
-			vim.cmd("ClaudeCodeResume")
-		end,
-		{ desc = "Claude [r]esume" },
+		"<leader>cf",
+		"<cmd>ClaudeCodeFocus<cr>",
+		{ desc = "Claude Code [f]ocus" },
+	},
+	{
+		"n",
+		"<leader>cb",
+		"<cmd>ClaudeCodeAdd %<cr>",
+		{ desc = "Claude Code add [b]uffer" },
+	},
+	{
+		"v",
+		"<leader>cs",
+		"<cmd>ClaudeCodeSend<cr>",
+		{ desc = "Claude Code [s]end selection" },
+	},
+	{
+		"n",
+		"<leader>caa",
+		"<cmd>ClaudeCodeDiffAccept<cr>",
+		{ desc = "Claude Code [a]ccept diff" },
+	},
+	{
+		"n",
+		"<leader>car",
+		"<cmd>ClaudeCodeDiffReject<cr>",
+		{ desc = "Claude Code [r]eject diff" },
 	},
 }
 
@@ -140,6 +159,30 @@ local flash_mappings = {
 local telescope_mappings = {
 	{
 		"n",
+		"<leader>s/.",
+		function()
+			local ok, builtin = pcall(require, "telescope.builtin")
+			if ok then
+				builtin.current_buffer_fuzzy_find(
+					require("telescope.themes").get_dropdown({ winblend = 10, previewer = false })
+				)
+			end
+		end,
+		{ desc = "Fuzzy search current buffer [.]" },
+	},
+	{
+		"n",
+		"<leader>s/a",
+		function()
+			local ok, builtin = pcall(require, "telescope.builtin")
+			if ok then
+				builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
+			end
+		end,
+		{ desc = "Search [a]ll open files" },
+	},
+	{
+		"n",
 		"<leader>sb",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
@@ -148,17 +191,6 @@ local telescope_mappings = {
 			end
 		end,
 		{ desc = "Search [b]uffers" },
-	},
-	{
-		"n",
-		"<leader>sf",
-		function()
-			local ok, ext = pcall(require, "telescope")
-			if ok and ext.extensions and ext.extensions.frecency then
-				ext.extensions.frecency.frecency({ hidden = true, no_ignore = true })
-			end
-		end,
-		{ desc = "Search [f]recency" },
 	},
 	{
 		"n",
@@ -173,14 +205,14 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>ss",
+		"<leader>sf",
 		function()
-			local ok, builtin = pcall(require, "telescope.builtin")
-			if ok then
-				builtin.find_files()
+			local ok, ext = pcall(require, "telescope")
+			if ok and ext.extensions and ext.extensions.frecency then
+				ext.extensions.frecency.frecency({ hidden = true, no_ignore = true })
 			end
 		end,
-		{ desc = "[s]earch files" },
+		{ desc = "Search [f]recency" },
 	},
 	{
 		"n",
@@ -245,27 +277,14 @@ local telescope_mappings = {
 	},
 	{
 		"n",
-		"<leader>s/a",
+		"<leader>ss",
 		function()
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
-				builtin.live_grep({ grep_open_files = true, prompt_title = "Live Grep in Open Files" })
+				builtin.find_files()
 			end
 		end,
-		{ desc = "Search [a]ll open files" },
-	},
-	{
-		"n",
-		"<leader>s/.",
-		function()
-			local ok, builtin = pcall(require, "telescope.builtin")
-			if ok then
-				builtin.current_buffer_fuzzy_find(
-					require("telescope.themes").get_dropdown({ winblend = 10, previewer = false })
-				)
-			end
-		end,
-		{ desc = "Fuzzy search current buffer [.]" },
+		{ desc = "[s]earch files" },
 	},
 	{
 		"n",
@@ -918,58 +937,58 @@ local function set_keymaps(mappings)
 	end
 end
 
-set_keymaps(claude_mappings)
-set_keymaps(format_mappings)
+set_keymaps(autopairs_mappings)
 set_keymaps(basic_mappings)
-set_keymaps(hardtime_mappings)
-set_keymaps(fastnav_mappings)
-set_keymaps(fastedit_mappings)
-set_keymaps(window_operations_mappings)
-set_keymaps(window_navigation_mappings)
 set_keymaps(buffer_mappings)
-set_keymaps(diagnostic_mappings)
-set_keymaps(selectall_mappings)
-set_keymaps(flash_mappings)
-set_keymaps(telescope_mappings)
-set_keymaps(delete_to_blackhole_mappings)
+set_keymaps(claudecode_mappings)
 set_keymaps(clipboard_mappings)
-set_keymaps(snacks_terminal_mappings)
+set_keymaps(delete_to_blackhole_mappings)
+set_keymaps(diagnostic_mappings)
+set_keymaps(fastedit_mappings)
+set_keymaps(fastnav_mappings)
+set_keymaps(find_replace_mappings)
+set_keymaps(flash_mappings)
+set_keymaps(format_mappings)
+set_keymaps(hardtime_mappings)
+set_keymaps(harpoon_mappings)
 set_keymaps(lazygit_mappings)
 set_keymaps(mini_splitjoin_mappings)
-set_keymaps(noice_mappings)
-set_keymaps(autopairs_mappings)
-set_keymaps(find_replace_mappings)
-set_keymaps(print_mappings)
-set_keymaps(yazi_mappings)
-set_keymaps(oil_mappings)
-set_keymaps(undotree_mappings)
-set_keymaps(harpoon_mappings)
 set_keymaps(multicursor_mappings)
+set_keymaps(noice_mappings)
+set_keymaps(oil_mappings)
+set_keymaps(print_mappings)
+set_keymaps(selectall_mappings)
+set_keymaps(snacks_terminal_mappings)
+set_keymaps(telescope_mappings)
 set_keymaps(trouble_mappings)
+set_keymaps(undotree_mappings)
+set_keymaps(window_navigation_mappings)
+set_keymaps(window_operations_mappings)
 set_keymaps(working_dir_mappings)
+set_keymaps(yazi_mappings)
 
 -- Oil keymaps (for Oil's setup function)
 local oil_keymaps = {
-	["g?"] = "actions.show_help",
-	["<CR>"] = "actions.select",
-	["<C-s>"] = "actions.select_vsplit",
-	["<C-h>"] = "actions.select_split",
-	["<C-t>"] = "actions.select_tab",
-	["<C-p>"] = "actions.preview",
-	["<C-c>"] = "actions.close",
-	["q"] = "actions.close",
-	["<C-l>"] = "actions.refresh",
 	["-"] = "actions.parent",
+	["<C-c>"] = "actions.close",
+	["<C-h>"] = "actions.select_split",
+	["<C-l>"] = "actions.refresh",
+	["<C-p>"] = "actions.preview",
+	["<C-s>"] = "actions.select_vsplit",
+	["<C-t>"] = "actions.select_tab",
+	["<CR>"] = "actions.select",
 	["_"] = "actions.open_cwd",
 	["`"] = "actions.cd",
-	["~"] = "actions.tcd",
+	["g."] = "actions.toggle_hidden",
+	["g?"] = "actions.show_help",
+	["g\\"] = "actions.toggle_trash",
 	["gs"] = "actions.change_sort",
 	["gx"] = "actions.open_external",
-	["g."] = "actions.toggle_hidden",
-	["g\\"] = "actions.toggle_trash",
+	["q"] = "actions.close",
+	["~"] = "actions.tcd",
 	-- Custom additions for more intuitive navigation
-	["H"] = "actions.parent",
 	["<BS>"] = "actions.parent",
+	["H"] = "actions.parent",
 }
 
 -- Function to get Oil keymaps for the setup

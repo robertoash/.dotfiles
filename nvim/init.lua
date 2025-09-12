@@ -60,7 +60,7 @@ require("lazy").setup({
 	{ import = "plugins.autopairs" },
 	{ import = "plugins.lazydev" },
 	{ import = "plugins.nvim-lspconfig" },
-	{ import = "plugins.claude-code" },
+	{ import = "plugins.claudecode" },
 	{ import = "plugins.conform" },
 	{ import = "plugins.blink-cmp" },
 	{ import = "plugins.yazi" },
