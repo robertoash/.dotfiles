@@ -99,7 +99,7 @@ config.use_fancy_tab_bar = false
 -- ========================================
 
 config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
-config.font_size = 15
+config.font_size = 14
 
 -- ========================================
 -- WINDOW & LAYOUT
@@ -173,6 +173,13 @@ config.keys = {
 		key = "Enter",
 		mods = "ALT",
 		action = wezterm.action.DisableDefaultAssignment,
+	},
+
+	-- Claude Code integration
+	{
+		key = "Enter",
+		mods = "SHIFT",
+		action = wezterm.action.SendString("\x1b\r"),
 	},
 
 	-- ----------------------------------------
