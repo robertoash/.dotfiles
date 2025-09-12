@@ -8,6 +8,9 @@ return {
 		
 		require("oil").setup({
 			keymaps = keymaps,
+			view_options = {
+				show_hidden = true,
+			},
 		})
 	end,
 	-- Optional dependencies
