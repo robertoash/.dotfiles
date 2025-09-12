@@ -138,8 +138,8 @@
   spc-mods (switch
     ;; If a key was pressed very recently, output space (allows double-tap-and-hold repeat)
     ((key-timing 1 less-than 120)) spc break
-    ;; Otherwise, use tap-hold for space/mods layer
-    () (tap-hold-release 50 175 spc (layer-while-held mods-base)) break
+    ;; Otherwise, use tap-hold for space/mods layer with higher threshold
+    () (tap-hold-release 50 250 spc (layer-while-held mods-base)) break
   )
 
   ;; ==============================================================================
