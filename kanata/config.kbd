@@ -116,20 +116,20 @@
 (defalias
 
   ;; Tab: tap=tab, double-tap=caps
-  tab-multi (tap-dance 175 (tab caps))
+  tab-multi (tap-dance 250 (tab caps))
 
   ;; Layer switching aliases
   switch-to-colemak (layer-switch colemak)
   switch-to-qwerty (layer-switch qwerty)
   
   ;; Multi-function Caps Lock for colemak: tap=esc, double-tap=switch-to-qwerty, hold=hyper
-  caps-multi-colemak (tap-dance 175 (
+  caps-multi-colemak (tap-dance 250 (
     (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
     @switch-to-qwerty
   ))
   
   ;; Multi-function Caps Lock for qwerty: tap=esc, double-tap=switch-to-colemak, hold=hyper
-  caps-multi-qwerty (tap-dance 175 (
+  caps-multi-qwerty (tap-dance 250 (
     (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
     @switch-to-colemak
   ))
