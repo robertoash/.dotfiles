@@ -9,12 +9,12 @@ SEPARATOR = "###"
 
 MANAGERS = {
     "pacman": {
-        "retrieve": ["sh", "-c", "pacman -Qe"],
+        "retrieve": ["sh", "-c", "pacman -Qen"],
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["sudo", "pacman", "-S", "--noconfirm", pkg],
     },
     "paru": {
-        "retrieve": ["sh", "-c", "pacman -Qme"],
+        "retrieve": ["sh", "-c", "pacman -Qem"],
         "parse": lambda line: line.strip().split(maxsplit=1),
         "restore": lambda pkg, ver=None: ["paru", "-S", "--noconfirm", pkg],
     },
