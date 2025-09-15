@@ -5,6 +5,16 @@ require("relative-motions"):setup({
 	enter_mode = "first",
 })
 
+require("sshfs"):setup({
+	sshfs_options = {
+		"reconnect",
+		"compression=yes",
+		"ServerAliveInterval=15",
+		"ServerAliveCountMax=3",
+		"allow_other",
+	},
+})
+
 require("bunny"):setup({
 	hops = {
 		{ key = "/", path = "/" },
