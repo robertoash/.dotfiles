@@ -68,6 +68,7 @@ require("lazy").setup({
 	{ import = "plugins.undotree" },
 	{ import = "plugins.harpoon" },
 	{ import = "plugins.trouble" },
+	{ import = "plugins.yanky" },
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {

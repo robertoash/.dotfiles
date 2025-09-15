@@ -35,6 +35,7 @@ if wk_ok then
 		{ "<leader>t", group = "[t]erminal", mode = { "n", "v" } },
 		{ "<leader>t/", group = "Terminal [/] management", mode = { "n", "v" } },
 		{ "<leader>u", group = "[u]ndo Tree", mode = { "n", "v" } },
+		{ "<leader>v", group = "Paste [v]", mode = { "n", "v", "x" } },
 		{ "<leader>x", group = "Trouble Diagnostics [x]", mode = { "n", "v" } },
 		{ "<leader>y", group = "[y]azi File Manager", mode = { "n", "v" } },
 	})
@@ -448,9 +449,32 @@ local delete_to_blackhole_mappings = {
 	{ "n", "<leader>DD", '"_dd', { desc = "Delete line to blackhole" } },
 }
 
--- Clipboard operations - paste from yank register
-local clipboard_mappings = {
-	{ { "n", "v", "x" }, "<leader>p", '"0p', { desc = "Paste from yank register" } },
+-- Yanky.nvim operations
+local yanky_mappings = {
+	{
+		{ "n", "v", "x" },
+		"<leader>vv",
+		"<Plug>(YankyPutAfter)",
+		{ desc = "Paste from yanky ring" }
+	},
+	{
+		{ "n", "v", "x" },
+		"<leader>vV",
+		"<Plug>(YankyPutBefore)",
+		{ desc = "Paste before from yanky ring" }
+	},
+	{
+		{ "n", "x" },
+		"<leader>vp",
+		"<Plug>(YankyPreviousEntry)",
+		{ desc = "Cycle to previous yanky entry" }
+	},
+	{
+		{ "n", "x" },
+		"<leader>vn",
+		"<Plug>(YankyNextEntry)",
+		{ desc = "Cycle to next yanky entry" }
+	},
 }
 
 local snacks_terminal_mappings = {
@@ -941,7 +965,7 @@ set_keymaps(autopairs_mappings)
 set_keymaps(basic_mappings)
 set_keymaps(buffer_mappings)
 set_keymaps(claudecode_mappings)
-set_keymaps(clipboard_mappings)
+set_keymaps(yanky_mappings)
 set_keymaps(delete_to_blackhole_mappings)
 set_keymaps(diagnostic_mappings)
 set_keymaps(fastedit_mappings)
