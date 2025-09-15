@@ -50,7 +50,7 @@ def create_status_file(operation, status="running", progress=0, details=None):
     """Create status file for monitoring."""
     if not status_dir.exists():
         status_dir.mkdir(parents=True, exist_ok=True)
-    
+
     status_file = status_dir / f"{operation}.status"
     status_data = {
         "operation": operation,
@@ -59,12 +59,13 @@ def create_status_file(operation, status="running", progress=0, details=None):
         "timestamp": datetime.now().isoformat(),
         "details": details or {}
     }
-    
+
     try:
         with open(status_file, 'w') as f:
             json.dump(status_data, f, indent=2)
     except Exception as e:
-        logger.error(f"Failed to create status file: {e}")
+        # Use print instead of logger since logger may not be initialized yet
+        print(f"Failed to create status file: {e}", file=sys.stderr)
 
 
 def verify_snapshot_completion(snapshot_path):

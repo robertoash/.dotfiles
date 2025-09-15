@@ -11,7 +11,7 @@ from _utils import logging_utils
 def backup_old_hp():
     remote_host = "oldhp"
     remote_backup_dir = "/mnt/lvm_backups/oldhp_backups"
-    local_backup_dir = "/media/sda1/server_bkups/old_hp"
+    local_backup_dir = "/media/sda1/server_bkups/oldhp"
 
     logging_utils.configure_logging()
 
