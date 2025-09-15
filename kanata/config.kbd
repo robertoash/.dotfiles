@@ -47,10 +47,10 @@
 (deflayer qwerty
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  @tab-multi q    w    e    r    t    y    u    i    o    p    å    ¨ ret
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   @caps-multi-qwerty a    s    d    f    g    h    j    k    l    ö    ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt              @spc-mods                 ralt        rctl
+  lctl lmet lalt        @spc-mods                 ralt        rctl
 )
 
 ;; ===============================================
@@ -61,10 +61,10 @@
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  @tab-multi q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
+  tab  q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
   @caps-multi-colemak a    r    s    t    d    h    n    e    i    o    ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  lctl lmet lalt           @spc-mods                    ralt        rctl
+  lctl lmet lalt     @spc-mods                    ralt        rctl
 )
 
 
@@ -115,24 +115,24 @@
 
 (defalias
 
-  ;; Tab: tap=tab, double-tap=caps
-  tab-multi (tap-dance 250 (tab caps))
-
   ;; Layer switching aliases
   switch-to-colemak (layer-switch colemak)
   switch-to-qwerty (layer-switch qwerty)
-  
-  ;; Multi-function Caps Lock for colemak: tap=esc, double-tap=switch-to-qwerty, hold=hyper
+
+  ;; Multi-function Caps Lock for colemak: tap=esc, double-tap=switch-to-qwerty, triple-tap=caps, hold=hyper
   caps-multi-colemak (tap-dance 250 (
     (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
     @switch-to-qwerty
+    caps
   ))
-  
-  ;; Multi-function Caps Lock for qwerty: tap=esc, double-tap=switch-to-colemak, hold=hyper
+
+  ;; Multi-function Caps Lock for qwerty: tap=esc, double-tap=switch-to-colemak, triple-tap=caps, hold=hyper
   caps-multi-qwerty (tap-dance 250 (
     (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
     @switch-to-colemak
+    caps
   ))
+
 
   ;; Space with mods layer on hold - with double-tap-and-hold repeat
   spc-mods (switch
@@ -178,5 +178,6 @@
   d-immediate d
   f-immediate f
 
-  
+
 )
+
