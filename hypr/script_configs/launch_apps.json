@@ -21,12 +21,12 @@
         ],
         "3": [
             {
-                "name": "browser_jobhunt",
-                "command": "qute_profile jobhunt",
+                "name": "browser_company",
+                "command": "qute_profile company",
                 "is_master": true
             },
             {
-                "name": "jobhunt_terminal",
+                "name": "company_terminal",
                 "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
                 "is_master": false
             },

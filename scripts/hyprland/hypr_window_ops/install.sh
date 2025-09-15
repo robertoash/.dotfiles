@@ -17,5 +17,4 @@ pipx install -e .
 echo "✅ Installation complete!"
 echo "You can now use the hypr-window-ops command with subcommands:"
 echo "  - hypr-window-ops move-windows <workspace>"
-echo "  - hypr-window-ops swap-profiles --to <profile>"
 echo "  - hypr-window-ops launch-apps [--profile <profile>] [--debug]"

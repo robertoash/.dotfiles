@@ -23,14 +23,8 @@ class ProfileSelector:
         
         self.applications = {
             "qutebrowser": {
-                "profiles": ["rash", "jobhunt"],
+                "profiles": ["rash", "company"],
                 "command_template": "/home/rash/.local/bin/qute_profile {profile}",
-            },
-            "vivaldi": {
-                "profiles": ["rash", "jobhunt", "app_profile"],
-                "command_template": (
-                    "/home/rash/.local/bin/vivaldi_launch --profile {profile}"
-                ),
             },
             "chromium": {
                 "profiles": chromium_profiles,
@@ -55,7 +49,7 @@ class ProfileSelector:
             return list(config.BROWSER_PROFILES.keys())
         except Exception as e:
             print(f"Warning: Could not load chromium profiles from config, using defaults: {e}")
-            return ["rash", "jobhunt", "app", "dash"]
+            return ["rash", "company", "app", "dash"]
 
     def _is_template_based(self, app_name: str) -> bool:
         """Check if application uses template-based configuration."""
@@ -207,7 +201,7 @@ def main():
         print(
             "Usage: rofi_profile_selector.py <application_name> [url]", file=sys.stderr
         )
-        print("Available applications: qutebrowser, vivaldi, chromium", file=sys.stderr)
+        print("Available applications: qutebrowser, chromium", file=sys.stderr)
         sys.exit(1)
 
     app_name = sys.argv[1].lower()

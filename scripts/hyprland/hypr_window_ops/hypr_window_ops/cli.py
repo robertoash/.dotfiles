@@ -39,7 +39,7 @@ Examples:
   hypr-window-ops launch-apps
 
   # Launch apps for a specific profile with debug logging
-  hypr-window-ops launch-apps --profile jobhunt --debug
+  hypr-window-ops launch-apps --profile company --debug
 
   # Focus window at specific location (master) on left monitor
   hypr-window-ops focus_location left master
@@ -93,8 +93,8 @@ Examples:
   # Launch apps for the default profile
   hypr-window-ops launch-apps
 
-  # Launch apps for job hunting with debug output
-  hypr-window-ops launch-apps --profile jobhunt --debug
+  # Launch apps for company profile with debug output
+  hypr-window-ops launch-apps --profile company --debug
         """,
     )
     launch_parser.add_argument(
