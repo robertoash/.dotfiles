@@ -450,7 +450,7 @@ local delete_to_blackhole_mappings = {
 
 -- Clipboard operations - paste from yank register
 local clipboard_mappings = {
-	{ { "n", "x" }, "<leader>p", '"0p', { desc = "Paste from yank register" } },
+	{ { "n", "v", "x" }, "<leader>p", '"0p', { desc = "Paste from yank register" } },
 }
 
 local snacks_terminal_mappings = {
