@@ -178,3 +178,4 @@ nvim/Session.vim
 hypr/active_keybinds.conf
 nvim/.claude/settings.local.json
 kanata/last_state.json
+espanso/match/base.yml
