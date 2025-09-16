@@ -8,6 +8,7 @@ from urllib.parse import urlencode
 import os
 from pathlib import Path
 import time
+import threading
 import pickle
 
 JELLYFIN_URL = "http://10.20.10.92:8096"
@@ -180,6 +181,23 @@ class JellyfinClient:
             return f"{self.base_url}/Videos/{item_id}/stream?static=true&api_key={self.api_key}"
         return f"{self.base_url}/Videos/{item_id}/stream?static=true"
 
+    def get_subtitle_streams(self, item_id):
+        """Get available subtitle streams for an item"""
+        detailed = self.get_item_details(item_id)
+        if detailed and 'MediaSources' in detailed and detailed['MediaSources']:
+            for source in detailed['MediaSources']:
+                if 'MediaStreams' in source:
+                    subtitles = [stream for stream in source['MediaStreams']
+                               if stream.get('Type') == 'Subtitle']
+                    return subtitles, source.get('Id')
+        return [], None
+
+    def get_subtitle_url(self, item_id, media_source_id, subtitle_index, format='vtt'):
+        """Get subtitle stream URL"""
+        if self.api_key:
+            return f"{self.base_url}/Videos/{item_id}/{media_source_id}/Subtitles/{subtitle_index}/Stream.{format}?api_key={self.api_key}"
+        return f"{self.base_url}/Videos/{item_id}/{media_source_id}/Subtitles/{subtitle_index}/Stream.{format}"
+
 def format_size(size_bytes):
     """Convert bytes to human readable format"""
     if not size_bytes:
@@ -274,7 +292,144 @@ def has_valid_file(item, client):
                 return True
     return False
 
-def show_rofi_menu(items, prompt="Select", client=None, sort_by_size=False):
+def browse_with_loading(client, library_id=None, parent_item=None, series_item=None, sort_by_size=False):
+    """Browse library with smart loading feedback"""
+
+    def check_cache_exists():
+        """Check if data is likely cached"""
+        if library_id is None:
+            # Libraries are usually cached
+            return client._get_cached('libraries') is not None
+        else:
+            # Check if items are cached
+            if parent_item and parent_item.get('Type') == 'Series':
+                cache_key = f"items_{parent_item['Id']}_Season"
+            elif parent_item and parent_item.get('Type') == 'Season':
+                cache_key = f"items_{parent_item['Id']}_Episode"
+            else:
+                cache_key = f"items_{library_id}_Movie,Series"
+            return client._get_cached(cache_key) is not None
+
+    def show_loading():
+        loading_items = ["🔄 Loading media library...", "⏳ Please wait...", "", "Press Escape to cancel"]
+        rofi_input = "\n".join(loading_items)
+
+        rofi_cmd = [
+            'rofi', '-dmenu', '-p', 'Loading...',
+            '-i', '-theme-str', 'listview { lines: 4; }',
+            '-no-custom'
+        ]
+
+        try:
+            subprocess.run(rofi_cmd, input=rofi_input, text=True, capture_output=True)
+        except Exception:
+            pass
+
+    # Check if we need loading screen
+    show_loading_screen = not check_cache_exists()
+    loading_thread = None
+
+    if show_loading_screen:
+        # Start loading rofi in background
+        loading_thread = threading.Thread(target=show_loading, daemon=True)
+        loading_thread.start()
+        # Give it a moment to appear
+        time.sleep(0.1)
+
+    # Load the actual data
+    try:
+        if library_id is None:
+            # Load libraries
+            libraries = client.get_libraries()
+            if not libraries:
+                return
+
+            # Filter libraries
+            filtered_libraries = []
+            for lib in libraries:
+                name = lib.get('Name', '').lower()
+                if name in ['movies', 'films', 'tv shows', 'tv', 'series']:
+                    filtered_libraries.append(lib)
+
+            if not filtered_libraries:
+                filtered_libraries = libraries
+
+            items = filtered_libraries
+            prompt = "Select Library"
+        else:
+            # Load items from library
+            if parent_item and parent_item.get('Type') == 'Series':
+                items = client.get_items(parent_id=parent_item['Id'], item_type='Season')
+            elif parent_item and parent_item.get('Type') == 'Season':
+                items = client.get_items(parent_id=parent_item['Id'], item_type='Episode')
+            else:
+                items = client.get_items(parent_id=library_id, item_type='Movie,Series')
+
+            if not items:
+                return
+
+            prompt = "Select Media"
+
+        # Kill any loading rofi processes if we showed them
+        if show_loading_screen:
+            try:
+                subprocess.run(['pkill', '-f', 'rofi.*Loading'], capture_output=True)
+            except:
+                pass
+
+        # Show actual menu
+        action, selected = show_rofi_menu(items, prompt, client, sort_by_size)
+
+        # Handle the selection
+        if action == 'select' and selected:
+            handle_selection(client, selected, library_id, parent_item, sort_by_size)
+        elif action == 'sort':
+            browse_with_loading(client, library_id, parent_item, series_item, not sort_by_size)
+        elif action == 'refresh':
+            client.cache = {}
+            client._save_cache()
+            browse_with_loading(client, library_id, parent_item, series_item, sort_by_size)
+        elif action == 'back':
+            if parent_item:
+                if parent_item.get('Type') == 'Season' and series_item:
+                    browse_with_loading(client, library_id, series_item, None, sort_by_size)
+                elif parent_item.get('Type') == 'Series':
+                    browse_with_loading(client, library_id, None, None, sort_by_size)
+            elif library_id:
+                browse_with_loading(client, None, None, None, sort_by_size)
+
+    except Exception as e:
+        # Kill loading processes and show error
+        if show_loading_screen:
+            try:
+                subprocess.run(['pkill', '-f', 'rofi.*Loading'], capture_output=True)
+            except:
+                pass
+        print(f"Error loading data: {e}")
+
+def handle_selection(client, selected, library_id, parent_item, sort_by_size):
+    """Handle menu selection"""
+    item_type = selected.get('Type', '')
+
+    if item_type in ['Movie', 'Episode']:
+        # Play the item with subtitles
+        url = client.get_playback_url(selected['Id'])
+        title = selected.get('Name', '')
+        subtitle_urls = get_preferred_subtitles(client, selected['Id'])
+        play_with_mpv(url, title, subtitle_urls)
+        return  # Exit after starting playback
+    elif item_type == 'Series':
+        # Browse into series - show seasons
+        browse_with_loading(client, library_id, selected, None, sort_by_size)
+    elif item_type == 'Season':
+        # Browse into season - show episodes
+        series_item = parent_item if parent_item and parent_item.get('Type') == 'Series' else None
+        browse_with_loading(client, library_id, selected, series_item, sort_by_size)
+    elif 'ItemId' in selected:
+        # Library selected
+        browse_with_loading(client, selected['ItemId'], sort_by_size=sort_by_size)
+
+def show_rofi_menu(items, prompt="Select", client=None, sort_by_size=False, show_loading=False):
     """Show rofi menu with items"""
     rofi_input = []
     item_map = {}
@@ -459,16 +614,67 @@ def show_rofi_menu(items, prompt="Select", client=None, sort_by_size=False):
         # Cancelled
         return (None, None)
 
-def play_with_mpv(url, title=""):
-    """Play media with mpv"""
+def play_with_mpv(url, title="", subtitle_urls=None):
+    """Play media with mpv including subtitles"""
     mpv_cmd = ['mpv']
     if title:
         mpv_cmd.append(f'--title={title}')
+
+    # Add subtitle files
+    if subtitle_urls:
+        for sub_url in subtitle_urls:
+            mpv_cmd.append(f'--sub-file={sub_url}')
+
     # Set custom window class for Wayland/Hyprland targeting
     mpv_cmd.append('--wayland-app-id=rofi_jellyfin')
     mpv_cmd.append(url)
-    
+
     subprocess.run(mpv_cmd)
+
+def get_preferred_subtitles(client, item_id):
+    """Get preferred subtitle URLs for an item"""
+    subtitles, media_source_id = client.get_subtitle_streams(item_id)
+    if not subtitles or not media_source_id:
+        return []
+
+    # Find the best English subtitle
+    preferred_langs = ['eng', 'en', 'english']
+    selected_subtitle = None
+
+    # First, try to find English subtitles
+    for subtitle in subtitles:
+        sub_lang = subtitle.get('Language', '').lower()
+        display_title = subtitle.get('DisplayTitle', '').lower()
+        codec = subtitle.get('Codec', '').lower()
+
+        # Skip image-based subtitles (PGS, VOBSUB, etc.)
+        if codec in ['dvd_subtitle', 'hdmv_pgs_subtitle', 'vobsub']:
+            continue
+
+        # Check if this is an English subtitle
+        for lang in preferred_langs:
+            if lang in sub_lang or lang in display_title:
+                selected_subtitle = subtitle
+                break
+        if selected_subtitle:
+            break
+
+    # If no English subtitles found, get first text-based subtitle
+    if not selected_subtitle:
+        for subtitle in subtitles:
+            codec = subtitle.get('Codec', '').lower()
+            if codec not in ['dvd_subtitle', 'hdmv_pgs_subtitle', 'vobsub']:
+                selected_subtitle = subtitle
+                break
+
+    if selected_subtitle:
+        index = selected_subtitle.get('Index')
+        if index is not None:
+            # Use SRT format as it's more reliable than VTT
+            sub_url = client.get_subtitle_url(item_id, media_source_id, index, 'srt')
+            return [sub_url]
+
+    return []
 
 def browse_library(client, library_id=None, parent_item=None, series_item=None, sort_by_size=False):
     """Browse Jellyfin library"""
@@ -564,10 +770,11 @@ def browse_library(client, library_id=None, parent_item=None, series_item=None, 
                 item_type = selected.get('Type', '')
                 
                 if item_type in ['Movie', 'Episode']:
-                    # Play the item
+                    # Play the item with subtitles
                     url = client.get_playback_url(selected['Id'])
                     title = selected.get('Name', '')
-                    play_with_mpv(url, title)
+                    subtitle_urls = get_preferred_subtitles(client, selected['Id'])
+                    play_with_mpv(url, title, subtitle_urls)
                     return  # Exit after starting playback
                 elif item_type == 'Series':
                     # Browse into series - show seasons
@@ -638,8 +845,8 @@ def main():
         )
         sys.exit(1)
     
-    # Start browsing
-    browse_library(client)
+    # Start browsing with loading feedback
+    browse_with_loading(client)
 
 if __name__ == "__main__":
     main()
