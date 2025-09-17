@@ -29,11 +29,6 @@
                 "name": "company_terminal",
                 "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
                 "is_master": false
-            },
-            {
-                "name": "yazi",
-                "command": "wezterm start --always-new-process --class yazi-term -- /home/rash/.cargo/bin/yazi '/home/rash/insync/j.roberto.ash@gmail.com/Google Drive/job_search'",
-                "is_master": false
             }
         ],
         "11": [

@@ -65,7 +65,7 @@ fastfetch###2.52.0-1###pacman
 fd###10.3.0-1###pacman
 feh###3.11.2-1###pacman
 ffmpegthumbnailer###2.2.3-3###pacman
-fish###4.0.2-1###pacman
+fish###4.0.6-1###pacman
 foliate###3.3.0-1###pacman
 fsarchiver###0.8.8-1###pacman
 fx###39.1.0-1###pacman
