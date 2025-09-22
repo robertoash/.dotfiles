@@ -3,6 +3,7 @@
 # Core System
 ## Shell & Environment
 alias rr='clear && exec fish'
+alias cd='z'
 
 ## Backup Tools
 alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
