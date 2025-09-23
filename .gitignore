@@ -35,6 +35,7 @@
 !lf/
 !mc/
 !nano/
+!nchat/
 !ncdu/
 !nvim/
 !onagre/
@@ -90,6 +91,7 @@
 !lf/**/*
 !mc/**/*
 !nano/**/*
+!nchat/**/*
 !ncdu/**/*
 !nvim/**/*
 !onagre/**/*
@@ -179,3 +181,9 @@ hypr/active_keybinds.conf
 nvim/.claude/settings.local.json
 kanata/last_state.json
 espanso/match/base.yml
+nchat/history
+nchat/profiles
+nchat/emojis
+nchat/log.txt
+nchat/log.txt.1
+nchat/version
