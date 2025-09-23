@@ -3,7 +3,10 @@
 # Core System
 ## Shell & Environment
 alias rr='clear && exec fish'
-alias cd='z'
+
+if not set -q SECURE_SHELL
+    alias cd='z'
+end
 
 ## Backup Tools
 alias bkup_all="bkup_packages; bkup_system; bkup_servers; bkup_buku"
@@ -23,7 +26,6 @@ alias llrl="eza --color=always --icons --git -HahlTR -L"
 alias lls="eza --all --color=always --icons --group-directories-first --git -Hah -l -a -s size"
 
 ## Media
-alias cnn="~/scripts/secrets/launch_iptv.py --cnn"
 alias zathura="zathura --fork --config-dir ~/.config/zathura"
 
 ## Monitoring
