@@ -159,7 +159,7 @@ noto-fonts###1:2025.09.01-1###pacman
 noto-fonts-cjk###20240730-1###pacman
 noto-fonts-emoji###1:2.051-1###pacman
 noto-fonts-extra###1:2025.09.01-1###pacman
-npm###11.6.0-1###pacman
+npm###11.6.1-1###pacman
 nss-mdns###0.15.1-2###pacman
 ntfs-3g###2022.10.3-2###pacman
 ntp###4.2.8.p18-4###pacman
@@ -192,7 +192,7 @@ python-appdirs###1.4.4-11###pacman
 python-capng###0.8.5-3###pacman
 python-dnspython###1:2.8.0-1###pacman
 python-dotenv###1.1.1-1###pacman
-python-opencv###4.12.0-7###pacman
+python-opencv###4.12.0-8###pacman
 python-packaging###25.0-1###pacman
 python-paho-mqtt###1.6.1-5###pacman
 python-pip###25.2-1###pacman
@@ -237,7 +237,7 @@ systemd-sysvcompat###258-3###pacman
 tailscale###1.88.1-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
-telegram-desktop###6.1.3-1###pacman
+telegram-desktop###6.1.3-2###pacman
 texinfo###7.2-1###pacman
 thefuck###3.32-11###pacman
 tinyxxd###1.3.7-1###pacman
@@ -313,7 +313,7 @@ hunspell-sv###1:2.42-2###paru
 hyprgraphics-git###0.1.6.r5.g32e6b83-1###paru
 hypridle-git###0.1.7.r1.gf158b2f-1###paru
 hyprkeys###1.0.3-1###paru
-hyprland-git###0.51.0.r31.gec9a72d-1###paru
+hyprland-git###0.51.0.r33.g8cce3b9-1###paru
 hyprland-protocols-git###0.6.4.r1.g613878c-1###paru
 hyprland-qtutils-git###0.1.5.r1.g5ffdfc1-1###paru
 hyprlock-git###0.9.1.r10.g7f769fa-1###paru
@@ -334,7 +334,7 @@ pinta###3.0.3-1###paru
 pyprland-git###r1490.8f0c570-1###paru
 python-qutescript-git###r34.5115bc8-1###paru
 python-sounddevice###0.5.2-1###paru
-qutebrowser-git###3.5.1.r88.ga8f9fc139-1###paru
+qutebrowser-git###3.5.1.r93.gc9498995d-1###paru
 reiserfsprogs###3.6.27-5###paru
 rofi-lbonn-wayland-git###1.7.9.wayland1.r1.gd4b16e6f-1###paru
 smem###1.5-8###paru
@@ -423,7 +423,7 @@ bash-language-server###5.6.0###npm
 corepack###0.34.0###npm
 node-gyp###11.4.2###npm
 nopt###7.2.1###npm
-npm###11.6.0###npm
+npm###11.6.1###npm
 pnpm###10.17.1###npm
 semver###7.7.2###npm
 typescript###5.9.0###npm
