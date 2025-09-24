@@ -100,8 +100,9 @@ def conf_source(file, shell_type=None):
                             escaped_value = value.replace("'", "\\'")
                             commands.append(f"set -gx {key} '{escaped_value}'")
 
-                # Output commands separated by semicolons and newlines for Fish
-                print(" && ".join(commands))
+                # Output commands separated by newlines for Fish
+                for cmd in commands:
+                    print(cmd)
             else:
                 # Original logic for bash/zsh
                 with open(file) as f:
