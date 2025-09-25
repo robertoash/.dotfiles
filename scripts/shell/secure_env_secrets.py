@@ -29,28 +29,6 @@ secrets_files = [
 gpg_id = "j.roberto.ash@gmail.com"
 
 
-def detect_shell():
-    """Detect the current shell being used."""
-    # Check parent process name
-    try:
-        ppid = os.getppid()
-        with open(f"/proc/{ppid}/comm", "r") as f:
-            parent_name = f.read().strip()
-        if parent_name in ["fish"]:
-            return "fish"
-        elif parent_name in ["bash", "zsh", "sh"]:
-            return "posix"
-    except (OSError, FileNotFoundError):
-        pass
-
-    # Fallback to SHELL environment variable
-    shell = os.environ.get("SHELL", "")
-    if "fish" in shell:
-        return "fish"
-    else:
-        return "posix"  # Default to POSIX (bash/zsh) syntax
-
-
 def configure_logging(args):
     # Configure logging in quiet mode
     logging_utils.configure_logging(quiet=True)
@@ -65,9 +43,7 @@ def configure_logging(args):
     logger.setLevel(logging.DEBUG if args.debug else logging.ERROR)
 
 
-def conf_source(file, shell_type=None):
-    if shell_type is None:
-        shell_type = detect_shell()
+def conf_source(file, shell_type="fish"):
 
     if os.path.getsize(file) > 0:
         try:
@@ -224,7 +200,8 @@ def main():
     parser.add_argument(
         "--shell",
         choices=["fish", "posix"],
-        help="Override shell detection (fish or posix)",
+        default="fish",
+        help="Shell syntax to use (default: fish)",
     )
     args = parser.parse_args()
 
@@ -249,7 +226,7 @@ def main():
         print(f"🔒 Re-encrypted: {file} → {file}.asc")
         return
 
-    shell_type = args.shell if args.shell else detect_shell()
+    shell_type = args.shell
 
     with open(lock_file, "w") as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)
