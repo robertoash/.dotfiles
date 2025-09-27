@@ -66,7 +66,9 @@ if status is-interactive
         # Only run once
         if not set -q __secrets_loaded
             if test -f /home/rash/.config/scripts/shell/secure_env_secrets.py
-                eval (/home/rash/.config/scripts/shell/secure_env_secrets.py)
+                for line in (/home/rash/.config/scripts/shell/secure_env_secrets.py)
+                    eval $line
+                end
                 set -g __secrets_loaded 1
             end
         end
