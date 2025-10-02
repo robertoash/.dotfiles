@@ -21,12 +21,7 @@
         ],
         "3": [
             {
-                "name": "browser_company",
-                "command": "qute_profile company",
-                "is_master": true
-            },
-            {
-                "name": "company_terminal",
+                "name": "config_terminal",
                 "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
                 "is_master": false
             }

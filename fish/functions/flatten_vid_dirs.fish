@@ -38,7 +38,7 @@ function flatten_vid_dirs --description "Extract video files from subdirectories
     end
     
     for dir in $empty_dirs
-        if test -d "$dir" -a -z (ls -A "$dir" 2>/dev/null)
+        if test -d "$dir"; and not count (ls -A "$dir" 2>/dev/null) >/dev/null
             echo "Removing empty directory: $dir"
             rmdir "$dir" 2>/dev/null
             

@@ -20,7 +20,7 @@ BROWSER_PROFILES = {
         "profile_directory": "rash",
         "app_url": None
     },
-    "jobhunt": {
+    "work": {
         "profile_directory": "work",
         "app_url": None
     },
