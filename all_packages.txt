@@ -143,11 +143,11 @@ libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
 libwnck3###43.3-1###pacman
 libxfce4ui###4.20.2-1###pacman
-linux###6.16.8.arch3-1###pacman
+linux###6.16.10.arch1-1###pacman
 linux-firmware###20250917-1###pacman
 linux-firmware-nvidia###20250917-1###pacman
-linux-headers###6.16.8.arch3-1###pacman
-linux-lts###6.12.49-1###pacman
+linux-headers###6.16.10.arch1-1###pacman
+linux-lts###6.12.50-1###pacman
 logrotate###3.22.0-1###pacman
 lsb-release###2.0.r55.a25a4fc-1###pacman
 lsix###1.9.1-1###pacman
@@ -181,7 +181,7 @@ ntfs-3g###2022.10.3-2###pacman
 ntp###4.2.8.p18-5###pacman
 nushell###0.107.0-1###pacman
 nzbget###25.3-1###pacman
-obsidian###1.9.12-1###pacman
+obsidian###1.9.14-1###pacman
 openssh###10.0p1-6###pacman
 os-prober###1.83-1###pacman
 otf-commit-mono-nerd###3.4.0-1###pacman
