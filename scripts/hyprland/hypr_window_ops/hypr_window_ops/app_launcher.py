@@ -126,7 +126,7 @@ def launch_profile_apps(
         logging.debug(f"Removed nofocus property from window {address}")
 
     # Return to default workspaces and focus master windows
-    # Switch to monitor 2 (DP-2) workspace
+    # Switch to monitor 2 (HDMI-A-1) workspace
     focus_workspace_master("11")
     time.sleep(config.FOCUS_WS_DELAY)
 

@@ -37,7 +37,7 @@ def toggle_monitor_stash():
     monitor_desc = monitor.get("description", "")
     
     # Determine which stash belongs to this monitor
-    if "DP-2" in monitor_name or "L32p-30" in monitor_desc:
+    if "HDMI-A-1" in monitor_name or "L32p-30" in monitor_desc:
         stash = "stash-right"
     elif "DP-1" in monitor_name or "P27u-20" in monitor_desc:
         stash = "stash-left"
@@ -72,7 +72,7 @@ def move_to_monitor_stash(stash_name=None):
         monitor_desc = monitor.get("description", "")
         
         # Map monitors to their stash workspaces
-        if "DP-2" in monitor_name or "L32p-30" in monitor_desc:
+        if "HDMI-A-1" in monitor_name or "L32p-30" in monitor_desc:
             stash = "stash-right"
         elif "DP-1" in monitor_name or "P27u-20" in monitor_desc:
             stash = "stash-left"

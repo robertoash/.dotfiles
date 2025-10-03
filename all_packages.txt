@@ -316,7 +316,7 @@ chaotic-mirrorlist###20240724-2###paru
 chromium-widevine###1:4.10.2891.0-3###paru
 claude-code###2.0.5-1###paru
 claude-desktop-native###0.13.37-2###paru
-colloid-catppuccin-gtk-theme-git###2025.07.31.r8.g39b5831-1###paru
+colloid-catppuccin-gtk-theme-git###2025.07.31.r9.ga651c4d-1###paru
 csvq-bin###1.18.1-2###paru
 espanso-wayland-git###2.2.7.r5.g896419ca-1###paru
 fatrace###0.19.1-1###paru
