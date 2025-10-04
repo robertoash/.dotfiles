@@ -36,8 +36,8 @@ dmidecode###3.6-1###pacman
 dmraid###1.0.0.rc16.3-15###pacman
 dnsmasq###2.91-1###pacman
 docker###1:28.5.0-1###pacman
-docker-buildx###0.28.0-1###pacman
-docker-compose###2.39.4-1###pacman
+docker-buildx###0.29.0-1###pacman
+docker-compose###2.40.0-1###pacman
 dosfstools###4.2-5###pacman
 downgrade###11.5.4-1###pacman
 dracut###108_eos-1###pacman
@@ -94,20 +94,8 @@ hdparm###9.65-3###pacman
 hunspell-en_us###2020.12.07-5###pacman
 hunspell-es_sv###1:2.9-1###pacman
 hwinfo###25.0-2###pacman
-hyprcursor###0.1.13-1###pacman
-hyprgraphics###0.1.6-1###pacman
-hypridle###0.1.7-1###pacman
-hyprland###0.51.1-1###pacman
-hyprland-protocols###0.6.4-1###pacman
-hyprland-qt-support###0.1.0-7###pacman
-hyprland-qtutils###0.1.5-1###pacman
-hyprlang###0.6.4-1###pacman
-hyprlock###0.9.2-1###pacman
-hyprpaper###0.7.5-3###pacman
-hyprpicker###0.4.5-4###pacman
-hyprutils###0.8.4-1###pacman
-hyprwayland-scanner###0.4.5-1###pacman
 img2pdf###0.6.1-1###pacman
+incus###6.17.0-1###pacman
 inetutils###2.6-1###pacman
 inotify-tools###4.25.9.0-1###pacman
 intel-media-driver###25.3.4-1###pacman
@@ -242,7 +230,7 @@ solaar###1.1.14-2###pacman
 spotifyd###0.4.1-1###pacman
 sshfs###3.7.3-3###pacman
 stow###2.4.1-1###pacman
-strace###6.16-1###pacman
+strace###6.17-1###pacman
 sublime-text###4200-1###pacman
 sudo###1.9.17.p1-1###pacman
 swappy###1.8.0-1###pacman
@@ -289,7 +277,6 @@ wl-clipboard###1:2.2.1-3###pacman
 wpa_supplicant###2:2.11-3###pacman
 wtype###0.4-2###pacman
 xcb-imdkit###1.0.9-1###pacman
-xdg-desktop-portal-hyprland###1.3.10-1###pacman
 xdg-desktop-portal-wlr###0.7.1-2###pacman
 xdg-user-dirs###0.18-2###pacman
 xdg-utils###1.2.1-1###pacman
@@ -305,6 +292,7 @@ xorg-xrandr###1.5.3-1###pacman
 yaml-language-server###1.19.0-1###pacman
 yay###12.5.2-2###pacman
 zathura###0.5.13-1###pacman
+zathura-pdf-poppler###0.3.3-6###pacman
 zip###3.0-11###pacman
 zoxide###0.9.8-2###pacman
 zsh###5.9-5###pacman
@@ -325,7 +313,12 @@ gnu-netcat###0.7.1-12###paru
 gophertube-bin###2.8.0-1###paru
 greetd-tuigreet-git###0.9.1.r19.g2aeca1b-1###paru
 hunspell-sv###1:2.42-2###paru
+hypridle-git###0.1.7.r1.gf158b2f-1###paru
 hyprkeys###1.0.3-1###paru
+hyprland-git###0.51.0.r58.g76d9987-1###paru
+hyprlock-git###0.9.2.r1.g3cb799b-1###paru
+hyprpaper-git###0.7.5.r9.gbcb1ffa-1###paru
+hyprpicker-git###0.4.5.r10.gb3f3f23-1###paru
 insync###3.9.6.60027-2###paru
 jellyfin-media-player###1.12.0-3.8###paru
 kanata-git###r1337.25193104-1###paru
@@ -359,6 +352,7 @@ waybar-git###0.14.0.r68.g18a9835-1###paru
 wdisplays###1.1.3-1###paru
 wezterm-git###20240203.110809.r769.gbf9a2ae-1###paru
 wl-color-picker###1.4-1###paru
+xdg-desktop-portal-hyprland-git###1.3.10.r2.ga10726d-1###paru
 bat###v0.25.0###cargo
 broot###v1.50.0###cargo
 cargo-binstall###v1.15.6###cargo
@@ -367,7 +361,7 @@ choose###v1.3.7###cargo
 du-dust###v1.2.3###cargo
 dua-cli###v2.32.0###cargo
 dysk###v3.1.0###cargo
-eza###v0.23.3###cargo
+eza###v0.23.4###cargo
 fre###v0.4.1###cargo
 fselect###v0.9.0###cargo
 git-delta###v0.18.2###cargo
@@ -388,7 +382,7 @@ sd###v1.0.0###cargo
 speedtest-rs###v0.2.0###cargo
 spotify_player###v0.21.###cargo
 starship###v1.23.0###cargo
-tealdeer###v1.7.2###cargo
+tealdeer###v1.8.0###cargo
 textty###v0.1.###cargo
 thoth-cli###v0.1.84###cargo
 topgrade###v16.0.4###cargo
@@ -420,7 +414,8 @@ yazi-rs/plugins:jump-to-char###d1c8baa###ya
 boydaihungst/mediainfo###2093ab7###ya
 yazi-rs/plugins:toggle-pane###d1c8baa###ya
 equals03/wl-clipboard###8b8c2f4###ya
-uhs-robert/sshfs###1a466c8###ya
+uhs-robert/sshfs###0d6e699###ya
+yazi-rs/plugins:mount###d1c8baa###ya
 yazi-rs/flavors:catppuccin-mocha###2d73b79###ya
 jorgebucaran/fisher######fisher
 aohorodnyk/fish-autovenv######fisher
