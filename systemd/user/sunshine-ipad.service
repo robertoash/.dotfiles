@@ -1,0 +1,11 @@
+[Unit]
+Description=Sunshine with iPad Screen
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/rash/.local/bin/sunshine-with-ipad
+Restart=no
+
+[Install]
+WantedBy=default.target
