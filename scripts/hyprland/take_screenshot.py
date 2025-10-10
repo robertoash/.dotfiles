@@ -163,6 +163,13 @@ def monitor_annotate():
         pass
 
 
+def desktop_direct_save():
+    out_path = SCREENSHOT_DIR / f"desktop-{STAMP}.png"
+    run(f'grim "{out_path}"')
+    # Show notification with option to open directory
+    show_save_notification(out_path.name, "Desktop")
+
+
 actions = {
     "region-annotate": region_annotate,
     "region-direct-save": region_direct_save,
@@ -172,6 +179,7 @@ actions = {
     "window-direct-save": window_direct_save,
     "monitor-direct-save": monitor_direct_save,
     "monitor-annotate": monitor_annotate,
+    "desktop-direct-save": desktop_direct_save,
 }
 
 if __name__ == "__main__":
@@ -179,6 +187,7 @@ if __name__ == "__main__":
         print("Usage: take_screenshot.py [ACTION]")
         print("Actions: region-annotate, region-direct-save, clipboard,")
         print("         window-annotate, window-direct-save,")
-        print("         monitor-direct-save, monitor-annotate")
+        print("         monitor-direct-save, monitor-annotate,")
+        print("         desktop-direct-save")
         sys.exit(1)
     actions[sys.argv[1]]()
