@@ -19,7 +19,6 @@ bluez###5.84-1###pacman
 bluez-utils###5.84-1###pacman
 btop###1.4.5-1###pacman
 btrfs-progs###6.17-1###pacman
-caligula###0.4.8-2###pacman
 cantarell-fonts###1:0.303.1-2###pacman
 chafa###1.16.2-1###pacman
 cloudflared###2025.9.1-1###pacman
@@ -116,7 +115,7 @@ jellyfin-mpv-shim###2.9.0-1###pacman
 jfsutils###1.1.15-9###pacman
 jp2a###1.3.2-1###pacman
 jq###1.8.1-1###pacman
-kdeconnect###25.08.1-1###pacman
+kdeconnect###25.08.2-2###pacman
 lazydocker###0.24.1-2###pacman
 lazygit###0.55.1-1###pacman
 less###1:679-1###pacman
@@ -131,7 +130,7 @@ libid3tag###0.16.3-2###pacman
 libnma###1.10.6-3###pacman
 libnma-gtk4###1.10.6-3###pacman
 libopenraw###0.3.7-2###pacman
-libreoffice-fresh###25.8.1-3###pacman
+libreoffice-fresh###25.8.2-1###pacman
 libspng###0.7.4-2###pacman
 libva-intel-driver###2.4.1-5###pacman
 libva-utils###2.22.0-1###pacman
@@ -214,8 +213,8 @@ python-watchdog###6.0.0-1###pacman
 qalculate-gtk###5.7.0-1###pacman
 qbittorrent###5.1.2-1###pacman
 qt5-wayland###5.15.17+kde+r57-1###pacman
-qt6-multimedia###6.9.2-4###pacman
-qt6-quick3d###6.9.2-1###pacman
+qt6-multimedia###6.10.0-1###pacman
+qt6-quick3d###6.10.0-1###pacman
 rebuild-detector###4.4.5-1###pacman
 reflector###2023-3###pacman
 reflector-simple###2024.8.1-1###pacman
@@ -233,7 +232,7 @@ slurp###1.5.0-1###pacman
 smartmontools###7.5-1###pacman
 sof-firmware###2025.05.1-1###pacman
 solaar###1.1.14-2###pacman
-spotifyd###0.4.1-1###pacman
+spotify-player###0.21.1-1###pacman
 sshfs###3.7.3-3###pacman
 stow###2.4.1-1###pacman
 strace###6.17-1###pacman
@@ -248,7 +247,7 @@ tailscale###1.88.3-1###pacman
 taplo-cli###0.10.0-1###pacman
 task###3.4.1-1###pacman
 tcpdump###4.99.5-1###pacman
-telegram-desktop###6.1.4-1###pacman
+telegram-desktop###6.1.4-2###pacman
 texinfo###7.2-1###pacman
 tinyxxd###1.3.7-1###pacman
 tk###8.6.16-1###pacman
@@ -268,8 +267,9 @@ unzip###6.0-23###pacman
 upower###1.90.10-1###pacman
 usb_modeswitch###2.6.2-1###pacman
 usbutils###018-1###pacman
-uv###0.9.0-1###pacman
+uv###0.9.1-1###pacman
 vi###1:070224-6###pacman
+wayvnc###0.9.1-1###pacman
 welcome###25.10-1###pacman
 wev###1.1.0-1###pacman
 wf-recorder###0.5.0-3###pacman
@@ -310,7 +310,7 @@ chaotic-keyring###20230616-1###paru
 chaotic-mirrorlist###20240724-2###paru
 chromium-widevine###1:4.10.2891.0-3###paru
 claude-code###2.0.13-1###paru
-claude-desktop-native###0.13.37-2###paru
+claude-desktop-native###0.13.64-1###paru
 colloid-catppuccin-gtk-theme-git###2025.07.31.r9.ga651c4d-1###paru
 csvq-bin###1.18.1-2###paru
 espanso-wayland-git###2.2.8.r4.g501cfb55-1###paru
@@ -345,10 +345,11 @@ sqls###0.2.27-1###paru
 stardict-dictd-moby-thesaurus###2.4.2-3###paru
 stardict-urban###2.4.2-3###paru
 stardict-wordnet###2.4.2-4###paru
+sunshine-bin###2025.924.154138-1###paru
 svttext-git###13.e076ce0-1###paru
 termux-language-server###0.0.27-1###paru
 tokyonight-gtk-theme-git###r93.93295bf8-1###paru
-ungoogled-chromium-bin###141.0.7390.54-1###paru
+ungoogled-chromium-bin###141.0.7390.65-1###paru
 urban-cli-bin###0.2.3-2###paru
 walk###1.13.0-1###paru
 waybar-git###0.14.0.r82.g559079e-1###paru
@@ -382,7 +383,6 @@ ripsecrets###v0.1.1###cargo
 rnr###v0.5.0###cargo
 sd###v1.0.0###cargo
 speedtest-rs###v0.2.0###cargo
-spotify_player###v0.21.###cargo
 starship###v1.23.0###cargo
 tealdeer###v1.8.0###cargo
 textty###v0.1.###cargo
