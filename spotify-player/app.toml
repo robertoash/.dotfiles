@@ -1,5 +1,5 @@
 theme = "~/.config/spotify-player/themes/tokyonight_deep.toml"
-client_id = "bd2c5ca79206484181b74666a839553b"
+client_id = "c47089f9ef7847548f16447677f6d117"
 login_redirect_uri = "http://127.0.0.1:8989/login"
 playback_format = """
 {status} {track} • {artists}
@@ -17,7 +17,7 @@ progress_bar_type = "Rectangle"
 enable_cover_image_cache = true
 seek_duration_secs = 5
 enable_streaming = "DaemonOnly"
-default_device = "spt_linuxmini"
+default_device = "spotify_player_cli"
 
 [layout]
 playback_window_position = "Top"
@@ -28,7 +28,7 @@ playlist_percent = 40
 album_percent = 40
 
 [device]
-name = "spt_linuxmini"
+name = "spotify_player_cli"
 device_type = "speaker"
 volume = 70
 bitrate = 320

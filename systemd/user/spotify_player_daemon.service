@@ -8,7 +8,7 @@ After=network-online.target
 
 [Service]
 Type=forking
-ExecStart=/home/rash/.cargo/bin/spotify_player --daemon
+ExecStart=/usr/bin/spotify_player --daemon
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
