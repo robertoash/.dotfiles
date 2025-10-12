@@ -1,5 +1,7 @@
 
+[
 {
+	"output": ["Lenovo Group Limited P27u-20 V90CHVAB", "Lenovo Group Limited L32p-30 U51250AL"],
 	"include": "/home/rash/.config/waybar/modules",
 	"layer": "top",
 	//"mode": "dock",
@@ -51,4 +53,34 @@
 		"custom/separator#dot-line",
 		"clock"
 	]
+},
+{
+	"output": "iPadScreen",
+	"include": "/home/rash/.config/waybar/modules",
+	"layer": "top",
+	"exclusive": true,
+	"passthrough": false,
+	"position": "top",
+	"spacing": 2,
+	"fixed-center": false,
+	"no-center": true,
+	"ipc": true,
+	"margin-top": 2,
+	"margin-left": 4,
+	"margin-right": 4,
+	"reload_style_on_change": true,
+
+	"modules-left": [
+		"hyprland/workspaces#numbers",
+		"custom/separator#dot-line",
+		"custom/kanata_mode",
+		"custom/separator#blank"
+	],
+
+	"modules-right": [
+		"custom/hypridle",
+		"custom/separator#dot-line",
+		"clock"
+	]
 }
+]

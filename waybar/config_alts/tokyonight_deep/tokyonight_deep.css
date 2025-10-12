@@ -449,3 +449,8 @@ window#waybar.hidden {
     min-height: 10px;
     border-radius: 5px;
 }
+
+/* Hide empty center modules */
+#waybar.empty .modules-center {
+    opacity: 0;
+}
