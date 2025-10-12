@@ -10,50 +10,46 @@ LOG_FILE = Path("/tmp/ungoogled_chromium_direct.log")
 CHROMIUM_BIN = "/usr/bin/chromium"  # Verify this path is correct
 CONFIG_FILE = Path.home() / ".config/hypr/script_configs/zen_apps.json"
 
+
 def load_profiles():
     """Load profiles from JSON configuration file and browser profiles from config.py."""
     try:
         # Load zen apps config
-        with open(CONFIG_FILE, 'r') as f:
+        with open(CONFIG_FILE, "r") as f:
             config = json.load(f)
-        
+
         # Flatten the structure while preserving type information
         profiles = {}
         for profile_type, type_profiles in config.items():
             for name, profile_data in type_profiles.items():
-                profiles[name] = {
-                    **profile_data,
-                    "type": profile_type
-                }
-        
+                profiles[name] = {**profile_data, "type": profile_type}
+
         # Add browser profile launchers from hypr_window_ops config
         try:
             import sys
+
             config_dir = Path.home() / ".config/scripts/hyprland/hypr_window_ops"
             sys.path.insert(0, str(config_dir))
-            
+
             from hypr_window_ops import config
-            
+
             # Add browser profiles with "url" type
             for name, profile_data in config.BROWSER_PROFILES.items():
-                profiles[name] = {
-                    **profile_data,
-                    "type": "url"
-                }
+                profiles[name] = {**profile_data, "type": "url"}
         except Exception as e:
             log(f"Warning: Could not load browser profiles from config.py: {e}")
-        
+
         return profiles
     except (FileNotFoundError, json.JSONDecodeError) as e:
         log(f"Error loading config file {CONFIG_FILE}: {e}")
         sys.exit(1)
 
+
 # Ungoogled Chromium command-line arguments
 BASE_ARGS = [
     "--new-window",
     "--new-instance",
-    "--ozone-platform=wayland",
-    "--enable-features=UseOzonePlatform",
+    "--disable-features=WaylandWpColorManagerV1,TranslateUI",
     # Performance optimizations
     "--disable-background-networking",
     "--disable-background-timer-throttling",
@@ -61,7 +57,6 @@ BASE_ARGS = [
     "--disable-sync",
     "--disable-translate",
     # Minimal UI in app mode
-    "--disable-features=TranslateUI",
     "--disable-popup-blocking",
 ]
 
@@ -77,11 +72,11 @@ def log(message: str) -> None:
 def build_command(profile_info: dict, profile_name: str) -> list:
     cmd = [CHROMIUM_BIN] + BASE_ARGS
     cmd.append(f"--profile-directory={profile_info['profile_directory']}")
-    
+
     # Set different class names for extensions
     if profile_info.get("type") == "extension":
         cmd.append(f"--app-name={profile_name.capitalize()}-Ext")
-    
+
     if profile_info.get("app_url"):
         cmd.append(f"--app={profile_info['app_url']}")
     return cmd
