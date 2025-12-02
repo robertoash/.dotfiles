@@ -47,7 +47,7 @@
 (deflayer qwerty
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  tab  q    w    e    r    t    y    u    i    o    p    å    ¨ ret
+  @tab-mods  q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   @caps-multi-qwerty a    s    d    f    g    h    j    k    l    ö    ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt        @spc-mods                 ralt        rctl
@@ -61,7 +61,7 @@
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  tab  q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
+  @tab-mods  q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
   @caps-multi-colemak a    r    s    t    d    h    n    e    i    o    ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
   lctl lmet lalt     @spc-mods                    ralt        rctl
@@ -82,6 +82,21 @@
   _    @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
+)
+
+;; ===============================================
+;; QWERTY OVERRIDE LAYER (Tab/Hyper-activated)
+;; ===============================================
+
+;; This layer ensures QWERTY output when tab or hyper modifiers are held
+;; Used for Hyprland keybinds that expect QWERTY positions
+(deflayer qwerty-override
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
+  _    a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 spc                   ralt        rctl
 )
 
 ;; ===============================================
@@ -115,20 +130,26 @@
 
 (defalias
 
+  ;; Tab with SUPER+CTRL+ALT on hold
+  ;; Also activates QWERTY override layer for Hyprland keybinds
+  tab-mods (tap-hold-release 75 120 tab (multi lmet lctl lalt (layer-while-held qwerty-override)))
+
   ;; Layer switching aliases
   switch-to-colemak (layer-switch colemak)
   switch-to-qwerty (layer-switch qwerty)
 
   ;; Multi-function Caps Lock for colemak: tap=esc, double-tap=switch-to-qwerty, triple-tap=caps, hold=hyper
+  ;; Hyper hold also activates QWERTY override layer for Hyprland keybinds
   caps-multi-colemak (tap-dance 250 (
-    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet (layer-while-held qwerty-override)))
     @switch-to-qwerty
     caps
   ))
 
   ;; Multi-function Caps Lock for qwerty: tap=esc, double-tap=switch-to-colemak, triple-tap=caps, hold=hyper
+  ;; Hyper hold also activates QWERTY override layer for Hyprland keybinds
   caps-multi-qwerty (tap-dance 250 (
-    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet))
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet (layer-while-held qwerty-override)))
     @switch-to-colemak
     caps
   ))

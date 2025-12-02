@@ -72,7 +72,7 @@ function z --description 'Smart directory jumping with recent fallback'
         if test -n "$__last_working_dir" -a -d "$__last_working_dir" -a "$__last_working_dir" != "$PWD"
             set prev_dir "$PWD"
             echo "→ $__last_working_dir"
-            cd "$__last_working_dir"
+            builtin cd "$__last_working_dir"
             # Update last working dir to where we came from (for ping-pong effect)
             set -g __last_working_dir "$prev_dir"
             
@@ -89,7 +89,7 @@ function z --description 'Smart directory jumping with recent fallback'
         else if test (count $__dir_history) -gt 0 -a -n "$__dir_history[1]" -a -d "$__dir_history[1]"
             set prev_dir "$PWD"
             echo "→ $__dir_history[1]"
-            cd "$__dir_history[1]"
+            builtin cd "$__dir_history[1]"
             # Update last working dir to where we came from
             set -g __last_working_dir "$prev_dir"
             

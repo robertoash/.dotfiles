@@ -21,7 +21,11 @@ if wk_ok then
 		{ "<leader>b/", group = "Buffer Navigation [/]", mode = { "n", "v" } },
 		{ "<leader>bc", group = "Buffer [c]lose", mode = { "n", "v" } },
 		{ "<leader>c", group = "[c]laude Code", mode = { "n", "v" } },
-		{ "<leader>d", group = "Working [d]ir", mode = { "n", "v" } },
+		{ "<leader>cd", group = "Claude Code [d]iff", mode = { "n", "v" } },
+		{ "<leader>d", group = "Working [d]ir / DBT / Database", mode = { "n", "v" } },
+		{ "<leader>db", group = "[d]ata[b]ase UI", mode = { "n", "v" } },
+		{ "<leader>dr", group = "DBT [r]un", mode = { "n", "v" } },
+		{ "<leader>dt", group = "DBT [t]est", mode = { "n", "v" } },
 		{ "<leader>f", group = "[f]ind", mode = { "n", "v" } },
 		{ "<leader>fr", group = "Find and [r]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[g]it", mode = { "n", "v" } },
@@ -35,9 +39,12 @@ if wk_ok then
 		{ "<leader>t", group = "[t]erminal", mode = { "n", "v" } },
 		{ "<leader>t/", group = "Terminal [/] management", mode = { "n", "v" } },
 		{ "<leader>u", group = "[u]ndo Tree", mode = { "n", "v" } },
-		{ "<leader>v", group = "Paste [v]", mode = { "n", "v", "x" } },
+		{ "<leader>v", group = "Paste [v]", mode = { "n", "v" } },
 		{ "<leader>x", group = "Trouble Diagnostics [x]", mode = { "n", "v" } },
 		{ "<leader>y", group = "[y]azi File Manager", mode = { "n", "v" } },
+		-- LSP keymaps (defined in nvim-lspconfig.lua via LspAttach autocmd)
+		{ "g", group = "[g]oto / LSP", mode = { "n" } },
+		{ "gr", group = "LSP [g]oto/[r]efactor", mode = { "n" } },
 	})
 end
 
@@ -50,7 +57,7 @@ local working_dir_mappings = {
 	},
 	{
 		"n",
-		"<leader>dr",
+		"<leader>d/",
 		function()
 			local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"):gsub("\n", "")
 			if vim.v.shell_error == 0 then
@@ -60,7 +67,47 @@ local working_dir_mappings = {
 				print("Not in a git repository.")
 			end
 		end,
-		{ desc = "CWD to Git [r]oot" },
+		{ desc = "CWD to Git root [/]" },
+	},
+}
+
+-- DBT mappings
+local dbt_mappings = {
+	{
+		"n",
+		"<leader>drf",
+		"<cmd>DbtRun<cr>",
+		{ desc = "DBT run [f]ile" },
+	},
+	{
+		"n",
+		"<leader>drp",
+		"<cmd>DbtRunAll<cr>",
+		{ desc = "DBT run [p]roject" },
+	},
+	{
+		"n",
+		"<leader>dtf",
+		"<cmd>DbtTest<cr>",
+		{ desc = "DBT test [f]ile" },
+	},
+	{
+		"n",
+		"<leader>dm",
+		function()
+			require("dbtpal.telescope").dbt_picker()
+		end,
+		{ desc = "DBT [m]odel picker" },
+	},
+}
+
+-- Dadbod (Database UI) mappings
+local dadbod_mappings = {
+	{
+		"n",
+		"<leader>dbb",
+		"<cmd>DBUIToggle<cr>",
+		{ desc = "Toggle Data[b]ase UI" },
 	},
 }
 
@@ -79,9 +126,9 @@ local claudecode_mappings = {
 	},
 	{
 		"n",
-		"<leader>cb",
+		"<leader>ca",
 		"<cmd>ClaudeCodeAdd %<cr>",
-		{ desc = "Claude Code add [b]uffer" },
+		{ desc = "Claude Code [a]dd buffer to context" },
 	},
 	{
 		"v",
@@ -91,15 +138,15 @@ local claudecode_mappings = {
 	},
 	{
 		"n",
-		"<leader>caa",
+		"<leader>cda",
 		"<cmd>ClaudeCodeDiffAccept<cr>",
-		{ desc = "Claude Code [a]ccept diff" },
+		{ desc = "Claude Code diff [a]ccept" },
 	},
 	{
 		"n",
-		"<leader>car",
+		"<leader>cdr",
 		"<cmd>ClaudeCodeDiffReject<cr>",
-		{ desc = "Claude Code [r]eject diff" },
+		{ desc = "Claude Code diff [r]eject" },
 	},
 }
 
@@ -118,12 +165,21 @@ local lazygit_mappings = {
 -- Conform.nvim (formatting)
 local format_mappings = {
 	{
-		"n",
+		{ "n", "v" },
 		"<leader>=",
 		function()
 			local ok, conform = pcall(require, "conform")
 			if ok then
-				conform.format({ async = true, lsp_format = "fallback" })
+				-- In visual mode, format the selection
+				-- In normal mode, format the whole document
+				local mode = vim.fn.mode()
+				if mode == "v" or mode == "V" or mode == "\22" then
+					-- Visual mode: format selection using range
+					conform.format({ async = true, lsp_format = "fallback" })
+				else
+					-- Normal mode: format entire buffer
+					conform.format({ async = true, lsp_format = "fallback" })
+				end
 			end
 		end,
 		{ desc = "[=] Apply Format" },
@@ -252,6 +308,23 @@ local telescope_mappings = {
 		"n",
 		"<leader>sn",
 		function()
+			-- Search in dotfiles directory
+			local ok, builtin = pcall(require, "telescope.builtin")
+			if ok then
+				builtin.find_files({
+					cwd = vim.fn.expand("~/.dotfiles"),
+					hidden = true,
+					no_ignore_parent = true,
+					prompt_title = "Find Dotfiles Files",
+				})
+			end
+		end,
+		{ desc = "Search dotfiles" },
+	},
+	{
+		"n",
+		"<leader>sN",
+		function()
 			-- Use regular find_files but in nvim config directory - more reliable scoping
 			local ok, builtin = pcall(require, "telescope.builtin")
 			if ok then
@@ -263,7 +336,7 @@ local telescope_mappings = {
 				})
 			end
 		end,
-		{ desc = "Search [n]eovim files" },
+		{ desc = "Search [N]eovim files" },
 	},
 	{
 		"n",
@@ -298,7 +371,12 @@ local telescope_mappings = {
 		end,
 		{ desc = "Search current [w]ord" },
 	},
-	vim.keymap.set("n", "<leader>z", ":Telescope zoxide list<CR>", { desc = "[z]oxide directories" }),
+	{
+		"n",
+		"<leader>z",
+		":Telescope zoxide list<CR>",
+		{ desc = "[z]oxide directories" },
+	},
 }
 
 --==========================================================================
@@ -414,32 +492,19 @@ local snacks_terminal_navigation = {
 	{ "t", "<A-n>", "<C-\\><C-n><C-w>w", { desc = "Go to next window" } },
 }
 
--- Apply terminal navigation keymaps to all terminal buffers (including snacks)
-vim.api.nvim_create_autocmd("TermOpen", {
-	callback = function()
-		for _, mapping in ipairs(snacks_terminal_navigation) do
-			local mode, lhs, rhs, opts = mapping[1], mapping[2], mapping[3], mapping[4]
-			vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { buffer = true }))
-		end
-	end,
-	desc = "Set window navigation keymaps for terminal buffers",
-})
-
 -- Buffer management keybinds using <leader>b
 local buffer_mappings = {
-	-- Common operations (direct access)
-	{ "n", "<leader>bn", ":enew<CR>", { desc = "[n]ew buffer" } },
-	{ "n", "<leader>bl", ":ls<CR>", { desc = "[l]ist buffers" } },
+	-- Most common operations (short bindings)
+	{ { "n", "v" }, "<leader>bd", ":bd<CR>", { desc = "[d]elete/close buffer" } },
+	{ { "n", "v" }, "<leader>bq", ":bd!<CR>", { desc = "[q]uit buffer (force)" } },
+	{ { "n", "v" }, "<leader>bn", ":bnext<CR>", { desc = "[n]ext buffer" } },
+	{ { "n", "v" }, "<leader>bp", ":bprev<CR>", { desc = "[p]revious buffer" } },
 
-	-- Navigation sub-group
-	{ "n", "<leader>bvj", ":bnext<CR>", { desc = "Next buffer [j]" } },
-	{ "n", "<leader>bvk", ":bprev<CR>", { desc = "Previous buffer [k]" } },
-	{ "n", "<leader>bvl", ":blast<CR>", { desc = "Last buffer [l]" } },
-	{ "n", "<leader>bvf", ":bfirst<CR>", { desc = "First buffer [f]" } },
-
-	-- Closing sub-group
-	{ "n", "<leader>bcc", ":bd<CR>", { desc = "[c]lose buffer" } },
-	{ "n", "<leader>bc!", ":bd!<CR>", { desc = "Close buffer force [!]" } },
+	-- Less common operations
+	{ { "n", "v" }, "<leader>b+", ":enew<CR>", { desc = "New buffer [+]" } },
+	{ { "n", "v" }, "<leader>bl", ":ls<CR>", { desc = "[l]ist buffers" } },
+	{ { "n", "v" }, "<leader>bf", ":bfirst<CR>", { desc = "[f]irst buffer" } },
+	{ { "n", "v" }, "<leader>b$", ":blast<CR>", { desc = "Last buffer [$]" } },
 }
 
 -- Delete to blackhole mappings
@@ -455,25 +520,25 @@ local yanky_mappings = {
 		{ "n", "v", "x" },
 		"<leader>vv",
 		"<Plug>(YankyPutAfter)",
-		{ desc = "Paste from yanky ring" }
+		{ desc = "Paste from yanky ring" },
 	},
 	{
 		{ "n", "v", "x" },
 		"<leader>vV",
 		"<Plug>(YankyPutBefore)",
-		{ desc = "Paste before from yanky ring" }
+		{ desc = "Paste before from yanky ring" },
 	},
 	{
 		{ "n", "x" },
 		"<leader>vp",
 		"<Plug>(YankyPreviousEntry)",
-		{ desc = "Cycle to previous yanky entry" }
+		{ desc = "Cycle to previous yanky entry" },
 	},
 	{
 		{ "n", "x" },
 		"<leader>vn",
 		"<Plug>(YankyNextEntry)",
-		{ desc = "Cycle to next yanky entry" }
+		{ desc = "Cycle to next yanky entry" },
 	},
 }
 
@@ -686,6 +751,20 @@ local yazi_mappings = {
 			require("yazi").yazi(nil, vim.fn.expand("%:p:h"))
 		end,
 		{ desc = "Yazi reveal current file [.]" },
+	},
+}
+
+-- Path yank keymap
+local path_yank_mappings = {
+	{
+		"n",
+		"<leader>py",
+		function()
+			local path = vim.fn.expand("%:p")
+			vim.fn.setreg("+", path)
+			vim.notify("Yanked: " .. path, vim.log.levels.INFO)
+		end,
+		{ desc = "[p]ath [y]ank (full)" },
 	},
 }
 
@@ -946,51 +1025,6 @@ local trouble_mappings = {
 	},
 }
 
--- =====================
--- Keymap binding section
--- =====================
-
-local function set_keymaps(mappings)
-	for _, map in ipairs(mappings) do
-		local mode, lhs, rhs, opts = map[1], map[2], map[3], map[4]
-		if type(mode) == "table" then
-			vim.keymap.set(mode, lhs, rhs, opts or {})
-		else
-			vim.keymap.set(mode, lhs, rhs, opts or {})
-		end
-	end
-end
-
-set_keymaps(autopairs_mappings)
-set_keymaps(basic_mappings)
-set_keymaps(buffer_mappings)
-set_keymaps(claudecode_mappings)
-set_keymaps(yanky_mappings)
-set_keymaps(delete_to_blackhole_mappings)
-set_keymaps(diagnostic_mappings)
-set_keymaps(fastedit_mappings)
-set_keymaps(fastnav_mappings)
-set_keymaps(find_replace_mappings)
-set_keymaps(flash_mappings)
-set_keymaps(format_mappings)
-set_keymaps(hardtime_mappings)
-set_keymaps(harpoon_mappings)
-set_keymaps(lazygit_mappings)
-set_keymaps(mini_splitjoin_mappings)
-set_keymaps(multicursor_mappings)
-set_keymaps(noice_mappings)
-set_keymaps(oil_mappings)
-set_keymaps(print_mappings)
-set_keymaps(selectall_mappings)
-set_keymaps(snacks_terminal_mappings)
-set_keymaps(telescope_mappings)
-set_keymaps(trouble_mappings)
-set_keymaps(undotree_mappings)
-set_keymaps(window_navigation_mappings)
-set_keymaps(window_operations_mappings)
-set_keymaps(working_dir_mappings)
-set_keymaps(yazi_mappings)
-
 -- Oil keymaps (for Oil's setup function)
 local oil_keymaps = {
 	["-"] = "actions.parent",
@@ -1013,7 +1047,56 @@ local oil_keymaps = {
 	-- Custom additions for more intuitive navigation
 	["<BS>"] = "actions.parent",
 	["H"] = "actions.parent",
+	-- Custom action to add file to ClaudeCode context
+	["<leader>ca"] = {
+		callback = function()
+			local oil = require("oil")
+			local entry = oil.get_cursor_entry()
+			local dir = oil.get_current_dir()
+			if entry and dir then
+				local full_path = dir .. entry.name
+				-- Only add if it's a file (not a directory)
+				if entry.type == "file" then
+					vim.cmd("ClaudeCodeAdd " .. vim.fn.fnameescape(full_path))
+					vim.notify("Added to Claude Code: " .. entry.name, vim.log.levels.INFO)
+				else
+					vim.notify("Cannot add directory to Claude Code", vim.log.levels.WARN)
+				end
+			end
+		end,
+		desc = "Add file to Claude Code context",
+		mode = "n",
+	},
 }
+
+--[[
+    =====================================================================
+    GIT-CONFLICT.NVIM KEYMAPS (handled by plugin setup)
+    =====================================================================
+    These mappings are set automatically by git-conflict.setup() when
+    default_mappings = true, and are only active in buffers with git
+    conflicts. Documented here for reference:
+
+    CONFLICT RESOLUTION:
+      co        - choose ours (keep current changes)
+      ct        - choose theirs (accept incoming changes)
+      cb        - choose both (keep both changes)
+      c0        - choose none (delete both changes)
+
+    CONFLICT NAVIGATION:
+      ]x        - next conflict
+      [x        - previous conflict
+
+    COMMANDS (available in conflicted buffers):
+      :GitConflictChooseOurs      - select the current changes
+      :GitConflictChooseTheirs    - select the incoming changes
+      :GitConflictChooseBoth      - select both changes
+      :GitConflictChooseNone      - select none of the changes
+      :GitConflictNextConflict    - move to the next conflict
+      :GitConflictPrevConflict    - move to the previous conflict
+      :GitConflictListQf          - list all conflicts in quickfix
+    =====================================================================
+--]]
 
 -- Function to get Oil keymaps for the setup
 local M = {}
@@ -1021,14 +1104,150 @@ function M.get_oil_keymaps()
 	return oil_keymaps
 end
 
--- Workaround for Noice cmdline issues in Oil buffers
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "oil",
-	callback = function()
-		-- This prevents the space key from being intercepted in command mode
-		vim.b.noice_cmdline_disabled = true
-	end,
-	desc = "Disable Noice cmdline in Oil buffers",
-})
+--[[
+    =====================================================================
+    MARKDOWN LINK NAVIGATION KEYMAPS
+    =====================================================================
+    Defined in: lua/plugins/follow-md-links.lua (due to plugin load order)
+
+    Active in markdown files:
+      <CR> (Enter) - Follow markdown link (works anywhere on the link)
+    =====================================================================
+--]]
+
+-- =====================
+-- Autocmd definitions
+-- =====================
+
+-- Visual line mappings for markdown files
+local markdown_visual_line_mappings = {
+	-- Movement on display lines
+	{ "n", "j", "gj" },
+	{ "n", "k", "gk" },
+	{ "n", "0", "g0" },
+	{ "n", "$", "g$" },
+	{ "n", "^", "g^" },
+	{ "v", "j", "gj" },
+	{ "v", "k", "gk" },
+	{ "v", "0", "g0" },
+	{ "v", "$", "g$" },
+	{ "v", "^", "g^" },
+	-- Make A, I, D work on visual lines
+	{ "n", "A", "g$a" },
+	{ "n", "I", "g^i" },
+	{ "n", "D", "vg$hd" },
+}
+
+local autocmd_definitions = {
+	terminal_window_nav = {
+		event = "TermOpen",
+		desc = "Set window navigation keymaps for terminal buffers",
+		callback = function()
+			for _, mapping in ipairs(snacks_terminal_navigation) do
+				local mode, lhs, rhs, opts = mapping[1], mapping[2], mapping[3], mapping[4]
+				vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { buffer = true }))
+			end
+		end,
+	},
+	oil_disable_noice = {
+		event = "FileType",
+		pattern = "oil",
+		desc = "Disable Noice cmdline in Oil buffers",
+		callback = function()
+			vim.b.noice_cmdline_disabled = true
+		end,
+	},
+	markdown_visual_lines = {
+		event = "FileType",
+		pattern = { "markdown", "text" },
+		desc = "Set visual line mappings for markdown/text files",
+		callback = function()
+			local opts = { buffer = true, noremap = true, silent = true }
+			for _, mapping in ipairs(markdown_visual_line_mappings) do
+				local mode, lhs, rhs = mapping[1], mapping[2], mapping[3]
+				vim.keymap.set(mode, lhs, rhs, opts)
+			end
+		end,
+	},
+}
+
+-- =====================
+-- Helper functions
+-- =====================
+
+local function set_keymaps(mappings)
+	for _, map in ipairs(mappings) do
+		local mode, lhs, rhs, opts = map[1], map[2], map[3], map[4]
+		if type(mode) == "table" then
+			vim.keymap.set(mode, lhs, rhs, opts or {})
+		else
+			vim.keymap.set(mode, lhs, rhs, opts or {})
+		end
+	end
+end
+
+local function set_autocmd(autocmd)
+	vim.api.nvim_create_autocmd(autocmd.event, {
+		pattern = autocmd.pattern,
+		callback = autocmd.callback,
+		desc = autocmd.desc,
+	})
+end
+
+-- =====================
+-- Apply all keymaps and autocmds
+-- =====================
+
+-- List of all keymap groups to apply
+local all_keymaps = {
+	autopairs_mappings,
+	basic_mappings,
+	buffer_mappings,
+	claudecode_mappings,
+	dadbod_mappings,
+	dbt_mappings,
+	delete_to_blackhole_mappings,
+	diagnostic_mappings,
+	fastedit_mappings,
+	fastnav_mappings,
+	find_replace_mappings,
+	flash_mappings,
+	format_mappings,
+	hardtime_mappings,
+	harpoon_mappings,
+	lazygit_mappings,
+	mini_splitjoin_mappings,
+	multicursor_mappings,
+	noice_mappings,
+	oil_mappings,
+	path_yank_mappings,
+	print_mappings,
+	selectall_mappings,
+	snacks_terminal_mappings,
+	telescope_mappings,
+	trouble_mappings,
+	undotree_mappings,
+	window_navigation_mappings,
+	window_operations_mappings,
+	working_dir_mappings,
+	yanky_mappings,
+	yazi_mappings,
+}
+
+-- List of all autocmds to apply (reference by key name)
+local all_autocmds = {
+	"terminal_window_nav",
+	"oil_disable_noice",
+	"markdown_visual_lines",
+}
+
+-- Apply loops
+for _, mapping_group in ipairs(all_keymaps) do
+	set_keymaps(mapping_group)
+end
+
+for _, autocmd_name in ipairs(all_autocmds) do
+	set_autocmd(autocmd_definitions[autocmd_name])
+end
 
 return M

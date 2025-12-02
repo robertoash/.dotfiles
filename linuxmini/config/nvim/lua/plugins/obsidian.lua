@@ -6,9 +6,13 @@ return {
 	event = {
 		"BufReadPre " .. vim.fn.expand("~") .. "/obsidian/vault/*.md",
 		"BufNewFile " .. vim.fn.expand("~") .. "/obsidian/vault/*.md",
-		"BufReadPre " .. vim.fn.expand("~") .. "/obsidian/vault/**/*.md",
-		"BufNewFile " .. vim.fn.expand("~") .. "/obsidian/vault/**/*.md",
 	},
+	-- Also check if file is within vault subdirectories
+	cond = function()
+		local bufpath = vim.api.nvim_buf_get_name(0)
+		local vault_path = vim.fn.expand("~") .. "/obsidian/vault/"
+		return bufpath:match("%.md$") and bufpath:find(vault_path, 1, true) ~= nil
+	end,
 	dependencies = {
 		-- Required.
 		"nvim-lua/plenary.nvim",

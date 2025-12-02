@@ -22,54 +22,61 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 --=============================================================================
--- NEOVIDE SETUP
+-- MACHINE DETECTION
 --=============================================================================
-if vim.g.neovide then
-	vim.g.neovide_padding_top = 20
-	vim.g.neovide_padding_bottom = 10
-	vim.g.neovide_padding_right = 20
-	vim.g.neovide_padding_left = 20
-	vim.g.neovide_opacity = 0.8
-	vim.g.neovide_normal_opacity = 0.8
-	vim.g.neovide_cursor_animation_length = 0.150
+local function is_work_mac()
+	local hostname = vim.fn.hostname()
+	return hostname:match("^rash%-workmbp") ~= nil
 end
 
 --=============================================================================
 -- PLUGINS
 --=============================================================================
-require("lazy").setup({
+local plugins = {
 	---------------------------
 	-- PLUGIN IMPORTS
 	---------------------------
-	{ import = "plugins.telescope" },
-	{ import = "plugins.obsidian" },
-	{ import = "plugins.render-markdown" },
-	{ import = "plugins.treesitter" },
+	-- { import = "plugins.hardtime" },
+	{ import = "plugins.autopairs" },
+	{ import = "plugins.blink-cmp" },
+	{ import = "plugins.claudecode" },
+	{ import = "plugins.colorizer" },
 	{ import = "plugins.comment" },
-	{ import = "plugins.snacks" },
-	{ import = "plugins.todo-comments" },
-	{ import = "plugins.mini" },
+	{ import = "plugins.conform" },
+	{ import = "plugins.flash" },
+	{ import = "plugins.follow-md-links" },
+	{ import = "plugins.git-conflict" },
+	{ import = "plugins.gitsigns" },
+	{ import = "plugins.harpoon" },
+	{ import = "plugins.lazydev" },
 	{ import = "plugins.lualine" },
+	{ import = "plugins.mini" },
 	{ import = "plugins.multicursors" },
 	{ import = "plugins.noice" },
-	{ import = "plugins.gitsigns" },
-	{ import = "plugins.which-key" },
-	{ import = "plugins.flash" },
-	{ import = "plugins.hardtime" },
-	{ import = "plugins.colorizer" },
-	{ import = "plugins.autopairs" },
-	{ import = "plugins.lazydev" },
 	{ import = "plugins.nvim-lspconfig" },
-	{ import = "plugins.claudecode" },
-	{ import = "plugins.conform" },
-	{ import = "plugins.blink-cmp" },
-	{ import = "plugins.yazi" },
+	{ import = "plugins.obsidian" },
 	{ import = "plugins.oil" },
-	{ import = "plugins.undotree" },
-	{ import = "plugins.harpoon" },
+	{ import = "plugins.render-markdown" },
+	{ import = "plugins.snacks" },
+	{ import = "plugins.telescope" },
+	{ import = "plugins.todo-comments" },
+	{ import = "plugins.treesitter" },
 	{ import = "plugins.trouble" },
+	{ import = "plugins.undotree" },
+	{ import = "plugins.vim-pencil" },
+	{ import = "plugins.which-key" },
+	{ import = "plugins.wrapwidth" },
 	{ import = "plugins.yanky" },
-}, {
+	{ import = "plugins.yazi" },
+}
+
+-- Conditionally import work-specific plugins
+if is_work_mac() then
+	table.insert(plugins, { import = "plugins.dbtpal" })
+	table.insert(plugins, { import = "plugins.dadbod" })
+end
+
+require("lazy").setup(plugins, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {
 			cmd = "⌘",

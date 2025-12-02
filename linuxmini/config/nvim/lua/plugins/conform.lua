@@ -22,6 +22,12 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			python = { "black" },
+			sql = { "sqlfluff" },
+		},
+		formatters = {
+			sqlfluff = {
+				args = { "format", "--dialect=snowflake", "-" },
+			}
 		},
 	},
 }

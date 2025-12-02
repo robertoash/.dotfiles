@@ -107,8 +107,8 @@ keymap = [
   { on = [ "P", "p" ],   run = '''shell 'lp -d Brother_DCP-L2530DW "$@"' --confirm''', desc = "Print selected files" },
   { on = "r",            run = "rename --cursor=before_ext",   desc = "Rename selected file(s)" },
   { on = [ ".", "." ],   run = "hidden toggle",                desc = "Toggle hidden files" },
-  { on = "s",            run = "search --via=fd --args='-HIi --ignore-file=~/.config/fd/.fdignore'", desc = "Search files by name via fd" },
-  { on = "S",            run = "search --via=rg --args='-uu --ignore-file=~/.config/rg/.rgignore'", desc = "Search files by content via ripgrep" },
+  { on = "s",            run = "search --via=fd --args='-HIi --ignore-file=~/.config/fd/ignore'", desc = "Search files by name via fd" },
+  { on = "S",            run = "search --via=rg --args='-uu'", desc = "Search files by content via ripgrep" },
   { on = "<C-s>",        run = "escape --search",              desc = "Cancel the ongoing search" },
   { on = "z",            run = "plugin zoxide",                desc = "Jump to a directory via zoxide" },
   { on = "Z",            run = "plugin fzf",                   desc = "Jump to a file/directory via fzf" },
@@ -126,10 +126,10 @@ keymap = [
   { on = [ ",", "l", "n" ],   run = "linemode none",                desc = "Linemode: none" },
 
   # Copy
-  { on = [ "c", "c" ],   run = "copy path",                    desc = "Copy the file path" },
   { on = [ "c", "d" ],   run = "copy dirname",                 desc = "Copy the directory path" },
   { on = [ "c", "f" ],   run = "copy filename",                desc = "Copy the filename" },
   { on = [ "c", "n" ],   run = "copy name_without_ext",        desc = "Copy the filename without extension" },
+  { on = [ "p", "y" ],   run = "copy path",                    desc = "Path yank (full)" },
 
   # Filter
   #{ on = "f",           run = "filter --smart",               desc = "Filter files" },

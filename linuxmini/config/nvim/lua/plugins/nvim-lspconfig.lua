@@ -171,10 +171,30 @@ return {
 					},
 				},
 			},
+			sqls = {
+				cmd = { "sqls" },
+				settings = {
+					sqls = {
+						connections = {
+							-- Snowflake connection (can also be in ~/.config/sqls/config.yml)
+							-- Uncomment and configure as needed:
+							-- {
+							--   driver = 'snowflake',
+							--   dataSourceName = 'username:password@account/database/schema?warehouse=warehouse_name',
+							-- }
+						}
+					}
+				}
+			},
 		}
 
 		-- Ensure the servers and tools above are installed
+		-- Note: sqls is installed manually, not Mason
 		local ensure_installed = vim.tbl_keys(servers or {})
+		-- Remove servers that are installed manually (not available in Mason)
+		ensure_installed = vim.tbl_filter(function(server)
+			return server ~= "sqls"
+		end, ensure_installed)
 		vim.list_extend(ensure_installed, {
 			"stylua", -- Used to format Lua code
 			"black",

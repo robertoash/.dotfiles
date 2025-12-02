@@ -6,7 +6,13 @@ local config = wezterm.config_builder()
 -- ========================================
 
 -- Always use fish shell as default
-config.default_prog = { "/usr/bin/fish" }
+-- GUI apps on macOS don't inherit PATH, so use full path on macOS
+if wezterm.target_triple:find("darwin") then
+	local user = os.getenv("USER")
+	config.default_prog = { "/etc/profiles/per-user/" .. user .. "/bin/fish" }
+else
+	config.default_prog = { "fish" }
+end
 
 -- ========================================
 -- APPEARANCE & COLORS
@@ -85,6 +91,34 @@ config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 
 -- Window appearance
 config.window_background_opacity = 0.8
+
+-- Window decorations: detect platform and desktop environment
+local is_macos = wezterm.target_triple:find("darwin") ~= nil
+
+-- Enable Wayland on Linux, disable on macOS
+if is_macos then
+	config.enable_wayland = false
+else
+	config.enable_wayland = true
+end
+
+-- Check if running Hyprland
+local function is_hyprland()
+	local desktop = os.getenv("XDG_CURRENT_DESKTOP") or ""
+	local session = os.getenv("DESKTOP_SESSION") or ""
+	return desktop:match("Hyprland") or session:match("hyprland")
+end
+
+-- Configure window decorations
+if is_hyprland() then
+	-- Hyprland: no decorations
+	config.window_decorations = "NONE"
+else
+	-- macOS / other DEs: native decorations with window size
+	config.initial_cols = 175
+	config.initial_rows = 42
+	config.window_decorations = "RESIZE"
+end
 
 -- ========================================
 -- TABS CONFIGURATION

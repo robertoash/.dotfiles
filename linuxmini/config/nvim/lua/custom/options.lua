@@ -6,6 +6,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.g.have_nerd_font = true
 
+-- Python provider configuration
+vim.g.python3_host_prog = vim.fn.exepath("python3")
+
 -- Performance and responsiveness
 vim.o.timeout = true
 vim.o.timeoutlen = 300

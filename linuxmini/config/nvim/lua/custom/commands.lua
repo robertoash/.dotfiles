@@ -33,18 +33,6 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 	end,
 })
 
--- Conceallevel for markdown files
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "markdown",
-	callback = function()
-		local bufname = vim.api.nvim_buf_get_name(0)
-		-- Only apply conceallevel to actual markdown files, not other filetypes
-		if bufname:match("%.md$") then
-			vim.opt_local.conceallevel = 1
-		end
-	end,
-})
-
 -- Explicitly ensure JSON files have no conceallevel
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = { "json", "jsonc" },

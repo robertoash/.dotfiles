@@ -8,7 +8,7 @@ plugins = [
 [scratchpads.blueman]
 animation = "fromTop"
 command = "blueman-manager"
-class = "blueman-manager"
+class = ".blueman-manager-wrapped"
 #position = "0% 0%"
 #margin = 10
 lazy = true

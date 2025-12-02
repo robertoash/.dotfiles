@@ -19,3 +19,4 @@ return {
 		vim.g.loaded_netrwPlugin = 1
 	end,
 }
+
