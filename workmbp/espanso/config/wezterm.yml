@@ -1,0 +1,10 @@
+# Disable Espanso in WezTerm to prevent conflicts with Karabiner key remapping
+# This prevents "inconsistent modifier state" warnings and ensures Karabiner's
+# Cmd/Option swap works reliably in WezTerm
+#
+# Note: Matches both "wezterm" and "wezterm-gui" processes, regardless of how
+# WezTerm was launched (directly, via skhd, etc.)
+
+filter_exec: "wezterm"
+
+enable: false

@@ -1,0 +1,9 @@
+# App shortcuts
+cmd + ctrl + alt - return : wezterm start --always-new-process --cwd ~/.dotfiles-nix/
+
+# Window/Display Focus (triggers Amethyst shortcuts)
+# Cmd+Tab: Switch monitor focus (triggers Amethyst's Ctrl+Shift+Option+k)
+cmd - tab : osascript -e 'tell application "System Events" to keystroke "k" using {control down, shift down, option down}'
+
+# Opt+Tab: Cycle through windows on same monitor (triggers Amethyst's Ctrl+Shift+Option+j)
+alt - tab : osascript -e 'tell application "System Events" to keystroke "j" using {control down, shift down, option down}'
