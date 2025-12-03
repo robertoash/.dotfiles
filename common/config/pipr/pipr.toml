@@ -1,0 +1,62 @@
+#  ____  _
+# |  * \(*)_ __  *_*       .________.
+# | |_) | | '_ \| '__|      |________|
+# |  __/| | |_) | |          |_    -|
+# |_|   |_| .__/|_|     xX  xXx___x_|
+#         |_|
+#
+# A commandline utility by
+# Leon Kowarschick
+
+# Copy final command to clipboard when exiting
+finish_hook = "xclip -selection clipboard -in"
+
+# General settings
+paranoid_history_mode_default = false
+autoeval_mode_default = true
+history_size = 1000
+cmdlist_always_show_preview = true
+cmd_timeout_millis = 1500
+highlighting_enabled = true
+eval_environment = ["fish", "-c"]
+
+# Comprehensive snippet collection
+[snippets]
+s = " | sed -r 's/||//g'"
+a = " | awk '{print $||1}'"
+g = " | grep '||'"
+c = " | cut -d'||,' -f1"
+r = " | tr '||' ' '"
+u = " | sort | uniq"
+h = " | head -n ||10"
+t = " | tail -n ||10"
+f = " | tail -f"
+w = " | wc -l"
+n = " | nl"
+j = " | jq '.||'"
+x = " | xargs ||"
+p = " | parallel ||"
+# Alternative single-character mappings for the multi-character ones:
+i = " | grep -i '||'"                  # 'i' for case-insensitive grep
+v = " | grep -v '||'"                  # 'v' for inverted grep
+k = " | sort -n"                       # 'k' for numeric sort (or pick another)
+l = " | sort | uniq -c | sort -nr"     # 'l' for count unique (or pick another)
+m = " | wc -w"                         # 'm' for word count
+o = " | column -t -s '||,'"            # 'o' for column format
+d = " | grep '[0-9][0-9][0-9][0-9]'"   # 'd' for date-like patterns
+
+[help_viewers]
+'m' = "man ??"
+'h' = "?? --help | less"
+'t' = "tldr ??"
+'e' = "?? --help | grep -E '||'"
+'o' = "apropos ??"
+
+[output_viewers]
+'l' = "less"
+'v' = "less -S"
+'b' = "bat --style=plain"
+'j' = "jq . | less"
+'c' = "column -t | less"
+'n' = "nl | less"
+'f' = "fx"

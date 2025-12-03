@@ -1,0 +1,165 @@
+# Sway config for oldmbp - Based on Hyprland config, optimized for low RAM
+# Reference: man 5 sway
+# NOTE: Mac keyboard layout - Cmd (Super/Mod4) and Option (Alt/Mod1) are swapped for ergonomics
+
+# Variables - Swapped for Mac keyboard (Cmd = Mod1, Option = Mod4)
+set $mod Mod1
+set $alt Mod4
+set $ctrl Control
+set $shift Shift
+set $hyper Mod1+Ctrl+Mod4+Shift
+
+# Input configuration
+input type:keyboard {
+    xkb_layout "se"
+    xkb_variant "nodeadkeys"
+}
+
+input type:touchpad {
+    tap enabled
+    natural_scroll disabled
+    click_method clickfinger
+    dwt enabled
+}
+
+# Output configuration (matching Niri - no fractional scaling)
+output eDP-1 {
+    mode 1920x1200@60Hz
+    scale 1
+}
+
+# Visual settings (50% of Hyprland gaps for smaller screen)
+gaps inner 5
+gaps outer 10
+default_border pixel 4
+default_floating_border pixel 4
+
+# Colors (matching Hyprland)
+client.focused          #8bffff #8bffff #000000 #d5a6ff #8bffff
+client.focused_inactive #25263d #25263d #ffffff #25263d #25263d
+client.unfocused        #25263d #25263d #ffffff #25263d #25263d
+client.urgent           #ff0000 #ff0000 #ffffff #ff0000 #ff0000
+
+# Note: Corner rounding requires swayfx (not standard Sway)
+# Keeping config minimal for performance on 8GB RAM
+
+# Disable focus follows mouse (matching Hyprland follow_mouse = 1)
+focus_follows_mouse yes
+
+# ===================================================== #
+#                    APP LAUNCH                         #
+# ===================================================== #
+
+# Application launcher (matching Hyprland ALT+Space)
+bindsym $alt+space exec rofi -show drun
+
+# Terminal and common apps
+bindsym $mod+$ctrl+$alt+Return exec wezterm start --always-new-process --class wezterm --cwd ~/.dotfiles-nix/
+bindsym $mod+$ctrl+$alt+t exec wezterm start --always-new-process --class thoth_notes -- thoth
+bindsym $mod+$ctrl+$alt+c exec wezterm start --always-new-process --class calculator --cwd /tmp -- qalc
+
+# Utilities
+bindsym $ctrl+$shift+period exec rofimoji --skin-tone medium-light -a clipboard copy --selector rofi --clipboarder wl-copy --typer wtype
+bindsym $mod+$shift+w exec ~/.config/waybar/launch.sh
+
+# Power menu
+bindsym $mod+$ctrl+$alt+q exec ~/.config/scripts/rofi/rofi_power.sh
+
+# ===================================================== #
+#                  WINDOW MANAGEMENT                    #
+# ===================================================== #
+
+# Close window (matching Hyprland ALT+Q)
+bindsym $alt+q kill
+
+# Focus
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Move windows
+bindsym $mod+$shift+Left move left
+bindsym $mod+$shift+Down move down
+bindsym $mod+$shift+Up move up
+bindsym $mod+$shift+Right move right
+
+# Fullscreen toggle - EASY ACCESS for small screen!
+bindsym $mod+f fullscreen toggle
+
+# Toggle floating
+bindsym $mod+$ctrl+$alt+$shift+t floating toggle
+
+# Mouse bindings
+floating_modifier $mod normal
+bindsym --whole-window $mod+button2 floating toggle
+
+# ===================================================== #
+#                  WORKSPACE MANAGEMENT                 #
+# ===================================================== #
+
+# Switch to workspace
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+
+# Move window to workspace
+bindsym $mod+$shift+1 move container to workspace number 1
+bindsym $mod+$shift+2 move container to workspace number 2
+bindsym $mod+$shift+3 move container to workspace number 3
+bindsym $mod+$shift+4 move container to workspace number 4
+bindsym $mod+$shift+5 move container to workspace number 5
+
+# ===================================================== #
+#                   MEDIA CONTROLS                      #
+# ===================================================== #
+
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioPrev exec playerctl previous
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioLowerVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-
+bindsym XF86AudioRaiseVolume exec wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%+
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+
+# ===================================================== #
+#                      LAYOUTS                          #
+# ===================================================== #
+
+# Split orientation
+bindsym $mod+h splith
+bindsym $mod+v splitv
+
+# Layout styles (matching Hyprland master layout)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# ===================================================== #
+#                   RELOAD & EXIT                       #
+# ===================================================== #
+
+bindsym $mod+$shift+c reload
+bindsym $mod+$shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+
+# ===================================================== #
+#                     STATUS BAR                        #
+# ===================================================== #
+
+bar {
+    swaybar_command waybar
+}
+
+# ===================================================== #
+#                     AUTOSTART                         #
+# ===================================================== #
+
+# Wallpaper (shared with Hyprland setup, stored in dotfiles repo)
+output eDP-1 bg ~/.config/wallpaper/sway_bg fill
+
+# Notification daemon
+exec dunst
+
+# Auto-start Waybar
+exec ~/.config/waybar/launch.sh

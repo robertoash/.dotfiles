@@ -1,0 +1,216 @@
+keybinds clear-defaults=true {
+    normal {
+        bind "enter" {
+            WriteChars "\r"
+        }
+    }
+    locked {
+        bind "Alt ." {
+            SwitchToMode "normal"
+        }
+    }
+    resize {
+        bind "+" { Resize "Increase"; }
+        bind "-" { Resize "Decrease"; }
+        bind "h" { Resize "Increase left"; }
+        bind "j" { Resize "Increase down"; }
+        bind "k" { Resize "Increase up"; }
+        bind "l" { Resize "Increase right"; }
+    }
+    scroll {
+        bind "b" { PageScrollUp; }
+        bind "f" { PageScrollDown; }
+        bind "s" { SwitchToMode "entersearch"; SearchInput 0; }
+    }
+    search {
+        bind "c" { SearchToggleOption "CaseSensitivity"; }
+        bind "n" { Search "down"; }
+        bind "o" { SearchToggleOption "WholeWord"; }
+        bind "p" { Search "up"; }
+        bind "w" { SearchToggleOption "Wrap"; }
+    }
+    shared_except "locked" {
+        // Focus Movement
+        bind "Alt h" { MoveFocus "left"; }
+        bind "Alt j" { MoveFocus "down"; }
+        bind "Alt k" { MoveFocus "up"; }
+        bind "Alt l" { MoveFocus "right"; }
+
+        // Pane Movement
+        bind "Alt Shift h" { MovePane "left"; }
+        bind "Alt Shift j" { MovePane "down"; }
+        bind "Alt Shift k" { MovePane "up"; }
+        bind "Alt Shift l" { MovePane "right"; }
+
+        // Pane Creation
+        bind "Alt +" { NewPane "right"; }
+        bind "Alt -" { NewPane "down"; }
+        bind "Alt n" { NewPane; }
+        bind "Alt Shift n" { NewPane "stacked"; }
+
+        // Pane Operations
+        bind "Alt b" { BreakPane; }
+        bind "Alt Shift b" { BreakPaneLeft; }
+        bind "Alt p" { TogglePanePinned; }
+        bind "Alt x" { CloseFocus; }
+
+        // Fullscreen/Floating/Embed
+        bind "Alt f" { ToggleFloatingPanes; }
+        bind "Alt m" { ToggleFocusFullscreen; }
+        bind "Alt Shift f" { TogglePaneEmbedOrFloating; }
+
+        // Tab Navigation
+        bind "Alt 1" { GoToTab 1; SwitchToMode "normal"; }
+        bind "Alt 2" { GoToTab 2; SwitchToMode "normal"; }
+        bind "Alt 3" { GoToTab 3; SwitchToMode "normal"; }
+        bind "Alt 4" { GoToTab 4; SwitchToMode "normal"; }
+        bind "Alt 5" { GoToTab 5; SwitchToMode "normal"; }
+        bind "Alt 8" { GoToPreviousTab; }
+        bind "Alt 9" { GoToNextTab; }
+
+        // Tab Movement
+        bind "Alt Shift 8" { MoveTab "Left"; }
+        bind "Alt Shift 9" { MoveTab "Right"; }
+
+        // Tab Creation/Closing
+        bind "Alt t" { NewTab; }
+        bind "Alt Shift x" { CloseTab; }
+
+        // Tab Renaming
+        bind "Alt Shift t" { TabNameInput 0; SwitchToMode "renametab"; }
+
+        // Resize
+        bind "Alt ?" { Resize "Increase"; }
+        bind "Alt _" { Resize "Decrease"; }
+        bind "Alt r" { SwitchToMode "resize"; }
+
+        // Layout Swapping
+        bind "Alt o" { NextSwapLayout; }
+        bind "Alt Shift o" { PreviousSwapLayout; }
+
+        // Scrolling
+        bind "Ctrl d" { HalfPageScrollDown; }
+        bind "Ctrl u" { HalfPageScrollUp; }
+
+        // Search
+        bind "Alt Shift 7" { SwitchToMode "entersearch"; SearchInput 0; }
+
+        // Scrollback Editor
+        bind "Alt e" { EditScrollback; }
+
+        // Plugins
+        bind "Alt 0" {
+            LaunchOrFocusPlugin "zellij:session-manager" {
+                floating true
+            }
+        }
+        bind "Alt s" {
+            LaunchOrFocusPlugin "zellij:session-manager" {
+                floating true
+                move_to_focused_tab true
+            }
+            SwitchToMode "normal"
+        }
+        bind "F1" {
+            LaunchOrFocusPlugin "file:@HOME_DIR@/.config/zellij/plugins/zellij_forgot.wasm" {
+                floating true
+            }
+        }
+
+        // Session Management
+        bind "Alt q" { Detach; }
+
+        // Mode Switching
+        bind "Alt ." { SwitchToMode "locked"; }
+    }
+    shared_except "normal" "locked" "entersearch" {
+        bind "enter" { SwitchToMode "normal"; }
+    }
+    shared_except "normal" "locked" "scroll" "search" {
+        bind "esc" { SwitchToMode "normal"; }
+    }
+    shared_among "scroll" "search" {
+        bind "d" { HalfPageScrollDown; }
+        bind "e" { EditScrollback; SwitchToMode "normal"; }
+        bind "esc" { ScrollToBottom; SwitchToMode "normal"; }
+        bind "j" { ScrollDown; }
+        bind "k" { ScrollUp; }
+        bind "u" { HalfPageScrollUp; }
+    }
+    entersearch {
+        bind "enter" { SwitchToMode "search"; }
+    }
+    renametab {
+        bind "enter" { SwitchToMode "normal"; }
+        bind "esc" { UndoRenameTab; SwitchToMode "normal"; }
+    }
+}
+
+plugins {
+    tab-bar location="zellij:tab-bar"
+    status-bar location="zellij:status-bar"
+    // status-bar location="file:@HOME_DIR@/.config/zellij/plugins/zjstatus.wasm" {
+    //     format_left   "{mode}"
+    //     format_center "{tabs}"
+    //     format_right  "{datetime}"
+    //     format_space  ""
+    //
+    //     // Mode indicators with icons and names
+    //     mode_normal        "#[bg=#89B4FA,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#89B4FA]"
+    //     mode_locked        "#[bg=#F38BA8,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#F38BA8]"
+    //     mode_resize        "#[bg=#FAB387,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#FAB387]"
+    //     mode_pane          "#[bg=#A6E3A1,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#A6E3A1]"
+    //     mode_tab           "#[bg=#F9E2AF,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#F9E2AF]"
+    //     mode_scroll        "#[bg=#94E2D5,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#94E2D5]"
+    //     mode_enter_search  "#[bg=#CBA6F7,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#CBA6F7]"
+    //     mode_search        "#[bg=#CBA6F7,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#CBA6F7]"
+    //     mode_rename_tab    "#[bg=#F9E2AF,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#F9E2AF]"
+    //     mode_rename_pane   "#[bg=#A6E3A1,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#A6E3A1]"
+    //     mode_session       "#[bg=#B4BEFE,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#B4BEFE]"
+    //     mode_move          "#[bg=#F5C2E7,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#F5C2E7]"
+    //     mode_prompt        "#[bg=#A6E3A1,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#A6E3A1]"
+    //     mode_tmux          "#[bg=#FAB387,fg=#1e1e2e,bold]  {name} #[bg=#1e1e2e,fg=#FAB387]"
+    //
+    //     // Datetime widget
+    //     datetime        "#[fg=#6C7086,bold] {format} "
+    //     datetime_format "%a %d %b %H:%M"
+    // }
+    strider location="zellij:strider"
+    compact-bar location="zellij:compact-bar"
+    session-manager location="zellij:session-manager"
+    welcome-screen location="zellij:session-manager" {
+        welcome_screen true
+    }
+    filepicker location="zellij:strider" {
+        cwd "/"
+    }
+    configuration location="zellij:configuration"
+    plugin-manager location="zellij:plugin-manager"
+    about location="zellij:about"
+    zjframes location="file:@HOME_DIR@/.config/zellij/plugins/zjframes.wasm" {
+        hide_frame_except_for_fullscreen false
+        hide_frame_except_for_scroll false
+        hide_frame_except_for_search false
+        hide_frame_for_single_pane false
+    }
+}
+
+load_plugins {
+    zjframes
+}
+
+default_shell "fish"
+default_cwd "$HOME/.config/"
+
+session_serialization false
+support_kitty_keyboard_protocol true
+
+theme "tokyonight_deep"
+
+@COPY_COMMAND@
+@SCROLLBACK_EDITOR@
+@LAYOUT_DIR@
+@THEME_DIR@
+
+show_startup_tips false
+show_release_notes false

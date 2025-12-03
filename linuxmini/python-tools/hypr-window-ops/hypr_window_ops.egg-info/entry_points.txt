@@ -1,0 +1,2 @@
+[console_scripts]
+hypr-window-ops = hypr_window_ops.cli:main

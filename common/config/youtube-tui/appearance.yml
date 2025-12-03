@@ -1,0 +1,37 @@
+# Tokyo Night Deep theme for youtube-tui
+# Matches the spotify-player tokyonight_deep theme
+
+borders: Plain
+
+colors:
+  # Main text colors
+  text: "#d0d6e3"              # bright_white - main text
+  text_special: "#8bffff"      # bright_cyan - highlighted text
+  text_secondary: "#454c6d"    # bright_black - dimmed text
+  text_error: "#ff5f8f"        # bright_red - error messages
+
+  # Border/outline colors
+  outline: "#454c6d"           # bright_black - normal borders
+  outline_selected: "#8bffff"  # bright_cyan - selected item border (bold)
+  outline_hover: "#7dcfff"     # cyan - hover state
+  outline_secondary: "#363b54" # black - secondary borders
+
+  # Message box borders
+  message_outline: "#7dcfff"         # cyan - info messages
+  message_error_outline: "#f7768e"   # red - error messages
+  message_success_outline: "#41a6b5" # green - success messages
+
+  # Item information colors
+  item_info:
+    tag: "#bb9af7"           # magenta - tags/categories
+    title: "#8bffff"         # bright_cyan - video titles (bold)
+    description: "#b9bdcc"   # white - descriptions
+    author: "#8bffff"        # bright_cyan - channel names
+    viewcount: "#e6c100"     # yellow - view counts
+    length: "#7dcfff"        # cyan - video duration
+    published: "#454c6d"     # bright_black - publish dates
+    video_count: "#e6c100"   # yellow - video counts
+    sub_count: "#41a6b5"     # green - subscriber counts
+    likes: "#f7768e"         # red - like counts
+    genre: "#bb9af7"         # magenta - genres
+    page_turner: "#7dcfff"   # cyan - page indicators

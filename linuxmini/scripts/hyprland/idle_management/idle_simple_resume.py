@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+import logging
+import subprocess
+import time
+
+# Import centralized configuration
+from config import (
+    EXTERNAL_SCRIPTS,
+    LOGGING_CONFIG,
+    RESUME_DELAYS,
+    get_control_file,
+    get_log_file,
+    get_system_command,
+)
+
+
+def setup_logging():
+    """Set up logging."""
+    log_file = get_log_file("idle_simple_resume")
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=LOGGING_CONFIG["format"],
+        datefmt=LOGGING_CONFIG["date_format"],
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler(),
+        ],
+    )
+
+
+def turn_dpms_on():
+    """Ensure displays are turned on."""
+    try:
+        logging.info("Ensuring displays are on (DPMS on)")
+        subprocess.run(get_system_command("hyprctl_dpms_on"), check=True)
+        logging.info("DPMS on successful")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to turn DPMS on: {e}")
+    except FileNotFoundError:
+        logging.error("hyprctl command not found")
+
+
+def restore_layout():
+    """Restore the saved Kanata layout after unlock."""
+    try:
+        from pathlib import Path
+        
+        # Read saved layout and mod state
+        saved_layout_file = Path("/tmp/hypridle_saved_layout")
+        saved_mod_file = Path("/tmp/hypridle_saved_mod")
+        
+        if saved_layout_file.exists() and saved_mod_file.exists():
+            saved_layout = saved_layout_file.read_text().strip()
+            saved_mod = saved_mod_file.read_text().strip()
+            
+            # Clean up the files
+            saved_layout_file.unlink()
+            saved_mod_file.unlink()
+            
+            # Restore the saved layout and mod state
+            subprocess.run([
+                'kanata-tools', 'set',
+                '--layout', saved_layout,
+                '--mod', saved_mod
+            ], check=True, capture_output=True)
+            logging.info(f"Restored layout to '{saved_layout}' with mod state '{saved_mod}'")
+        else:
+            logging.info("No saved layout/mod state found - skipping layout restoration")
+        
+    except Exception as e:
+        logging.error(f"Failed to restore layout after unlock: {e}")
+
+def report_active_status():
+    """Report active status to HA."""
+    try:
+        logging.info("Reporting active status to HA")
+        script = str(EXTERNAL_SCRIPTS["activity_status_reporter"])
+        subprocess.run([script, "--active"], check=True)
+        logging.info("Active status reported successfully")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to report active status: {e}")
+    except FileNotFoundError:
+        logging.error("activity_status_reporter.py not found")
+
+
+def main():
+    """Simple resume cleanup - report active and ensure dpms is on."""
+    setup_logging()
+    logging.info("Simple resume cleanup started")
+
+    # Get control file and delay from config
+    lock_exit_flag = get_control_file("idle_simple_lock_exit")
+    cleanup_delay = RESUME_DELAYS["exit_flag_cleanup"]
+
+    # Signal any running lock monitoring to stop
+    try:
+        lock_exit_flag.write_text("resume")
+        logging.info("Created exit flag for idle_simple_lock")
+    except Exception as e:
+        logging.warning(f"Could not create lock exit flag: {e}")
+
+    # Restore Kanata layout after unlock
+    restore_layout()
+
+    # Ensure displays are on (in case they were turned off)
+    turn_dpms_on()
+
+    # Report active status to HA
+    report_active_status()
+
+    # Clean up the exit flag after a moment
+    try:
+        time.sleep(cleanup_delay)
+        lock_exit_flag.unlink(missing_ok=True)
+        logging.info("Cleaned up lock exit flag")
+    except Exception as e:
+        logging.warning(f"Could not clean up lock exit flag: {e}")
+
+    logging.info("Simple resume cleanup completed")
+    # Note: in_office_monitor runs continuously, no need to manage it here
+
+
+if __name__ == "__main__":
+    main()

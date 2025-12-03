@@ -1,0 +1,75 @@
+{
+    "personal": {
+        "1": [
+            {
+                "name": "browser_personal",
+                "command": "qute_profile rash",
+                "is_master": true
+            },
+            {
+                "name": "browser_terminal",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "is_master": false
+            }
+        ],
+        "2": [
+            {
+                "name": "nvim_zellij",
+                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- zellij --layout workspace2",
+                "is_master": true
+            }
+        ],
+        "3": [
+            {
+                "name": "config_terminal",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "is_master": false
+            }
+        ],
+        "11": [
+            {
+                "name": "claude_zen",
+                "command": "claude-desktop-native --force-device-scale-factor=1.4",
+                "is_master": true,
+                "launch_delay": 1.0,
+                "no_focus": true
+            },
+            {
+                "name": "claude_terminal",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "is_master": false
+            }
+        ],
+        "12": [
+            {
+                "name": "perplexity",
+                "command": "chromium_launch --profile perplexity",
+                "is_master": true
+            },
+            {
+                "name": "nvim_obsidian_zellij",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "is_master": false
+            }
+        ],
+        "13": [
+            {
+                "name": "obsidian",
+                "command": "env OBSIDIAN_USE_WAYLAND=1 obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "is_master": true
+            },
+            {
+                "name": "nvim_obsidian_zellij",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "is_master": false
+            }
+        ],
+        "14": [
+            {
+                "name": "overseerr",
+                "command": "chromium_launch --profile overseerr",
+                "is_master": true
+            }
+        ]
+    }
+}

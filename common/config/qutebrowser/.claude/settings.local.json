@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/rash/.config/hypr/script_configs/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

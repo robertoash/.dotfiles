@@ -1,2 +1,11 @@
 # Private keys and certificates
-linuxmini/config/sunshine/credentials/cakey.pem
+linuxmini/sunshine/credentials/cakey.pem
+
+# Secrets and credentials
+**/secrets/
+**/*secret*
+**/*credential*
+**/*.key
+**/*.p8
+**/*.pem
+**/token*

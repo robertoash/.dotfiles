@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+PROFILE=$1
+shift  # Remove the profile argument
+
+QUTE_BASE="$HOME/.config/qutebrowser/profiles/$PROFILE"
+
+if [ ! -d "$QUTE_BASE" ]; then
+    echo "❌ Profile '$PROFILE' doesn't exist."
+    exit 1
+fi
+
+# Pass all remaining arguments to qutebrowser
+qutebrowser --basedir "$QUTE_BASE" "$@" &
+disown

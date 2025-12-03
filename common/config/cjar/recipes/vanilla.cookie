@@ -1,0 +1,5 @@
+cookie_name=vanilla
+plate=/home/rash/.config/cjar/plates/vanilla/
+dough_container=/media/sda1/big_hdd/dough/vanilla/
+thermal_monitoring=/dev/sda
+sweet=true

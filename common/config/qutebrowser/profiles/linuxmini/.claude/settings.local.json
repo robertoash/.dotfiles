@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/rash/.dotfiles-nix/config/common/qutebrowser/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch Waybar config for changes
+
+[Path]
+PathModified=/home/rash/.config/waybar/config
+PathModified=/home/rash/.config/waybar/modules
+PathModified=/home/rash/.config/waybar/style.css
+
+[Install]
+WantedBy=graphical-session.target

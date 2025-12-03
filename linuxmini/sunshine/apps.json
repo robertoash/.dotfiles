@@ -1,0 +1,19 @@
+{
+    "apps": [
+        {
+            "auto-detach": true,
+            "cmd": "",
+            "elevated": false,
+            "exclude-global-prep-cmd": false,
+            "exit-timeout": 5,
+            "image-path": "",
+            "name": "iPadScreen",
+            "output": "",
+            "prep-cmd": [],
+            "wait-all": true
+        }
+    ],
+    "env": {
+        "PATH": "$(PATH):$(HOME)/.local/bin"
+    }
+}

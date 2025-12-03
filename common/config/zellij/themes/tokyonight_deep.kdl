@@ -1,0 +1,143 @@
+// TokyoNight Deep Theme for Zellij
+// Adapted from tokyonight_deep palette
+
+themes {
+  tokyonight-deep {
+    // Basic text components
+    text_unselected {
+      base 255 255 255        // foreground - primary text
+      background 1 1 17       // background - deepest dark
+      emphasis_0 125 207 255  // cyan - cursor color for links
+      emphasis_1 122 162 247  // blue - primary blue
+      emphasis_2 187 154 247  // magenta - purple highlights
+      emphasis_3 230 193 0    // yellow - attention color
+    }
+
+    text_selected {
+      base 255 255 255        // foreground - selected text
+      background 81 92 126    // selection_background
+      emphasis_0 139 255 255  // accent - bright cyan
+      emphasis_1 255 95 143   // bright red - high visibility
+      emphasis_2 0 255 187    // bright green
+      emphasis_3 255 238 0    // bright yellow
+    }
+
+    // Ribbon components (tabs, status bar)
+    ribbon_unselected {
+      base 185 189 204        // color7 - muted text
+      background 54 59 84     // color0 - dark background
+      emphasis_0 125 207 255  // cyan
+      emphasis_1 122 162 247  // blue
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    ribbon_selected {
+      base 255 255 255        // foreground - selected ribbon text
+      background 69 76 109    // color8 - slightly lighter background
+      emphasis_0 139 255 255  // accent - bright cyan
+      emphasis_1 130 170 255  // bright blue
+      emphasis_2 213 166 255  // bright magenta
+      emphasis_3 255 238 0    // bright yellow
+    }
+
+    // Table components
+    table_title {
+      base 208 214 227        // color15 - bright text
+      background 1 1 17       // background
+      emphasis_0 139 255 255  // accent
+      emphasis_1 255 95 143   // bright red
+      emphasis_2 0 255 187    // bright green
+      emphasis_3 255 238 0    // bright yellow
+    }
+
+    table_cell_unselected {
+      base 255 255 255        // foreground
+      background 1 1 17       // background
+      emphasis_0 125 207 255  // cyan
+      emphasis_1 122 162 247  // blue
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    table_cell_selected {
+      base 255 255 255        // foreground
+      background 81 92 126    // selection_background
+      emphasis_0 139 255 255  // accent
+      emphasis_1 255 95 143   // bright red
+      emphasis_2 0 255 187    // bright green
+      emphasis_3 255 238 0    // bright yellow
+    }
+
+    // List components
+    list_unselected {
+      base 255 255 255        // foreground
+      background 1 1 17       // background
+      emphasis_0 125 207 255  // cyan
+      emphasis_1 65 166 181   // green - color2
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    list_selected {
+      base 255 255 255        // foreground
+      background 81 92 126    // selection_background
+      emphasis_0 139 255 255  // accent
+      emphasis_1 0 255 187    // bright green
+      emphasis_2 213 166 255  // bright magenta
+      emphasis_3 255 238 0    // bright yellow
+    }
+
+    // Frame components (pane borders)
+    frame_selected {
+      base 125 207 255        // cyan - active frame
+      background 1 1 17       // background
+      emphasis_0 139 255 255  // accent
+      emphasis_1 122 162 247  // blue
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    frame_highlight {
+      base 139 255 255        // accent - highlighted frame
+      background 1 1 17       // background
+      emphasis_0 255 95 143   // bright red
+      emphasis_1 0 255 187    // bright green
+      emphasis_2 255 238 0    // bright yellow
+      emphasis_3 213 166 255  // bright magenta
+    }
+
+    // Exit code indicators
+    exit_code_success {
+      base 0 255 187          // bright green - color10
+      background 1 1 17       // background
+      emphasis_0 65 166 181   // base green
+      emphasis_1 125 207 255  // cyan
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    exit_code_error {
+      base 255 95 143         // bright red - color9
+      background 1 1 17       // background
+      emphasis_0 247 118 142  // base red
+      emphasis_1 125 207 255  // cyan
+      emphasis_2 187 154 247  // magenta
+      emphasis_3 230 193 0    // yellow
+    }
+
+    // Multiplayer user colors
+    multiplayer_user_colors {
+      player_1 247 118 142    // red - color1
+      player_2 65 166 181     // green - color2
+      player_3 122 162 247    // blue - color4
+      player_4 230 193 0      // yellow - color3
+      player_5 187 154 247    // magenta - color5
+      player_6 125 207 255    // cyan - color6
+      player_7 255 95 143     // bright red - color9
+      player_8 0 255 187      // bright green - color10
+      player_9 130 170 255    // bright blue - color12
+      player_10 213 166 255   // bright magenta - color13
+    }
+  }
+}

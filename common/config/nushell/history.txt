@@ -1,0 +1,10 @@
+lll
+exa
+eza
+eza -l
+eza -l | where name = "ticktick"
+eza -l | table
+ls -la | table
+ls /tmp/*.json
+docker ps
+exit

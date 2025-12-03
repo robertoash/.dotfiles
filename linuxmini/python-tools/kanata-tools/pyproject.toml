@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kanata-tools"
+version = "0.1.0"
+description = "Unified tooling for Kanata keyboard remapper management"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Rash" }
+]
+dependencies = []
+
+[project.scripts]
+kanata-tools = "kanata_tools.cli:main"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.8.4",
+    "mypy>=1.14.1",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true

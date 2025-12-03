@@ -1,0 +1,12 @@
+[Unit]
+Description=Restart Dunst when config changes
+StartLimitInterval=30s
+StartLimitBurst=10
+
+[Service]
+Type=oneshot
+# Create a marker file in user's runtime directory, then restart dunst
+ExecStart=/bin/sh -c 'mkdir -p "${XDG_RUNTIME_DIR}/dunst" && touch "${XDG_RUNTIME_DIR}/dunst/restarted" && /usr/bin/systemctl --user restart dunst.service'
+
+[Install]
+WantedBy=graphical-session.target

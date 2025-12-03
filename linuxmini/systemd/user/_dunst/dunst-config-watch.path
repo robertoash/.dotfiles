@@ -1,0 +1,8 @@
+[Unit]
+Description=Watch Dunst config for changes
+
+[Path]
+PathModified=/home/rash/.config/dunst/dunst.config
+
+[Install]
+WantedBy=graphical-session.target

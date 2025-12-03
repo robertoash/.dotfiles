@@ -1,0 +1,80 @@
+[alias]
+	amend = "commit --amend --no-edit"
+	lg = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+	st = "status -sb"
+	uncommit = "reset --soft HEAD~1"
+	unstage = "reset HEAD --"
+
+[branch]
+	sort = "-committerdate"
+
+[commit]
+	verbose = true
+
+[core]
+	hooksPath = "/nix/store/j808n4pr8wbbwlrn7f971d4bfwvz0dii-git-hooks"
+	pager = "/nix/store/7hl6xzhgc6skamy3c6w34snh2l3f70bg-delta-0.18.2/bin/delta"
+
+[credential "https://gist.github.com"]
+	helper = "!gh auth git-credential"
+
+[credential "https://github.com"]
+	helper = "!gh auth git-credential"
+
+[delta]
+	dark = true
+	line-numbers = true
+	navigate = true
+	side-by-side = true
+
+[diff]
+	algorithm = "histogram"
+
+[fetch]
+	fsckobjects = true
+	prune = true
+
+[filter "sunshine-normalize"]
+	clean = "/nix/store/m0i5hf36sv62vgm2ppjkynv03ihdlxvv-gnused-4.9/bin/sed 's/^output_name = .*/output_name = 0/'"
+	smudge = "/nix/store/zwplch93wbpj82bp7riwaixmdx2xi0ah-coreutils-9.7/bin/cat"
+
+[help]
+	autocorrect = 10
+
+[init]
+	defaultBranch = "main"
+
+[interactive]
+	diffFilter = "/nix/store/7hl6xzhgc6skamy3c6w34snh2l3f70bg-delta-0.18.2/bin/delta --color-only"
+
+[merge]
+	conflictstyle = "zdiff3"
+
+[merge "ours"]
+	driver = "true"
+
+[pull]
+	ff = true
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+	default = "current"
+
+[rebase]
+	autosquash = true
+	autostash = true
+	updateRefs = true
+
+[receive]
+	fsckobjects = true
+
+[rerere]
+	enabled = true
+
+[transfer]
+	fsckobjects = true
+
+[user]
+	email = "j.roberto.ash@gmail.com"
+	name = "Roberto Ash"

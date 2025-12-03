@@ -1,0 +1,18 @@
+[project]
+name = "cjar"
+version = "0.1.0"
+description = "Cookie Manager for all your cookie needs"
+authors = [{ name = "Rash" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyrage>=1.1.0",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+cjar = "cjar.cli:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

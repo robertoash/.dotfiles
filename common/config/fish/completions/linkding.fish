@@ -1,0 +1,1 @@
+complete --command linkding --no-files --arguments "(env _LINKDING_COMPLETE=complete_fish _TYPER_COMPLETE_FISH_ACTION=get-args _TYPER_COMPLETE_ARGS=(commandline -cp) linkding)" --condition "env _LINKDING_COMPLETE=complete_fish _TYPER_COMPLETE_FISH_ACTION=is-args _TYPER_COMPLETE_ARGS=(commandline -cp) linkding"

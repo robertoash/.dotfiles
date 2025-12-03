@@ -1,0 +1,456 @@
+/* theme_it: tokyonight_deep *//* Injected at: 2025-04-14 10:33:05 */
+/* theme_it:define-color-start */
+@define-color accent #8bffff;
+@define-color background #010111;
+@define-color color0 #363b54;
+@define-color color1 #f7768e;
+@define-color color10 #00ffbb;
+@define-color color11 #ffee00;
+@define-color color12 #82aaff;
+@define-color color13 #d5a6ff;
+@define-color color14 #8bffff;
+@define-color color15 #d0d6e3;
+@define-color color16 #1d1d2c;
+@define-color color17 #632e3c;
+@define-color color18 #1a4760;
+@define-color color19 #806b00;
+@define-color color2 #41a6b5;
+@define-color color20 #354977;
+@define-color color21 #4a3e6b;
+@define-color color22 #356177;
+@define-color color23 #494d5e;
+@define-color color24 #0b0c19;
+@define-color color25 #31182b;
+@define-color color26 #0d2136;
+@define-color color27 #403600;
+@define-color color28 #18204a;
+@define-color color29 #251e4a;
+@define-color color3 #e6c100;
+@define-color color30 #19294c;
+@define-color color31 #25263d;
+@define-color color4 #7aa2f7;
+@define-color color5 #bb9af7;
+@define-color color6 #7dcfff;
+@define-color color7 #b9bdcc;
+@define-color color8 #454c6d;
+@define-color color9 #ff5f8f;
+@define-color cursor #7dcfff;
+@define-color foreground #ffffff;
+@define-color selection_background #515c7e;
+@define-color selection_foreground #ffffff;
+/* theme_it:define-color-end */
+/* theme_it:translation-map-start */
+@define-color accent #8bffff;
+@define-color active #8bffff;
+@define-color attention #ffee00;
+@define-color background #010111;
+@define-color battery_full #00ffbb;
+@define-color battery_low #ff5f8f;
+@define-color battery_medium #ffee00;
+@define-color bg #010111;
+@define-color bg0 #363b54;
+@define-color bg1 #f7768e;
+@define-color bg2 #41a6b5;
+@define-color bg3 #e6c100;
+@define-color bg_alt #1a4760;
+@define-color bg_dark #1d1d2c;
+@define-color bg_darker #632e3c;
+@define-color blue #82aaff;
+@define-color border #454c6d;
+@define-color bright_blue #7aa2f7;
+@define-color bright_cyan #7dcfff;
+@define-color bright_green #41a6b5;
+@define-color bright_magenta #bb9af7;
+@define-color bright_red #f7768e;
+@define-color bright_white #b9bdcc;
+@define-color bright_yellow #e6c100;
+@define-color cpu_high #ff5f8f;
+@define-color critical #ff5f8f;
+@define-color cyan #8bffff;
+@define-color danger #ff5f8f;
+@define-color dim_black #363b54;
+@define-color dim_white #454c6d;
+@define-color disabled #806b00;
+@define-color error #ff5f8f;
+@define-color fg #ffffff;
+@define-color fg0 #b9bdcc;
+@define-color fg1 #7dcfff;
+@define-color fg2 #bb9af7;
+@define-color fg_dim #454c6d;
+@define-color fg_light #d0d6e3;
+@define-color focus #8bffff;
+@define-color foreground #ffffff;
+@define-color green #00ffbb;
+@define-color highlight #8bffff;
+@define-color hover #7aa2f7;
+@define-color icon_critical #ff5f8f;
+@define-color icon_default #ffffff;
+@define-color icon_warning #ffee00;
+@define-color important #8bffff;
+@define-color inactive #632e3c;
+@define-color info #82aaff;
+@define-color magenta #d5a6ff;
+@define-color muted #1d1d2c;
+@define-color net_down #ff5f8f;
+@define-color net_up #00ffbb;
+@define-color notice #ffee00;
+@define-color ok #00ffbb;
+@define-color orange #ffee00;
+@define-color pressed #bb9af7;
+@define-color primary #8bffff;
+@define-color purple #d5a6ff;
+@define-color red #ff5f8f;
+@define-color selected #8bffff;
+@define-color subtle #1a4760;
+@define-color success #00ffbb;
+@define-color teal #8bffff;
+@define-color temp_critical #ff5f8f;
+@define-color temp_ok #00ffbb;
+@define-color text #ffffff;
+@define-color urgent #ff5f8f;
+@define-color volume_active #8bffff;
+@define-color volume_muted #454c6d;
+@define-color vpn_connected #00ffbb;
+@define-color vpn_disconnected #ff5f8f;
+@define-color warn #ffee00;
+@define-color warning #ffee00;
+@define-color workspace_active #8bffff;
+@define-color workspace_hover #7aa2f7;
+@define-color workspace_inactive #356177;
+@define-color workspace_persistent #632e3c;
+@define-color workspace_urgent #ff5f8f;
+@define-color yellow #ffee00;
+/* theme_it:translation-map-end */
+/* theme_it: tokyonight_deep */
+
+* {
+    font-family: "GeistMono NF";
+    font-weight: bold;
+    font-size: 15px;
+    min-height: 0;
+    /* set font-size to 100% if font scaling is set to 1.00 using nwg-look */
+    /*font-size: 100%;*/
+    font-feature-settings: '"zero", "ss01", "ss02", "ss03", "ss04", "ss05", "cv31"';
+    margin-top: 1px;
+    padding: 0px;
+}
+
+window#waybar {
+    transition-property: background-color;
+    transition-duration: 0.5s;
+    background: transparent;
+    border-radius: 10px;
+}
+
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+#waybar.empty #window {
+    background: none;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    background-color: @background;
+    border: 0.5px solid @color8;
+    padding: 3px 6px;
+    border-radius: 10px;
+}
+
+.modules-left {
+    border: 1px solid @accent;
+    padding-right: 8px;
+}
+
+.modules-right {
+    border: 1px solid @accent;
+    padding-left: 8px;
+}
+
+#backlight,
+#backlight-slider,
+#battery,
+#bluetooth,
+#clock,
+#cpu,
+#disk,
+#idle_inhibitor,
+#keyboard-state,
+#memory,
+#mode,
+#mpris,
+#network,
+#pulseaudio,
+#pulseaudio-slider,
+#taskbar button,
+#taskbar,
+#temperature,
+#tray,
+#window,
+#wireplumber,
+#workspaces,
+#custom-backlight,
+#custom-cycle_wall,
+#custom-keybinds,
+#custom-keyboard,
+#custom-light_dark,
+#custom-lock,
+#custom-menu,
+#custom-power_vertical,
+#custom-power,
+#custom-swaync,
+#custom-updater,
+#custom-in_office_idle,
+#custom-speedtest,
+#custom-vpn,
+#custom-weather,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.default,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.severe,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.sunnyDay {
+    padding: 3px 6px;
+}
+
+#idle_inhibitor,
+#bluetooth,
+#backlight,
+#cpu,
+#custom-keyboard,
+#memory,
+#pulseaudio,
+#pulseaudio.bluetooth,
+#custom-vpn.vpn-connected {
+    color: @accent;
+}
+
+#battery {
+    color: @color10;
+}
+
+/* Idle Detection Module Styles */
+
+#custom-hypridle {
+    padding: 4px 0px 0px 0px;
+    margin: 2px 2px 2px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+#battery.critical:not(.charging) {
+    background-color: @color9;
+    color: @foreground;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    box-shadow: inset 0 -3px transparent;
+}
+
+@keyframes blink {
+    to {
+        color: @color8;
+    }
+}
+
+#clock.sal {
+    color: @foreground;
+}
+
+#clock {
+    color: @color11;
+}
+
+#disk {
+    color: @color12;
+}
+
+#temperature {
+    color: @color10;
+}
+
+#temperature.critical {
+    background-color: @color9;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+#keyboard-state {
+    color: @color13;
+}
+
+#workspaces button {
+    color: @color22;
+    box-shadow: none;
+    text-shadow: none;
+    padding: 3px 3px 5px 5px;
+    border-radius: 9px;
+}
+
+#workspaces button:hover {
+    border-radius: 9px;
+    color: @background;
+    background-color: @color4;
+}
+
+#workspaces button.persistent {
+    color: @color17;
+}
+
+/* Highlight active workspace even if not focused */
+#workspaces button.visible {
+    background-color: @color0;
+    color: @background;
+    margin: 0px 5px 0px 5px;
+    padding: 0px 5px 2px 5px;
+}
+#workspaces button.visible:hover {
+    background-color: @accent;
+    color: @background;
+}
+
+#workspaces button.active {
+    background-color: @accent;
+    color: @background;
+    margin: 0px 5px 0px 5px;
+    padding: 0px 5px 2px 5px;
+}
+
+
+#workspaces button.urgent {
+    color: @color9;
+}
+
+#taskbar button.active {
+    padding: 0 8px;
+}
+
+#taskbar button:hover {
+    padding: 0 2px;
+}
+
+#custom-cava_mviz {
+    color: @color13;
+}
+
+#custom-menu {
+    color: @color9;
+}
+
+#custom-power,
+#custom-updater,
+#pulseaudio.muted,
+#custom-vpn.vpn-disconnected {
+    color: @color9;
+}
+
+#custom-light_dark,
+#custom-speedtest,
+#custom-separator {
+    color: @color12;
+}
+
+#window {
+    color: @color14;
+    opacity: 0.6;
+}
+
+#network {
+    color: @color12;
+}
+
+#custom-weather,
+#custom-waybar-mpris {
+    color: @color13;
+}
+
+#custom-lock {
+    color: @color1;
+}
+
+#custom-tibber_text,
+#custom-tibber_icon {
+    padding: 3px 6px;
+}
+
+#custom-tibber_text.price-good,
+#custom-tibber_icon.icon-good {
+    color: @color10;
+}
+
+#custom-tibber_text.price-bad,
+#custom-tibber_icon.icon-bad {
+    color: @color9;
+}
+
+#custom-tibber_text.price-mid {
+    color: @color11;
+}
+
+#custom-in_office_idle.icon-blue {
+    color: @color12;
+}
+#custom-in_office_idle.icon-red {
+    color: @color9;
+}
+
+#custom-kanata_mode {
+    padding: 0 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: @background;
+    margin: 0 5px;
+}
+
+/* Optional: Hover effects */
+#custom-kanata_mode:hover {
+    opacity: 0.8;
+}
+
+#network.disconnected,
+#network.disabled {
+    background-color: @color16;
+    color: @foreground;
+}
+
+#pulseaudio-slider slider,
+#backlight-slider slider {
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+}
+
+#pulseaudio-slider trough,
+#backlight-slider trough {
+    min-width: 80px;
+    min-height: 10px;
+    border-radius: 5px;
+}
+
+#pulseaudio-slider highlight,
+#backlight-slider highlight {
+    min-height: 10px;
+    border-radius: 5px;
+}
+
+/* Hide empty center modules */
+#waybar.empty .modules-center {
+    opacity: 0;
+}

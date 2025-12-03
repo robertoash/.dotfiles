@@ -1,0 +1,47 @@
+Dear customer, thank you for your trust
+
+subscription 1 month FOR 1 DEVICE  
+
+playlist m3u:
+
+http://line.trx-ott.com/get.php?username=2c84df9731&password=c5389604b295&type=m3u_plus&output=ts
+
+playlist epg : 
+
+http://line.trx-ott.com/xmltv.php?username=2c84df9731&password=c5389604b295
+
+Log in using Xtream Codes API :
+
+Username : 2c84df9731
+
+password : c5389604b295
+
+link : http://detect15599.cdn-akm.me
+
+application iptv Smarters Pro on smart tv samsung or LG : 
+
+username = 2c84df9731
+
+password = c5389604b295
+
+link = http://hi-ott.me
+
+link for UK or USA or Canada or europe = http://cf.hi-ott.me or http://cf.hi-cdn.me or http://cf.hi-max.me
+
+DATE EXPIRE : 2025-04-02		
+
+
+You can use paid applications such as:
+ibo player-setiptv-bob-tivimate player other....
+
+support : nordictv4k@gmail.com
+
+
+If you need help, contact us on WhatsApp :click on whatsapp link : https://api.whatsapp.com/send?phone=12342800724
+
+
+
+
+https://api.whatsapp.com/send?phone=12342800724
+
+number whatsapp : +1 (234) 280-0724

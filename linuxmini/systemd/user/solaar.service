@@ -1,0 +1,13 @@
+[Unit]
+Description=Solaar for Logitech devices
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sleep 15
+ExecStart=/usr/bin/solaar --window=hide
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

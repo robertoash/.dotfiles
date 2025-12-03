@@ -1,0 +1,125 @@
+// Minimal niri config for oldmbp
+// Full config reference: https://github.com/YaLTeR/niri/wiki/Configuration:-Overview
+
+input {
+    keyboard {
+        xkb {
+            layout "se"
+            variant "nodeadkeys"
+        }
+    }
+
+    touchpad {
+        tap
+        dwt
+        click-method "clickfinger"
+    }
+}
+
+output "eDP-1" {
+    mode "1920x1200@60"
+    scale 1.0
+}
+
+layout {
+    gaps 5
+
+    focus-ring {
+        off
+    }
+
+    border {
+        width 4
+        active-color "#8bffff"
+        inactive-color "#25263d"
+    }
+}
+
+// Animation settings (similar to Hyprland's smooth animations)
+animations {
+    window-open {
+        duration-ms 150
+        curve "ease-out-cubic"
+    }
+    window-close {
+        duration-ms 150
+        curve "ease-out-cubic"
+    }
+    workspace-switch {
+        duration-ms 200
+        curve "ease-out-cubic"
+    }
+}
+
+// Rounded corners for all windows (matching Hyprland's 10px rounding)
+window-rule {
+    geometry-corner-radius 10
+    clip-to-geometry true
+}
+
+// Keep inactive windows at full opacity (only border color changes, not window fill)
+window-rule {
+    match is-active=false
+    opacity 1.0
+}
+
+// Disable background fill for borders on all windows
+window-rule {
+    draw-border-with-background false
+}
+
+binds {
+    // Application launchers (matching Hyprland ALT+Space)
+    Super+Space hotkey-overlay-title="App launcher" { spawn "rofi" "-show" "drun"; }
+    Super+Ctrl+Alt+Return hotkey-overlay-title="Terminal" { spawn "wezterm" "start" "--always-new-process" "--class" "wezterm" "--cwd" "/home/rash/.dotfiles-nix/"; }
+    Super+Ctrl+Alt+T hotkey-overlay-title="Notes (Thoth)" { spawn "wezterm" "start" "--always-new-process" "--class" "thoth_notes" "--" "thoth"; }
+    Super+Ctrl+Alt+C hotkey-overlay-title="Calculator" { spawn "wezterm" "start" "--always-new-process" "--class" "calculator" "--cwd" "/tmp" "--" "qalc"; }
+
+    // Utilities and scripts
+    Ctrl+Shift+Period hotkey-overlay-title="Emoji picker" { spawn "rofimoji" "--skin-tone" "medium-light" "-a" "clipboard" "copy" "--selector" "rofi" "--clipboarder" "wl-copy" "--typer" "wtype"; }
+    Super+Shift+W hotkey-overlay-title="Restart Waybar" { spawn "sh" "-c" "~/.config/waybar/launch.sh"; }
+    Super+Shift+Plus hotkey-overlay-title="Show keybind help" { show-hotkey-overlay; }
+
+    // Window management
+    Super+Q hotkey-overlay-title="Close window" { close-window; }
+    Super+Left hotkey-overlay-title="Focus left column" { focus-column-left; }
+    Super+Right hotkey-overlay-title="Focus right column" { focus-column-right; }
+    Super+Up hotkey-overlay-title="Focus window up" { focus-window-up; }
+    Super+Down hotkey-overlay-title="Focus window down" { focus-window-down; }
+
+    Super+Shift+Left hotkey-overlay-title="Move column left" { move-column-left; }
+    Super+Shift+Right hotkey-overlay-title="Move column right" { move-column-right; }
+    Super+Shift+Up hotkey-overlay-title="Move window up" { move-window-up; }
+    Super+Shift+Down hotkey-overlay-title="Move window down" { move-window-down; }
+
+    // Workspace switching (using the same numbers as Hyprland)
+    Super+1 hotkey-overlay-title="Workspace 1" { focus-workspace 1; }
+    Super+2 hotkey-overlay-title="Workspace 2" { focus-workspace 2; }
+    Super+3 hotkey-overlay-title="Workspace 3" { focus-workspace 3; }
+    Super+4 hotkey-overlay-title="Workspace 4" { focus-workspace 4; }
+    Super+5 hotkey-overlay-title="Workspace 5" { focus-workspace 5; }
+
+    Super+Shift+1 hotkey-overlay-title="Move to workspace 1" { move-window-to-workspace 1; }
+    Super+Shift+2 hotkey-overlay-title="Move to workspace 2" { move-window-to-workspace 2; }
+    Super+Shift+3 hotkey-overlay-title="Move to workspace 3" { move-window-to-workspace 3; }
+    Super+Shift+4 hotkey-overlay-title="Move to workspace 4" { move-window-to-workspace 4; }
+    Super+Shift+5 hotkey-overlay-title="Move to workspace 5" { move-window-to-workspace 5; }
+
+    // Window sizing
+    Super+F hotkey-overlay-title="Maximize column" { maximize-column; }
+    Super+Shift+F hotkey-overlay-title="Toggle fullscreen" { fullscreen-window; }
+
+    // Volume controls (matching Hyprland)
+    XF86AudioPlay hotkey-overlay-title="Play/Pause" { spawn "playerctl" "play-pause"; }
+    XF86AudioPrev hotkey-overlay-title="Previous track" { spawn "playerctl" "previous"; }
+    XF86AudioNext hotkey-overlay-title="Next track" { spawn "playerctl" "next"; }
+    XF86AudioLowerVolume hotkey-overlay-title="Volume down" { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "10%-"; }
+    XF86AudioRaiseVolume hotkey-overlay-title="Volume up" { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "10%+"; }
+    XF86AudioMute hotkey-overlay-title="Mute/Unmute" { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+
+    // Session management
+    Super+Ctrl+Alt+Q hotkey-overlay-title="Power menu" { spawn "sh" "-c" "~/.config/scripts/rofi/rofi_power.sh"; }
+}
+
+// Use classic window decorations for consistent rounded corners
+prefer-no-csd

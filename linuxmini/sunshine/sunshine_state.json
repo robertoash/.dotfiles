@@ -1,0 +1,15 @@
+{
+    "username": "rash",
+    "salt": "VchGzl6dRrVynK!z",
+    "password": "D9FFD4EAFCBAEA05950D3A40BE6A051D7D3652330C22A3D5E05099D0B18F100B",
+    "root": {
+        "uniqueid": "1D600731-37AC-510F-280D-9E5B95386D0A",
+        "named_devices": [
+            {
+                "name": "iPadScreen",
+                "cert": "-----BEGIN CERTIFICATE-----\nMIICvzCCAaegAwIBAgIBADANBgkqhkiG9w0BAQsFADAjMSEwHwYDVQQDDBhOVklE\nSUEgR2FtZVN0cmVhbSBDbGllbnQwHhcNMjUxMDEwMDkzNzIyWhcNNDUxMDA1MDkz\nNzIyWjAjMSEwHwYDVQQDDBhOVklESUEgR2FtZVN0cmVhbSBDbGllbnQwggEiMA0G\nCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDnWuUviul6zKOwo0sAvOpKGT06XD+Q\nRD1W8Urltr+IBj2hafwiT\/yLDOJ245KcgiVSSOFHRTVBlVRQmW5YXFsOr5om5r57\nXlnCZvClWvQo6bKrXhU00Gci1dNIkm+Z5GotWGPbwqjCeOR4RXSP5taMD1P2CK4o\n9SSMtqsBFd4VejNkjrrNXNUGSJunuk292TeaZpgif\/ye3PJMrhY2du5aCHvqxJ+U\nSxEAVOLH5T\/g+bXSRPDA+nTRXkaMhLFX3ysDjQQfSTAqTO\/PyoX1a0kAgwbWTIv1\nyjhcK0bWNr4cuu+x7RLJ\/FrJt0\/FVUDpl0TzNZD6jXurYsQSbrTv4iNHAgMBAAEw\nDQYJKoZIhvcNAQELBQADggEBAJASlB8TYrBtDUkBVUtPD1puWHKa0dYUjitayPyB\nbRlJOmInK3ApQooJMBpdEcl\/1kwYAK+wfu3ZInkRwcJj7Z7HDsCVYk7Il7FcwRJq\nlyETUOPWr61KZiVsSEfjcmNU8ahm6g3Wtt\/EJVm4eJkgTIqwBjloU9dhaJPv86dp\nbPMPxqAdwJBixoFE2VYs9n+WolKIZmoSeLk5Dd7nw2dj1dw\/mbBtCMRrLbXLvEzD\nAPywjUIbNdor+PuJRRzed3qyFJD8jvC51zfidpzfq9RoP2WMLHc3jeK5pskNfj77\nNDzlRBGMKvcFOa+VEmRQvDOlUnOAEQwyqxrMsw5xIBW18WM=\n-----END CERTIFICATE-----\n",
+                "uuid": "0390EA7A-C6CA-3608-CE1A-59CD1567F927"
+            }
+        ]
+    }
+}

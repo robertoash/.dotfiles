@@ -1,0 +1,567 @@
+[2025-10-21 18:24:51.546]: Info: Sunshine version: 2025.924.154138 commit: 
+[2025-10-21 18:24:51.546]: Info: Package Publisher: nixpkgs
+[2025-10-21 18:24:51.546]: Info: Publisher Website: https://nixos.org
+[2025-10-21 18:24:51.546]: Info: Get support: https://github.com/NixOS/nixpkgs/issues
+[2025-10-21 18:24:51.548]: Info: Found display [wayland-1]
+[2025-10-21 18:24:51.548]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:51.548]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:51.548]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:51.548]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:51.548]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:51.548]: Info: Found interface: wl_output(63) version 4
+[2025-10-21 18:24:51.548]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.548]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.548]: Info: Resolution: 1280x960
+[2025-10-21 18:24:51.548]: Info: Name: DP-1
+[2025-10-21 18:24:51.548]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.548]: Info: Offset: 0x0
+[2025-10-21 18:24:51.548]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:51.548]: Info: Name: DP-2
+[2025-10-21 18:24:51.548]: Info: Found monitor: Lenovo Group Limited L32p-30 U51250AL (DP-2)
+[2025-10-21 18:24:51.548]: Info: Offset: 2160x1260
+[2025-10-21 18:24:51.548]: Info: Logical size: 3840x2160
+[2025-10-21 18:24:51.548]: Info: Name: iPadScreen
+[2025-10-21 18:24:51.548]: Info: Offset: 6000x2840
+[2025-10-21 18:24:51.548]: Info: Logical size: 1280x960
+[2025-10-21 18:24:51.548]: Info: -------- Start of Wayland monitor list --------
+[2025-10-21 18:24:51.548]: Info: Monitor 0 is DP-1: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.548]: Info: Monitor 1 is DP-2: Lenovo Group Limited L32p-30 U51250AL (DP-2)
+[2025-10-21 18:24:51.548]: Info: Monitor 2 is iPadScreen: 
+[2025-10-21 18:24:51.548]: Info: --------- End of Wayland monitor list ---------
+[2025-10-21 18:24:51.549]: Warning: Gamepad ds5 is disabled due to Permission denied
+[2025-10-21 18:24:51.549]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:24:51.549]: Info: Trying encoder [nvenc]
+[2025-10-21 18:24:51.549]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:51.549]: Info: Found display [wayland-1]
+[2025-10-21 18:24:51.549]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:51.549]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:51.549]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:51.549]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:51.549]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(63) version 4
+[2025-10-21 18:24:51.550]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.550]: Info: Name: DP-1
+[2025-10-21 18:24:51.550]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.550]: Info: Offset: 0x0
+[2025-10-21 18:24:51.550]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:51.550]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:51.550]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:51.550]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:51.550]: Info: Color depth: 8-bit
+[2025-10-21 18:24:51.550]: Info: Color range: JPEG
+[2025-10-21 18:24:51.550]: Error: [CUDA @ 0x5b88dc077340] Cannot load libcuda.so.1
+[2025-10-21 18:24:51.550]: Error: [CUDA @ 0x5b88dc077340] Could not dynamically load CUDA
+[2025-10-21 18:24:51.550]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:51.550]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:51.550]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:51.550]: Info: Color depth: 8-bit
+[2025-10-21 18:24:51.550]: Info: Color range: JPEG
+[2025-10-21 18:24:51.550]: Error: [CUDA @ 0x5b88dc081100] Cannot load libcuda.so.1
+[2025-10-21 18:24:51.550]: Error: [CUDA @ 0x5b88dc081100] Could not dynamically load CUDA
+[2025-10-21 18:24:51.550]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:51.550]: Info: Encoder [nvenc] failed
+[2025-10-21 18:24:51.550]: Info: Trying encoder [vaapi]
+[2025-10-21 18:24:51.550]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:51.550]: Info: Found display [wayland-1]
+[2025-10-21 18:24:51.550]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:51.550]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:51.550]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(63) version 4
+[2025-10-21 18:24:51.550]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.550]: Info: Name: DP-1
+[2025-10-21 18:24:51.550]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.550]: Info: Offset: 0x0
+[2025-10-21 18:24:51.550]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:51.550]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:51.550]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:51.550]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:51.550]: Info: Color depth: 8-bit
+[2025-10-21 18:24:51.550]: Info: Color range: JPEG
+[2025-10-21 18:24:51.550]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:51.550]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:51.550]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:51.550]: Info: Color depth: 8-bit
+[2025-10-21 18:24:51.550]: Info: Color range: JPEG
+[2025-10-21 18:24:51.550]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:51.550]: Info: Encoder [vaapi] failed
+[2025-10-21 18:24:51.550]: Info: Trying encoder [software]
+[2025-10-21 18:24:51.550]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:51.550]: Info: Found display [wayland-1]
+[2025-10-21 18:24:51.550]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:51.550]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:51.550]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:51.550]: Info: Found interface: wl_output(63) version 4
+[2025-10-21 18:24:51.550]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.550]: Info: Name: DP-1
+[2025-10-21 18:24:51.550]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.550]: Info: Offset: 0x0
+[2025-10-21 18:24:51.550]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:51.550]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:51.550]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:51.750]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:51.751]: Info: Found display [wayland-1]
+[2025-10-21 18:24:51.751]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:51.751]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:51.751]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:51.751]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:51.751]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:51.751]: Info: Found interface: wl_output(63) version 4
+[2025-10-21 18:24:51.751]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:51.751]: Info: Name: DP-1
+[2025-10-21 18:24:51.751]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:51.751]: Info: Offset: 0x0
+[2025-10-21 18:24:51.752]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:51.752]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:51.752]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:51.952]: Info: Encoder [software] failed
+[2025-10-21 18:24:51.952]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:24:51.952]: Fatal: Please check that a display is connected and powered on.
+[2025-10-21 18:24:51.952]: Error: Video failed to find working encoder
+[2025-10-21 18:24:51.956]: Info: Starting system tray
+[2025-10-21 18:24:51.957]: Fatal: Couldn't bind RTSP server to port [48010], Address already in use
+[2025-10-21 18:24:51.962]: Info: Adding avahi service rash-linuxmini
+[2025-10-21 18:24:52.009]: Info: System tray created
+[2025-10-21 18:24:52.009]: Info: Starting main loop
+[2025-10-21 18:24:52.009]: Info: Shutdown event detected, breaking main loop
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       [2025-10-21 18:24:53.499]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:24:53.499]: Info: Trying encoder [nvenc]
+[2025-10-21 18:24:53.499]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:53.499]: Info: Found display [wayland-1]
+[2025-10-21 18:24:53.499]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:53.500]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:53.500]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:53.500]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:53.500]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:53.500]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:53.500]: Info: Name: DP-1
+[2025-10-21 18:24:53.500]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:53.500]: Info: Offset: 0x0
+[2025-10-21 18:24:53.500]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:53.500]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:53.500]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:53.500]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:53.500]: Info: Color depth: 8-bit
+[2025-10-21 18:24:53.500]: Info: Color range: JPEG
+[2025-10-21 18:24:53.501]: Error: [CUDA @ 0x7b3140019880] Cannot load libcuda.so.1
+[2025-10-21 18:24:53.501]: Error: [CUDA @ 0x7b3140019880] Could not dynamically load CUDA
+[2025-10-21 18:24:53.501]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:53.501]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:53.501]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:53.501]: Info: Color depth: 8-bit
+[2025-10-21 18:24:53.501]: Info: Color range: JPEG
+[2025-10-21 18:24:53.501]: Error: [CUDA @ 0x7b314004a840] Cannot load libcuda.so.1
+[2025-10-21 18:24:53.501]: Error: [CUDA @ 0x7b314004a840] Could not dynamically load CUDA
+[2025-10-21 18:24:53.501]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:53.501]: Info: Encoder [nvenc] failed
+[2025-10-21 18:24:53.501]: Info: Trying encoder [vaapi]
+[2025-10-21 18:24:53.501]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:53.501]: Info: Found display [wayland-1]
+[2025-10-21 18:24:53.502]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:53.502]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:53.502]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:53.502]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:53.502]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:53.502]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:53.502]: Info: Name: DP-1
+[2025-10-21 18:24:53.502]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:53.502]: Info: Offset: 0x0
+[2025-10-21 18:24:53.502]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:53.502]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:53.502]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:53.502]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:53.502]: Info: Color depth: 8-bit
+[2025-10-21 18:24:53.502]: Info: Color range: JPEG
+[2025-10-21 18:24:53.502]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:53.502]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:53.502]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:53.502]: Info: Color depth: 8-bit
+[2025-10-21 18:24:53.502]: Info: Color range: JPEG
+[2025-10-21 18:24:53.503]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:53.503]: Info: Encoder [vaapi] failed
+[2025-10-21 18:24:53.503]: Info: Trying encoder [software]
+[2025-10-21 18:24:53.503]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:53.503]: Info: Found display [wayland-1]
+[2025-10-21 18:24:53.503]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:53.503]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:53.503]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:53.503]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:53.503]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:53.504]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:53.504]: Info: Name: DP-1
+[2025-10-21 18:24:53.504]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:53.504]: Info: Offset: 0x0
+[2025-10-21 18:24:53.504]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:53.504]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:53.504]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:53.704]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:53.705]: Info: Found display [wayland-1]
+[2025-10-21 18:24:53.705]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:53.705]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:53.705]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:53.705]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:53.705]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:53.706]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:53.706]: Info: Name: DP-1
+[2025-10-21 18:24:53.706]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:53.706]: Info: Offset: 0x0
+[2025-10-21 18:24:53.706]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:53.706]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:53.706]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:53.906]: Info: Encoder [software] failed
+[2025-10-21 18:24:53.906]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:24:53.906]: Fatal: Please ensure your manually chosen GPU and monitor are connected and powered on.
+[2025-10-21 18:24:58.324]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:24:58.324]: Info: Trying encoder [nvenc]
+[2025-10-21 18:24:58.324]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:58.324]: Info: Found display [wayland-1]
+[2025-10-21 18:24:58.324]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:58.324]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:58.324]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:58.324]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:58.324]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:58.325]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:58.325]: Info: Name: DP-1
+[2025-10-21 18:24:58.325]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:58.325]: Info: Offset: 0x0
+[2025-10-21 18:24:58.325]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:58.325]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:58.325]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:58.325]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:58.325]: Info: Color depth: 8-bit
+[2025-10-21 18:24:58.325]: Info: Color range: JPEG
+[2025-10-21 18:24:58.325]: Error: [CUDA @ 0x7b31400464c0] Cannot load libcuda.so.1
+[2025-10-21 18:24:58.326]: Error: [CUDA @ 0x7b31400464c0] Could not dynamically load CUDA
+[2025-10-21 18:24:58.326]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:58.326]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:24:58.326]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:58.326]: Info: Color depth: 8-bit
+[2025-10-21 18:24:58.326]: Info: Color range: JPEG
+[2025-10-21 18:24:58.326]: Error: [CUDA @ 0x7b314000d840] Cannot load libcuda.so.1
+[2025-10-21 18:24:58.326]: Error: [CUDA @ 0x7b314000d840] Could not dynamically load CUDA
+[2025-10-21 18:24:58.326]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:24:58.326]: Info: Encoder [nvenc] failed
+[2025-10-21 18:24:58.326]: Info: Trying encoder [vaapi]
+[2025-10-21 18:24:58.326]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:58.326]: Info: Found display [wayland-1]
+[2025-10-21 18:24:58.326]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:58.326]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:58.327]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:58.327]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:58.327]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:58.327]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:58.327]: Info: Name: DP-1
+[2025-10-21 18:24:58.327]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:58.327]: Info: Offset: 0x0
+[2025-10-21 18:24:58.327]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:58.327]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:58.327]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:58.327]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:58.327]: Info: Color depth: 8-bit
+[2025-10-21 18:24:58.327]: Info: Color range: JPEG
+[2025-10-21 18:24:58.327]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:58.327]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:24:58.327]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:24:58.327]: Info: Color depth: 8-bit
+[2025-10-21 18:24:58.328]: Info: Color range: JPEG
+[2025-10-21 18:24:58.328]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:24:58.328]: Info: Encoder [vaapi] failed
+[2025-10-21 18:24:58.328]: Info: Trying encoder [software]
+[2025-10-21 18:24:58.328]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:58.328]: Info: Found display [wayland-1]
+[2025-10-21 18:24:58.328]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:58.328]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:58.328]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:58.328]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:58.328]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:58.329]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:58.329]: Info: Name: DP-1
+[2025-10-21 18:24:58.329]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:58.329]: Info: Offset: 0x0
+[2025-10-21 18:24:58.329]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:58.329]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:58.329]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:58.530]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:24:58.530]: Info: Found display [wayland-1]
+[2025-10-21 18:24:58.530]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:24:58.531]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:24:58.531]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:24:58.531]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:24:58.531]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:24:58.531]: Info: Resolution: 3840x2160
+[2025-10-21 18:24:58.532]: Info: Name: DP-1
+[2025-10-21 18:24:58.532]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:24:58.532]: Info: Offset: 0x0
+[2025-10-21 18:24:58.532]: Info: Logical size: 2160x3840
+[2025-10-21 18:24:58.532]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:24:58.532]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:24:58.732]: Info: Encoder [software] failed
+[2025-10-21 18:24:58.732]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:24:58.732]: Fatal: Please ensure your manually chosen GPU and monitor are connected and powered on.
+[2025-10-21 18:35:08.628]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:35:08.628]: Info: Trying encoder [nvenc]
+[2025-10-21 18:35:08.628]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:08.628]: Info: Found display [wayland-1]
+[2025-10-21 18:35:08.628]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:08.629]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:08.629]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:08.629]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:08.629]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:08.629]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:08.629]: Info: Name: DP-1
+[2025-10-21 18:35:08.629]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:08.629]: Info: Offset: 0x0
+[2025-10-21 18:35:08.629]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:08.629]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:08.629]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:08.629]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:08.629]: Info: Color depth: 8-bit
+[2025-10-21 18:35:08.629]: Info: Color range: JPEG
+[2025-10-21 18:35:08.629]: Error: [CUDA @ 0x7b31400198c0] Cannot load libcuda.so.1
+[2025-10-21 18:35:08.630]: Error: [CUDA @ 0x7b31400198c0] Could not dynamically load CUDA
+[2025-10-21 18:35:08.630]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:08.630]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:08.630]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:08.630]: Info: Color depth: 8-bit
+[2025-10-21 18:35:08.630]: Info: Color range: JPEG
+[2025-10-21 18:35:08.630]: Error: [CUDA @ 0x7b314000a800] Cannot load libcuda.so.1
+[2025-10-21 18:35:08.630]: Error: [CUDA @ 0x7b314000a800] Could not dynamically load CUDA
+[2025-10-21 18:35:08.630]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:08.630]: Info: Encoder [nvenc] failed
+[2025-10-21 18:35:08.630]: Info: Trying encoder [vaapi]
+[2025-10-21 18:35:08.630]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:08.630]: Info: Found display [wayland-1]
+[2025-10-21 18:35:08.630]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:08.630]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:08.630]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:08.630]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:08.630]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:08.631]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:08.631]: Info: Name: DP-1
+[2025-10-21 18:35:08.631]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:08.631]: Info: Offset: 0x0
+[2025-10-21 18:35:08.631]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:08.631]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:08.631]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:08.631]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:08.631]: Info: Color depth: 8-bit
+[2025-10-21 18:35:08.631]: Info: Color range: JPEG
+[2025-10-21 18:35:08.631]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:08.631]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:08.631]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:08.631]: Info: Color depth: 8-bit
+[2025-10-21 18:35:08.631]: Info: Color range: JPEG
+[2025-10-21 18:35:08.631]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:08.631]: Info: Encoder [vaapi] failed
+[2025-10-21 18:35:08.631]: Info: Trying encoder [software]
+[2025-10-21 18:35:08.631]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:08.631]: Info: Found display [wayland-1]
+[2025-10-21 18:35:08.632]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:08.632]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:08.632]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:08.632]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:08.632]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:08.632]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:08.632]: Info: Name: DP-1
+[2025-10-21 18:35:08.633]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:08.633]: Info: Offset: 0x0
+[2025-10-21 18:35:08.633]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:08.633]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:08.633]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:08.833]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:08.833]: Info: Found display [wayland-1]
+[2025-10-21 18:35:08.833]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:08.833]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:08.833]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:08.833]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:08.833]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:08.834]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:08.834]: Info: Name: DP-1
+[2025-10-21 18:35:08.834]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:08.834]: Info: Offset: 0x0
+[2025-10-21 18:35:08.834]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:08.834]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:08.834]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:09.035]: Info: Encoder [software] failed
+[2025-10-21 18:35:09.035]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:35:09.035]: Fatal: Please ensure your manually chosen GPU and monitor are connected and powered on.
+[2025-10-21 18:35:19.960]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:35:19.960]: Info: Trying encoder [nvenc]
+[2025-10-21 18:35:19.960]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:19.960]: Info: Found display [wayland-1]
+[2025-10-21 18:35:19.961]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:19.961]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:19.961]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:19.961]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:19.961]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:19.961]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:19.961]: Info: Name: DP-1
+[2025-10-21 18:35:19.961]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:19.961]: Info: Offset: 0x0
+[2025-10-21 18:35:19.961]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:19.961]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:19.961]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:19.961]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:19.961]: Info: Color depth: 8-bit
+[2025-10-21 18:35:19.961]: Info: Color range: JPEG
+[2025-10-21 18:35:19.962]: Error: [CUDA @ 0x7b3140046440] Cannot load libcuda.so.1
+[2025-10-21 18:35:19.962]: Error: [CUDA @ 0x7b3140046440] Could not dynamically load CUDA
+[2025-10-21 18:35:19.962]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:19.962]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:19.962]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:19.962]: Info: Color depth: 8-bit
+[2025-10-21 18:35:19.962]: Info: Color range: JPEG
+[2025-10-21 18:35:19.962]: Error: [CUDA @ 0x7b3140019fc0] Cannot load libcuda.so.1
+[2025-10-21 18:35:19.962]: Error: [CUDA @ 0x7b3140019fc0] Could not dynamically load CUDA
+[2025-10-21 18:35:19.962]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:19.962]: Info: Encoder [nvenc] failed
+[2025-10-21 18:35:19.962]: Info: Trying encoder [vaapi]
+[2025-10-21 18:35:19.962]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:19.962]: Info: Found display [wayland-1]
+[2025-10-21 18:35:19.962]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:19.962]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:19.963]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:19.963]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:19.963]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:19.963]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:19.963]: Info: Name: DP-1
+[2025-10-21 18:35:19.963]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:19.963]: Info: Offset: 0x0
+[2025-10-21 18:35:19.963]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:19.963]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:19.963]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:19.963]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:19.963]: Info: Color depth: 8-bit
+[2025-10-21 18:35:19.963]: Info: Color range: JPEG
+[2025-10-21 18:35:19.963]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:19.963]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:19.963]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:19.963]: Info: Color depth: 8-bit
+[2025-10-21 18:35:19.963]: Info: Color range: JPEG
+[2025-10-21 18:35:19.963]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:19.964]: Info: Encoder [vaapi] failed
+[2025-10-21 18:35:19.964]: Info: Trying encoder [software]
+[2025-10-21 18:35:19.964]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:19.964]: Info: Found display [wayland-1]
+[2025-10-21 18:35:19.964]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:19.964]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:19.964]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:19.964]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:19.964]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:19.964]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:19.964]: Info: Name: DP-1
+[2025-10-21 18:35:19.964]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:19.964]: Info: Offset: 0x0
+[2025-10-21 18:35:19.964]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:19.964]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:19.964]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:20.165]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:20.165]: Info: Found display [wayland-1]
+[2025-10-21 18:35:20.166]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:20.166]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:20.166]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:20.166]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:20.166]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:20.167]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:20.167]: Info: Name: DP-1
+[2025-10-21 18:35:20.167]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:20.167]: Info: Offset: 0x0
+[2025-10-21 18:35:20.167]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:20.167]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:20.167]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:20.367]: Info: Encoder [software] failed
+[2025-10-21 18:35:20.367]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:35:20.367]: Fatal: Please ensure your manually chosen GPU and monitor are connected and powered on.
+[2025-10-21 18:35:25.233]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-10-21 18:35:25.233]: Info: Trying encoder [nvenc]
+[2025-10-21 18:35:25.233]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:25.233]: Info: Found display [wayland-1]
+[2025-10-21 18:35:25.234]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:25.234]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:25.234]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:25.234]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:25.234]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:25.234]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:25.234]: Info: Name: DP-1
+[2025-10-21 18:35:25.234]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:25.234]: Info: Offset: 0x0
+[2025-10-21 18:35:25.234]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:25.234]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:25.234]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:25.234]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:25.234]: Info: Color depth: 8-bit
+[2025-10-21 18:35:25.234]: Info: Color range: JPEG
+[2025-10-21 18:35:25.234]: Error: [CUDA @ 0x7b3140030c00] Cannot load libcuda.so.1
+[2025-10-21 18:35:25.234]: Error: [CUDA @ 0x7b3140030c00] Could not dynamically load CUDA
+[2025-10-21 18:35:25.234]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:25.234]: Info: Creating encoder [h264_nvenc]
+[2025-10-21 18:35:25.234]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:25.234]: Info: Color depth: 8-bit
+[2025-10-21 18:35:25.234]: Info: Color range: JPEG
+[2025-10-21 18:35:25.235]: Error: [CUDA @ 0x7b314000b640] Cannot load libcuda.so.1
+[2025-10-21 18:35:25.235]: Error: [CUDA @ 0x7b314000b640] Could not dynamically load CUDA
+[2025-10-21 18:35:25.235]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-10-21 18:35:25.235]: Info: Encoder [nvenc] failed
+[2025-10-21 18:35:25.235]: Info: Trying encoder [vaapi]
+[2025-10-21 18:35:25.235]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:25.235]: Info: Found display [wayland-1]
+[2025-10-21 18:35:25.235]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:25.235]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:25.235]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:25.235]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:25.235]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:25.235]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:25.235]: Info: Name: DP-1
+[2025-10-21 18:35:25.235]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:25.235]: Info: Offset: 0x0
+[2025-10-21 18:35:25.235]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:25.235]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:25.235]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:25.235]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:25.235]: Info: Color depth: 8-bit
+[2025-10-21 18:35:25.235]: Info: Color range: JPEG
+[2025-10-21 18:35:25.235]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:25.235]: Info: Creating encoder [h264_vaapi]
+[2025-10-21 18:35:25.235]: Info: Color coding: SDR (Rec. 601)
+[2025-10-21 18:35:25.235]: Info: Color depth: 8-bit
+[2025-10-21 18:35:25.235]: Info: Color range: JPEG
+[2025-10-21 18:35:25.235]: Error: Couldn't create GBM device: [No such file or directory]
+[2025-10-21 18:35:25.235]: Info: Encoder [vaapi] failed
+[2025-10-21 18:35:25.235]: Info: Trying encoder [software]
+[2025-10-21 18:35:25.235]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:25.236]: Info: Found display [wayland-1]
+[2025-10-21 18:35:25.236]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:25.236]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:25.236]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:25.236]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:25.236]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:25.236]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:25.236]: Info: Name: DP-1
+[2025-10-21 18:35:25.236]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:25.236]: Info: Offset: 0x0
+[2025-10-21 18:35:25.236]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:25.236]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:25.236]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:25.436]: Info: Screencasting with Wayland's protocol
+[2025-10-21 18:35:25.436]: Info: Found display [wayland-1]
+[2025-10-21 18:35:25.437]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-10-21 18:35:25.437]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-10-21 18:35:25.437]: Info: Found interface: zwp_linux_dmabuf_v1(60) version 5
+[2025-10-21 18:35:25.437]: Info: Found interface: wl_output(61) version 4
+[2025-10-21 18:35:25.437]: Info: Found interface: wl_output(62) version 4
+[2025-10-21 18:35:25.438]: Info: Resolution: 3840x2160
+[2025-10-21 18:35:25.438]: Info: Name: DP-1
+[2025-10-21 18:35:25.438]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-10-21 18:35:25.438]: Info: Offset: 0x0
+[2025-10-21 18:35:25.438]: Info: Logical size: 2160x3840
+[2025-10-21 18:35:25.438]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-10-21 18:35:25.438]: Error: Couldn't open EGL display: [00003000]
+[2025-10-21 18:35:25.638]: Info: Encoder [software] failed
+[2025-10-21 18:35:25.638]: Fatal: Unable to find display or encoder during startup.
+[2025-10-21 18:35:25.638]: Fatal: Please ensure your manually chosen GPU and monitor are connected and powered on.
+[2025-10-21 21:04:07.086]: Info: Terminate handler called
+[2025-10-21 21:04:07.086]: Error: Couldn't accept incoming connections: Operation canceled
+[2025-10-21 21:04:07.123]: Info: Shutdown event detected, breaking main loop

@@ -1,0 +1,22 @@
+# Qutebrowser runtime directories (automatically created at root, macOS only)
+/config/
+/cache/
+/data/
+
+# Profile runtime data (old structure - keep for backwards compatibility)
+profiles/*/cache/
+profiles/*/data/
+profiles/cache/
+profiles/config/
+profiles/data/
+profiles/runtime/
+profiles/*/config/qsettings/
+
+# Machine-specific profile runtime directories (profiles/<machine>/<profile-name>/)
+profiles/*/*/cache/
+profiles/*/*/data/
+profiles/*/*/runtime/
+profiles/*/*/config/qsettings/
+
+# Python cache
+userscripts/__pycache__/

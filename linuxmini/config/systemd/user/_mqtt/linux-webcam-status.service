@@ -1,9 +1,0 @@
-[Unit]
-Description=Monitor webcam activity and notify Home Assistant
-
-[Service]
-ExecStart=/home/rash/.config/scripts/hyprland/idle_management/linux_webcam_status.py
-Restart=always
-
-[Install]
-WantedBy=default.target

@@ -1,0 +1,20 @@
+#:schema https://raw.githubusercontent.com/insanum/gcalcli/HEAD/data/config-schema.json
+# gcalcli configuration file
+
+[auth]
+# Google client ID for your auth client project
+ client-id = "492595562722-bga1qolj5gs144o93nst8m1supem9mfc.apps.googleusercontent.com"
+
+[calendars]
+# Calendars to use as default for certain commands when no explicit 
+# target calendar is otherwise specified
+default-calendars = ["Gmail Kalender", "Hem"]
+
+# Calendars to ignore by default (unless explicitly included using --calendar) 
+# when running commands against all calendars
+#ignore-calendars = ["Tasks", "DIF"]
+
+[output]
+# Weekday to treat as start of week (sunday or monday)
+week-start = "monday"
+

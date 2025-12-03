@@ -1,0 +1,125 @@
+[2025-11-29 10:26:30.958]: Info: Sunshine version: 2025.628.4510
+[2025-11-29 10:26:30.958]: Info: Package Publisher: nixpkgs
+[2025-11-29 10:26:30.958]: Info: Publisher Website: https://nixos.org
+[2025-11-29 10:26:30.958]: Info: Get support: https://github.com/NixOS/nixpkgs/issues
+[2025-11-29 10:26:30.958]: Info: config: 'output_name' =  
+[2025-11-29 10:26:30.958]: Info: config: 'upnp' = off
+[2025-11-29 10:26:30.958]: Info: config: 'stream_audio' = disabled
+[2025-11-29 10:26:30.958]: Info: Found display [wayland-1]
+[2025-11-29 10:26:31.621]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-11-29 10:26:31.621]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-11-29 10:26:31.621]: Info: Found interface: zwp_linux_dmabuf_v1(62) version 5
+[2025-11-29 10:26:31.621]: Info: Found interface: wl_output(63) version 4
+[2025-11-29 10:26:31.621]: Info: Found interface: wl_output(64) version 4
+[2025-11-29 10:26:31.622]: Info: Resolution: 3840x2160
+[2025-11-29 10:26:31.622]: Info: Resolution: 3840x2160
+[2025-11-29 10:26:31.622]: Info: Name: DP-1
+[2025-11-29 10:26:31.622]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-11-29 10:26:31.622]: Info: Offset: 0x0
+[2025-11-29 10:26:31.622]: Info: Logical size: 2160x3840
+[2025-11-29 10:26:31.622]: Info: Name: DP-2
+[2025-11-29 10:26:31.622]: Info: Found monitor: Lenovo Group Limited L32p-30 U51250AL (DP-2)
+[2025-11-29 10:26:31.622]: Info: Offset: 2160x1260
+[2025-11-29 10:26:31.622]: Info: Logical size: 3840x2160
+[2025-11-29 10:26:31.622]: Info: -------- Start of Wayland monitor list --------
+[2025-11-29 10:26:31.622]: Info: Monitor 0 is DP-1: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-11-29 10:26:31.622]: Info: Monitor 1 is DP-2: Lenovo Group Limited L32p-30 U51250AL (DP-2)
+[2025-11-29 10:26:31.622]: Info: --------- End of Wayland monitor list ---------
+[2025-11-29 10:26:31.656]: Warning: Gamepad ds5 is disabled due to Permission denied
+[2025-11-29 10:26:31.656]: Info: // Testing for available encoders, this may generate errors. You can safely ignore those errors. //
+[2025-11-29 10:26:31.657]: Info: Trying encoder [nvenc]
+[2025-11-29 10:26:31.657]: Info: Screencasting with Wayland's protocol
+[2025-11-29 10:26:31.657]: Info: Found display [wayland-1]
+[2025-11-29 10:26:31.657]: Info: Found interface: zxdg_out[2025-11-29 10:26:32.447]: Info: Avahi service linuxmini successfully established.
+[2025-11-30 09:22:08.066]: Info: Adding avahi service linuxmini
+[2025-11-30 09:22:08.883]: Info: Avahi service linuxmini successfully established.
+Info: Found interface: wl_output(63) version 4
+[2025-11-29 10:26:31.657]: Info: Found interface: wl_output(64) version 4
+[2025-11-29 10:26:31.657]: Info: Resolution: 3840x2160
+[2025-11-29 10:26:31.657]: Info: Name: DP-1
+[2025-11-29 10:26:31.658]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-11-29 10:26:31.658]: Info: Offset: 0x0
+[2025-11-29 10:26:31.658]: Info: Logical size: 2160x3840
+[2025-11-29 10:26:31.658]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-11-29 10:26:31.658]: Info: Creating encoder [h264_nvenc]
+[2025-11-29 10:26:31.658]: Info: Color coding: SDR (Rec. 601)
+[2025-11-29 10:26:31.658]: Info: Color depth: 8-bit
+[2025-11-29 10:26:31.658]: Info: Color range: JPEG
+[2025-11-29 10:26:31.660]: Error: [AVHWDeviceContext @ 0x3f58b8c0] Cannot load libcuda.so.1
+[2025-11-29 10:26:31.660]: Error: [AVHWDeviceContext @ 0x3f58b8c0] Could not dynamically load CUDA
+[2025-11-29 10:26:31.660]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-11-29 10:26:31.660]: Info: Creating encoder [h264_nvenc]
+[2025-11-29 10:26:31.660]: Info: Color coding: SDR (Rec. 601)
+[2025-11-29 10:26:31.660]: Info: Color depth: 8-bit
+[2025-11-29 10:26:31.660]: Info: Color range: JPEG
+[2025-11-29 10:26:31.660]: Error: [AVHWDeviceContext @ 0x3f632b00] Cannot load libcuda.so.1
+[2025-11-29 10:26:31.660]: Error: [AVHWDeviceContext @ 0x3f632b00] Could not dynamically load CUDA
+[2025-11-29 10:26:31.660]: Error: Failed to create a CUDA device: Operation not permitted
+[2025-11-29 10:26:31.660]: Info: Encoder [nvenc] failed
+[2025-11-29 10:26:31.660]: Info: Trying encoder [vaapi]
+[2025-11-29 10:26:31.660]: Info: Screencasting with Wayland's protocol
+[2025-11-29 10:26:31.660]: Info: Found display [wayland-1]
+[2025-11-29 10:26:31.660]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-11-29 10:26:31.661]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-11-29 10:26:31.661]: Info: Found interface: zwp_linux_dmabuf_v1(62) version 5
+[2025-11-29 10:26:31.661]: Info: Found interface: wl_output(63) version 4
+[2025-11-29 10:26:31.661]: Info: Found interface: wl_output(64) version 4
+[2025-11-29 10:26:31.661]: Info: Resolution: 3840x2160
+[2025-11-29 10:26:31.661]: Info: Name: DP-1
+[2025-11-29 10:26:31.661]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-11-29 10:26:31.661]: Info: Offset: 0x0
+[2025-11-29 10:26:31.661]: Info: Logical size: 2160x3840
+[2025-11-29 10:26:31.661]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-11-29 10:26:31.661]: Info: Creating encoder [h264_vaapi]
+[2025-11-29 10:26:31.661]: Info: Color coding: SDR (Rec. 601)
+[2025-11-29 10:26:31.661]: Info: Color depth: 8-bit
+[2025-11-29 10:26:31.661]: Info: Color range: JPEG
+[2025-11-29 10:26:31.687]: Info: vaapi vendor: Intel iHD driver for Intel(R) Gen Graphics - 25.1.4 ()
+[2025-11-29 10:26:31.687]: Info: Streaming bitrate is 1000000
+[2025-11-29 10:26:31.687]: Info: Using LP encoding mode
+[2025-11-29 10:26:31.687]: Info: Using VBR with single frame VBV size
+[2025-11-29 10:26:31.707]: Info: System tray created
+[2025-11-29 10:26:31.740]: Info: Creating encoder [hevc_vaapi]
+[2025-11-29 10:26:31.740]: Info: Color coding: SDR (Rec. 601)
+[2025-11-29 10:26:31.740]: Info: Color depth: 8-bit
+[2025-11-29 10:26:31.740]: Info: Color range: JPEG
+[2025-11-29 10:26:31.752]: Info: vaapi vendor: Intel iHD driver for Intel(R) Gen Graphics - 25.1.4 ()
+[2025-11-29 10:26:31.752]: Info: Streaming bitrate is 1000000
+[2025-11-29 10:26:31.752]: Info: Using LP encoding mode
+[2025-11-29 10:26:31.752]: Info: Using VBR with single frame VBV size
+[2025-11-29 10:26:31.839]: Info: Creating encoder [av1_vaapi]
+[2025-11-29 10:26:31.839]: Info: Color coding: SDR (Rec. 601)
+[2025-11-29 10:26:31.839]: Info: Color depth: 8-bit
+[2025-11-29 10:26:31.839]: Info: Color range: JPEG
+[2025-11-29 10:26:31.847]: Info: vaapi vendor: Intel iHD driver for Intel(R) Gen Graphics - 25.1.4 ()
+[2025-11-29 10:26:31.847]: Info: Streaming bitrate is 1000000
+[2025-11-29 10:26:31.847]: Error: [av1_vaapi @ 0x3f63ba80] No usable encoding entrypoint found for profile VAProfileAV1Profile0 (32).
+[2025-11-29 10:26:31.848]: Error: Could not open codec [av1_vaapi]: Function not implemented
+[2025-11-29 10:26:31.850]: Info: Screencasting with Wayland's protocol
+[2025-11-29 10:26:31.850]: Info: Found display [wayland-1]
+[2025-11-29 10:26:31.850]: Info: Found interface: zxdg_output_manager_v1(9) version 3
+[2025-11-29 10:26:31.850]: Info: Found interface: zwlr_screencopy_manager_v1(41) version 3
+[2025-11-29 10:26:31.850]: Info: Found interface: zwp_linux_dmabuf_v1(62) version 5
+[2025-11-29 10:26:31.850]: Info: Found interface: wl_output(63) version 4
+[2025-11-29 10:26:31.850]: Info: Found interface: wl_output(64) version 4
+[2025-11-29 10:26:31.850]: Info: Resolution: 3840x2160
+[2025-11-29 10:26:31.850]: Info: Name: DP-1
+[2025-11-29 10:26:31.850]: Info: Found monitor: Lenovo Group Limited P27u-20 V90CHVAB (DP-1)
+[2025-11-29 10:26:31.850]: Info: Offset: 0x0
+[2025-11-29 10:26:31.850]: Info: Logical size: 2160x3840
+[2025-11-29 10:26:31.850]: Info: Selected monitor [Lenovo Group Limited P27u-20 V90CHVAB (DP-1)] for streaming
+[2025-11-29 10:26:31.850]: Info: Creating encoder [hevc_vaapi]
+[2025-11-29 10:26:31.851]: Info: Color coding: SDR (Rec. 709)
+[2025-11-29 10:26:31.851]: Info: Color depth: 10-bit
+[2025-11-29 10:26:31.851]: Info: Color range: JPEG
+[2025-11-29 10:26:31.862]: Info: vaapi vendor: Intel iHD driver for Intel(R) Gen Graphics - 25.1.4 ()
+[2025-11-29 10:26:31.862]: Info: Streaming bitrate is 1000000
+[2025-11-29 10:26:31.862]: Info: Using LP encoding mode
+[2025-11-29 10:26:31.862]: Info: Using VBR with single frame VBV size
+[2025-11-29 10:26:31.934]: Info: 
+[2025-11-29 10:26:31.934]: Info: // Ignore any errors mentioned above, they are not relevant. //
+[2025-11-29 10:26:31.935]: Info: 
+[2025-11-29 10:26:31.935]: Info: Found H.264 encoder: h264_vaapi [vaapi]
+[2025-11-29 10:26:31.935]: Info: Found HEVC encoder: hevc_vaapi [vaapi]
+[2025-11-29 10:26:31.936]: Fatal: Couldn't bind RTSP server to port [48010], Address already in use
+[2025-11-29 10:26:31.938]: Info: Adding avahi service linuxmini

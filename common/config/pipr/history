@@ -1,0 +1,19 @@
+qlll ~/.config
+---
+cat ~/.config/hypr/active_keybinds.conf g
+---
+cat ~/.config/hypr/active_keybinds.conf 
+---
+cat ~/.config/hypr/active_keybinds.conf # Text processing
+---
+cat ~/.config/hypr/active_keybinds.conf 1
+---
+echo hello
+---
+q
+---
+qq§
+---
+cat ~/.config/hypr/active_keybinds.conf | grep -i 'bindd' | awk '{print $1}'
+---
+cat ~/.config/hypr/active_keybinds.conf | grep -i 'bindd' | 

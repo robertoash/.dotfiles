@@ -1,0 +1,16 @@
+#include tokyonight_deep
+set selection-clipboard clipboard
+
+# Adobe PDF viewer-like experience settings
+set adjust-open "best-fit"                    # Fit to page width, shows page borders
+set pages-per-row 1                        # Single page layout
+set scroll-page-aware "true"               # Stop at page boundaries
+set scroll-full-overlap 0.01               # Minimal overlap when scrolling
+set scroll-step 40                         # Reasonable scroll step
+
+# Show page borders and maintain original document appearance
+set guioptions "s"                         # Show statusbar
+set statusbar-basename "true"              # Show just filename in statusbar
+set window-title-basename "true"           # Show just filename in window title
+set window-title-page "true"               # Show page number in title
+

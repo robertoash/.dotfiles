@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "Bash(systemctl:*)",
+      "Bash(systemctl status:*)",
+      "Bash(kanata:*)",
+      "WebSearch"
+    ],
+    "deny": []
+  }
+}
