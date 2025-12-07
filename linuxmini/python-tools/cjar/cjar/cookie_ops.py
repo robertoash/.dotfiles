@@ -75,7 +75,9 @@ def eat_cookie(cookie_name: str) -> None:
     """Mount a cookie"""
     recipe = get_cookie_recipe(cookie_name)
     subprocess.run(
-        shlex.split(OVEN) + [recipe["dough_container"], recipe["plate"], "-o", "allow_other"], check=True
+        shlex.split(OVEN)
+        + [recipe["dough_container"], recipe["plate"], "-o", "allow_other"],
+        check=True,
     )
 
 

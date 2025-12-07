@@ -180,6 +180,14 @@ c.content.images = True
 # Font
 c.fonts.default_family = "GeistMono Nerd Font"
 c.fonts.default_size = "13pt"
+
+# Web font families - prevents fallback to weird system fonts
+c.fonts.web.family.standard = "sans-serif"
+c.fonts.web.family.serif = "serif"
+c.fonts.web.family.sans_serif = "sans-serif"
+c.fonts.web.family.fixed = "GeistMono Nerd Font"
+c.fonts.web.family.cursive = "sans-serif"  # Prevent weird cursive fallback
+c.fonts.web.family.fantasy = "sans-serif"  # Prevent weird fantasy fallback
 # Hint styling
 c.hints.chars = "asdfghjklöqweryuopånbvcxz"
 c.hints.uppercase = True

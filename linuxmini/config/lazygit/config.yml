@@ -2,14 +2,13 @@ git:
   autoRefresh: true
   autoFetch: false
   # Background refreshes
-  paging:
-    colorArg: always
-    pager: delta --dark --paging=never
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
 refresher:
   # File/submodule refresh interval in seconds.
   # Auto-refresh can be disabled via option 'git.autoRefresh'.
   refreshInterval: 10
-
   # Re-fetch interval in seconds.
   # Auto-fetch can be disabled via option 'git.autoFetch'.
   fetchInterval: 600

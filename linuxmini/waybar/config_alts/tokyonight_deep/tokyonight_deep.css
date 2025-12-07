@@ -124,7 +124,7 @@
 /* theme_it: tokyonight_deep */
 
 * {
-    font-family: "GeistMono NF";
+    font-family: "GeistMono NF", "Noto Color Emoji";
     font-weight: bold;
     font-size: 15px;
     min-height: 0;

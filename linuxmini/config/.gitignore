@@ -22,6 +22,7 @@
 !fd/
 !fish/
 !flake/
+!fontconfig/
 !foot/
 !fzf/
 !fzf-tab/
@@ -78,6 +79,7 @@
 !fd/**/*
 !fish/**/*
 !flake/**/*
+!fontconfig/**/*
 !foot/**/*
 !fzf/**/*
 !fzf-tab/**/*

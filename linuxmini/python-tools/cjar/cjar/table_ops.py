@@ -14,8 +14,6 @@ DEFAULT_PANTRY = Path.home() / ".config" / "cjar" / "plates" / "vanilla" / "pant
 DEFAULT_TABLE_CONFIG = DEFAULT_PANTRY / "table.yml"
 
 
-
-
 def get_table_dirs(table_setup):
     """Extract ingredient locations from recipe."""
     dirs = []
@@ -45,10 +43,6 @@ def get_table_dirs(table_setup):
                     dirs.append(abs_path)
 
     return dirs
-
-
-
-
 
 
 def table_up(table_setup=None):
@@ -131,10 +125,17 @@ def get_kitchen_status():
     # Survey the table
     try:
         result = subprocess.run(
-            ["docker", "ps", "--filter", "name=stash", "--format", "{{.Status}}"],
+            [
+                "docker",
+                "ps",
+                "--filter",
+                "name=stash",
+                "--format",
+                "{{.Status}}",
+            ],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
 
         if result.stdout.strip():
@@ -152,6 +153,7 @@ def get_kitchen_status():
     # Check for any mounted cookies
     try:
         from .cookie_ops import get_all_cookies, DINNER_TABLE
+
         all_cookies = get_all_cookies()
 
         if all_cookies:

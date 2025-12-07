@@ -92,6 +92,9 @@ config.harfbuzz_features = { "calt=0", "clig=0", "liga=0" }
 -- Window appearance
 config.window_background_opacity = 0.8
 
+-- Fix for Hyprland window sizing issue (https://github.com/wezterm/wezterm/issues/7156)
+config.adjust_window_size_when_changing_font_size = false
+
 -- Window decorations: detect platform and desktop environment
 local is_macos = wezterm.target_triple:find("darwin") ~= nil
 

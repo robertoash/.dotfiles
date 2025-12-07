@@ -29,7 +29,13 @@ def configure_logging(quiet=False):
     caller_filename_no_ext = caller_path.stem
 
     # Calculate the target log directory
-    relative_log_dir = caller_dir.relative_to(base_scripts_dir_exp)
+    # Handle both direct paths and symlinked paths from ~/.dotfiles
+    try:
+        relative_log_dir = caller_dir.relative_to(base_scripts_dir_exp)
+    except ValueError:
+        # If script is symlinked from ~/.dotfiles, use a fallback structure
+        # Extract the last two path components (e.g., "waybar" from "~/.dotfiles/.../waybar")
+        relative_log_dir = Path(caller_dir.parts[-1]) if caller_dir.parts else Path(".")
     log_dir = base_log_dir_exp / relative_log_dir
 
     # Ensure the log directory exists

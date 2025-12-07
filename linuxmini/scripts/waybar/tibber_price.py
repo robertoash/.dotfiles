@@ -29,8 +29,15 @@ if args.debug:
 else:
     logging.getLogger().setLevel(logging.ERROR)
 
-# Your Tibber token must be set as an environment variable 'TIBBER_TOKEN'.
-TIBBER_TOKEN = os.environ["TIBBER_TOKEN"]
+# Your Tibber token - read from environment or secrets file
+TIBBER_TOKEN = os.environ.get("TIBBER_TOKEN")
+if not TIBBER_TOKEN:
+    secrets_file = f"/run/user/{os.getuid()}/secrets/tibber-token"
+    if os.path.exists(secrets_file):
+        with open(secrets_file, "r") as f:
+            TIBBER_TOKEN = f.read().strip()
+    else:
+        raise EnvironmentError("TIBBER_TOKEN not found in environment or secrets file")
 
 
 def fetch_prices():

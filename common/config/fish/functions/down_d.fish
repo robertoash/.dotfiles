@@ -1,5 +1,5 @@
 function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fast -> fast+impersonation -> slow+compatible'
-    set -l yt_dlp_path "/etc/profiles/per-user/$USER/bin/yt-dlp"
+    set -l yt_dlp_path "/home/rash/.local/bin/yt-dlp"
     set -l fast_failed_urls
     set -l medium_failed_urls
     set -l quality_format "bestvideo+bestaudio/best"
