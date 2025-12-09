@@ -13,7 +13,13 @@ fi
 
 SECRETS_DIR="$RUNTIME_DIR/secrets"
 DOTFILES="$HOME/.dotfiles"
-HOSTNAME=$(hostname -s)
+
+# Get hostname - use /etc/hostname on Linux, hostname command on macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    HOSTNAME=$(/usr/bin/hostname -s)
+else
+    HOSTNAME=$(cat /etc/hostname)
+fi
 
 # Create secrets directory with secure permissions
 mkdir -p "$SECRETS_DIR"
