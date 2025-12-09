@@ -10,6 +10,11 @@ linuxmini/sunshine/credentials/cakey.pem
 **/*.pem
 **/token*
 
+# Exceptions for sops (scripts and service, not secrets)
+!linuxmini/scripts/sops/
+!linuxmini/scripts/sops/**
+!linuxmini/systemd/user/sops-secrets.service
+
 # Dev artifacts
 __pycache__
 
