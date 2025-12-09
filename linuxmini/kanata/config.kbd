@@ -132,7 +132,7 @@
 
   ;; Tab with SUPER+CTRL+ALT on hold
   ;; Also activates QWERTY override layer for Hyprland keybinds
-  tab-mods (tap-hold-release 75 120 tab (multi lmet lctl lalt (layer-while-held qwerty-override)))
+  tab-mods (tap-hold-release 150 200 tab (multi lmet lctl lalt (layer-while-held qwerty-override)))
 
   ;; Layer switching aliases
   switch-to-colemak (layer-switch colemak)
