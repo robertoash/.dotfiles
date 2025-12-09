@@ -38,13 +38,7 @@ if status is-interactive
 
                 # Claude Code OAuth Token (only for SSH connections to workmbp)
                 if test -n "$SSH_CONNECTION"; and test (hostname) = "workmbp"
-                    # Use system secrets to avoid LaunchAgent SSH issues
-                    if test -f "/run/secrets/workmbp-claude-token"
-                        set -gx CLAUDE_CODE_OAUTH_TOKEN (cat "/run/secrets/workmbp-claude-token")
-                    else
-                        # Fallback to home-manager path
-                        test -f "$secrets_dir/workmbp-claude-token" && set -gx CLAUDE_CODE_OAUTH_TOKEN (cat "$secrets_dir/workmbp-claude-token")
-                    end
+                    test -f "$secrets_dir/workmbp-claude-token" && set -gx CLAUDE_CODE_OAUTH_TOKEN (cat "$secrets_dir/workmbp-claude-token")
                 end
 
                 set -g __sops_secrets_loaded 1

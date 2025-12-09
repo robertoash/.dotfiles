@@ -6,10 +6,9 @@ local config = wezterm.config_builder()
 -- ========================================
 
 -- Always use fish shell as default
--- GUI apps on macOS don't inherit PATH, so use full path on macOS
+-- On macOS, use Homebrew's fish location
 if wezterm.target_triple:find("darwin") then
-	local user = os.getenv("USER")
-	config.default_prog = { "/etc/profiles/per-user/" .. user .. "/bin/fish" }
+	config.default_prog = { "/opt/homebrew/bin/fish" }
 else
 	config.default_prog = { "fish" }
 end

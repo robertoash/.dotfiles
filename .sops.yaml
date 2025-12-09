@@ -1,0 +1,42 @@
+# SOPS configuration for secrets management
+# Public key extracted from ~/.config/sops/age/keys.txt
+keys:
+  - &linuxmini age1q366mx62s06sdkf2l3mkz6y62wfga0ncvsl4ymlvxqjk69vcqgvsmjpmxz
+  - &workmbp age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7
+  - &oldmbp age1tccgfl69k6epggugazgyg7nz7tqcxu0mdylyseme9mxctmpsfp7sf8rc87
+
+creation_rules:
+  # Common secrets for all machines
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini
+          - *workmbp
+          - *oldmbp
+
+  # Linux-specific secrets (linuxmini + oldmbp)
+  - path_regex: secrets/linux\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini
+          - *oldmbp
+
+  # Darwin/macOS-specific secrets
+  - path_regex: secrets/darwin\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini  # Can access from linuxmini for editing
+          - *workmbp
+
+  # Machine-specific: linuxmini
+  - path_regex: secrets/linuxmini\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini
+
+  # Machine-specific: workmbp
+  - path_regex: secrets/workmbp\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini  # Can access from linuxmini for editing
+          - *workmbp

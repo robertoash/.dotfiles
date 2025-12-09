@@ -1,8 +1,8 @@
 # ~/.config/fish/conf.d/00_homebrew.fish
-# Homebrew Configuration (workmbp only)
+# Homebrew Configuration (macOS only)
 
-# Add Homebrew to PATH
-if test (hostname) = rash-workmbp.local
+# Add Homebrew to PATH on macOS
+if test (uname) = Darwin
     # Check for Apple Silicon Homebrew
     if test -d /opt/homebrew
         fish_add_path --prepend /opt/homebrew/bin

@@ -1,10 +1,10 @@
 function cnn --description "Watch CNN via Xtream proxy"
     # Read credentials from sops secrets
-    # XDG_RUNTIME_DIR is set in session-variables.nix for both Darwin and Linux
     set -l secrets_dir "$XDG_RUNTIME_DIR/secrets"
 
     if not test -d "$secrets_dir"
-        echo "❌ Secrets not available. Run: home-manager switch" >&2
+        echo "❌ Secrets directory not found: $secrets_dir" >&2
+        echo "Set up the secrets directory or set XDG_RUNTIME_DIR appropriately" >&2
         return 1
     end
 

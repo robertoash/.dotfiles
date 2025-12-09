@@ -11,9 +11,9 @@ linuxmini/sunshine/credentials/cakey.pem
 **/token*
 
 # Exceptions for sops (scripts and service, not secrets)
-!linuxmini/scripts/sops/
-!linuxmini/scripts/sops/**
 !linuxmini/systemd/user/sops-secrets.service
+!common/scripts/decrypt-secrets.sh
+!common/config/fish/conf.d/*_secrets.fish
 
 # Dev artifacts
 __pycache__

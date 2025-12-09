@@ -1,12 +1,11 @@
-# Load secrets from sops-nix (workmbp-specific version)
-# On nix-darwin, secrets are stored in /run/secrets/ (system-level)
-# This overrides the common version that uses $XDG_RUNTIME_DIR/secrets/
+# Load secrets from sops (workmbp-specific version)
+# Uses $XDG_RUNTIME_DIR/secrets/ for secrets
 
 if status is-interactive
     function __load_workmbp_sops_secrets --on-event fish_prompt
         # Only run once
         if not set -q __workmbp_sops_secrets_loaded
-            set -l secrets_dir "/run/secrets"
+            set -l secrets_dir "$XDG_RUNTIME_DIR/secrets"
 
             if test -d "$secrets_dir"
                 # API Keys (available on workmbp via system secrets)
