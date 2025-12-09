@@ -22,3 +22,4 @@ linuxmini/python-tools/kanata-tools/kanata_tools/__pycache__
 linuxmini/scripts/_logs/
 linuxmini/kanata/last_state.json
 linuxmini/sunshine/sunshine.log
+common/config/nchat
