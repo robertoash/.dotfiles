@@ -1,4 +1,10 @@
 -- ~/.config/yazi/init.lua
+
+-- smart-enter plugin
+require("smart-enter"):setup({
+	open_multi = false,
+})
+
 require("relative-motions"):setup({
 	show_numbers = "relative",
 	show_motion = true,
