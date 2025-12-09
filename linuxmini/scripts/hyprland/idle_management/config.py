@@ -28,7 +28,6 @@ IDLE_MANAGEMENT_DIR = SCRIPTS_DIR / "hyprland" / "idle_management"
 # =============================================================================
 
 LOG_FILES = {
-    "face_detector": TMP_DIR / "face_detector.log",
     "idle_simple_lock": TMP_DIR / "idle_simple_lock.log",
     "idle_simple_dpms": TMP_DIR / "idle_simple_dpms.log",
     "idle_simple_resume": TMP_DIR / "idle_simple_resume.log",
@@ -44,7 +43,6 @@ LOG_FILES = {
 STATUS_FILES = {
     "linux_mini_status": MQTT_DIR / "linux_mini_status",
     "idle_detection_status": MQTT_DIR / "idle_detection_status",
-    "face_presence": MQTT_DIR / "face_presence",
     "in_office_status": MQTT_DIR / "in_office_status",
     "linux_webcam_status": MQTT_DIR / "linux_webcam_status",
     "manual_override_status": MQTT_DIR / "manual_override_status",
@@ -54,7 +52,6 @@ STATUS_FILES = {
 STATUS_FILE_DEFAULTS = {
     "linux_mini_status": "active",
     "idle_detection_status": "inactive",
-    "face_presence": "not_detected",
     "in_office_status": "on",
     "linux_webcam_status": "inactive",
     "manual_override_status": "inactive",
@@ -119,50 +116,9 @@ DPMS_SCHEDULE = {
 # =============================================================================
 
 DETECTION_PARAMS = {
-    "threshold": 0.3,  # threshold for overall presence detection (lenient fallback)
-    "timing": {
-        # Adaptive window detection timing (applies to all detection methods)
-        "initial_window": 1,  # Initial detection window duration (seconds)
-        "max_duration": 10,  # Maximum detection window duration (seconds)
-        "monitoring_interval": 60,  # How often to re-check presence during continuous monitoring (seconds)  # noqa: E501
-        # Recency weighting parameters (applies to all detection methods)
-        "recent_window_duration": 2,  # Duration in seconds to prioritize for recency weighting
-        "recent_window_threshold": 0.5,  # Threshold for recent window (responsive detection)
-    },
-    "fallback_settings": {
-        "fallback_to_generic_detection": True,
-        "max_unknown_detections_before_fallback": 2,
-    },
-    "facial_recognition": {
-        "enabled": False,
-        "priority": 1,
-        # Reference images configuration
-        "reference_images_dir": IDLE_MANAGEMENT_DIR / "reference_faces",
-        "supported_image_formats": [".jpg", ".jpeg", ".png", ".bmp"],
-        # Recognition parameters
-        # Lower = more strict (0.4-0.8 recommended) - optimized for higher accuracy
-        "tolerance": 0.6,
-        # Minimum confidence for positive recognition - adjusted based on self-recognition test
-        "min_recognition_confidence": 0.5,  # Lowered since self-recognition averages 0.57
-        # Performance settings - OPTIMIZED FOR REAL-TIME PERFORMANCE
-        "face_detection_model": "hog",
-        # "hog" (faster) or "cnn" (more accurate) - using HOG for real-time performance
-        "face_locations_model": "hog",
-        # Number of times to jitter when computing encoding - balanced accuracy/speed
-        # (1-100, higher = more accurate but slower) - 2 jitters for balanced performance
-        "num_jitters": 2,
-        # Security and fallback settings
-        "anti_spoofing_enabled": False,  # Enable anti-spoofing measures (experimental)
-    },
-    "mediapipe_face": {
-        "enabled": True,
-        "priority": 2,
-        "min_detection_confidence": 0.5,
-        "min_tracking_confidence": 0.5,
-    },
     "motion": {
         "enabled": True,
-        "priority": 3,
+        "priority": 1,
         "min_area": 200,
     },
 }
@@ -197,9 +153,7 @@ LOGGING_CONFIG = {
 # =============================================================================
 
 WEBCAM_CONFIG = {
-    "excluded_processes": [
-        "face_detector"
-    ],  # Processes to exclude from webcam usage detection
+    "excluded_processes": [],  # Processes to exclude from webcam usage detection
 }
 
 # =============================================================================
@@ -246,7 +200,7 @@ def get_detection_method_param(method_name, param_name):
 def get_detection_method_order():
     """Get the configured detection method order based on priorities."""
     methods = []
-    for method_name in ["facial_recognition", "mediapipe_face", "motion"]:
+    for method_name in ["motion"]:
         method_config = DETECTION_PARAMS.get(method_name, {})
         if method_config.get("enabled", False):
             priority = method_config.get("priority", 999)
@@ -257,35 +211,6 @@ def get_detection_method_order():
     return [method_name for priority, method_name in methods]
 
 
-def get_fallback_setting(param_name):
-    """Get a fallback setting parameter."""
-    return DETECTION_PARAMS.get("fallback_settings", {}).get(param_name)
-
-
-def get_detection_timing_param(param_name):
-    """Get a detection timing parameter from DETECTION_PARAMS.timing section."""
-    return DETECTION_PARAMS.get("timing", {}).get(param_name)
-
-
-def get_facial_recognition_param(param_name):
-    """Get a facial recognition parameter."""
-    # First check the new structure
-    facial_config = DETECTION_PARAMS.get("facial_recognition", {})
-    if param_name in facial_config:
-        return facial_config[param_name]
-
-    # Check fallback settings for backward compatibility
-    fallback_config = DETECTION_PARAMS.get("fallback_settings", {})
-    if param_name in fallback_config:
-        return fallback_config[param_name]
-
-    # Parameter not found in either location
-    return None
-
-
-def is_facial_recognition_enabled():
-    """Check if facial recognition is enabled."""
-    return DETECTION_PARAMS.get("facial_recognition", {}).get("enabled", False)
 
 
 def is_detection_method_enabled(method_name):
@@ -329,14 +254,6 @@ def ensure_directories():
     """Ensure all required directories exist."""
     directories = [MQTT_DIR, TMP_DIR]
 
-    # Add facial recognition directory if enabled
-    if is_facial_recognition_enabled():
-        ref_dir = DETECTION_PARAMS.get("facial_recognition", {}).get(
-            "reference_images_dir"
-        )
-        if ref_dir:
-            directories.append(ref_dir)
-
     for directory in directories:
         directory.mkdir(parents=True, exist_ok=True)
 
@@ -358,38 +275,9 @@ def get_all_log_files():
 
 def get_enabled_detection_methods():
     """Get a string describing detection methods that will actually be used."""
-    fallback_enabled = get_fallback_setting("fallback_to_generic_detection")
-
-    if fallback_enabled:
-        # Fallback enabled: show all enabled methods in priority order
-        enabled_methods = []
-        detection_order = get_detection_method_order()
-
-        for method in detection_order:
-            if method == "facial_recognition":
-                enabled_methods.append("Facial Recognition")
-            elif method == "mediapipe_face":
-                enabled_methods.append("MediaPipe")
-            elif method == "motion":
-                enabled_methods.append("Motion")
-
-        return " + ".join(enabled_methods) if enabled_methods else "None"
-    else:
-        # Fallback disabled: only highest priority available method runs
-        detection_order = get_detection_method_order()
-
-        if not detection_order:
-            return "None"
-
-        highest_priority = detection_order[0]
-        if highest_priority == "facial_recognition":
-            return "Facial Recognition (only)"
-        elif highest_priority == "mediapipe_face":
-            return "MediaPipe (only)"
-        elif highest_priority == "motion":
-            return "Motion (only)"
-
-        return "None"
+    if is_detection_method_enabled("motion"):
+        return "Motion"
+    return "None"
 
 
 # =============================================================================
@@ -409,40 +297,6 @@ def validate_config():
     # Check that scripts directory exists
     if not IDLE_MANAGEMENT_DIR.exists():
         errors.append(f"Scripts directory not found: {IDLE_MANAGEMENT_DIR}")
-
-    # Validate facial recognition configuration if enabled
-    if is_facial_recognition_enabled():
-        # Check if face_recognition library is available
-        try:
-            __import__("face_recognition")
-        except ImportError:
-            errors.append(
-                "Facial recognition enabled but face_recognition library not "
-                "installed (pip install face_recognition)"
-            )
-
-        # Check reference images directory
-        ref_dir = DETECTION_PARAMS.get("facial_recognition", {}).get(
-            "reference_images_dir"
-        )
-        if not ref_dir or not ref_dir.exists():
-            errors.append(
-                f"Facial recognition reference directory not found: {ref_dir}"
-            )
-        else:
-            # Check for reference images
-            supported_formats = DETECTION_PARAMS.get("facial_recognition", {}).get(
-                "supported_image_formats", []
-            )
-            reference_images = []
-            for fmt in supported_formats:
-                reference_images.extend(ref_dir.glob(f"*{fmt}"))
-
-            if not reference_images:
-                errors.append(
-                    f"No reference images found in {ref_dir}. "
-                    f"Supported formats: {supported_formats}"
-                )
 
     return errors
 
