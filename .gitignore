@@ -16,7 +16,10 @@ linuxmini/sunshine/credentials/cakey.pem
 !common/config/fish/conf.d/*_secrets.fish
 
 # Dev artifacts
-__pycache__
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
 
 # System files
 linuxmini/systemd/user/default.target.wants
@@ -31,3 +34,7 @@ common/config/nchat
 
 # Runtime
 **/raycast/extensions/
+
+# Claude Code state (MCP servers are configured via setup.py)
+.claude.json
+.claude.json.backup

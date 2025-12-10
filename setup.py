@@ -3,7 +3,12 @@
 import os
 import socket
 import subprocess
+import sys
 from pathlib import Path
+
+# Add setup to path for imports
+sys.path.insert(0, str(Path(__file__).parent / "setup"))
+from claude_setup import setup_claude_config
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -39,7 +44,7 @@ def create_symlink(source, target, description=""):
     desc = f" ({description})" if description else ""
     print(f"✅ {target} -> {source}{desc}")
 
-def merge_common_into_machine(common_dir, machine_dir, config_root, level=0, symlink_paths=None):
+def merge_common_into_machine(common_dir, machine_dir, config_root, level=0, symlink_paths=None, progress_info=None):
     """
     Populate machine_dir with symlinks to files from common_dir.
     Only creates symlinks for items that don't already exist in machine_dir.
@@ -59,25 +64,43 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, level=0, sym
     if symlink_paths is None:
         symlink_paths = []
 
+    if progress_info is None:
+        progress_info = {"current": 0, "total": 0, "name": ""}
+
     indent = "  " * level
 
     # For each item in common_dir
-    for common_item in common_dir.iterdir():
-        machine_item = machine_dir / common_item.name
+    items = list(common_dir.iterdir())
+    for common_app_item in items:
+        machine_app_item = machine_dir / common_app_item.name
+
+        # Skip .gitignore files - they should be machine-specific
+        if common_app_item.name == '.gitignore':
+            continue
+
+        # Update progress counter
+        if level >= 0:
+            progress_info["current"] += 1
+            if progress_info["name"]:
+                print(f"\r🔀 Merging {progress_info['name']}... ({progress_info['current']}/{progress_info['total']} processed)", end='', flush=True)
 
         # If item doesn't exist in machine_dir, create symlink
-        if not machine_item.exists() and not machine_item.is_symlink():
-            machine_item.symlink_to(common_item.resolve())
+        if not machine_app_item.exists() and not machine_app_item.is_symlink():
+            machine_app_item.symlink_to(common_app_item.resolve())
             if level == 0:
-                print(f"{indent}📎 {common_item.name} -> common")
+                print(f"\n{indent}📎 {common_app_item.name} -> common")
             # Add relative path from config root
-            symlink_paths.append(str(machine_item.relative_to(config_root)))
-        elif machine_item.is_symlink() and machine_item.resolve() == common_item.resolve():
-            # Symlink already exists pointing to common - add to gitignore
-            symlink_paths.append(str(machine_item.relative_to(config_root)))
-        elif common_item.is_dir() and machine_item.is_dir() and not machine_item.is_symlink():
-            # Both are directories and machine_item is not a symlink, merge recursively
-            merge_common_into_machine(common_item, machine_item, config_root, level + 1, symlink_paths)
+            # Symlinks are always tracked as files (even if they point to directories)
+            symlink_paths.append(str(machine_app_item.relative_to(config_root)))
+        elif machine_app_item.is_symlink():
+            # Symlink already exists - add to gitignore
+            if machine_app_item.resolve() == common_app_item.resolve():
+                # Symlinks are always tracked as files (even if they point to directories)
+                symlink_paths.append(str(machine_app_item.relative_to(config_root)))
+            # Don't recurse into symlinked directories
+        elif common_app_item.is_dir() and machine_app_item.is_dir() and not machine_app_item.is_symlink():
+            # Both are directories and machine_app_item is not a symlink, merge recursively
+            merge_common_into_machine(common_app_item, machine_app_item, config_root, level + 1, symlink_paths, progress_info)
 
     return symlink_paths
 
@@ -92,19 +115,72 @@ machine_config_dir = dotfiles_dir / hostname / "config"
 print("\n📦 Step 1: Merging common configs into machine-specific directories...")
 all_symlink_paths = []
 if common_config_dir.exists() and machine_config_dir.exists():
-    for common_item in common_config_dir.iterdir():
-        machine_item = machine_config_dir / common_item.name
+    for common_app_item in common_config_dir.iterdir():
+        machine_app_item = machine_config_dir / common_app_item.name
 
-        # If both exist and both are directories, merge recursively
-        if machine_item.exists() and common_item.is_dir() and machine_item.is_dir():
-            print(f"🔀 Merging {common_item.name}...")
-            symlink_paths = merge_common_into_machine(common_item, machine_item, machine_config_dir)
+        # If both exist and both are directories (and machine is not a symlink), merge recursively
+        if machine_app_item.exists() and common_app_item.is_dir() and machine_app_item.is_dir() and not machine_app_item.is_symlink():
+            # Count total items that will actually be processed (mirrors merge logic exactly)
+            def count_files_to_process(common_path, machine_path):
+                count = 0
+                try:
+                    for common_item in common_path.iterdir():
+                        count += 1  # Count this item
+                        machine_item = machine_path / common_item.name
+
+                        # If both are directories and machine is not a symlink, recurse
+                        if common_item.is_dir() and machine_item.exists() and machine_item.is_dir() and not machine_item.is_symlink():
+                            count += count_files_to_process(common_item, machine_item)
+                except (OSError, PermissionError):
+                    pass
+                return count
+
+            total = count_files_to_process(common_app_item, machine_app_item)
+            progress_info = {"current": 0, "total": total, "name": common_app_item.name}
+            print(f"🔀 Merging {common_app_item.name}... (0/{total} processed)", end='', flush=True)
+            symlink_paths = merge_common_into_machine(common_app_item, machine_app_item, machine_config_dir, progress_info=progress_info)
+            print()  # New line after progress complete
             if symlink_paths:
                 all_symlink_paths.extend(symlink_paths)
 
     # Create/update .gitignore with all symlink paths
     if all_symlink_paths:
         gitignore_path = machine_config_dir / ".gitignore"
+
+        # Optimize symlinks: group by parent directory
+        # If all files in a directory are symlinks, just ignore the directory
+        from collections import defaultdict
+        dir_files = defaultdict(lambda: {"symlinks": set(), "all_files": set()})
+
+        for symlink_path in all_symlink_paths:
+            path = Path(symlink_path)
+            parent = str(path.parent) if path.parent != Path('.') else ""
+            dir_files[parent]["symlinks"].add(symlink_path)
+            # Check actual filesystem to see all files in this directory
+            actual_dir = machine_config_dir / path.parent
+            if actual_dir.exists() and actual_dir.is_dir() and not actual_dir.is_symlink():
+                for item in actual_dir.iterdir():
+                    rel_path = str(item.relative_to(machine_config_dir))
+                    dir_files[parent]["all_files"].add(rel_path)
+
+        # Determine what to add to gitignore: directories or individual files
+        gitignore_entries = []
+
+        for parent_dir, files in sorted(dir_files.items()):
+            symlinks = files["symlinks"]
+            all_files = files["all_files"]
+
+            # If all files in this directory are symlinks, just ignore the directory
+            if symlinks == all_files and len(all_files) > 0:
+                # Add directory pattern
+                if parent_dir:
+                    gitignore_entries.append(f"{parent_dir}/")
+            else:
+                # Add individual symlink files
+                gitignore_entries.extend(sorted(symlinks))
+
+        # Remove duplicates and sort
+        gitignore_entries = sorted(set(gitignore_entries))
 
         # Preserve existing .gitignore content if it exists
         existing_content = ""
@@ -127,11 +203,13 @@ if common_config_dir.exists() and machine_config_dir.exists():
         # Build new content
         gitignore_content = existing_content.rstrip() + "\n\n" if existing_content.strip() else ""
         gitignore_content += marker_start
-        gitignore_content += "\n".join(sorted(all_symlink_paths)) + "\n"
+        gitignore_content += "\n".join(gitignore_entries) + "\n"
         gitignore_content += marker_end
 
         gitignore_path.write_text(gitignore_content)
-        print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({len(all_symlink_paths)} symlinks)")
+        before_count = len(all_symlink_paths)
+        after_count = len(gitignore_entries)
+        print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({after_count} entries, optimized from {before_count} symlinks)")
 
 # Step 2: Symlink all configs to ~/.config
 print("\n🔗 Step 2: Symlinking configs to ~/.config...")
@@ -201,5 +279,8 @@ if authorized_keys_source.exists():
     create_symlink(authorized_keys_source, authorized_keys_target, "SSH keys")
 else:
     print(f"⚠️  SSH authorized_keys source not found: {authorized_keys_source}")
+
+# Step 6: Setup Claude Code configuration
+setup_claude_config(dotfiles_dir)
 
 print(f"\n🎉 Dotfiles setup complete for {hostname}!")
