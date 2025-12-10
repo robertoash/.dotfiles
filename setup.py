@@ -283,4 +283,38 @@ else:
 # Step 6: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir)
 
+# Step 7: Setup systemd user services (Linux only)
+if hostname in ["linuxmini", "oldmbp"]:
+    print("\n⚙️  Step 7: Setting up systemd user services...")
+    systemd_user_dir = config_dir / "systemd" / "user"
+
+    if systemd_user_dir.exists():
+        # Find all service files in subdirectories (not top-level)
+        service_files = []
+        for subdir in systemd_user_dir.iterdir():
+            if subdir.is_dir() and subdir.name.startswith("_"):
+                # Find all unit files in this subdirectory
+                for unit_file in subdir.glob("*"):
+                    if unit_file.is_file() and unit_file.suffix in [".service", ".timer", ".path", ".socket"]:
+                        service_files.append(unit_file)
+
+        # Create symlinks in the top-level directory
+        for service_file in service_files:
+            symlink_target = systemd_user_dir / service_file.name
+
+            # Remove existing file/symlink if it exists
+            if symlink_target.exists() or symlink_target.is_symlink():
+                if symlink_target.is_symlink() and symlink_target.resolve() == service_file.resolve():
+                    # Already a correct symlink, skip
+                    continue
+                symlink_target.unlink()
+
+            # Create symlink
+            symlink_target.symlink_to(service_file)
+            print(f"  📎 {service_file.name} -> {service_file.parent.name}/")
+
+        # Reload systemd daemon
+        subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
+        print("  🔄 Systemd user daemon reloaded")
+
 print(f"\n🎉 Dotfiles setup complete for {hostname}!")

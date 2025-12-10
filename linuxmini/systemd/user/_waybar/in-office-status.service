@@ -1,0 +1,13 @@
+[Unit]
+Description=In-office Status for Waybar
+PartOf=graphical-session.target
+After=graphical-session.target waybar.service
+
+[Service]
+Type=simple
+ExecStart=/home/rash/.config/scripts/waybar/in_office_status.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

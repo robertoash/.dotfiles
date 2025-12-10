@@ -1,0 +1,10 @@
+# Ignore symlinks to service files in subdirectories
+# These are created automatically by setup.py
+*.service
+*.timer
+*.path
+*.socket
+
+# But don't ignore the subdirectories themselves
+!_*/
+!_*/**

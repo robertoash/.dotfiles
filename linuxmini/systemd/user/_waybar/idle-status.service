@@ -1,0 +1,13 @@
+[Unit]
+Description=Waybar Idle Status
+PartOf=graphical-session.target
+After=graphical-session.target waybar.service hypridle.service
+
+[Service]
+Type=oneshot
+ExecStartPre=/bin/sleep 3
+ExecStart=/home/rash/.config/scripts/waybar/waybar_idle_status.py
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

@@ -5,23 +5,25 @@ import subprocess
 import sys
 from pathlib import Path
 
-PID_FILE = Path("/tmp/waybar/hypridle.pid")
 STATUS_FILE = Path("/tmp/waybar/hypridle_status.json")
 LOG_FILE = Path("/tmp/hypridle_toggle.log")
 
 
 def kill_all_hypridle():
-    """Kill all running hypridle processes."""
+    """Stop hypridle systemd service."""
     subprocess.run(
-        ["pkill", "-x", "hypridle"],
+        ["systemctl", "--user", "stop", "hypridle.service"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
     )
 
 
 def is_hypridle_running():
-    """Check if any hypridle process is running."""
-    result = subprocess.run(["pgrep", "-x", "hypridle"], stdout=subprocess.PIPE)
+    """Check if hypridle systemd service is active."""
+    result = subprocess.run(
+        ["systemctl", "--user", "is-active", "hypridle.service"],
+        stdout=subprocess.PIPE
+    )
     return result.returncode == 0
 
 
@@ -126,22 +128,19 @@ def get_status():
 def toggle_hypridle(hypridle_is_on: bool):
     if hypridle_is_on:
         kill_all_hypridle()
-        PID_FILE.unlink(missing_ok=True)
         set_manual_override()  # Set manual override when turning off
-        log_action("Hypridle turned OFF")
+        log_action("Hypridle service stopped")
         return False
     else:
-        # Ensure the PID file directory exists
-        PID_FILE.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Start a new hypridle process
-        log_action("Starting hypridle process")
-        proc = subprocess.Popen(
-            ["hypridle"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        # Start hypridle systemd service
+        log_action("Starting hypridle service")
+        subprocess.run(
+            ["systemctl", "--user", "start", "hypridle.service"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
-        PID_FILE.write_text(str(proc.pid))
         clear_manual_override()  # Clear manual override when turning on
-        log_action(f"Hypridle turned ON with PID {proc.pid}")
+        log_action("Hypridle service started")
         return True
 
 
@@ -158,9 +157,8 @@ def main():
     log_action(f"Script started with args: {' '.join(sys.argv)}")
 
     if args.fresh_start:
-        log_action("Fresh start requested - killing all hypridle processes")
+        log_action("Fresh start requested - ensuring hypridle service is stopped")
         kill_all_hypridle()
-        PID_FILE.unlink(missing_ok=True)
         hypridle_is_on = False
         log_action("Fresh start preparation complete")
     else:

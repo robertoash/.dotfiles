@@ -224,7 +224,6 @@ nchat/version
 qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
 qutebrowser/.claude
-qutebrowser/.gitignore
 qutebrowser/profiles/linuxmini/.claude
 qutebrowser/profiles/linuxmini/company
 qutebrowser/profiles/linuxmini/jobhunt
