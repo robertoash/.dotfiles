@@ -186,4 +186,20 @@ elif hostname in ["linuxmini", "oldmbp"]:
     if scripts_dir.exists():
         create_symlink(scripts_dir, config_dir / "scripts", "Linux scripts")
 
+# Step 5: Setup SSH authorized_keys
+print("\n🔐 Step 5: Setting up SSH authorized_keys...")
+ssh_dir = home / ".ssh"
+ssh_dir.mkdir(mode=0o700, exist_ok=True)
+
+# Symlink authorized_keys from dotfiles
+authorized_keys_source = dotfiles_dir / "common" / "ssh" / "authorized_keys"
+authorized_keys_target = ssh_dir / "authorized_keys"
+
+if authorized_keys_source.exists():
+    # Ensure source file has correct permissions (600)
+    subprocess.run(["chmod", "600", str(authorized_keys_source)], check=True)
+    create_symlink(authorized_keys_source, authorized_keys_target, "SSH keys")
+else:
+    print(f"⚠️  SSH authorized_keys source not found: {authorized_keys_source}")
+
 print(f"\n🎉 Dotfiles setup complete for {hostname}!")

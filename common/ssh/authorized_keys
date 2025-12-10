@@ -1,0 +1,23 @@
+# SSH authorized keys for all machines
+# Automatically managed by dotfiles setup.py
+
+# workmbp (darwin)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA7UrB87Pd5QHv1Kq2hIFJ9PEjntZ8UY+vb1opaIHGUk rash@rashworkmbp.local
+
+# linuxmini
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFq0fX4c5gWsAEQ9A+D37dO4qtL37gs4/bcOgv2aEg+V rash-linuxmini
+
+# oden (10.20.10.80)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEP8f6Rumbdcqp6BgMHIsFDrTHIcQZjPNblJudfviK0/ rash@oden-server
+
+# oldhp (10.20.10.95)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIqEIxNyk+yK0lYhJEBxL4rYItWLWBeNhoOolpcGvATo rash@oldhp
+
+# dockerlab (10.20.10.90)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIzmxKTtlIjY3T2tbVEgInhqCKoVQDDNNC/IAL77midH rash@dockerlab
+
+# offlinelab (10.20.10.92)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL4vRBopG5W80ZLMIlp1mF2rBWhUK4D/VxyUCYgEifvR rash@offlinelab
+
+# cloudflare-tunnel (10.20.10.91)
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDVXx625/yG5LMcIyIooZLSZrho1WjhdkDYBPbjeTkRc rash@cloudflare-tunnel
