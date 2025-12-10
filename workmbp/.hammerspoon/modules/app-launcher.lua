@@ -15,8 +15,8 @@ local log = hs.logger.new("app-launcher", "info")
 
 -- Launch WezTerm at specific directory
 function AppLauncher.launch_wezterm()
-	local target_dir = os.getenv("HOME") .. "/.dotfiles-nix"
-	local wezterm_bin = "/etc/profiles/per-user/rash/bin/wezterm"
+	local target_dir = os.getenv("HOME") .. "/.dotfiles"
+	local wezterm_bin = "/Applications/WezTerm.app"
 
 	log.f("Launching WezTerm at %s", target_dir)
 

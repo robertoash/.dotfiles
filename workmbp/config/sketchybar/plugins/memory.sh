@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export PATH="/etc/profiles/per-user/rash/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 # Get total physical memory in GB
 TOTAL_BYTES=$(sysctl -n hw.memsize)
@@ -17,4 +17,4 @@ PAGES_WIRED=$(echo "$VM_STAT" | grep "Pages wired down" | awk '{print $4}' | tr 
 USED_BYTES=$(( (PAGES_ACTIVE + PAGES_WIRED) * PAGE_SIZE ))
 USED_GB=$((USED_BYTES / 1024 / 1024 / 1024))
 
-sketchybar --set memory label="${USED_GB}/${TOTAL_GB}GB"
+/opt/homebrew/bin/sketchybar --set memory label="${USED_GB}/${TOTAL_GB}GB"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export PATH="/etc/profiles/per-user/rash/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+export PATH="/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
 # Collect battery information using pmset (single call)
 BATTERY_DATA=$(pmset -g batt)
@@ -36,4 +36,4 @@ else
 fi
 
 # Update SketchyBar item with icon and label
-sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%"
+/opt/homebrew/bin/sketchybar --set "$NAME" icon="$ICON" label="${PERCENTAGE}%"
