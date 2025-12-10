@@ -4,7 +4,12 @@ function welcome-banner --description "Display a welcome banner with image and h
 
     # Fixed configuration
     set image_path ~/.config/fish/fish_welcome_img.jpg
-    set hostname_text (cat /etc/hostname 2>/dev/null || echo "unknown")
+    # macOS uses hostname command, Linux uses /etc/hostname
+    if test -f /etc/hostname
+        set hostname_text (cat /etc/hostname 2>/dev/null || echo "unknown")
+    else
+        set hostname_text (hostname -s 2>/dev/null || hostname 2>/dev/null || echo "unknown")
+    end
     set max_pixels 450  # Maximum width or height in pixels
 
     # Validate image exists
