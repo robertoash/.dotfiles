@@ -1,0 +1,27 @@
+# Snowflake CLI configuration
+# See: https://docs.snowflake.com/en/developer-guide/snowflake-cli/connecting/configure-connections
+
+# Default connection name
+default_connection_name = "dev"
+
+# Development database connection
+[connections.dev]
+account = "oz91619.eu-west-1"
+user = "ROBERTO.ASH@READLY.COM"
+database = "READLY_DEV"
+#schema = "RASH_ANALYTICS"
+warehouse = "ANALYTICS_WH"
+role = "DEVELOPER_ANALYTICS"
+authenticator = "SNOWFLAKE_JWT"
+private_key_path = "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8"
+
+# Production database connection
+[connections.prod]
+account = "oz91619.eu-west-1"
+user = "ROBERTO.ASH@READLY.COM"
+database = "READLY"
+#schema = "ANALYTICS"
+warehouse = "ANALYTICS_WH"
+role = "DEVELOPER_ANALYTICS"
+authenticator = "SNOWFLAKE_JWT"
+private_key_path = "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8"

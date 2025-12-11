@@ -243,20 +243,13 @@ if machine_dir.exists():
 
 # 4. Special cases by hostname
 if hostname == "workmbp":
-    # macOS special locations
-    special_locations = {
-        # Hammerspoon
-        dotfiles_dir / "workmbp" / ".hammerspoon": home / ".hammerspoon",
-        
-        # Snowflake config (special location)
-        dotfiles_dir / "workmbp" / "snowflake" / "config.toml": home / ".snowflake" / "config.toml",
-        
-        # Raycast (in ~/.config but from workmbp root, not workmbp/config)
-        dotfiles_dir / "workmbp" / "raycast": config_dir / "raycast",
-    }
-    
-    for source, target in special_locations.items():
-        create_symlink(source, target, "macOS special")
+    # Home directory dotfiles - automatically symlink everything in home/
+    home_dir = dotfiles_dir / "workmbp" / "home"
+    if home_dir.exists():
+        for item in home_dir.iterdir():
+            target = home / item.name
+            create_symlink(item, target, "home")
+
 
 elif hostname in ["linuxmini", "oldmbp"]:
     # Linux-specific: symlink scripts from linuxmini

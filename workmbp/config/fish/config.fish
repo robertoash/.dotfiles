@@ -7,3 +7,6 @@ set -g fish_greeting
 
 # Add cargo bin to PATH
 fish_add_path $HOME/.cargo/bin
+
+# Add .local/bin to PATH (for dbt and dbtf)
+fish_add_path --append $HOME/.local/bin
