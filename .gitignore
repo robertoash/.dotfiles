@@ -38,3 +38,4 @@ common/config/nchat
 # Claude Code state (MCP servers are configured via setup.py)
 .claude.json
 .claude.json.backup
+*.cache
