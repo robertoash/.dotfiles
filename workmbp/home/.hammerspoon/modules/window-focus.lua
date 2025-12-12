@@ -15,6 +15,7 @@ WindowFocus.timer = nil
 WindowFocus.last_window = nil
 WindowFocus.last_mouse_pos = nil
 WindowFocus.enabled = false
+WindowFocus.dragging = false  -- Disable focus-follows-mouse during window drag
 
 -- ============================================================================
 -- Focus Follows Mouse Implementation
@@ -94,6 +95,11 @@ end
 -- Timer callback to check mouse position
 local function check_mouse_position()
     if not Config.preferences.focus_follows_mouse then
+        return
+    end
+
+    -- Disable focus-follows-mouse during window drag
+    if WindowFocus.dragging then
         return
     end
 

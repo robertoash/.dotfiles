@@ -67,9 +67,43 @@ local function on_window_focused(window)
         end
 
         local old_window_id = WindowFocusEvents.last_focused[screen_id][space_id]
-        WindowFocusEvents.last_focused[screen_id][space_id] = window:id()
+        local win_id = window:id()
+        WindowFocusEvents.last_focused[screen_id][space_id] = win_id
         log.i(string.format("👁️  FOCUS EVENT: %s (ID: %s) on screen %s, space %s [was: %s]",
-            window:title(), window:id(), screen:name(), space_id, old_window_id or "nil"))
+            window:title(), win_id, screen:name(), space_id, old_window_id or "nil"))
+
+        -- On ANY focus event, check if HS-launched windows moved between screens
+        -- Update position cache and retile involved screens if changed
+        for hs_win_id, _ in pairs(WindowManagement.hs_launched_windows) do
+            local hs_win = hs.window.find(hs_win_id)
+            if hs_win and WindowManagement.is_tileable(hs_win) then
+                local current_screen = hs_win:screen()
+                if current_screen then
+                    local cached_screen_id = WindowManagement.hs_launched_window_screens[hs_win_id]
+                    local current_screen_id = WindowManagement.get_screen_id(current_screen)
+
+                    if cached_screen_id and cached_screen_id ~= current_screen_id then
+                        -- Window moved between screens - retile both origin and destination
+                        local cached_screen = hs.screen.find(cached_screen_id)
+                        if cached_screen then
+                            log.i(string.format("🖥️  HS-launched window %d moved from %s to %s",
+                                hs_win_id, cached_screen:name(), current_screen:name()))
+
+                            -- Retile both screens
+                            hs.timer.doAfter(0.1, function()
+                                WindowManagement.tile_screen(cached_screen)
+                                WindowManagement.tile_screen(current_screen)
+                                log.i(string.format("   ✓ Retiled origin (%s) and destination (%s)",
+                                    cached_screen:name(), current_screen:name()))
+                            end)
+                        end
+                    end
+
+                    -- Update position cache
+                    WindowManagement.hs_launched_window_screens[hs_win_id] = current_screen_id
+                end
+            end
+        end
 
         -- Clear focus-follows-mouse last_window tracker to allow immediate refocus
         -- This fixes the issue where keyboard focus changes prevent mouse focus

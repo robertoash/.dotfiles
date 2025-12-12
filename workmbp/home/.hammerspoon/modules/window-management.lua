@@ -47,8 +47,8 @@ WindowManagement.screen_mfact = {}
 -- Expected window frames after tiling (to detect manual resizing)
 WindowManagement.expected_frames = {}
 
--- Flag to temporarily disable manual resize detection during programmatic changes
-WindowManagement.ignore_resize_events = false
+-- Timestamp of last tiling operation (to ignore windowMoved events during retiling)
+WindowManagement.last_tiling_time = 0
 
 -- Flag to indicate we're in the middle of a space change (not a window move)
 WindowManagement.space_change_in_progress = false
@@ -59,6 +59,14 @@ WindowManagement.windows_being_moved = {}
 
 -- Track previous screen for each window (to detect cross-monitor moves)
 WindowManagement.window_previous_screen = {}
+
+-- Track windows launched via HS keybinds (for special cross-monitor handling via focus events)
+-- Maps window ID -> true for windows launched via HS
+WindowManagement.hs_launched_windows = {}
+
+-- Track current screen for each HS-launched window (for detecting cross-monitor moves)
+-- Maps window ID -> screen ID
+WindowManagement.hs_launched_window_screens = {}
 
 -- Pinned windows (appear on all spaces in same tiled position)
 -- Maps window ID -> {screen_id, position_index}
@@ -135,9 +143,16 @@ function WindowManagement.is_tileable(win)
         return false
     end
 
-    if not win:isStandard() then return false end
     if not win:isVisible() then return false end
     if win:isFullScreen() then return false end
+
+    -- Windows launched via HS keybinds are always tileable
+    -- (they may not pass isStandard() check but we want to tile them anyway)
+    if win_id and WindowManagement.hs_launched_windows[win_id] then
+        return true
+    end
+
+    if not win:isStandard() then return false end
 
     -- All standard windows are now tileable (including former floating apps)
     return true
@@ -911,8 +926,8 @@ function WindowManagement.tile_screen(screen)
     local windows = get_tileable_windows(screen)
     if #windows == 0 then return end
 
-    -- Suppress windowMoved events during programmatic repositioning
-    WindowManagement.ignore_resize_events = true
+    -- Record timestamp to suppress windowMoved events during programmatic repositioning
+    WindowManagement.last_tiling_time = hs.timer.secondsSinceEpoch()
 
     local layout = get_layout_for_screen(screen)
 
@@ -928,11 +943,6 @@ function WindowManagement.tile_screen(screen)
     if WindowBorders then
         WindowBorders.update_all()
     end
-
-    -- Clear flag after a short delay to allow all positioning to complete
-    hs.timer.doAfter(0.15, function()
-        WindowManagement.ignore_resize_events = false
-    end)
 end
 
 -- Tile all screens (only external monitors, excludes built-in display)

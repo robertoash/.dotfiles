@@ -51,6 +51,35 @@ function AppLauncher.launch_wezterm()
 		log.e(string.format("WezTerm launch failed: %s", error or "unknown error"))
 	end
 
+	-- Tag the newly launched window as HS-launched
+	-- This ensures it gets tiled even if it doesn't pass normal is_tileable() checks
+	hs.timer.doAfter(0.5, function()
+		-- Find the newest WezTerm window (most recently created)
+		local all_windows = hs.window.allWindows()
+		local newest_wezterm = nil
+		local newest_id = 0
+
+		for _, win in ipairs(all_windows) do
+			local app = win:application()
+			if app and app:name() == "WezTerm" then
+				local win_id = win:id()
+				-- Check if this window is already tagged
+				if not WindowManagement.hs_launched_windows[win_id] and win_id > newest_id then
+					newest_wezterm = win
+					newest_id = win_id
+				end
+			end
+		end
+
+		if newest_wezterm and WindowManagement then
+			-- Tag this window as HS-launched
+			local win_id = newest_wezterm:id()
+			WindowManagement.hs_launched_windows[win_id] = true
+			log.i(string.format("🏷️  Tagged HS-launched window: %s (ID: %d)",
+				newest_wezterm:title() or "unknown", win_id))
+		end
+	end)
+
 	-- Manual retile after delay to ensure window gets tiled
 	-- WezTerm needs time to fully spawn and become tileable
 	hs.timer.doAfter(0.3, function()

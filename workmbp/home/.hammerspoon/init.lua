@@ -80,10 +80,6 @@ function Diagnostics.check_system_health()
         table.insert(stuck_flags, "ignore_focus_events")
     end
     
-    if WindowManagement and WindowManagement.ignore_resize_events then
-        table.insert(stuck_flags, "ignore_resize_events")
-    end
-    
     if WindowManagement and WindowManagement.space_change_in_progress then
         table.insert(stuck_flags, "space_change_in_progress")
     end
@@ -106,7 +102,6 @@ function Diagnostics.check_system_health()
             WindowFocusEvents.ignore_focus_events = false
         end
         if WindowManagement then
-            WindowManagement.ignore_resize_events = false
             WindowManagement.space_change_in_progress = false
             WindowManagement.windows_being_moved = {}
         end
@@ -165,8 +160,11 @@ function hs_status()
     end
     
     if WindowManagement then
-        table.insert(status, string.format("ignore_resize: %s", WindowManagement.ignore_resize_events and "ON" or "off"))
         table.insert(status, string.format("space_change: %s", WindowManagement.space_change_in_progress and "ON" or "off"))
+
+        -- Show time since last tiling
+        local time_since_tiling = hs.timer.secondsSinceEpoch() - WindowManagement.last_tiling_time
+        table.insert(status, string.format("last_tiling: %.2fs ago", time_since_tiling))
 
         -- Count windows being moved
         local move_count = 0

@@ -11,6 +11,12 @@ local log = hs.logger.new('window-structural-events', 'info')
 
 -- State
 WindowStructuralEvents.watcher = nil
+WindowStructuralEvents.drag_watcher = nil
+WindowStructuralEvents.mouse_down_watcher = nil
+WindowStructuralEvents.mouse_up_watcher = nil
+
+-- Track which window is being dragged (cached on mouse down)
+local dragged_window = nil
 
 -- ============================================================================
 -- Event Handler
@@ -22,16 +28,25 @@ local function on_window_event(win, app, event)
     if Diagnostics and Diagnostics.mark_event_activity then
         Diagnostics.mark_event_activity()
     end
-    
+
     -- Log event for debugging
     local app_name = "unknown"
+    local win_title = "unknown"
+    local win_id = nil
     if app then
         local success, name = pcall(function() return app:name() end)
         if success and name then
             app_name = name
         end
     end
-    log.i(string.format("🔔 STRUCTURAL EVENT: %s (app: %s)", event, app_name))
+    if win then
+        pcall(function()
+            win_title = win:title() or "untitled"
+            win_id = win:id()
+        end)
+    end
+    log.i(string.format("🔔 STRUCTURAL EVENT: %s | app: %s | window: %s (ID: %s)",
+        event, app_name, win_title, tostring(win_id)))
 
     -- For window entering fullscreen, hide its border
     if event == hs.window.filter.windowFullscreened then
@@ -132,6 +147,8 @@ local function on_window_event(win, app, event)
         -- Clean up tracking for destroyed windows
         if event == hs.window.filter.windowDestroyed and win_id then
             WindowManagement.window_previous_screen[win_id] = nil
+            WindowManagement.hs_launched_windows[win_id] = nil
+            WindowManagement.hs_launched_window_screens[win_id] = nil
         end
 
         -- Remove border immediately for destroyed/minimized/hidden windows
@@ -153,8 +170,10 @@ local function on_window_event(win, app, event)
 
     -- For window moved events (drag and drop), handle reordering and retile
     if event == hs.window.filter.windowMoved then
-        -- Skip windowMoved events during programmatic retiling
-        if WindowManagement.ignore_resize_events then
+        -- Skip windowMoved events that occur within 0.2s of a tiling operation
+        local time_since_tiling = hs.timer.secondsSinceEpoch() - WindowManagement.last_tiling_time
+        if time_since_tiling < 0.2 then
+            log.d(string.format("⏭️  Ignoring windowMoved (%.3fs after tiling)", time_since_tiling))
             return
         end
 
@@ -234,8 +253,9 @@ local function on_window_event(win, app, event)
             -- Initialize screen tracking for new/visible windows
             local win_id = nil
             pcall(function() win_id = win:id() end)
-            if win_id then
+            if win_id and not WindowManagement.window_previous_screen[win_id] then
                 WindowManagement.window_previous_screen[win_id] = screen
+                log.d(string.format("  Initialized screen tracking for window %d", win_id))
             end
 
             WindowManagement.tile_screen(screen)
@@ -281,11 +301,51 @@ function WindowStructuralEvents.start()
 
     log.i("Starting structural event tracking")
 
+    -- Watch for mouse down to cache which window is being dragged
+    -- (before focus-follows-mouse can steal focus)
+    WindowStructuralEvents.mouse_down_watcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseDown}, function(event)
+        local win = hs.window.focusedWindow()
+        if win then
+            dragged_window = win
+            -- Disable focus-follows-mouse during drag
+            if WindowFocus then
+                WindowFocus.dragging = true
+            end
+            log.d(string.format("🖱️  Mouse down on: %s", win:title() or "unknown"))
+        end
+        return false  -- Don't block the event
+    end)
+    WindowStructuralEvents.mouse_down_watcher:start()
+
+    -- Watch for mouse drag to raise the cached dragged window
+    WindowStructuralEvents.drag_watcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseDragged}, function(event)
+        if dragged_window then
+            pcall(function() dragged_window:raise() end)
+            log.d(string.format("🔝 Raised window to front: %s", dragged_window:title() or "unknown"))
+        end
+        return false  -- Don't block the event
+    end)
+    WindowStructuralEvents.drag_watcher:start()
+
+    -- Watch for mouse up to clear the dragged window cache
+    WindowStructuralEvents.mouse_up_watcher = hs.eventtap.new({hs.eventtap.event.types.leftMouseUp}, function(event)
+        if dragged_window then
+            log.d(string.format("🖱️  Mouse up, drag ended for: %s", dragged_window:title() or "unknown"))
+        end
+        dragged_window = nil
+        -- Re-enable focus-follows-mouse
+        if WindowFocus then
+            WindowFocus.dragging = false
+        end
+        return false  -- Don't block the event
+    end)
+    WindowStructuralEvents.mouse_up_watcher:start()
+
     -- Watch for structural window events (NOT focus)
     local success, result = pcall(function()
-        -- Use a permissive filter to catch all new windows
+        -- Use a permissive filter to catch all windows (including non-standard ones)
         local filter = hs.window.filter.new()
-        filter:setDefaultFilter({}) -- Allow all windows
+        -- Don't set a filter - this allows ALL windows (including WezTerm launched via HS)
 
         return filter:subscribe({
             hs.window.filter.windowCreated,
@@ -318,6 +378,21 @@ function WindowStructuralEvents.stop()
     if WindowStructuralEvents.watcher then
         WindowStructuralEvents.watcher:unsubscribeAll()
         WindowStructuralEvents.watcher = nil
+    end
+
+    if WindowStructuralEvents.drag_watcher then
+        WindowStructuralEvents.drag_watcher:stop()
+        WindowStructuralEvents.drag_watcher = nil
+    end
+
+    if WindowStructuralEvents.mouse_down_watcher then
+        WindowStructuralEvents.mouse_down_watcher:stop()
+        WindowStructuralEvents.mouse_down_watcher = nil
+    end
+
+    if WindowStructuralEvents.mouse_up_watcher then
+        WindowStructuralEvents.mouse_up_watcher:stop()
+        WindowStructuralEvents.mouse_up_watcher = nil
     end
 
     log.i("Structural event tracking stopped")
