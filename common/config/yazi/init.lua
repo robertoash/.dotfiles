@@ -32,3 +32,8 @@ require("bunny"):setup({
 	notify = false, -- Notify after hopping, default is false
 	fuzzy_cmd = "fzf", -- Fuzzy searching command, default is "fzf"
 })
+
+require("full-border"):setup({
+	-- Available values: ui.Border.PLAIN, ui.Border.ROUNDED
+	type = ui.Border.ROUNDED,
+})

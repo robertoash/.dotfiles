@@ -31,7 +31,10 @@ prepend_keymap = [
   { on = [ "c", "p" ],   run = "plugin command",                desc = "Yazi command prompt" },
 # Copy selected files to clipboard
   { on = "<C-c>",        run = "plugin wl-clipboard",           desc = "Copy to system clipboard" } ,
+  { on = "p",            run = "plugin smart-paste",            desc = "Paste into the hovered directory or CWD" },
   { on = "d",            run = 'shell -- trash-put "$@"',       desc = "Trash selected files" },
+  { on = [ ",", "g" ],   run = "plugin vcs-files",              desc = "Show Git file changes" },
+  { on = "F",            run = "plugin smart-filter",           desc = "Smart filter" },
 ]
 
 keymap = [
@@ -157,8 +160,7 @@ keymap = [
 
   # Goto
   { on = [ "g", "h" ],       run = "cd ~",             desc = "Go home" },
-  { on = [ "g", "c" ],       run = "cd ~/.config",     desc = "Goto ~/.config" },
-  { on = [ "g", "d" ],       run = "cd ~/Downloads",   desc = "Goto ~/Downloads" },
+  { on = [ "g", "d" ],       run = "cd ~/.dotfiles",   desc = "Goto ~/.dotfiles" },
   { on = [ "g", "<Space>" ], run = "cd --interactive", desc = "Jump interactively" },
 
   # Tabs
