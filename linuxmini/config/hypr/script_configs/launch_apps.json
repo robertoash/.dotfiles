@@ -8,21 +8,21 @@
             },
             {
                 "name": "browser_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false
             }
         ],
         "2": [
             {
                 "name": "nvim_zellij",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.config' -- zellij --layout workspace2",
+                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace2",
                 "is_master": true
             }
         ],
         "3": [
             {
                 "name": "config_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false
             }
         ],
@@ -36,7 +36,7 @@
             },
             {
                 "name": "claude_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false
             }
         ],
@@ -48,7 +48,7 @@
             },
             {
                 "name": "nvim_obsidian_zellij",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false
             }
         ],
@@ -60,7 +60,7 @@
             },
             {
                 "name": "nvim_obsidian_zellij",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.config' --class wezterm",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false
             }
         ],
