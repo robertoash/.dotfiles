@@ -217,6 +217,7 @@ fish/fish_variables
 fish/fish_welcome_img.jpg
 fish/functions
 fish/themes
+fzf/fzf_preview.sh
 kanata/.claude
 nchat/emojis
 nchat/history

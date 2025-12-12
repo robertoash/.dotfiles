@@ -3,7 +3,7 @@
 
 # Fzf configs
 # 🧠 User-friendly wrapper configs
-set -gx FZF_CONFIG_DEFAULT "fzf --preview 'bat --color=always {}' --preview-window '~3' --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff'"
+set -gx FZF_CONFIG_DEFAULT "fzf --preview '$HOME/.config/fzf/fzf_preview.sh {}' --preview-window '~3' --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff'"
 set -gx FZF_CONFIG_NO_PREVIEW "fzf --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff'"
 set -gx FZF_CONFIG_INLINE "fzf --height=30% --layout=reverse --border=none --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff'"
 
