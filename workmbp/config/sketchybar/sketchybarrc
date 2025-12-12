@@ -70,7 +70,7 @@ do
                               label.padding_left=5 \
                               label.drawing=off \
                               script="$PLUGIN_DIR/space.sh" \
-                              click_script="yabai -m space --focus $sid" \
+                              click_script="$PLUGIN_DIR/space_click.sh $sid" \
              --subscribe space.$sid space_change mouse.clicked
 done
 
