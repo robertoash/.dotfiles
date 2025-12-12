@@ -247,6 +247,5 @@ qutebrowser/userscripts/cleanup_history_builtin.py
 qutebrowser/userscripts/cleanup_history_external.py
 spotify-player/themes.bkup
 task/.task
-yazi/flavors/catppuccin-mocha.yazi
 zellij/config.kdl.template
 # === END AUTO-GENERATED SYMLINKS ===

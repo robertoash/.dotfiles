@@ -214,6 +214,9 @@ if common_config_dir.exists() and machine_config_dir.exists():
 # Step 2: Symlink all configs to ~/.config
 print("\n🔗 Step 2: Symlinking configs to ~/.config...")
 
+# Track warnings about existing valid symlinks
+symlink_warnings = []
+
 # Symlink machine-specific configs (which now contain merged common + machine files)
 if machine_config_dir.exists():
     for item in machine_config_dir.iterdir():
@@ -225,8 +228,23 @@ if machine_config_dir.exists():
 if common_config_dir.exists():
     for item in common_config_dir.iterdir():
         target = config_dir / item.name
+        # Check if machine-specific version exists
+        machine_version = machine_config_dir / item.name if machine_config_dir.exists() else None
+
+        # Skip if machine-specific version exists (it takes precedence)
+        if machine_version and machine_version.exists():
+            continue
+
         # Only symlink if not already linked from machine-specific
-        if not target.exists() and not target.is_symlink():
+        if target.is_symlink() and not target.exists():
+            # Broken symlink - replace it
+            create_symlink(item, target, "common")
+        elif target.is_symlink() and target.exists():
+            # Valid symlink pointing elsewhere - warn but don't replace
+            if target.resolve() != item.resolve():
+                symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
+        elif not target.exists():
+            # Doesn't exist - create it
             create_symlink(item, target, "common")
 
 # Step 3: Symlink machine directories directly (not in config/)
@@ -237,8 +255,16 @@ if machine_dir.exists():
             continue  # Already handled above
         if item.is_dir() or item.is_file():
             target = config_dir / item.name
-            # Only create if doesn't exist
-            if not target.exists() and not target.is_symlink():
+            # Only create if doesn't exist or is a broken symlink
+            if target.is_symlink() and not target.exists():
+                # Broken symlink - replace it
+                create_symlink(item, target, f"{hostname} direct")
+            elif target.is_symlink() and target.exists():
+                # Valid symlink pointing elsewhere - warn but don't replace
+                if target.resolve() != item.resolve():
+                    symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
+            elif not target.exists():
+                # Doesn't exist - create it
                 create_symlink(item, target, f"{hostname} direct")
 
 # 4. Special cases by hostname
@@ -309,5 +335,11 @@ if hostname in ["linuxmini", "oldmbp"]:
         # Reload systemd daemon
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
         print("  🔄 Systemd user daemon reloaded")
+
+# Print warnings about existing valid symlinks if any
+if symlink_warnings:
+    print("\n⚠️  Warnings:")
+    for warning in symlink_warnings:
+        print(warning)
 
 print(f"\n🎉 Dotfiles setup complete for {hostname}!")
