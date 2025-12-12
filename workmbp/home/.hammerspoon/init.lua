@@ -87,7 +87,18 @@ function Diagnostics.check_system_health()
     if WindowManagement and WindowManagement.space_change_in_progress then
         table.insert(stuck_flags, "space_change_in_progress")
     end
-    
+
+    -- Check for stuck windows in windows_being_moved
+    if WindowManagement and WindowManagement.windows_being_moved then
+        local stuck_count = 0
+        for _ in pairs(WindowManagement.windows_being_moved) do
+            stuck_count = stuck_count + 1
+        end
+        if stuck_count > 0 then
+            table.insert(stuck_flags, string.format("windows_being_moved(%d)", stuck_count))
+        end
+    end
+
     if #stuck_flags > 0 then
         diag_log.w(string.format("⚠️ STUCK FLAGS DETECTED: %s", table.concat(stuck_flags, ", ")))
         -- Auto-reset stuck flags
@@ -97,6 +108,7 @@ function Diagnostics.check_system_health()
         if WindowManagement then
             WindowManagement.ignore_resize_events = false
             WindowManagement.space_change_in_progress = false
+            WindowManagement.windows_being_moved = {}
         end
         Helpers.toast("🔄 Reset stuck flags", 1.0)
     end
@@ -155,6 +167,15 @@ function hs_status()
     if WindowManagement then
         table.insert(status, string.format("ignore_resize: %s", WindowManagement.ignore_resize_events and "ON" or "off"))
         table.insert(status, string.format("space_change: %s", WindowManagement.space_change_in_progress and "ON" or "off"))
+
+        -- Count windows being moved
+        local move_count = 0
+        if WindowManagement.windows_being_moved then
+            for _ in pairs(WindowManagement.windows_being_moved) do
+                move_count = move_count + 1
+            end
+        end
+        table.insert(status, string.format("moving_windows: %d", move_count))
     end
     
     local timer_count = 0

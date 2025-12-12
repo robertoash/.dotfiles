@@ -65,37 +65,32 @@ local function on_window_event(win, app, event)
         return
     end
 
-    -- For window leaving current space, hide border and retile immediately (before space switch)
+    -- For window leaving current space (drag-and-drop), retile origin
     if event == hs.window.filter.windowNotInCurrentSpace then
-        -- Hide border for window leaving current space
         local win_id = nil
+        local screen = nil
+        local win_title = "unknown"
         if win then
-            pcall(function() win_id = win:id() end)
+            pcall(function()
+                win_id = win:id()
+                screen = win:screen()
+                win_title = win:title() or "untitled"
+            end)
         end
+
+        log.i(string.format("👋 Window %d (%s) leaving current space", win_id or 0, win_title))
+
+        -- Hide border for window leaving current space
         if win_id and WindowBorders then
             WindowBorders.remove_window(win_id)
-            log.i("👋 Hid border for window leaving space")
+            log.i("   Hid border")
         end
 
-        -- Only retile if this is an actual window move, not a space change
-        -- During space changes, all windows on the old space fire this event
-        if not WindowManagement.space_change_in_progress then
-            -- Window is moving to another space - retile old space immediately
-            -- Must be done NOW before we switch spaces, otherwise windows won't be visible
-            local screen = nil
-            if win then
-                pcall(function()
-                    screen = win:screen()
-                end)
-            end
-
-            if screen then
-                -- Retile immediately (no delay) to ensure gap is filled before space switch
-                WindowManagement.tile_screen(screen)
-                log.i("🔄 Retiled old space after window moved to different space")
-            end
-        else
-            log.d("Skipping retile during space change (not a window move)")
+        -- Retile origin space (get_tileable_windows will filter out the leaving window)
+        if screen and WindowManagement then
+            log.i(string.format("   Retiling origin screen %s", screen:name()))
+            WindowManagement.tile_screen(screen)
+            log.i("   ✓ Retile complete")
         end
         return
     end
@@ -134,6 +129,11 @@ local function on_window_event(win, app, event)
             end)
         end
 
+        -- Clean up tracking for destroyed windows
+        if event == hs.window.filter.windowDestroyed and win_id then
+            WindowManagement.window_previous_screen[win_id] = nil
+        end
+
         -- Remove border immediately for destroyed/minimized/hidden windows
         if win_id and WindowBorders then
             WindowBorders.remove_window(win_id)
@@ -153,6 +153,41 @@ local function on_window_event(win, app, event)
 
     -- For window moved events (drag and drop), handle reordering and retile
     if event == hs.window.filter.windowMoved then
+        -- Skip windowMoved events during programmatic retiling
+        if WindowManagement.ignore_resize_events then
+            return
+        end
+
+        local win_id = nil
+        local current_screen = nil
+        if win then
+            pcall(function()
+                win_id = win:id()
+                current_screen = win:screen()
+            end)
+        end
+
+        -- Check if window moved between screens (cross-monitor move)
+        local previous_screen = win_id and WindowManagement.window_previous_screen[win_id]
+        local screen_changed = previous_screen and current_screen and
+                              (previous_screen:id() ~= current_screen:id())
+
+        if screen_changed then
+            log.i(string.format("🖥️  Window %d moved from screen %s to %s (cross-monitor move)",
+                win_id, previous_screen:name(), current_screen:name()))
+
+            -- Retile origin screen after a delay to let the window finish moving visually
+            hs.timer.doAfter(0.1, function()
+                WindowManagement.tile_screen(previous_screen)
+                log.i(string.format("   ✓ Retiled origin screen %s", previous_screen:name()))
+            end)
+        end
+
+        -- Update previous screen tracking
+        if win_id and current_screen then
+            WindowManagement.window_previous_screen[win_id] = current_screen
+        end
+
         hs.timer.doAfter(0.05, function()
             local success, screen = pcall(function()
                 return win and win:screen()
@@ -196,6 +231,13 @@ local function on_window_event(win, app, event)
         end)
 
         if success and screen then
+            -- Initialize screen tracking for new/visible windows
+            local win_id = nil
+            pcall(function() win_id = win:id() end)
+            if win_id then
+                WindowManagement.window_previous_screen[win_id] = screen
+            end
+
             WindowManagement.tile_screen(screen)
 
             -- Enforce top gap on untiled screens

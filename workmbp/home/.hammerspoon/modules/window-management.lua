@@ -53,6 +53,13 @@ WindowManagement.ignore_resize_events = false
 -- Flag to indicate we're in the middle of a space change (not a window move)
 WindowManagement.space_change_in_progress = false
 
+-- Set of window IDs currently being moved (excludes them from tiling)
+-- Used for cross-space moves and can be extended for drag-and-drop reordering
+WindowManagement.windows_being_moved = {}
+
+-- Track previous screen for each window (to detect cross-monitor moves)
+WindowManagement.window_previous_screen = {}
+
 -- Pinned windows (appear on all spaces in same tiled position)
 -- Maps window ID -> {screen_id, position_index}
 WindowManagement.pinned_windows = {}
@@ -120,6 +127,14 @@ end
 -- Check if window should be tiled (public API for other modules)
 function WindowManagement.is_tileable(win)
     if not win then return false end
+
+    -- Exclude windows currently being moved (cross-space or drag-and-drop)
+    local win_id = nil
+    pcall(function() win_id = win:id() end)
+    if win_id and WindowManagement.windows_being_moved[win_id] then
+        return false
+    end
+
     if not win:isStandard() then return false end
     if not win:isVisible() then return false end
     if win:isFullScreen() then return false end
@@ -203,7 +218,7 @@ function WindowManagement.enforce_top_gap(win)
     if win_frame.y < min_y then
         -- Window is encroaching into reserved space, push it down
         win_frame.y = min_y
-        win:setFrame(win_frame)
+        win:setFrame(win_frame, 0)
         log.d(string.format("⬇️  Enforced top gap (%dpx) on %s: pushed to y=%.0f", top_gap, win:title() or "unknown", min_y))
     end
 end
@@ -369,6 +384,9 @@ local function get_tileable_windows(screen)
     local space_id = get_space_id(screen)
     local ordered_ids = WindowManagement.window_order[screen_id][space_id]
 
+    log.d(string.format("🔍 Getting tileable windows for screen %s, space %s. Current order: [%s]",
+        screen_id, space_id, table.concat(ordered_ids, ", ")))
+
     -- Get all current tileable windows ON THIS SPACE
     local current_windows = {}
     local current_ids = {}
@@ -378,26 +396,42 @@ local function get_tileable_windows(screen)
         if WindowManagement.is_tileable(win) and win:screen() == screen then
             -- Check if window is on the current space
             local on_current_space = true
+            local win_id = win:id()
+            local win_spaces_str = "unknown"
             pcall(function()
                 local win_spaces = hs.spaces.windowSpaces(win)
                 if win_spaces and #win_spaces > 0 then
                     on_current_space = false
+                    local spaces_list = {}
                     for _, ws in ipairs(win_spaces) do
+                        table.insert(spaces_list, tostring(ws))
                         if tostring(ws) == space_id then
                             on_current_space = true
-                            break
                         end
                     end
+                    win_spaces_str = table.concat(spaces_list, ", ")
                 end
             end)
+
+            log.d(string.format("  Window %d: spaces=[%s], on_current_space=%s",
+                win_id, win_spaces_str, tostring(on_current_space)))
 
             if on_current_space then
                 local id = win:id()
                 current_windows[id] = win
                 table.insert(current_ids, id)
+
+                -- Initialize screen tracking if not already set
+                if not WindowManagement.window_previous_screen[id] then
+                    WindowManagement.window_previous_screen[id] = screen
+                    log.d(string.format("  Initialized screen tracking for window %d", id))
+                end
             end
         end
     end
+
+    log.d(string.format("  Found %d tileable windows on current space: [%s]",
+        #current_ids, table.concat(current_ids, ", ")))
 
     -- If we have windows but no saved order, infer layout from current state
     if #current_ids > 0 and #ordered_ids == 0 then
@@ -672,7 +706,7 @@ local function apply_tall_layout(screen, windows)
             win_frame = target_frame
         end
 
-        windows[1]:setFrame(win_frame)
+        windows[1]:setFrame(win_frame, 0)
         -- Save expected frame
         WindowManagement.expected_frames[windows[1]:id()] = win_frame
     else
@@ -695,7 +729,7 @@ local function apply_tall_layout(screen, windows)
             master_frame = master_target_frame
         end
 
-        windows[1]:setFrame(master_frame)
+        windows[1]:setFrame(master_frame, 0)
         -- Save expected frame
         WindowManagement.expected_frames[windows[1]:id()] = master_frame
 
@@ -743,7 +777,7 @@ local function apply_tall_layout(screen, windows)
         local current_y = frame.y
         for i = 2, #windows do
             stack_frames[i].y = current_y
-            windows[i]:setFrame(stack_frames[i])
+            windows[i]:setFrame(stack_frames[i], 0)
             WindowManagement.expected_frames[windows[i]:id()] = stack_frames[i]
             log.d(string.format("Window %d positioned at y=%.1f, height=%.1f", i, current_y, stack_frames[i].h))
             current_y = current_y + stack_frames[i].h + margin + extra_gap
@@ -778,7 +812,7 @@ local function apply_wide_layout(screen, windows)
             win_frame = target_frame
         end
 
-        windows[1]:setFrame(win_frame)
+        windows[1]:setFrame(win_frame, 0)
         -- Save expected frame
         WindowManagement.expected_frames[windows[1]:id()] = win_frame
     else
@@ -802,7 +836,7 @@ local function apply_wide_layout(screen, windows)
             master_frame = master_target_frame
         end
 
-        windows[1]:setFrame(master_frame)
+        windows[1]:setFrame(master_frame, 0)
         -- Save expected frame
         WindowManagement.expected_frames[windows[1]:id()] = master_frame
 
@@ -850,7 +884,7 @@ local function apply_wide_layout(screen, windows)
         local current_x = frame.x
         for i = 2, #windows do
             stack_frames[i].x = current_x
-            windows[i]:setFrame(stack_frames[i])
+            windows[i]:setFrame(stack_frames[i], 0)
             WindowManagement.expected_frames[windows[i]:id()] = stack_frames[i]
             log.d(string.format("Window %d positioned at x=%.1f, width=%.1f", i, current_x, stack_frames[i].w))
             current_x = current_x + stack_frames[i].w + margin + extra_gap
@@ -877,6 +911,9 @@ function WindowManagement.tile_screen(screen)
     local windows = get_tileable_windows(screen)
     if #windows == 0 then return end
 
+    -- Suppress windowMoved events during programmatic repositioning
+    WindowManagement.ignore_resize_events = true
+
     local layout = get_layout_for_screen(screen)
 
     log.i(string.format("🔧 TILING: %d windows on screen %s with %s layout", #windows, screen:name(), layout))
@@ -891,6 +928,11 @@ function WindowManagement.tile_screen(screen)
     if WindowBorders then
         WindowBorders.update_all()
     end
+
+    -- Clear flag after a short delay to allow all positioning to complete
+    hs.timer.doAfter(0.15, function()
+        WindowManagement.ignore_resize_events = false
+    end)
 end
 
 -- Tile all screens (only external monitors, excludes built-in display)

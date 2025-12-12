@@ -186,9 +186,33 @@ function Spaces.move_window_to_space(space_num)
     end
 
     local target_space = spaces[space_num]
+    local win_id = win:id()
+    local origin_screen = win:screen()
+
+    -- Remove window from origin space's window_order
+    if origin_screen and WindowManagement then
+        local screen_id = origin_screen:id()
+        local space_id = tostring(hs.spaces.focusedSpace())
+
+        if WindowManagement.window_order[screen_id] and WindowManagement.window_order[screen_id][space_id] then
+            local order = WindowManagement.window_order[screen_id][space_id]
+            for i, id in ipairs(order) do
+                if id == win_id then
+                    table.remove(order, i)
+                    log.i(string.format("🗑️  Removed window %d from origin space order", win_id))
+                    break
+                end
+            end
+        end
+    end
 
     -- Move window to space
     hs.spaces.moveWindowToSpace(win, target_space)
+
+    -- Retile origin space (window already removed from order)
+    if origin_screen and WindowManagement then
+        WindowManagement.tile_screen(origin_screen)
+    end
 
     -- Follow the window to the new space
     hs.spaces.gotoSpace(target_space)
@@ -202,6 +226,8 @@ end
 
 -- Move focused window to next space
 function Spaces.move_window_to_next()
+    log.i("🚀 MOVE_WINDOW_TO_NEXT CALLED")
+
     local spaces = get_current_screen_spaces()
     if #spaces <= 1 then
         log.d("Only one space on current screen")
@@ -235,12 +261,37 @@ function Spaces.move_window_to_next()
     -- Calculate next index (wrap around)
     local next_index = (current_index % #spaces) + 1
 
+    local win_id = win:id()
+    local origin_screen = win:screen()
+
+    -- Remove window from origin space's window_order
+    if origin_screen and WindowManagement then
+        local screen_id = origin_screen:id()
+        local space_id = tostring(hs.spaces.focusedSpace())
+
+        if WindowManagement.window_order[screen_id] and WindowManagement.window_order[screen_id][space_id] then
+            local order = WindowManagement.window_order[screen_id][space_id]
+            for i, id in ipairs(order) do
+                if id == win_id then
+                    table.remove(order, i)
+                    log.i(string.format("🗑️  Removed window %d from origin space order", win_id))
+                    break
+                end
+            end
+        end
+    end
+
     -- WORKAROUND: Use native macOS shortcut (Ctrl+Alt+L = Move right a space)
     -- This triggers symbolic hotkey 82 which moves window to next space
     hs.eventtap.keyStroke({"ctrl", "alt"}, "l", 0)
 
-    -- Wait briefly for the move, then follow and show toast
+    -- Wait briefly for the move to complete
     hs.timer.doAfter(0.1, function()
+        -- Retile origin space (window already removed from order)
+        if origin_screen and WindowManagement then
+            WindowManagement.tile_screen(origin_screen)
+        end
+
         local next_space = spaces[next_index]
         hs.spaces.gotoSpace(next_space)
 
@@ -287,12 +338,37 @@ function Spaces.move_window_to_previous()
     -- Calculate previous index (wrap around)
     local prev_index = current_index == 1 and #spaces or current_index - 1
 
+    local win_id = win:id()
+    local origin_screen = win:screen()
+
+    -- Remove window from origin space's window_order
+    if origin_screen and WindowManagement then
+        local screen_id = origin_screen:id()
+        local space_id = tostring(hs.spaces.focusedSpace())
+
+        if WindowManagement.window_order[screen_id] and WindowManagement.window_order[screen_id][space_id] then
+            local order = WindowManagement.window_order[screen_id][space_id]
+            for i, id in ipairs(order) do
+                if id == win_id then
+                    table.remove(order, i)
+                    log.i(string.format("🗑️  Removed window %d from origin space order", win_id))
+                    break
+                end
+            end
+        end
+    end
+
     -- WORKAROUND: Use native macOS shortcut (Ctrl+Alt+H = Move left a space)
     -- This triggers symbolic hotkey 80 which moves window to previous space
     hs.eventtap.keyStroke({"ctrl", "alt"}, "h", 0)
 
-    -- Wait briefly for the move, then follow and show toast
+    -- Wait briefly for the move to complete
     hs.timer.doAfter(0.1, function()
+        -- Retile origin space (window already removed from order)
+        if origin_screen and WindowManagement then
+            WindowManagement.tile_screen(origin_screen)
+        end
+
         local prev_space = spaces[prev_index]
         hs.spaces.gotoSpace(prev_space)
 
