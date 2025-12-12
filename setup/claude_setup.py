@@ -35,76 +35,96 @@ def decrypt_secrets(secrets_file):
 def substitute_secrets(template_str, secrets):
     """Replace {{PLACEHOLDER}} with actual secret values"""
     replacements = {
-        "{{CLAUDE_GITHUB_TOKEN}}": secrets.get("claude-github-token", ""),
-        "{{CLAUDE_HA_TOKEN_CONFIG}}": secrets.get("claude-ha-token-config", ""),
-        "{{CLAUDE_HA_TOKEN_GLOBAL}}": secrets.get("claude-ha-token-global", ""),
+        "{{CLAUDE_GITHUB_TOKEN}}": secrets.get("github-token", ""),
+        "{{CLAUDE_HA_TOKEN_CONFIG}}": secrets.get("ha-token-config", ""),
+        "{{CLAUDE_HA_TOKEN_GLOBAL}}": secrets.get("ha-token-global", ""),
         "{{OBSIDIAN_API_KEY}}": secrets.get("obsidian-api-key", ""),
     }
-    
+
     for placeholder, value in replacements.items():
         template_str = template_str.replace(placeholder, value)
-    
+
     return template_str
 
 
 def setup_claude_config(dotfiles_dir):
     """Setup Claude Code MCP servers with encrypted secrets"""
     dotfiles_dir = Path(dotfiles_dir)
-    
+
     # Paths
-    secrets_file = dotfiles_dir / "common" / "secrets" / "claude.yaml"
+    secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
     template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
     claude_json_path = Path.home() / ".claude.json"
-    
+
     print("\n🔐 Setting up Claude Code configuration...")
-    
-    # Check if sops is installed
+
+    # Try to set up MCP servers (but continue even if it fails)
+    mcp_setup_success = False
     try:
+        # Check if sops is installed
         subprocess.run(["sops", "--version"], capture_output=True, check=True)
+
+        # Check if secrets and template files exist
+        if secrets_file.exists() and template_file.exists():
+            # Decrypt secrets
+            secrets = decrypt_secrets(secrets_file)
+            if secrets:
+                # Load template
+                with open(template_file) as f:
+                    template_str = f.read()
+
+                # Substitute secrets
+                mcp_servers_str = substitute_secrets(template_str, secrets)
+                mcp_servers = json.loads(mcp_servers_str)
+
+                # Load existing .claude.json or create new one
+                if claude_json_path.exists():
+                    with open(claude_json_path) as f:
+                        claude_config = json.load(f)
+                else:
+                    claude_config = {}
+
+                # Update mcpServers section
+                if "mcpServers" not in claude_config:
+                    claude_config["mcpServers"] = {}
+
+                claude_config["mcpServers"].update(mcp_servers)
+
+                # Write back
+                with open(claude_json_path, "w") as f:
+                    json.dump(claude_config, f, indent=2)
+
+                print(f"✅ Updated {claude_json_path} with MCP server configurations")
+                mcp_setup_success = True
+            else:
+                print("⚠️  Failed to decrypt secrets. Skipping MCP servers setup.")
+        else:
+            if not secrets_file.exists():
+                print(f"⚠️  Secrets file not found: {secrets_file}")
+            if not template_file.exists():
+                print(f"⚠️  Template not found: {template_file}")
+            print("⚠️  Skipping MCP servers setup.")
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("⚠️  sops not found. Skipping Claude config setup.")
-        return False
-    
-    # Check if secrets file exists
-    if not secrets_file.exists():
-        print(f"⚠️  Secrets file not found: {secrets_file}")
-        return False
-    
-    # Check if template exists
-    if not template_file.exists():
-        print(f"⚠️  Template not found: {template_file}")
-        return False
-    
-    # Decrypt secrets
-    secrets = decrypt_secrets(secrets_file)
-    if not secrets:
-        print("⚠️  Failed to decrypt secrets.")
-        return False
-    
-    # Load template
-    with open(template_file) as f:
-        template_str = f.read()
-    
-    # Substitute secrets
-    mcp_servers_str = substitute_secrets(template_str, secrets)
-    mcp_servers = json.loads(mcp_servers_str)
-    
-    # Load existing .claude.json or create new one
-    if claude_json_path.exists():
-        with open(claude_json_path) as f:
-            claude_config = json.load(f)
+        print("⚠️  sops not found. Skipping MCP servers setup.")
+    except Exception as e:
+        print(f"⚠️  Error setting up MCP servers: {e}")
+
+    # Symlink CLAUDE.md from common to ~/.claude/
+    claude_md_source = dotfiles_dir / "common" / ".claude" / "CLAUDE.md"
+    claude_md_target = Path.home() / ".claude" / "CLAUDE.md"
+
+    if claude_md_source.exists():
+        # Create ~/.claude directory if it doesn't exist
+        claude_md_target.parent.mkdir(parents=True, exist_ok=True)
+
+        # Remove existing symlink or file
+        if claude_md_target.exists() or claude_md_target.is_symlink():
+            claude_md_target.unlink()
+
+        # Create symlink
+        claude_md_target.symlink_to(claude_md_source.resolve())
+        print(f"✅ Symlinked {claude_md_target} -> {claude_md_source}")
     else:
-        claude_config = {}
-    
-    # Update mcpServers section
-    if "mcpServers" not in claude_config:
-        claude_config["mcpServers"] = {}
-    
-    claude_config["mcpServers"].update(mcp_servers)
-    
-    # Write back
-    with open(claude_json_path, "w") as f:
-        json.dump(claude_config, f, indent=2)
-    
-    print(f"✅ Updated {claude_json_path} with MCP server configurations")
+        print(f"⚠️  CLAUDE.md not found at {claude_md_source}")
+
     return True
