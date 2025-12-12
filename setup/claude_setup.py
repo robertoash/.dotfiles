@@ -3,6 +3,7 @@ Claude Code configuration setup with sops-encrypted secrets.
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -11,11 +12,18 @@ from pathlib import Path
 def decrypt_secrets(secrets_file):
     """Decrypt sops secrets file and return as dict"""
     try:
+        # Set age key file path to speed up decryption
+        env = os.environ.copy()
+        age_key_file = Path.home() / ".config" / "sops" / "age" / "keys.txt"
+        if age_key_file.exists():
+            env["SOPS_AGE_KEY_FILE"] = str(age_key_file)
+
         result = subprocess.run(
             ["sops", "-d", str(secrets_file)],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
+            env=env
         )
         # Parse YAML output - simple parser to avoid PyYAML dependency
         secrets = {}
@@ -61,8 +69,14 @@ def setup_claude_config(dotfiles_dir):
     # Try to set up MCP servers (but continue even if it fails)
     mcp_setup_success = False
     try:
+        # Set up environment with age key path for faster sops operations
+        env = os.environ.copy()
+        age_key_file = Path.home() / ".config" / "sops" / "age" / "keys.txt"
+        if age_key_file.exists():
+            env["SOPS_AGE_KEY_FILE"] = str(age_key_file)
+
         # Check if sops is installed
-        subprocess.run(["sops", "--version"], capture_output=True, check=True)
+        subprocess.run(["sops", "--version"], capture_output=True, check=True, env=env)
 
         # Check if secrets and template files exist
         if secrets_file.exists() and template_file.exists():

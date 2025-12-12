@@ -1,3 +1,11 @@
+# Auto-load completion directories from ~/.config/fish/completions/*.d/
+# This allows symlinking external completion directories (e.g., brew, cargo)
+for comp_dir in $__fish_config_dir/completions/*.d
+    if test -d "$comp_dir"
+        set -gx fish_complete_path "$comp_dir" $fish_complete_path
+    end
+end
+
 ## Frecent
 # Completions for frecent itself
 complete -c frecent -s d -l dirs -d "Show directories only"
