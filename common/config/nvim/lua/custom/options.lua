@@ -32,9 +32,36 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 -- Performance and responsiveness
 vim.o.updatetime = 250
 
--- Clipboard
+-- Clipboard: Use OSC 52 for SSH sessions, system clipboard otherwise
 vim.schedule(function()
-	vim.o.clipboard = "unnamedplus"
+	-- Detect if we're in an SSH session
+	local in_ssh = vim.env.SSH_TTY ~= nil or vim.env.SSH_CONNECTION ~= nil
+
+	if in_ssh then
+		-- Use OSC 52 for copying only (WezTerm doesn't support OSC 52 paste yet)
+		-- To paste from local clipboard, use WezTerm's paste (middle-click or Ctrl+Shift+V)
+		local function paste()
+			return {
+				vim.split(vim.fn.getreg(""), "\n"),
+				vim.fn.getregtype(""),
+			}
+		end
+
+		vim.g.clipboard = {
+			name = "OSC 52",
+			copy = {
+				["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+				["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+			},
+			paste = {
+				["+"] = paste,
+				["*"] = paste,
+			},
+		}
+	else
+		-- Use system clipboard for local sessions
+		vim.o.clipboard = "unnamedplus"
+	end
 end)
 
 -- Search and substitution
