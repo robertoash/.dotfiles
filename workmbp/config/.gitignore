@@ -25,7 +25,6 @@ fish/functions/cut_video.fish
 fish/functions/dd.fish
 fish/functions/delete_gone_branches.fish
 fish/functions/down_d.fish
-fish/functions/downscale_video.fish
 fish/functions/dracut-rebuild.fish
 fish/functions/empty_file.fish
 fish/functions/ff.fish
@@ -59,6 +58,7 @@ fish/functions/rr.fish
 fish/functions/sgpt_fish.fish
 fish/functions/snake_case_all.fish
 fish/functions/tg_d.fish
+fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
 fish/functions/yazi.fish
 sunshine/sunshine.log
