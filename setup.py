@@ -220,6 +220,8 @@ symlink_warnings = []
 # Symlink machine-specific configs (which now contain merged common + machine files)
 if machine_config_dir.exists():
     for item in machine_config_dir.iterdir():
+        if item.name == ".gitignore":
+            continue  # Skip .gitignore - handled in Step 3 from machine directory
         if item.is_dir() or item.is_file():
             target = config_dir / item.name
             create_symlink(item, target, f"{hostname}")
@@ -240,8 +242,12 @@ if common_config_dir.exists():
             # Broken symlink - replace it
             create_symlink(item, target, "common")
         elif target.is_symlink() and target.exists():
-            # Valid symlink pointing elsewhere - warn but don't replace
-            if target.resolve() != item.resolve():
+            # Check if pointing to machine-specific version (which takes precedence)
+            if machine_version and machine_version.exists() and target.resolve() == machine_version.resolve():
+                # Correctly pointing to machine version, no warning needed
+                pass
+            elif target.resolve() != item.resolve():
+                # Valid symlink pointing elsewhere - warn but don't replace
                 symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
         elif not target.exists():
             # Doesn't exist - create it
@@ -260,8 +266,12 @@ if machine_dir.exists():
                 # Broken symlink - replace it
                 create_symlink(item, target, f"{hostname} direct")
             elif target.is_symlink() and target.exists():
-                # Valid symlink pointing elsewhere - warn but don't replace
-                if target.resolve() != item.resolve():
+                # Check if already pointing to this machine's version
+                if target.resolve() == item.resolve():
+                    # Already correctly linked, no warning needed
+                    pass
+                else:
+                    # Valid symlink pointing elsewhere - warn but don't replace
                     symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
             elif not target.exists():
                 # Doesn't exist - create it
