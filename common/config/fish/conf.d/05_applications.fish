@@ -18,3 +18,8 @@ end
 if test -f ~/.config/broot/launcher/fish/br
     source ~/.config/broot/launcher/fish/br
 end
+
+# Buku browser integration
+if test -f ~/.dotfiles/linuxmini/scripts/shell/buku_browser_wrapper.py
+    set -gx BROWSER ~/.dotfiles/linuxmini/scripts/shell/buku_browser_wrapper.py
+end

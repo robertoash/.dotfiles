@@ -1,5 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
+SETUVAR --export BROWSER:/home/rash/\x2edotfiles/linuxmini/scripts/shell/buku_browser_wrapper\x2epy
 SETUVAR __fish_initialized:3800
 SETUVAR _fisher_aohorodnyk_2F_fish_2D_autovenv_files:\x7e/\x2econfig/fish/conf\x2ed/autovenv\x2efish
 SETUVAR _fisher_plugins:aohorodnyk/fish\x2dautovenv
