@@ -12,8 +12,8 @@
 	verbose = true
 
 [core]
-	hooksPath = "/nix/store/j808n4pr8wbbwlrn7f971d4bfwvz0dii-git-hooks"
-	pager = "/nix/store/7hl6xzhgc6skamy3c6w34snh2l3f70bg-delta-0.18.2/bin/delta"
+	# hooksPath = "/nix/store/j808n4pr8wbbwlrn7f971d4bfwvz0dii-git-hooks"
+	pager = "delta"
 
 [credential "https://gist.github.com"]
 	helper = "!gh auth git-credential"
@@ -35,8 +35,8 @@
 	prune = true
 
 [filter "sunshine-normalize"]
-	clean = "/nix/store/m0i5hf36sv62vgm2ppjkynv03ihdlxvv-gnused-4.9/bin/sed 's/^output_name = .*/output_name = 0/'"
-	smudge = "/nix/store/zwplch93wbpj82bp7riwaixmdx2xi0ah-coreutils-9.7/bin/cat"
+	clean = "sed 's/^output_name = .*/output_name = 0/'"
+	smudge = "cat"
 
 [help]
 	autocorrect = 10
@@ -45,7 +45,7 @@
 	defaultBranch = "main"
 
 [interactive]
-	diffFilter = "/nix/store/7hl6xzhgc6skamy3c6w34snh2l3f70bg-delta-0.18.2/bin/delta --color-only"
+	diffFilter = "delta --color-only"
 
 [merge]
 	conflictstyle = "zdiff3"
