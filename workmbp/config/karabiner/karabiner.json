@@ -142,9 +142,17 @@
                         ]
                     },
                     {
-                        "description": "Fix Home/End keys: Home → Cmd+Left, End → Cmd+Right",
+                        "description": "Fix Home/End keys: Home → Cmd+Left, End → Cmd+Right (except WezTerm)",
                         "manipulators": [
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.github\\.wez\\.wezterm$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "home",
                                     "modifiers": { "optional": ["any"] }
@@ -158,6 +166,14 @@
                                 "type": "basic"
                             },
                             {
+                                "conditions": [
+                                    {
+                                        "bundle_identifiers": [
+                                            "^com\\.github\\.wez\\.wezterm$"
+                                        ],
+                                        "type": "frontmost_application_unless"
+                                    }
+                                ],
                                 "from": {
                                     "key_code": "end",
                                     "modifiers": { "optional": ["any"] }

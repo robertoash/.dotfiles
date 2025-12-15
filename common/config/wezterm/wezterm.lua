@@ -237,6 +237,22 @@ config.keys = {
 	},
 
 	-- ----------------------------------------
+	-- LINE NAVIGATION
+	-- ----------------------------------------
+
+	-- Home and End keys for line navigation
+	{
+		key = "Home",
+		mods = "NONE",
+		action = wezterm.action.SendString("\x1bOH"),
+	},
+	{
+		key = "End",
+		mods = "NONE",
+		action = wezterm.action.SendString("\x1bOF"),
+	},
+
+	-- ----------------------------------------
 	-- WORD NAVIGATION
 	-- ----------------------------------------
 
