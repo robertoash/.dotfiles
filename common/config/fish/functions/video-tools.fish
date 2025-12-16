@@ -288,7 +288,9 @@ function _video_tools_split_single
     echo "Timestamp format examples:"
     echo "  • 1:23:45 (1 hour, 23 minutes, 45 seconds)"
     echo "  • 5:30 (5 minutes, 30 seconds)"
+    echo "  • 23:06.040 (23 minutes, 6.040 seconds)"
     echo "  • 90 (90 seconds)"
+    echo "  • 90.5 (90.5 seconds)"
     echo ""
     echo "Enter split timestamps (space or comma separated):"
     echo "  Example: 1:30 5:00 10:30"
@@ -461,15 +463,25 @@ end
 function _video_tools_timestamp_to_seconds
     set ts $argv[1]
 
-    # Handle HH:MM:SS, MM:SS, or seconds
+    # Handle HH:MM:SS, MM:SS, or seconds (with optional decimal parts)
     set parts (string split ':' $ts)
     set count (count $parts)
 
-    # Strip leading zeros from each part to avoid octal interpretation
+    # Strip leading zeros from each part to avoid octal interpretation, preserving decimals
     for i in (seq 1 (count $parts))
-        set parts[$i] (string replace -r '^0+' '' $parts[$i])
-        # If empty (was all zeros), set to 0
-        test -z "$parts[$i]"; and set parts[$i] 0
+        if string match -qr '\.' $parts[$i]
+            # Contains decimal point - strip leading zeros but keep '0' before decimal if needed
+            set parts[$i] (string replace -r '^0+([1-9]|0?\.)' '$1' $parts[$i])
+            # Ensure we have a leading zero before decimal point
+            if string match -qr '^\.' $parts[$i]
+                set parts[$i] "0$parts[$i]"
+            end
+        else
+            # No decimal - strip leading zeros normally
+            set parts[$i] (string replace -r '^0+' '' $parts[$i])
+            # If empty (was all zeros), set to 0
+            test -z "$parts[$i]"; and set parts[$i] 0
+        end
     end
 
     if test $count -eq 1
@@ -506,7 +518,7 @@ end
 function _video_tools_read_file
     set prompt $argv[1]
 
-    read -P "$prompt: " input_file
+    read -P "$prompt: " -S input_file
 
     # If empty, launch fzf
     if test -z "$input_file"
@@ -627,7 +639,9 @@ function _video_tools_ask_trim_config
     echo "Timestamp format examples:"
     echo "  • 1:23:45 (1 hour, 23 minutes, 45 seconds)"
     echo "  • 5:30 (5 minutes, 30 seconds)"
+    echo "  • 23:06.040 (23 minutes, 6.040 seconds)"
     echo "  • 90 (90 seconds)"
+    echo "  • 90.5 (90.5 seconds)"
     echo ""
 
     # Get start timestamp

@@ -8,23 +8,13 @@ layout {
             plugin location="zellij:status-bar"
         }
     }
-    
-    tab name="config" focus=true split_direction="vertical" {
-        pane size="65%" command="fish" {
-            args "-c" "nvim; exec fish"
-            cwd "/home/rash/.config"
+
+    tab name="workmbp" focus=true split_direction="vertical" {
+        pane size="65%" command="ssh" {
+            args "workmbp" "-t" "cd ~/dev/rash/remuneration_migration && exec fish"
         }
-        pane size="35%" {
-            cwd "/home/rash/.config"
-        }
-    }
-    tab name="surgefactor" split_direction="vertical" {
-        pane size="65%" command="fish" {
-            args "-c" "nvim; exec fish"
-            cwd "/home/rash/dev/apps/surgefactor"
-        }
-        pane size="35%" {
-            cwd "/home/rash/dev/apps/surgefactor"
+        pane size="35%" command="ssh" {
+            args "workmbp" "-t" "cd ~/dev/dbt/dbt_production && exec fish"
         }
     }
 }
