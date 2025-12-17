@@ -41,6 +41,14 @@ abbr fd "fd -Hi --no-ignore-vcs"
 abbr fdf "fd -Hi --no-ignore-vcs -t f"
 abbr fdd "fd -Hi --no-ignore-vcs -t d"
 
+# Ugrep
+abbr ug "ugrep -I --ignore-files"
+abbr ugi "ugrep -I --ignore-files -i"
+abbr ugr "ugrep -I --ignore-files -r"
+
+# Realpath
+abbr rp "realpath"
+
 # Jc
 abbr jc "jc -p"
 
