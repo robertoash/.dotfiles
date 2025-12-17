@@ -1,10 +1,9 @@
-theme = "~/.config/spotify-player/themes/tokyonight_deep.toml"
+theme = "tokyonight_deep"
 client_id = "c47089f9ef7847548f16447677f6d117"
-login_redirect_uri = "http://127.0.0.1:8989/login"
 playback_format = """
-{status} {track} • {artists}
-{album}
-{metadata}"""
+  {status} {track}
+  {artists} • {album}
+  {metadata}"""
 tracks_playback_limit = 50
 app_refresh_duration_in_ms = 32
 playback_refresh_duration_in_ms = 0
@@ -15,9 +14,10 @@ liked_icon = "♥"
 border_type = "Plain"
 progress_bar_type = "Rectangle"
 enable_cover_image_cache = true
+enable_media_control = true
 seek_duration_secs = 5
 enable_streaming = "DaemonOnly"
-default_device = "spotify_player_cli"
+cover_img_scale = 1.2
 
 [layout]
 playback_window_position = "Top"
@@ -28,10 +28,4 @@ playlist_percent = 40
 album_percent = 40
 
 [device]
-name = "spotify_player_cli"
-device_type = "speaker"
-volume = 70
-bitrate = 320
-audio_cache = false
-normalization = false
 autoplay = false

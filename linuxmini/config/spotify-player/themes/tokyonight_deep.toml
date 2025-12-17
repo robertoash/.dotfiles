@@ -25,9 +25,9 @@ bright_white    = "#d0d6e3"
 block_title = { fg = "Magenta" }
 border = { fg = "BrightBlack" }
 playback_status = { fg = "Cyan", modifiers = ["Bold"] }
-playback_track = { fg = "BrightCyan", modifiers = ["Bold"] }
+playback_track = { fg = "BrightYellow", modifiers = ["Bold"] }
 playback_artists = { fg = "BrightCyan", modifiers = ["Bold"] }
-playback_album = { fg = "Yellow" }
+playback_album = { fg = "Blue" }
 playback_metadata = { fg = "BrightBlack" }
 playback_progress_bar = { bg = "BrightBlack", fg = "Green" }
 playback_progress_bar_unfilled = { bg = "BrightBlack", fg = "BrightBlack" }

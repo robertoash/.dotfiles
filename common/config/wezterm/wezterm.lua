@@ -156,6 +156,9 @@ config.selection_word_boundary = " \t\n{}[]()\"'`"
 -- TERMINAL BEHAVIOR
 -- ========================================
 
+-- Enable Kitty graphics protocol for image support
+config.enable_kitty_graphics = true
+
 -- Scrollback (like kitty's scrollback_lines 10000)
 config.scrollback_lines = 10000
 

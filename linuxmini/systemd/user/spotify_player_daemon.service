@@ -1,19 +1,16 @@
 [Unit]
 Description=Spotify Player Daemon
 Documentation=https://github.com/aome510/spotify-player
-Wants=sound.target
-After=sound.target
+After=pipewire.service network-online.target
 Wants=network-online.target
-After=network-online.target
 
 [Service]
 Type=forking
-ExecStart=/usr/bin/spotify_player --daemon
+ExecStart=%h/.cargo/bin/spotify_player --daemon
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
 StandardError=journal
-TimeoutStartSec=10
 
 [Install]
 WantedBy=default.target
