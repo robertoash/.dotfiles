@@ -312,9 +312,40 @@ else:
 # Step 6: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir)
 
-# Step 7: Setup systemd user services (Linux only)
+# Step 7: Setup launch agents (macOS only)
+if hostname == "workmbp":
+    print("\n🚀 Step 7: Setting up macOS launch agents...")
+    launchagents_source_dir = machine_dir / "launchagents"
+    launchagents_target_dir = home / "Library" / "LaunchAgents"
+
+    if launchagents_source_dir.exists():
+        launchagents_target_dir.mkdir(parents=True, exist_ok=True)
+
+        # Find all plist files
+        plist_files = list(launchagents_source_dir.glob("*.plist"))
+
+        for plist_file in plist_files:
+            symlink_target = launchagents_target_dir / plist_file.name
+
+            # Check if already loaded and needs unloading
+            if symlink_target.exists() or symlink_target.is_symlink():
+                subprocess.run(["launchctl", "unload", str(symlink_target)],
+                             stderr=subprocess.DEVNULL, check=False)
+
+            # Create/update symlink
+            create_symlink(plist_file, symlink_target, "launch agent")
+
+            # Load the launch agent
+            result = subprocess.run(["launchctl", "load", str(symlink_target)],
+                                  capture_output=True, text=True)
+            if result.returncode == 0:
+                print(f"  ✅ Loaded {plist_file.name}")
+            else:
+                print(f"  ⚠️  Failed to load {plist_file.name}: {result.stderr.strip()}")
+
+# Step 8: Setup systemd user services (Linux only)
 if hostname in ["linuxmini", "oldmbp"]:
-    print("\n⚙️  Step 7: Setting up systemd user services...")
+    print("\n⚙️  Step 8: Setting up systemd user services...")
     systemd_user_dir = config_dir / "systemd" / "user"
 
     if systemd_user_dir.exists():
