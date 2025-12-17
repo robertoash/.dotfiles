@@ -1,5 +1,6 @@
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
 fish/completions
+fish/conf.d/00_environment.fish
 fish/conf.d/00_setup_secrets.fish
 fish/conf.d/01_path.fish
 fish/conf.d/02_abbreviations.fish
@@ -58,8 +59,11 @@ fish/functions/rr.fish
 fish/functions/sgpt_fish.fish
 fish/functions/snake_case_all.fish
 fish/functions/tg_d.fish
+fish/functions/tt.fish
 fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
 fish/functions/yazi.fish
+spotify-player/theme.toml
+spotify-player/themes
 sunshine/sunshine.log
 # === END AUTO-GENERATED SYMLINKS ===

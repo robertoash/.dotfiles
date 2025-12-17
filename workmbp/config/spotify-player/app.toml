@@ -1,5 +1,6 @@
 theme = "tokyonight_deep"
-client_id = "c47089f9ef7847548f16447677f6d117"
+client_port = 8080
+login_redirect_uri = "http://127.0.0.1:8989/login"
 playback_format = """
   {status} {track}
   {artists} • {album}
@@ -19,10 +20,14 @@ pause_icon = ""
 liked_icon = "♥"
 border_type = "Plain"
 progress_bar_type = "Rectangle"
+progress_bar_position = "Bottom"
+genre_num = 2
+enable_media_control = false
+enable_streaming = "Always"
 enable_cover_image_cache = true
-enable_media_control = true
+default_device = "spotify-player"
 seek_duration_secs = 5
-enable_streaming = "DaemonOnly"
+sort_artist_albums_by_type = false
 cover_img_scale = 1.2
 
 [layout]
@@ -34,4 +39,10 @@ playlist_percent = 40
 album_percent = 40
 
 [device]
+name = "spotify-player"
+device_type = "speaker"
+volume = 70
+bitrate = 320
+audio_cache = false
+normalization = false
 autoplay = false
