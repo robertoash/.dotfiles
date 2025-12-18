@@ -15,12 +15,6 @@
       "MEMORY_FILE_PATH": "/home/rash/.claude/memory.json"
     }
   },
-  "puppeteer": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["@modelcontextprotocol/server-puppeteer"],
-    "env": {}
-  },
   "obsidian": {
     "type": "stdio",
     "command": "uvx",
