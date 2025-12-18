@@ -40,5 +40,11 @@
       "HA_URL": "http://10.20.10.100:8123",
       "HA_TOKEN": "{{CLAUDE_HA_TOKEN_GLOBAL}}"
     }
+  },
+  "mcp-mermaid": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "mcp-mermaid"],
+    "env": {}
   }
 }
