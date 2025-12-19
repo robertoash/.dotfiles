@@ -43,6 +43,119 @@ def get_monitor_for_ws(ws_id):
     return next((ws["monitor"] for ws in workspaces if ws["id"] == ws_id), None)
 
 
+def get_target_window_with_focus(relative_floating=False, for_toggle_floating_activation=False):
+    """
+    Get the target window and focus it if needed (when using smart targeting).
+
+    Args:
+        relative_floating: Enable smart targeting for floating windows
+        for_toggle_floating_activation: True when toggle-floating is making a tiled window floating
+
+    Returns:
+        tuple: (window_info dict, original_active_address str or None)
+            - window_info: The window to operate on
+            - original_active_address: Address to restore focus to (None if no focus change needed)
+    """
+    if not relative_floating:
+        return run_hyprctl(["activewindow", "-j"]), None
+
+    # Get original active window before smart targeting
+    original_active = run_hyprctl(["activewindow", "-j"])
+    original_address = original_active.get("address") if original_active else None
+
+    target = get_target_floating_window(for_toggle_floating_activation)
+
+    if target is None:
+        return original_active, None
+
+    # Smart target found - focus it
+    focus_window(target["address"])
+    return target, original_address
+
+
+def get_target_floating_window(for_toggle_floating_activation=False):
+    """
+    Determine which window to target for floating window operations.
+
+    Args:
+        for_toggle_floating_activation: True when toggle-floating is being used
+            to make a tiled window floating (affects targeting logic)
+
+    Returns:
+        dict or None: Window info dict for the target window, or None if should
+                      use active window (caller handles getting active window)
+
+    Logic:
+        1. Get active window - if floating, return None (caller uses active)
+        2. Get visible workspaces (one per monitor)
+        3. Get all floating windows in visible workspaces
+        4. Determine current monitor from active window
+        5. Count total floating and floating on current monitor
+        6. Apply targeting rules based on count
+    """
+    # Step 1: Get active window
+    active_window = run_hyprctl(["activewindow", "-j"])
+    if not active_window or "address" not in active_window:
+        return None  # Fallback to active window (will be handled by caller)
+
+    # Early exit: if active is floating, use it
+    if active_window.get("floating", False):
+        return None  # Signal to use active window
+
+    # Step 2: Get visible workspaces
+    monitors = run_hyprctl(["monitors", "-j"])
+    if not monitors:
+        return None
+
+    visible_workspace_ids = {
+        mon["activeWorkspace"]["id"]
+        for mon in monitors
+        if "activeWorkspace" in mon
+    }
+
+    # Step 3: Get all clients and filter for floating in visible workspaces
+    all_clients = get_clients()
+    if not all_clients:
+        return None
+
+    floating_in_visible = [
+        client
+        for client in all_clients
+        if client.get("floating", False)
+        and client.get("workspace", {}).get("id") in visible_workspace_ids
+    ]
+
+    # Step 4: Determine current monitor
+    current_monitor = active_window.get("monitor")
+    if current_monitor is None:
+        # Fallback: find focused monitor
+        focused_mon = next((m for m in monitors if m.get("focused")), None)
+        current_monitor = focused_mon["id"] if focused_mon else 0
+
+    # Step 5: Count floating windows
+    total_floating = len(floating_in_visible)
+    floating_on_current = [
+        w for w in floating_in_visible if w.get("monitor") == current_monitor
+    ]
+    count_on_current = len(floating_on_current)
+
+    # Step 6: Apply targeting rules
+    # Exception for toggle-floating activation: always use active window
+    if for_toggle_floating_activation:
+        return None
+
+    # Exactly 1 floating total
+    if total_floating == 1:
+        return floating_in_visible[0]
+
+    # Exactly 1 floating on current monitor
+    if count_on_current == 1:
+        return floating_on_current[0]
+
+    # Default: use active window
+    return None
+
+
 def get_windows_in_workspace(workspace_id):
     """Get all window addresses in a workspace."""
     clients = get_clients()

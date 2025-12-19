@@ -77,19 +77,22 @@ def move_window_to_corner(corner):
         window_manager.run_hyprctl_command(["dispatch", "movewindow", direction])
 
 
-def move_window_to_monitor(direction, debug=False):
+def move_window_to_monitor(direction, debug=False, relative_floating=False):
     """
     Move window to adjacent monitor with corner mirroring.
 
     Args:
         direction: "left" or "right"
         debug: Whether to print debug information
+        relative_floating: Use smart targeting to find floating windows
 
     Returns:
         0 on success, 1 on error
     """
-    # Get active window info
-    win_info = window_manager.run_hyprctl(["activewindow", "-j"])
+    win_info, original_active_address = window_manager.get_target_window_with_focus(
+        relative_floating
+    )
+
     if not win_info.get("floating"):
         print("❌ Only works with floating windows.")
         return 1
@@ -185,5 +188,9 @@ def move_window_to_monitor(direction, debug=False):
         is_pinned = new_win_info.get("pinned", False)
         print(f"✅ Moved from monitor {monitor_index} to {new_monitor_index}")
         print("🔄 Pinned:", was_pinned, "→", is_pinned)
+
+    # Restore focus to original window if we changed it
+    if original_active_address:
+        window_manager.focus_window(original_active_address)
 
     return 0

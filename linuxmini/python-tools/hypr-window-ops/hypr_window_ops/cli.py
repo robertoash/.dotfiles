@@ -161,31 +161,51 @@ Examples:
 
     # Window property commands
     # Pin window without dimming
-    subparsers.add_parser(
+    pin_parser = subparsers.add_parser(
         "pin-nodim",
         help="Toggle pinning of active window without dimming",
         description="Toggle pinning of the active window without dimming.",
     )
+    pin_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
 
     # Toggle nofocus
-    subparsers.add_parser(
+    nofocus_parser = subparsers.add_parser(
         "toggle-nofocus",
         help="Toggle nofocus property for floating pinned windows",
         description="Toggle nofocus property for floating pinned windows.",
     )
+    nofocus_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
 
     # Toggle floating
-    subparsers.add_parser(
+    floating_parser = subparsers.add_parser(
         "toggle-floating",
         help="Toggle floating state of the active window",
         description="Toggle floating state of the active window with automatic resizing.",
     )
+    floating_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
 
     # Toggle fullscreen without dimming
-    subparsers.add_parser(
+    fullscreen_parser = subparsers.add_parser(
         "toggle-fullscreen-nodim",
         help="Toggle fullscreen without dimming for the active window",
         description="Toggle fullscreen without dimming for the active window.",
+    )
+    fullscreen_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
     )
 
     # Snap window to corner
@@ -219,6 +239,11 @@ Examples:
         "--address",
         help="Window address (if not specified, use active window)",
     )
+    snap_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
 
     # Move window to monitor
     move_monitor_parser = subparsers.add_parser(
@@ -249,6 +274,11 @@ Examples:
         "--debug",
         action="store_true",
         help="Enable debug output",
+    )
+    move_monitor_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
     )
 
     # Toggle monitor stash (per-monitor toggle)
@@ -319,24 +349,32 @@ Examples:
             return 1
         return switch_ws_on_monitor.switch_to_nth_workspace_on_focused_monitor(n)
     elif args.command == "pin-nodim":
-        window_properties.pin_window_without_dimming()
+        window_properties.pin_window_without_dimming(
+            relative_floating=args.relative_floating
+        )
         return 0
     elif args.command == "toggle-nofocus":
-        window_properties.toggle_nofocus()
+        window_properties.toggle_nofocus(relative_floating=args.relative_floating)
         return 0
     elif args.command == "toggle-floating":
-        window_properties.toggle_floating()
+        window_properties.toggle_floating(relative_floating=args.relative_floating)
         return 0
     elif args.command == "toggle-fullscreen-nodim":
-        window_properties.toggle_fullscreen_without_dimming()
+        window_properties.toggle_fullscreen_without_dimming(
+            relative_floating=args.relative_floating
+        )
         return 0
     elif args.command == "snap-to-corner":
         return snap_windows.snap_window_to_corner(
-            corner=args.corner, window_address=args.address
+            corner=args.corner,
+            window_address=args.address,
+            relative_floating=args.relative_floating,
         )
     elif args.command == "move-to-monitor":
         return monitor_movement.move_window_to_monitor(
-            direction=args.direction, debug=args.debug
+            direction=args.direction,
+            debug=args.debug,
+            relative_floating=args.relative_floating,
         )
     elif args.command == "toggle-stash":
         return stash_manager.toggle_monitor_stash()

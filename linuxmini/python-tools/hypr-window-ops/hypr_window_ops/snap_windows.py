@@ -124,29 +124,36 @@ def mirror_corner(corner):
     return mirror_map.get(corner, corner)
 
 
-def snap_window_to_corner(corner=None, window_address=None):
+def snap_window_to_corner(corner=None, window_address=None, relative_floating=False):
     """
     Snap a window to a specific corner or auto-detect based on cursor position.
 
     Args:
         corner: One of 'lower-left', 'lower-right', 'upper-left', 'upper-right',
                 or None for auto-detect
-        window_address: Specific window address, or None for active window
+        window_address: Specific window address, or None for smart targeting
+        relative_floating: Use smart targeting to find floating windows
 
     Returns:
         0 on success, 1 on error
     """
     # Get target window
+    original_active_address = None
     if window_address:
+        # Explicit address provided - find and focus it
         clients = window_manager.get_clients()
         window_info = next((c for c in clients if c["address"] == window_address), None)
         if not window_info:
             print(f"❌ Could not find window with address {window_address}")
             return 1
+        window_manager.focus_window(window_info["address"])
     else:
-        window_info = window_manager.run_hyprctl(["activewindow", "-j"])
+        # Use smart targeting or active window
+        window_info, original_active_address = window_manager.get_target_window_with_focus(
+            relative_floating
+        )
         if not window_info:
-            print("❌ Could not find active window")
+            print("❌ Could not find window")
             return 1
 
     # Check if window is floating
@@ -185,4 +192,9 @@ def snap_window_to_corner(corner=None, window_address=None):
     }
     corner_name = corner_names.get(tuple(corner_directions), "unknown")
     print(f"✅ Window snapped to {corner_name} corner")
+
+    # Restore focus to original window if we changed it
+    if original_active_address:
+        window_manager.focus_window(original_active_address)
+
     return 0
