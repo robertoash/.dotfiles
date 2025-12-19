@@ -43,46 +43,33 @@
 ;; MAIN LAYER - QWERTY (default)
 ;; ===============================================
 
-;; QWERTY without home row mods
+;; QWERTY with always-on home row mods
 (deflayer qwerty
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   @tab-mods  q    w    e    r    t    y    u    i    o    p    å    ¨ ret
-  @caps-multi-qwerty a    s    d    f    g    h    j    k    l    ö    ä    '
+  @caps-multi-qwerty @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt        @spc-mods                 ralt        rctl
+  lctl lmet lalt        @spc-placeholder                 ralt        rctl
 )
 
 ;; ===============================================
 ;; COLEMAK LAYER
 ;; ===============================================
 
-;; Colemak without home row mods
+;; Colemak with always-on home row mods
+;; Home row in Colemak: a r s t / n e i o (different from QWERTY)
 (deflayer colemak
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   @tab-mods  q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
-  @caps-multi-colemak a    r    s    t    d    h    n    e    i    o    ä    '
+  @caps-multi-colemak @a-met @r-ctl @s-alt @t-sft d    h    @n-sft @e-alt @i-ctl @o-met ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  lctl lmet lalt     @spc-mods                    ralt        rctl
+  lctl lmet lalt     @spc-placeholder                    ralt        rctl
 )
 
 
 
-
-;; ===============================================
-;; HOME ROW MODS LAYER (Space-activated)
-;; ===============================================
-
-;; Mods layer activated by holding space - outputs QWERTY for all keys
-(deflayer mods-base
-  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
-  _    @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
-  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt                 _                    ralt        rctl
-)
 
 ;; ===============================================
 ;; QWERTY OVERRIDE LAYER (Tab/Hyper-activated)
@@ -103,22 +90,24 @@
 ;; SAME-HAND RESTRICTION LAYERS FOR MODS
 ;; ===============================================
 
-;; LEFT-ONLY MODS: When left hand mod is pressed, only left hand mods work, right hand uses immediate mods
+;; LEFT-ONLY MODS: When left hand mod is held, left hand mods activate immediately (no hold delay)
+;; Right hand keys output letters normally for opposite-hand combos
 (deflayer mods-left-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
-  _    @a-met-base @s-ctl-base @d-alt-base @f-sft-base g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
+  _    lmet lctl lalt lsft g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
 
-;; RIGHT-ONLY MODS: When right hand mod is pressed, only right hand mods work, left hand uses immediate mods
+;; RIGHT-ONLY MODS: When right hand mod is held, right hand mods activate immediately (no hold delay)
+;; Left hand keys output letters normally for opposite-hand combos
 (deflayer mods-right-only
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
-  _    @a-immediate @s-immediate @d-immediate @f-immediate g    h    @j-sft-base @k-alt-base @l-ctl-base @ö-met-base ä    '
+  _    @a-immediate @s-immediate @d-immediate @f-immediate g    h    rsft lalt rctl rmet ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
@@ -155,40 +144,56 @@
   ))
 
 
-  ;; Space with mods layer on hold - with double-tap-and-hold repeat
-  spc-mods (switch
-    ;; If a key was pressed very recently, output space (allows double-tap-and-hold repeat)
+  ;; Space placeholder for future functionality
+  spc-placeholder (switch
+    ;; If a key was pressed very recently, output space (allows fast typing and double-tap repeat)
     ((key-timing 1 less-than 120)) spc break
-    ;; Otherwise, use tap-hold for space/mods layer with higher threshold
-    () (tap-hold-release 50 250 spc (layer-while-held mods-base)) break
+    ;; Otherwise, tap-hold structure (currently just outputs space, ready for future mods)
+    () (tap-hold-release 50 250 spc spc) break
   )
 
   ;; ==============================================================================
-  ;; HOME ROW MODS WITH SAME-HAND RESTRICTION
+  ;; HOME ROW MODS WITH TYPING STREAK DETECTION AND SAME-HAND RESTRICTION
   ;; ==============================================================================
 
-  ;; Left hand mods that activate left-only restriction
-  a-met (tap-hold-release 100 180 a (multi lmet (layer-while-held mods-left-only)))
-  s-ctl (tap-hold-release 85 150 s (multi lctl (layer-while-held mods-left-only)))
-  d-alt (tap-hold-release 85 150 d (multi lalt (layer-while-held mods-left-only)))
-  f-sft (tap-hold-release 75 120 f (multi lsft (layer-while-held mods-left-only)))
+  ;; Left hand mods with typing streak detection (150ms) and 350ms tapping term
+  ;; If a key was pressed within 150ms, output just the letter (typing streak)
+  ;; Otherwise use tap-hold with opposite-hand restriction
+  a-met (switch
+    ((key-timing 1 less-than 150)) a break
+    () (tap-hold-release 150 350 a (multi lmet (layer-while-held mods-left-only))) break
+  )
+  s-ctl (switch
+    ((key-timing 1 less-than 150)) s break
+    () (tap-hold-release 150 350 s (multi lctl (layer-while-held mods-left-only))) break
+  )
+  d-alt (switch
+    ((key-timing 1 less-than 150)) d break
+    () (tap-hold-release 150 350 d (multi lalt (layer-while-held mods-left-only))) break
+  )
+  f-sft (switch
+    ((key-timing 1 less-than 150)) f break
+    () (tap-hold-release 150 250 f (multi lsft (layer-while-held mods-left-only))) break
+  )
 
-  ;; Right hand mods that activate right-only restriction
-  j-sft (tap-hold-release 75 120 j (multi rsft (layer-while-held mods-right-only)))
-  k-alt (tap-hold-release 85 150 k (multi lalt (layer-while-held mods-right-only)))
-  l-ctl (tap-hold-release 85 150 l (multi rctl (layer-while-held mods-right-only)))
-  ö-met (tap-hold-release 100 180 ö (multi rmet (layer-while-held mods-right-only)))
+  ;; Right hand mods with typing streak detection
+  j-sft (switch
+    ((key-timing 1 less-than 150)) j break
+    () (tap-hold-release 150 250 j (multi rsft (layer-while-held mods-right-only))) break
+  )
+  k-alt (switch
+    ((key-timing 1 less-than 150)) k break
+    () (tap-hold-release 150 350 k (multi lalt (layer-while-held mods-right-only))) break
+  )
+  l-ctl (switch
+    ((key-timing 1 less-than 150)) l break
+    () (tap-hold-release 150 350 l (multi rctl (layer-while-held mods-right-only))) break
+  )
+  ö-met (switch
+    ((key-timing 1 less-than 150)) ö break
+    () (tap-hold-release 150 350 ö (multi rmet (layer-while-held mods-right-only))) break
+  )
 
-  ;; Base mods for use in restriction layers (no layer switching)
-  a-met-base (tap-hold-release 100 180 a lmet)
-  s-ctl-base (tap-hold-release 85 150 s lctl)
-  d-alt-base (tap-hold-release 85 150 d lalt)
-  f-sft-base (tap-hold-release 75 120 f lsft)
-  j-sft-base (tap-hold-release 75 120 j rsft)
-  k-alt-base (tap-hold-release 85 150 k lalt)
-  l-ctl-base (tap-hold-release 85 150 l rctl)
-  ö-met-base (tap-hold-release 100 180 ö rmet)
-  
   ;; Immediate regular keys for opposite hand (no mod behavior, just the key)
   j-immediate j
   k-immediate k
@@ -198,6 +203,43 @@
   s-immediate s
   d-immediate d
   f-immediate f
+
+  ;; ==============================================================================
+  ;; COLEMAK-SPECIFIC HOME ROW MODS
+  ;; ==============================================================================
+  ;; Same mod positions as QWERTY, but output Colemak characters
+
+  ;; Left hand Colemak mods (a r s t)
+  r-ctl (switch
+    ((key-timing 1 less-than 150)) r break
+    () (tap-hold-release 150 350 r (multi lctl (layer-while-held mods-left-only))) break
+  )
+  s-alt (switch
+    ((key-timing 1 less-than 150)) s break
+    () (tap-hold-release 150 350 s (multi lalt (layer-while-held mods-left-only))) break
+  )
+  t-sft (switch
+    ((key-timing 1 less-than 150)) t break
+    () (tap-hold-release 150 250 t (multi lsft (layer-while-held mods-left-only))) break
+  )
+
+  ;; Right hand Colemak mods (n e i o)
+  n-sft (switch
+    ((key-timing 1 less-than 150)) n break
+    () (tap-hold-release 150 250 n (multi rsft (layer-while-held mods-right-only))) break
+  )
+  e-alt (switch
+    ((key-timing 1 less-than 150)) e break
+    () (tap-hold-release 150 350 e (multi lalt (layer-while-held mods-right-only))) break
+  )
+  i-ctl (switch
+    ((key-timing 1 less-than 150)) i break
+    () (tap-hold-release 150 350 i (multi rctl (layer-while-held mods-right-only))) break
+  )
+  o-met (switch
+    ((key-timing 1 less-than 150)) o break
+    () (tap-hold-release 150 350 o (multi rmet (layer-while-held mods-right-only))) break
+  )
 
 
 )
