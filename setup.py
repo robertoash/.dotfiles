@@ -9,11 +9,13 @@ from pathlib import Path
 # Add setup to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "setup"))
 from claude_setup import setup_claude_config
+from machines import get_machine_config
 
 # Get hostname and paths
 hostname = socket.gethostname()
 home = Path.home()
 dotfiles_dir = Path(__file__).parent
+machine_config = get_machine_config(hostname)
 
 print(f"🚀 Setting up dotfiles for {hostname}...")
 
@@ -108,47 +110,44 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, level=0, sym
 config_dir = home / ".config"
 config_dir.mkdir(exist_ok=True)
 
-common_config_dir = dotfiles_dir / "common" / "config"
-machine_config_dir = dotfiles_dir / hostname / "config"
+# Step 1: Merge common directories (config, secrets) into machine-specific directories
+print("\n🔀 Step 1: Merging common directories into machine-specific directories...")
 
-# Step 1: Merge common configs into machine-specific directories (in the repo)
-print("\n📦 Step 1: Merging common configs into machine-specific directories...")
-all_symlink_paths = []
-if common_config_dir.exists() and machine_config_dir.exists():
-    for common_app_item in common_config_dir.iterdir():
-        machine_app_item = machine_config_dir / common_app_item.name
+# Directories to merge: config and secrets
+merge_dirs = ["config", "secrets"]
 
-        # If both exist and both are directories (and machine is not a symlink), merge recursively
-        if machine_app_item.exists() and common_app_item.is_dir() and machine_app_item.is_dir() and not machine_app_item.is_symlink():
-            # Count total items that will actually be processed (mirrors merge logic exactly)
-            def count_files_to_process(common_path, machine_path):
-                count = 0
-                try:
-                    for common_item in common_path.iterdir():
-                        count += 1  # Count this item
-                        machine_item = machine_path / common_item.name
+for dir_name in merge_dirs:
+    common_dir = dotfiles_dir / "common" / dir_name
+    machine_dir = dotfiles_dir / hostname / dir_name
 
-                        # If both are directories and machine is not a symlink, recurse
-                        if common_item.is_dir() and machine_item.exists() and machine_item.is_dir() and not machine_item.is_symlink():
-                            count += count_files_to_process(common_item, machine_item)
-                except (OSError, PermissionError):
-                    pass
-                return count
+    if not common_dir.exists() or not machine_dir.exists():
+        continue
 
-            total = count_files_to_process(common_app_item, machine_app_item)
-            progress_info = {"current": 0, "total": total, "name": common_app_item.name}
-            print(f"🔀 Merging {common_app_item.name}... (0/{total} processed)", end='', flush=True)
-            symlink_paths = merge_common_into_machine(common_app_item, machine_app_item, machine_config_dir, progress_info=progress_info)
-            print()  # New line after progress complete
-            if symlink_paths:
-                all_symlink_paths.extend(symlink_paths)
+    # Count total items for progress
+    def count_files_to_process(common_path, machine_path):
+        count = 0
+        try:
+            for common_item in common_path.iterdir():
+                count += 1
+                machine_item = machine_path / common_item.name
+                if common_item.is_dir() and machine_item.exists() and machine_item.is_dir() and not machine_item.is_symlink():
+                    count += count_files_to_process(common_item, machine_item)
+        except (OSError, PermissionError):
+            pass
+        return count
 
-    # Create/update .gitignore with all symlink paths
+    total = count_files_to_process(common_dir, machine_dir)
+    progress_info = {"current": 0, "total": total, "name": dir_name}
+    icon = "🔐" if dir_name == "secrets" else "📦"
+    print(f"{icon} Merging {dir_name}... (0/{total} processed)", end='', flush=True)
+
+    all_symlink_paths = merge_common_into_machine(common_dir, machine_dir, machine_dir, progress_info=progress_info)
+    print()
+
+    # Create/update .gitignore
     if all_symlink_paths:
-        gitignore_path = machine_config_dir / ".gitignore"
+        gitignore_path = machine_dir / ".gitignore"
 
-        # Optimize symlinks: group by parent directory
-        # If all files in a directory are symlinks, just ignore the directory
         from collections import defaultdict
         dir_files = defaultdict(lambda: {"symlinks": set(), "all_files": set()})
 
@@ -156,40 +155,31 @@ if common_config_dir.exists() and machine_config_dir.exists():
             path = Path(symlink_path)
             parent = str(path.parent) if path.parent != Path('.') else ""
             dir_files[parent]["symlinks"].add(symlink_path)
-            # Check actual filesystem to see all files in this directory
-            actual_dir = machine_config_dir / path.parent
+            actual_dir = machine_dir / path.parent
             if actual_dir.exists() and actual_dir.is_dir() and not actual_dir.is_symlink():
                 for item in actual_dir.iterdir():
-                    rel_path = str(item.relative_to(machine_config_dir))
+                    rel_path = str(item.relative_to(machine_dir))
                     dir_files[parent]["all_files"].add(rel_path)
 
-        # Determine what to add to gitignore: directories or individual files
         gitignore_entries = []
-
         for parent_dir, files in sorted(dir_files.items()):
             symlinks = files["symlinks"]
             all_files = files["all_files"]
-
-            # If all files in this directory are symlinks, just ignore the directory
             if symlinks == all_files and len(all_files) > 0:
-                # Add directory pattern
                 if parent_dir:
                     gitignore_entries.append(f"{parent_dir}/")
             else:
-                # Add individual symlink files
                 gitignore_entries.extend(sorted(symlinks))
 
-        # Remove duplicates and sort
         gitignore_entries = sorted(set(gitignore_entries))
 
-        # Preserve existing .gitignore content if it exists
+        # Preserve existing content
         existing_content = ""
         marker_start = "# === AUTO-GENERATED SYMLINKS (do not edit) ===\n"
         marker_end = "# === END AUTO-GENERATED SYMLINKS ===\n"
 
         if gitignore_path.exists():
             existing = gitignore_path.read_text()
-            # Remove old auto-generated section if it exists
             if marker_start in existing:
                 before = existing.split(marker_start)[0]
                 if marker_end in existing:
@@ -200,7 +190,6 @@ if common_config_dir.exists() and machine_config_dir.exists():
             else:
                 existing_content = existing
 
-        # Build new content
         gitignore_content = existing_content.rstrip() + "\n\n" if existing_content.strip() else ""
         gitignore_content += marker_start
         gitignore_content += "\n".join(gitignore_entries) + "\n"
@@ -210,6 +199,9 @@ if common_config_dir.exists() and machine_config_dir.exists():
         before_count = len(all_symlink_paths)
         after_count = len(gitignore_entries)
         print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({after_count} entries, optimized from {before_count} symlinks)")
+
+machine_config_dir = dotfiles_dir / hostname / "config"
+common_config_dir = dotfiles_dir / "common" / "config"
 
 # Step 2: Symlink all configs to ~/.config
 print("\n🔗 Step 2: Symlinking configs to ~/.config...")
@@ -278,20 +270,24 @@ if machine_dir.exists():
                 create_symlink(item, target, f"{hostname} direct")
 
 # 4. Special cases by hostname
-if hostname == "workmbp":
-    # Home directory dotfiles - automatically symlink everything in home/
-    home_dir = dotfiles_dir / "workmbp" / "home"
-    if home_dir.exists():
-        for item in home_dir.iterdir():
-            target = home / item.name
-            create_symlink(item, target, "home")
 
+# Home directory dotfiles - automatically symlink everything in home/
+home_dir = machine_dir / "home"
+if home_dir.exists():
+    for item in home_dir.iterdir():
+        target = home / item.name
+        create_symlink(item, target, "home")
 
-elif hostname in ["linuxmini", "oldmbp"]:
-    # Linux-specific: symlink scripts from linuxmini
-    scripts_dir = dotfiles_dir / "linuxmini" / "scripts"
-    if scripts_dir.exists():
-        create_symlink(scripts_dir, config_dir / "scripts", "Linux scripts")
+# Secrets directory - symlink merged secrets to ~/secrets
+machine_secrets_dir = machine_dir / "secrets"
+if machine_secrets_dir.exists():
+    secrets_target = home / "secrets"
+    create_symlink(machine_secrets_dir, secrets_target, "secrets")
+
+# Machine-specific scripts - symlink if they exist
+scripts_dir = machine_dir / "scripts"
+if scripts_dir.exists():
+    create_symlink(scripts_dir, config_dir / "scripts", "scripts")
 
 # Step 5: Setup SSH authorized_keys
 print("\n🔐 Step 5: Setting up SSH authorized_keys...")
@@ -313,12 +309,12 @@ else:
 setup_claude_config(dotfiles_dir)
 
 # Step 7: Setup launch agents (macOS only)
-if hostname == "workmbp":
-    print("\n🚀 Step 7: Setting up macOS launch agents...")
+if machine_config["is_macos"]:
     launchagents_source_dir = machine_dir / "launchagents"
     launchagents_target_dir = home / "Library" / "LaunchAgents"
 
     if launchagents_source_dir.exists():
+        print("\n🚀 Step 7: Setting up macOS launch agents...")
         launchagents_target_dir.mkdir(parents=True, exist_ok=True)
 
         # Find all plist files
@@ -344,11 +340,11 @@ if hostname == "workmbp":
                 print(f"  ⚠️  Failed to load {plist_file.name}: {result.stderr.strip()}")
 
 # Step 8: Setup systemd user services (Linux only)
-if hostname in ["linuxmini", "oldmbp"]:
-    print("\n⚙️  Step 8: Setting up systemd user services...")
+if machine_config["is_linux"]:
     systemd_user_dir = config_dir / "systemd" / "user"
 
     if systemd_user_dir.exists():
+        print("\n⚙️  Step 8: Setting up systemd user services...")
         # Find all service files in subdirectories (not top-level)
         service_files = []
         for subdir in systemd_user_dir.iterdir():
