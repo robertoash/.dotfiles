@@ -21,10 +21,43 @@ def get_window_geometry(window_info):
     }
 
 
-def move_window_to_corner(corner):
-    """Move window to specified corner using hyprctl movewindow commands."""
+def move_window_to_corner(corner, window_address=None):
+    """
+    Move window to specified corner using hyprctl movewindow commands,
+    then apply margin offset to account for gaps_out.
+
+    Args:
+        corner: List of directions like ["d", "r"] for lower-right
+        window_address: Window address (hex string like "0x12345") or None for active window
+    """
     for direction in corner:
         window_manager.run_hyprctl_command(["dispatch", "movewindow", direction])
+
+    # Apply margin offset to account for gaps_out
+    gaps_out = window_manager.get_hyprland_gaps_out()
+    print(f"Debug: gaps_out = {gaps_out}, corner = {corner}")
+    if gaps_out > 0:
+        # Calculate offset based on corner position
+        # corner is like ["d", "r"] or ["u", "l"]
+        x_offset = -gaps_out if "r" in corner else gaps_out
+        y_offset = -gaps_out if "d" in corner else gaps_out
+
+        print(f"Debug: Applying offset x={x_offset}, y={y_offset} to window {window_address}")
+        # Build command with window address - no space before address per Hyprland docs
+        # Use -- to prevent negative numbers from being interpreted as flags
+        if window_address:
+            window_manager.run_hyprctl_command([
+                "dispatch", "movewindowpixel",
+                "--",
+                f"{x_offset} {y_offset},address:{window_address}"
+            ])
+        else:
+            # Fallback to active window (though this may not work)
+            window_manager.run_hyprctl_command([
+                "dispatch", "movewindowpixel",
+                "--",
+                f"{x_offset} {y_offset}"
+            ])
 
 
 def infer_corner_from_cursor(window_info):
@@ -147,6 +180,7 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
             print(f"❌ Could not find window with address {window_address}")
             return 1
         window_manager.focus_window(window_info["address"])
+        target_address = window_address
     else:
         # Use smart targeting or active window
         window_info, original_active_address = window_manager.get_target_window_with_focus(
@@ -155,6 +189,7 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
         if not window_info:
             print("❌ Could not find window")
             return 1
+        target_address = window_info.get("address")
 
     # Check if window is floating
     if not window_info.get("floating"):
@@ -181,7 +216,7 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
             return 0
 
     # Move window to corner
-    move_window_to_corner(corner_directions)
+    move_window_to_corner(corner_directions, target_address)
 
     # Get corner name for feedback
     corner_names = {

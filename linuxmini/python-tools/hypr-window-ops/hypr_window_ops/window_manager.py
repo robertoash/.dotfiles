@@ -18,8 +18,35 @@ def run_hyprctl(command):
 
 def run_hyprctl_command(command):
     """Run a hyprctl command that doesn't return JSON (like dispatch, setprop)."""
+    # Debug output
+    if "movewindowpixel" in command:
+        print(f"Debug: hyprctl command: {['hyprctl'] + command}")
     result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
+    if "movewindowpixel" in command:
+        print(f"Debug: result stdout: {result.stdout}")
+        print(f"Debug: result stderr: {result.stderr}")
     return result.returncode == 0
+
+
+def get_hyprland_gaps_out():
+    """
+    Get the gaps_out value from Hyprland using hyprctl.
+
+    Returns:
+        int: The gaps_out value (default: 0 if not found or on error)
+    """
+    try:
+        result = run_hyprctl(["getoption", "general:gaps_out", "-j"])
+        if result and "custom" in result:
+            # gaps_out can be "20 20 20 20" (top right bottom left)
+            # or just "20" - we'll take the first value
+            gaps_str = result["custom"]
+            first_value = gaps_str.split()[0]
+            return int(first_value)
+        return 0
+    except Exception as e:
+        print(f"Warning: Could not read gaps_out: {e}")
+        return 0
 
 
 def get_clients():

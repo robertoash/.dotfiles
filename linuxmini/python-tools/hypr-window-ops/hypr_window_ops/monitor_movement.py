@@ -63,8 +63,15 @@ def mirror_corner(corner):
     return mirror_map.get(corner, corner)
 
 
-def move_window_to_corner(corner):
-    """Move window to specified corner using hyprctl movewindow commands."""
+def move_window_to_corner(corner, window_address=None):
+    """
+    Move window to specified corner using hyprctl movewindow commands,
+    then apply margin offset to account for gaps_out.
+
+    Args:
+        corner: Corner name like "lower-right", "upper-left", etc.
+        window_address: Window address (hex string like "0x12345") or None for active window
+    """
     corner_map = {
         "lower-left": ["d", "l"],
         "upper-right": ["u", "r"],
@@ -75,6 +82,29 @@ def move_window_to_corner(corner):
 
     for direction in corner_directions:
         window_manager.run_hyprctl_command(["dispatch", "movewindow", direction])
+
+    # Apply margin offset to account for gaps_out
+    gaps_out = window_manager.get_hyprland_gaps_out()
+    if gaps_out > 0:
+        # Calculate offset based on corner position
+        x_offset = -gaps_out if "r" in corner_directions else gaps_out
+        y_offset = -gaps_out if "d" in corner_directions else gaps_out
+
+        # Build command with window address - no space before address per Hyprland docs
+        # Use -- to prevent negative numbers from being interpreted as flags
+        if window_address:
+            window_manager.run_hyprctl_command([
+                "dispatch", "movewindowpixel",
+                "--",
+                f"{x_offset} {y_offset},address:{window_address}"
+            ])
+        else:
+            # Fallback to active window (though this may not work)
+            window_manager.run_hyprctl_command([
+                "dispatch", "movewindowpixel",
+                "--",
+                f"{x_offset} {y_offset}"
+            ])
 
 
 def move_window_to_monitor(direction, debug=False, relative_floating=False):
@@ -173,7 +203,8 @@ def move_window_to_monitor(direction, debug=False, relative_floating=False):
     sleep(0.2)
 
     # Now move to the mirrored corner using the same method as snap_windows.py
-    move_window_to_corner(target_corner)
+    window_address = win_info.get("address")
+    move_window_to_corner(target_corner, window_address)
 
     # Re-pin window if it was originally pinned
     if was_pinned:
