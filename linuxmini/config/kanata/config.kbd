@@ -173,13 +173,13 @@
   )
   f-sft (switch
     ((key-timing 1 less-than 150)) f break
-    () (tap-hold-release 150 250 f (multi lsft (layer-while-held mods-left-only))) break
+    () (tap-hold-release 150 250 f lsft) break
   )
 
   ;; Right hand mods with typing streak detection
   j-sft (switch
     ((key-timing 1 less-than 150)) j break
-    () (tap-hold-release 150 250 j (multi rsft (layer-while-held mods-right-only))) break
+    () (tap-hold-release 150 250 j rsft) break
   )
   k-alt (switch
     ((key-timing 1 less-than 150)) k break
@@ -220,13 +220,13 @@
   )
   t-sft (switch
     ((key-timing 1 less-than 150)) t break
-    () (tap-hold-release 150 250 t (multi lsft (layer-while-held mods-left-only))) break
+    () (tap-hold-release 150 250 t lsft) break
   )
 
   ;; Right hand Colemak mods (n e i o)
   n-sft (switch
     ((key-timing 1 less-than 150)) n break
-    () (tap-hold-release 150 250 n (multi rsft (layer-while-held mods-right-only))) break
+    () (tap-hold-release 150 250 n rsft) break
   )
   e-alt (switch
     ((key-timing 1 less-than 150)) e break
