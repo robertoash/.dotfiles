@@ -38,7 +38,7 @@
   "mcp-mermaid": {
     "type": "stdio",
     "command": "npx",
-    "args": ["-y", "mcp-mermaid"],
+    "args": ["-y", "@lepion/mcp-server-mermaid"],
     "env": {}
   }
 }
