@@ -98,10 +98,20 @@ def setup_claude_config(dotfiles_dir):
                 else:
                     claude_config = {}
 
-                # Update mcpServers section
+                # Sync mcpServers section - remove servers not in template, add/update from template
                 if "mcpServers" not in claude_config:
                     claude_config["mcpServers"] = {}
 
+                # Remove servers that aren't in the template
+                servers_to_remove = [
+                    server for server in claude_config["mcpServers"]
+                    if server not in mcp_servers
+                ]
+                for server in servers_to_remove:
+                    del claude_config["mcpServers"][server]
+                    print(f"  🗑️  Removed obsolete MCP server: {server}")
+
+                # Add/update servers from template
                 claude_config["mcpServers"].update(mcp_servers)
 
                 # Write back
