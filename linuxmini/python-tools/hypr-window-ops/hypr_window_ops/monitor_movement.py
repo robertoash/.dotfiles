@@ -186,10 +186,11 @@ def move_window_to_monitor(direction, debug=False, relative_floating=False):
         print(f"🪞 Mirrored corner: {current_corner} → {target_corner}")
 
     # Unpin window if it's pinned (pinned windows don't move between monitors)
+    window_address = win_info.get("address")
     if was_pinned:
         if debug:
             print("📌 Temporarily unpinning window for monitor move")
-        window_manager.run_hyprctl_command(["dispatch", "pin"])
+        window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_address}"])
 
     # Move to target monitor using proper syntax
     target_monitor_name = sorted_monitors[target_index]["name"]
@@ -203,14 +204,13 @@ def move_window_to_monitor(direction, debug=False, relative_floating=False):
     sleep(0.2)
 
     # Now move to the mirrored corner using the same method as snap_windows.py
-    window_address = win_info.get("address")
     move_window_to_corner(target_corner, window_address)
 
     # Re-pin window if it was originally pinned
     if was_pinned:
         if debug:
             print("📌 Re-pinning window")
-        window_manager.run_hyprctl_command(["dispatch", "pin"])
+        window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_address}"])
 
     # Verify final state
     if debug:

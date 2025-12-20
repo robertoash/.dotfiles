@@ -17,28 +17,26 @@ def get_active_window():
 
 def pin_window_without_dimming(relative_floating=False):
     """Pin a floating window without dimming, toggling if already pinned."""
-    window_info, original_active_address = window_manager.get_target_window_with_focus(
-        relative_floating
-    )
+    window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
     floating = window_info.get("floating")
     pinned = window_info.get("pinned")
 
     if pinned:
         # Unpin the window and disable nodim
-        window_manager.run_hyprctl_command(["dispatch", "pin"])
+        window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "0"]
         )
     else:
         # Float the window first if it's not already floating
         if not floating:
-            toggle_floating()
-            # Re-focus window after toggle if using smart targeting
-            if original_active_address:
-                window_manager.focus_window(window_id)
+            window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
+            # Re-fetch window info after floating to get updated state
+            window_info = window_manager.get_target_window(relative_floating)
+            window_id = window_info.get("address")
         # Pin the window and set nodim property
-        window_manager.run_hyprctl_command(["dispatch", "pin"])
+        window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "1"]
         )
@@ -46,16 +44,10 @@ def pin_window_without_dimming(relative_floating=False):
             corner="lower-right", window_address=window_id
         )
 
-    # Restore focus to original window if we changed it
-    if original_active_address:
-        window_manager.focus_window(original_active_address)
-
 
 def toggle_nofocus(relative_floating=False):
     """Toggle nofocus property for floating pinned windows."""
-    window_info, original_active_address = window_manager.get_target_window_with_focus(
-        relative_floating
-    )
+    window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
     floating = window_info.get("floating")
     pinned = window_info.get("pinned")
@@ -96,10 +88,6 @@ def toggle_nofocus(relative_floating=False):
         except FileNotFoundError:
             pass  # If the file doesn't exist, there's nothing to do
 
-    # Restore focus to original window if we changed it
-    if original_active_address:
-        window_manager.focus_window(original_active_address)
-
 
 def toggle_floating(relative_floating=False):
     """Toggle floating state of a window."""
@@ -108,36 +96,26 @@ def toggle_floating(relative_floating=False):
 
     if is_currently_floating:
         # Deactivating floating -> tiled: use smart targeting
-        window_info, original_active_address = window_manager.get_target_window_with_focus(
-            relative_floating
-        )
-        window_manager.run_hyprctl_command(["dispatch", "settiled"])
-
-        # Restore focus to original window if we changed it
-        if original_active_address:
-            window_manager.focus_window(original_active_address)
+        window_info = window_manager.get_target_window(relative_floating)
+        window_id = window_info.get("address")
+        window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
     else:
         # Activating tiled -> floating: always use active window
-        window_info, original_active_address = window_manager.get_target_window_with_focus(
+        window_info = window_manager.get_target_window(
             relative_floating, for_toggle_floating_activation=True
         )
+        window_id = window_info.get("address")
         new_width = "1280"
         new_height = "720"
-        window_manager.run_hyprctl_command(["dispatch", "setfloating"])
+        window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["dispatch", "resizeactive", "exact", new_width, new_height]
         )
 
-        # Restore focus to original window if we changed it
-        if original_active_address:
-            window_manager.focus_window(original_active_address)
-
 
 def toggle_fullscreen_without_dimming(relative_floating=False):
     """Toggle fullscreen without dimming, managing pinned/floating state."""
-    window_info, original_active_address = window_manager.get_target_window_with_focus(
-        relative_floating
-    )
+    window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
     fullscreen = window_info.get("fullscreen")
     floating = window_info.get("floating")
@@ -147,7 +125,7 @@ def toggle_fullscreen_without_dimming(relative_floating=False):
 
     if fullscreen:
         # Exit fullscreen and restore previous state
-        window_manager.run_hyprctl_command(["dispatch", "fullscreen"])
+        window_manager.run_hyprctl_command(["dispatch", "fullscreen", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "0"]
         )
@@ -175,15 +153,15 @@ def toggle_fullscreen_without_dimming(relative_floating=False):
 
                 # Restore floating state first
                 if saved_state["floating"] and not floating:
-                    window_manager.run_hyprctl_command(["dispatch", "setfloating"])
+                    window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
                 elif not saved_state["floating"] and floating:
-                    window_manager.run_hyprctl_command(["dispatch", "settiled"])
+                    window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
 
                 # Restore pinned state
                 if saved_state["pinned"] and not pinned:
-                    window_manager.run_hyprctl_command(["dispatch", "pin"])
+                    window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
                 elif not saved_state["pinned"] and pinned:
-                    window_manager.run_hyprctl_command(["dispatch", "pin"])
+                    window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
 
                 # Remove this window from the state file
                 del states[window_id]
@@ -193,16 +171,16 @@ def toggle_fullscreen_without_dimming(relative_floating=False):
             else:
                 # Default to tiled (no pin) if no previous state found
                 if floating:
-                    window_manager.run_hyprctl_command(["dispatch", "settiled"])
+                    window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
                 if pinned:
-                    window_manager.run_hyprctl_command(["dispatch", "pin"])
+                    window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
 
         except FileNotFoundError:
             # Default to tiled (no pin) if no state file found
             if floating:
-                window_manager.run_hyprctl_command(["dispatch", "settiled"])
+                window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
             if pinned:
-                window_manager.run_hyprctl_command(["dispatch", "pin"])
+                window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
     else:
         # Save current state before going fullscreen
         # Read existing states
@@ -235,29 +213,10 @@ def toggle_fullscreen_without_dimming(relative_floating=False):
 
         # Unpin if pinned before going fullscreen
         if pinned:
-            # Focus the window first to ensure it's active
-            window_manager.run_hyprctl_command(
-                ["dispatch", "focuswindow", f"address:{window_id}"]
-            )
-            window_manager.run_hyprctl_command(["dispatch", "pin"])
-
-            # Re-get window state after unpinning to verify the change
-            active_window = get_active_window()
-            window_id = active_window.get("address")
-            new_pinned = active_window.get("pinned")
-            print(f"Debug: After unpinning, pinned state is: {new_pinned}")
-
-        # Ensure window is focused before fullscreen
-        window_manager.run_hyprctl_command(
-            ["dispatch", "focuswindow", f"address:{window_id}"]
-        )
+            window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
 
         # Enter fullscreen and set nodim property
-        window_manager.run_hyprctl_command(["dispatch", "fullscreen"])
+        window_manager.run_hyprctl_command(["dispatch", "fullscreen", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "1"]
         )
-
-    # Restore focus to original window if we changed it
-    if original_active_address:
-        window_manager.focus_window(original_active_address)

@@ -70,9 +70,32 @@ def get_monitor_for_ws(ws_id):
     return next((ws["monitor"] for ws in workspaces if ws["id"] == ws_id), None)
 
 
+def get_target_window(relative_floating=False, for_toggle_floating_activation=False):
+    """
+    Get the target window without changing focus.
+
+    Args:
+        relative_floating: Enable smart targeting for floating windows
+        for_toggle_floating_activation: True when toggle-floating is making a tiled window floating
+
+    Returns:
+        dict: The window info to operate on
+    """
+    if not relative_floating:
+        return run_hyprctl(["activewindow", "-j"])
+
+    target = get_target_floating_window(for_toggle_floating_activation)
+
+    if target is None:
+        return run_hyprctl(["activewindow", "-j"])
+
+    return target
+
+
 def get_target_window_with_focus(relative_floating=False, for_toggle_floating_activation=False):
     """
     Get the target window and focus it if needed (when using smart targeting).
+    DEPRECATED: Use get_target_window() with address: syntax instead to avoid focus shifts.
 
     Args:
         relative_floating: Enable smart targeting for floating windows
