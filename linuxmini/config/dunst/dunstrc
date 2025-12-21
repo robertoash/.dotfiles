@@ -61,19 +61,20 @@ mouse_right_click = close_current
 per_monitor_dpi = false
 
 [global]
-frame_color = "#7aa2f7"
+frame_color = "#8bffff"
 separator_color = frame
-highlight = "#7aa2f7"
+highlight = "#8bffff"
 
 [urgency_low]
-background = "#1a1b26"
-foreground = "#c0caf5"
+background = "#010111"
+foreground = "#b9bdcc"
 
 [urgency_normal]
-background = "#bb9af7"
-foreground = "#1a1b26"
+background = "#7aa2f7"
+foreground = "#010111"
+frame_color = "#8bffff"
 
 [urgency_critical]
-background = "#f7768e"
-foreground = "#101010"
-frame_color = "#e6c100"
+background = "#ff5f8f"
+foreground = "#010111"
+frame_color = "#ffee00"
