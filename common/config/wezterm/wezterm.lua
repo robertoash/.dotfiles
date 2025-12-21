@@ -134,7 +134,10 @@ config.use_fancy_tab_bar = false
 -- FONT CONFIGURATION
 -- ========================================
 
-config.font = wezterm.font("GeistMono Nerd Font", { weight = "Regular" })
+config.font = wezterm.font_with_fallback({
+	{ family = "GeistMono Nerd Font", weight = "Regular" },
+	{ family = "Noto Sans Symbols", scale = 0.9 },
+})
 config.font_size = 14
 
 -- ========================================
