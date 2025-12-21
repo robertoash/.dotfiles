@@ -468,6 +468,10 @@ local print_mappings = {
 
 -- Window creation and closing using <leader>-
 local window_operations_mappings = {
+	-- Fast access with Alt keys
+	{ "n", "<A-->", "<C-w>s", { desc = "Horizontal split" } },
+	{ "n", "<A-+>", "<C-w>v", { desc = "Vertical split" } },
+
 	-- Window creation (splits)
 	{ "n", "<leader>-s", "<C-w>s", { desc = "[s]plit window horizontally" } },
 	{ "n", "<leader>-v", "<C-w>v", { desc = "Split window [v]ertically" } },
@@ -494,6 +498,11 @@ local snacks_terminal_navigation = {
 
 -- Buffer management keybinds using <leader>b
 local buffer_mappings = {
+	-- Fast access with Alt keys
+	{ { "n", "v" }, "<A->>", ":bnext<CR>", { desc = "Next buffer" } },
+	{ { "n", "v" }, "<A-<>", ":bprev<CR>", { desc = "Previous buffer" } },
+	{ { "n", "v" }, "<A-x>", ":bd<CR>", { desc = "Close buffer" } },
+
 	-- Most common operations (short bindings)
 	{ { "n", "v" }, "<leader>bd", ":bd<CR>", { desc = "[d]elete/close buffer" } },
 	{ { "n", "v" }, "<leader>bq", ":bd!<CR>", { desc = "[q]uit buffer (force)" } },
