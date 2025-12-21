@@ -60,7 +60,7 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
         return 1
     end
 
-    # Helper function to build format string based on video orientation
+    # Helper function to build format string
     function build_format_string -a url -a quality -a yt_dlp
         # If quality is "bestvideo+bestaudio/best" (default), just return it
         if test "$quality" = "bestvideo+bestaudio/best"
@@ -68,52 +68,18 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             return
         end
 
-        # Get video info to determine orientation
-        set -l video_info ($yt_dlp --dump-json --no-playlist "$url" 2>/dev/null | string collect)
-
-        if test -z "$video_info"
-            # Can't determine orientation, use a fallback that tries both
-            echo "bestvideo[height=$quality]+bestaudio/bestvideo[width=$quality]+bestaudio/bestvideo+bestaudio/best"
-            return
-        end
-
-        # Extract width and height using string match (simpler than jq)
-        set -l width (echo "$video_info" | string match -r '"width":\s*(\d+)' | string match -r '\d+')
-        set -l height (echo "$video_info" | string match -r '"height":\s*(\d+)' | string match -r '\d+')
-
-        if test -z "$width" -o -z "$height"
-            # Can't parse dimensions, use fallback
-            echo "bestvideo[height=$quality]+bestaudio/bestvideo[width=$quality]+bestaudio/bestvideo+bestaudio/best"
-            return
-        end
-
-        # Determine orientation and build format string
-        # For horizontal videos (width > height), use height
-        # For vertical videos (height > width), use width
-        if test "$width" -gt "$height"
-            # Horizontal video - use height for quality
-            switch $quality
-                case 720
-                    echo "bestvideo[height=720]+bestaudio/bestvideo[height=1080]+bestaudio/bestvideo[height=1440]+bestaudio/bestvideo[height=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 1080
-                    echo "bestvideo[height=1080]+bestaudio/bestvideo[height=1440]+bestaudio/bestvideo[height=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 1440
-                    echo "bestvideo[height=1440]+bestaudio/bestvideo[height=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 2160
-                    echo "bestvideo[height=2160]+bestaudio/bestvideo+bestaudio/best"
-            end
-        else
-            # Vertical video - use width for quality
-            switch $quality
-                case 720
-                    echo "bestvideo[width=720]+bestaudio/bestvideo[width=1080]+bestaudio/bestvideo[width=1440]+bestaudio/bestvideo[width=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 1080
-                    echo "bestvideo[width=1080]+bestaudio/bestvideo[width=1440]+bestaudio/bestvideo[width=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 1440
-                    echo "bestvideo[width=1440]+bestaudio/bestvideo[width=2160]+bestaudio/bestvideo+bestaudio/best"
-                case 2160
-                    echo "bestvideo[width=2160]+bestaudio/bestvideo+bestaudio/best"
-            end
+        # Build format string: try format_id matching, then exact dimensions, then caps
+        # format_id matching works for sites that use quality in the ID (like "1080p_HD")
+        # Dimension matching works for sites with detailed metadata
+        switch $quality
+            case 720
+                echo "bestvideo[format_id*=720]+bestaudio/bestvideo[height=720]+bestaudio/bestvideo[width=720]+bestaudio/bestvideo[height<=720][width<=720]+bestaudio/best"
+            case 1080
+                echo "bestvideo[format_id*=1080]+bestaudio/bestvideo[height=1080]+bestaudio/bestvideo[width=1080]+bestaudio/bestvideo[height<=1080][width<=1080]+bestaudio/best"
+            case 1440
+                echo "bestvideo[format_id*=1440]+bestaudio/bestvideo[height=1440]+bestaudio/bestvideo[width=1440]+bestaudio/bestvideo[height<=1440][width<=1440]+bestaudio/best"
+            case 2160
+                echo "bestvideo[format_id*=2160]+bestaudio/bestvideo[height=2160]+bestaudio/bestvideo[width=2160]+bestaudio/bestvideo[height<=2160][width<=2160]+bestaudio/best"
         end
     end
 
