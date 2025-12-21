@@ -60,11 +60,42 @@ def turn_dpms_on():
 def turn_dpms_off():
     """Turn DPMS off using hyprctl."""
     try:
-        logging.info("in_office turned OFF - turning displays off (DPMS off)")
+        logging.info("Turning displays off (DPMS off)")
         subprocess.run(get_system_command("hyprctl_dpms_off"), check=True)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS off: {e}")
+        return False
+
+
+def lock_computer():
+    """Lock the computer using hyprlock."""
+    try:
+        # Check if hyprlock is already running
+        result = subprocess.run(
+            get_system_command("pidof_hyprlock"), capture_output=True
+        )
+        if result.returncode == 0:
+            logging.info("hyprlock already running")
+            return True
+
+        logging.info("Locking computer with hyprlock")
+        subprocess.Popen(get_system_command("hyprlock"))
+        return True
+    except Exception as e:
+        logging.error(f"Failed to lock computer: {e}")
+        return False
+
+
+def is_locked():
+    """Check if the computer is locked (hyprlock is running)."""
+    try:
+        result = subprocess.run(
+            get_system_command("pidof_hyprlock"), capture_output=True
+        )
+        return result.returncode == 0
+    except Exception as e:
+        logging.error(f"Failed to check lock status: {e}")
         return False
 
 
@@ -122,7 +153,26 @@ def main():
                 turn_dpms_on()
             elif last_status == "on" and current_status == "off":
                 logging.info("in_office status changed from ON to OFF")
-                turn_dpms_off()
+                # Lock the computer immediately
+                lock_computer()
+
+                # Give hyprlock a few seconds to initialize and start rendering
+                logging.info("Giving hyprlock 3 seconds to initialize...")
+                time.sleep(3)
+
+                # Wait 30 seconds with lock screen visible before turning off DPMS
+                logging.info("Waiting 30 seconds before turning off DPMS...")
+                time.sleep(30)
+
+                # Check if still OFF and locked before turning off DPMS
+                current_status_after_wait = get_in_office_status()
+                if current_status_after_wait == "off" and is_locked():
+                    logging.info("Still OFF and locked - turning off DPMS")
+                    turn_dpms_off()
+                elif current_status_after_wait == "on":
+                    logging.info("Status changed to ON during wait - skipping DPMS off")
+                elif not is_locked():
+                    logging.info("Computer is not locked - skipping DPMS off")
 
             last_status = current_status
             time.sleep(check_interval)
