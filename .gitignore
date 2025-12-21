@@ -3,6 +3,7 @@ linuxmini/sunshine/credentials/cakey.pem
 
 # Secrets and credentials
 **/secrets/
+**/secrets/keys/
 **/*secret*
 **/*credential*
 **/*.key
@@ -14,6 +15,23 @@ linuxmini/sunshine/credentials/cakey.pem
 !linuxmini/systemd/user/sops-secrets.service
 !common/scripts/decrypt-secrets.sh
 !common/config/fish/conf.d/*_secrets.fish
+
+# Exceptions for encrypted SOPS secrets (specific files only)
+!**/secrets/.gitignore
+!common/secrets/
+!common/secrets/common.yaml
+!common/secrets/common.yml
+!common/secrets/claude.yaml
+!common/secrets/claude.yml
+!linuxmini/secrets/
+!linuxmini/secrets/linuxmini.yaml
+!linuxmini/secrets/linuxmini.yml
+!workmbp/secrets/
+!workmbp/secrets/workmbp.yaml
+!workmbp/secrets/workmbp.yml
+!oldmbp/secrets/
+!oldmbp/secrets/oldmbp.yaml
+!oldmbp/secrets/oldmbp.yml
 
 # Dev artifacts
 __pycache__/
