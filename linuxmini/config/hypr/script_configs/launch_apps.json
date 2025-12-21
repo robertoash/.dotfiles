@@ -28,6 +28,13 @@
         ],
         "11": [
             {
+                "name": "workmbp_zellij",
+                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace11",
+                "is_master": true
+            }
+        ],
+        "12": [
+            {
                 "name": "claude_zen",
                 "command": "claude-desktop-native --force-device-scale-factor=1.4",
                 "is_master": true,
@@ -40,22 +47,10 @@
                 "is_master": false
             }
         ],
-        "12": [
+        "13": [
             {
                 "name": "perplexity",
                 "command": "chromium_launch --profile perplexity",
-                "is_master": true
-            },
-            {
-                "name": "nvim_obsidian_zellij",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
-                "is_master": false
-            }
-        ],
-        "13": [
-            {
-                "name": "obsidian",
-                "command": "env OBSIDIAN_USE_WAYLAND=1 obsidian --enable-features=UseOzonePlatform --ozone-platform=wayland",
                 "is_master": true
             },
             {

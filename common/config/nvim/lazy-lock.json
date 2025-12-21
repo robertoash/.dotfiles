@@ -16,7 +16,7 @@
   "mason-tool-installer.nvim": { "branch": "main", "commit": "517ef5994ef9d6b738322664d5fdd948f0fdeb46" },
   "mason.nvim": { "branch": "main", "commit": "57e5a8addb8c71fb063ee4acda466c7cf6ad2800" },
   "mini.icons": { "branch": "main", "commit": "ff2e4f1d29f659cc2bad0f9256f2f6195c6b2428" },
-  "mini.nvim": { "branch": "main", "commit": "6acb62618e2e7f1bf4f2e96e77a562ec80696f5e" },
+  "mini.nvim": { "branch": "main", "commit": "6170f606fbdb94bf461635c47962f61dceffe496" },
   "multicursor.nvim": { "branch": "1.0", "commit": "a0ea3303a6c4b233cf3272fb1e358d4c842e5260" },
   "noice.nvim": { "branch": "main", "commit": "7bfd942445fb63089b59f97ca487d605e715f155" },
   "nui.nvim": { "branch": "main", "commit": "de740991c12411b663994b2860f1a4fd0937c130" },
@@ -44,5 +44,5 @@
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" },
   "wrapwidth": { "branch": "main", "commit": "a766191a1cd24ebb95d669ebd4a440c50d7f4422" },
   "yanky.nvim": { "branch": "main", "commit": "04fc42b94305d94948c9c197f679336668af3292" },
-  "yazi.nvim": { "branch": "main", "commit": "d87cd885e06d50e1bb5607e48d96c1094d3b10e3" }
+  "yazi.nvim": { "branch": "main", "commit": "0754bf5cee9a0c64d5755d685d1d9d4c18c75fcc" }
 }
