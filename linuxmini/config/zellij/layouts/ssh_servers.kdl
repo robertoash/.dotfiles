@@ -16,8 +16,8 @@ layout {
             pane split_direction="horizontal" {
                 pane {
                     command "ssh"
-                    args "oden-server"
-                    name "oden-server"
+                    args "oden"
+                    name "oden"
                 }
                 pane {
                     command "ssh"
