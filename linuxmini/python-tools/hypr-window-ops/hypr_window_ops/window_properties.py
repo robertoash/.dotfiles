@@ -38,6 +38,11 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
             # Re-fetch window info after floating to get updated state
             window_info = window_manager.get_target_window(relative_floating)
             window_id = window_info.get("address")
+        # Resize to 1280x720
+        window_manager.run_hyprctl_command([
+            "dispatch", "resizewindowpixel",
+            f"exact 1280 720,address:{window_id}"
+        ])
         # Pin the window and set nodim property
         window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
