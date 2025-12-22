@@ -7,10 +7,12 @@ from . import (
     app_launcher,
     focus_location,
     monitor_movement,
+    monitor_toggle,
     move_windows,
     snap_windows,
     stash_manager,
     switch_ws_on_monitor,
+    window_cycling,
     window_properties,
 )
 
@@ -382,6 +384,39 @@ Examples:
         help="Use smart targeting to find floating windows in visible workspaces",
     )
 
+    # Toggle monitor with last window memory
+    subparsers.add_parser(
+        "toggle-monitor",
+        help="Toggle to next monitor and restore last active window",
+        description="""
+Toggle focus to the next monitor and automatically restore the last active
+window in the target monitor's workspace. Remembers the last focused window
+in each workspace for seamless workspace switching.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Toggle to next monitor
+  hypr-window-ops toggle-monitor
+        """,
+    )
+
+    # Cycle windows on current monitor
+    subparsers.add_parser(
+        "cycle-windows",
+        help="Cycle through windows on current monitor",
+        description="""
+Cycle focus through all windows on the current monitor, including both
+tiled and floating windows. Excludes pinned windows and special workspaces.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Cycle to next window on current monitor
+  hypr-window-ops cycle-windows
+        """,
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -458,6 +493,10 @@ Examples:
     elif args.command == "toggle-sneaky":
         window_properties.toggle_sneaky_tag(relative_floating=args.relative_floating)
         return 0
+    elif args.command == "toggle-monitor":
+        return monitor_toggle.toggle_active_monitor()
+    elif args.command == "cycle-windows":
+        return window_cycling.cycle_windows()
     else:
         parser.print_help()
         return 1
