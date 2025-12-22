@@ -113,6 +113,153 @@ def toggle_floating(relative_floating=False):
         )
 
 
+def toggle_double_size(relative_floating=False):
+    """Toggle double size of a floating window."""
+    # Get target window without changing focus
+    window_info = window_manager.get_target_window(relative_floating)
+    if not window_info:
+        print("❌ Could not find window")
+        return
+
+    window_id = window_info.get("address")
+    floating = window_info.get("floating")
+
+    # Check if window is floating
+    if not floating:
+        print("🚫 Window is not floating. Cannot toggle double size.")
+        return
+
+    current_width = window_info["size"][0]
+    current_height = window_info["size"][1]
+    current_x = window_info["at"][0]
+    current_y = window_info["at"][1]
+
+    state_file = "/tmp/doubled_window_sizes"
+
+    # Check if window is currently doubled
+    try:
+        with open(state_file, "r") as f:
+            doubled_states = {}
+            for line in f:
+                if line.strip():
+                    parts = line.strip().split(":")
+                    if len(parts) >= 5:
+                        addr, orig_w, orig_h, orig_x, orig_y = (
+                            parts[0], int(parts[1]), int(parts[2]),
+                            int(parts[3]), int(parts[4])
+                        )
+                        doubled_states[addr] = {
+                            "width": orig_w, "height": orig_h,
+                            "x": orig_x, "y": orig_y
+                        }
+
+        if window_id in doubled_states:
+            # Window is doubled, restore original size and position
+            orig_state = doubled_states[window_id]
+
+            # Resize using resizewindowpixel with address (no focus change needed)
+            window_manager.run_hyprctl_command([
+                "dispatch", "resizewindowpixel",
+                f"exact {orig_state['width']} {orig_state['height']},address:{window_id}"
+            ])
+
+            # Restore original position
+            x_offset = orig_state["x"] - current_x
+            y_offset = orig_state["y"] - current_y
+            if x_offset != 0 or y_offset != 0:
+                window_manager.run_hyprctl_command([
+                    "dispatch", "movewindowpixel",
+                    "--",
+                    f"{x_offset} {y_offset},address:{window_id}"
+                ])
+
+            # Remove from state file
+            del doubled_states[window_id]
+            with open(state_file, "w") as f:
+                for addr, state in doubled_states.items():
+                    f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
+
+            print(f"✅ Window restored to {orig_state['width']}x{orig_state['height']}")
+        else:
+            # Window is not doubled, double it and save original size/position
+            # Detect which corner the window is in
+            corner = snap_windows.detect_current_corner(window_info)
+
+            new_width = current_width * 2
+            new_height = current_height * 2
+
+            doubled_states[window_id] = {
+                "width": current_width, "height": current_height,
+                "x": current_x, "y": current_y
+            }
+
+            with open(state_file, "w") as f:
+                for addr, state in doubled_states.items():
+                    f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
+
+            # Resize using resizewindowpixel with address (no focus change needed)
+            window_manager.run_hyprctl_command([
+                "dispatch", "resizewindowpixel",
+                f"exact {new_width} {new_height},address:{window_id}"
+            ])
+
+            # Calculate offset to keep corner in place
+            # Default resize grows from top-left, so we need to compensate
+            x_offset = 0
+            y_offset = 0
+
+            if corner in ["upper-right", "lower-right"]:
+                x_offset = -current_width
+            if corner in ["lower-left", "lower-right"]:
+                y_offset = -current_height
+
+            # Apply offset if needed to anchor the corner
+            if x_offset != 0 or y_offset != 0:
+                window_manager.run_hyprctl_command([
+                    "dispatch", "movewindowpixel",
+                    "--",
+                    f"{x_offset} {y_offset},address:{window_id}"
+                ])
+
+            print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {corner})")
+
+    except FileNotFoundError:
+        # No state file exists, so window isn't doubled - double it
+        # Detect which corner the window is in
+        corner = snap_windows.detect_current_corner(window_info)
+
+        new_width = current_width * 2
+        new_height = current_height * 2
+
+        with open(state_file, "w") as f:
+            f.write(f"{window_id}:{current_width}:{current_height}:{current_x}:{current_y}\n")
+
+        # Resize using resizewindowpixel with address (no focus change needed)
+        window_manager.run_hyprctl_command([
+            "dispatch", "resizewindowpixel",
+            f"exact {new_width} {new_height},address:{window_id}"
+        ])
+
+        # Calculate offset to keep corner in place
+        x_offset = 0
+        y_offset = 0
+
+        if corner in ["upper-right", "lower-right"]:
+            x_offset = -current_width
+        if corner in ["lower-left", "lower-right"]:
+            y_offset = -current_height
+
+        # Apply offset if needed to anchor the corner
+        if x_offset != 0 or y_offset != 0:
+            window_manager.run_hyprctl_command([
+                "dispatch", "movewindowpixel",
+                "--",
+                f"{x_offset} {y_offset},address:{window_id}"
+            ])
+
+        print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {corner})")
+
+
 def toggle_fullscreen_without_dimming(relative_floating=False):
     """Toggle fullscreen without dimming, managing pinned/floating state."""
     window_info = window_manager.get_target_window(relative_floating)

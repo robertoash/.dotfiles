@@ -208,6 +208,18 @@ Examples:
         help="Use smart targeting to find floating windows in visible workspaces",
     )
 
+    # Toggle double size
+    double_size_parser = subparsers.add_parser(
+        "toggle-double-size",
+        help="Toggle double size of a floating window",
+        description="Toggle double size of a floating window, remembering original size.",
+    )
+    double_size_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
+
     # Snap window to corner
     snap_parser = subparsers.add_parser(
         "snap-to-corner",
@@ -361,6 +373,11 @@ Examples:
         return 0
     elif args.command == "toggle-fullscreen-nodim":
         window_properties.toggle_fullscreen_without_dimming(
+            relative_floating=args.relative_floating
+        )
+        return 0
+    elif args.command == "toggle-double-size":
+        window_properties.toggle_double_size(
             relative_floating=args.relative_floating
         )
         return 0
