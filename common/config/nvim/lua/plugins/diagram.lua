@@ -7,6 +7,7 @@ return {
 		require("diagram").setup({
 			integrations = {
 				require("diagram.integrations.markdown"),
+				require("diagram.integrations.mermaid_file"),
 			},
 			events = {
 				render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
