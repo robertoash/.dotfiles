@@ -1,7 +1,7 @@
 return {
 	"3rd/image.nvim",
 	opts = {
-		backend = "kitty", -- WezTerm supports kitty graphics protocol
+		backend = "sixel", -- WezTerm has better sixel support than kitty protocol
 		processor = "magick_cli", -- "magick_rock" | "magick_cli"
 		integrations = {
 			markdown = {
