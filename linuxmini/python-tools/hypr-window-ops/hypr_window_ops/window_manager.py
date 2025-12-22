@@ -295,6 +295,28 @@ def focus_window(address):
     run_hyprctl_command(["dispatch", "focuswindow", f"address:{address}"])
 
 
+def apply_sneaky_tag(address):
+    """Apply the 'sneaky' tag to a window."""
+    run_hyprctl_command(["dispatch", "tagwindow", "+sneaky", f"address:{address}"])
+
+
+def remove_sneaky_tag(address):
+    """Remove the 'sneaky' tag from a window."""
+    run_hyprctl_command(["dispatch", "tagwindow", "--", "-sneaky", f"address:{address}"])
+
+
+def get_sneaky_windows():
+    """Get all windows with the 'sneaky' tag."""
+    all_clients = get_clients()
+    if not all_clients:
+        return []
+
+    return [
+        client for client in all_clients
+        if "sneaky" in client.get("tags", [])
+    ]
+
+
 def toggle_special_workspace(workspace_name):
     """Toggle a special workspace visibility."""
     run_hyprctl_command(["dispatch", "togglespecialworkspace", workspace_name])

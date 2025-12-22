@@ -157,7 +157,7 @@ def mirror_corner(corner):
     return mirror_map.get(corner, corner)
 
 
-def snap_window_to_corner(corner=None, window_address=None, relative_floating=False):
+def snap_window_to_corner(corner=None, window_address=None, relative_floating=False, sneaky=False):
     """
     Snap a window to a specific corner or auto-detect based on cursor position.
 
@@ -166,6 +166,7 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
                 or None for auto-detect
         window_address: Specific window address, or None for smart targeting
         relative_floating: Use smart targeting to find floating windows
+        sneaky: Apply the 'sneaky' tag to the window
 
     Returns:
         0 on success, 1 on error
@@ -217,6 +218,10 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
 
     # Move window to corner
     move_window_to_corner(corner_directions, target_address)
+
+    # Apply sneaky tag if requested
+    if sneaky:
+        window_manager.apply_sneaky_tag(target_address)
 
     # Get corner name for feedback
     corner_names = {

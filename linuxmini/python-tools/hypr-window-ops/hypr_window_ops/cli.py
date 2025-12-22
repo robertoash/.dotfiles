@@ -171,6 +171,11 @@ Examples:
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
     )
+    pin_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
+    )
 
     # Toggle nofocus
     nofocus_parser = subparsers.add_parser(
@@ -182,6 +187,11 @@ Examples:
         "--relative-floating",
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
+    )
+    nofocus_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
     )
 
     # Toggle floating
@@ -195,6 +205,11 @@ Examples:
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
     )
+    floating_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
+    )
 
     # Toggle fullscreen without dimming
     fullscreen_parser = subparsers.add_parser(
@@ -207,6 +222,11 @@ Examples:
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
     )
+    fullscreen_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
+    )
 
     # Toggle double size
     double_size_parser = subparsers.add_parser(
@@ -218,6 +238,11 @@ Examples:
         "--relative-floating",
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
+    )
+    double_size_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
     )
 
     # Snap window to corner
@@ -256,6 +281,11 @@ Examples:
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
     )
+    snap_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
+    )
 
     # Move window to monitor
     move_monitor_parser = subparsers.add_parser(
@@ -291,6 +321,11 @@ Examples:
         "--relative-floating",
         action="store_true",
         help="Use smart targeting to find floating windows in visible workspaces",
+    )
+    move_monitor_parser.add_argument(
+        "--sneaky",
+        action="store_true",
+        help="Tag the window as 'sneaky' to make it avoid the active window",
     )
 
     # Toggle monitor stash (per-monitor toggle)
@@ -335,6 +370,18 @@ Examples:
         help="Specific stash name to use (e.g., stash-left, stash-right)",
     )
 
+    # Toggle sneaky tag
+    sneaky_parser = subparsers.add_parser(
+        "toggle-sneaky",
+        help="Toggle sneaky tag on a window",
+        description="Toggle the sneaky tag on a window without modifying its state.",
+    )
+    sneaky_parser.add_argument(
+        "--relative-floating",
+        action="store_true",
+        help="Use smart targeting to find floating windows in visible workspaces",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -362,23 +409,32 @@ Examples:
         return switch_ws_on_monitor.switch_to_nth_workspace_on_focused_monitor(n)
     elif args.command == "pin-nodim":
         window_properties.pin_window_without_dimming(
-            relative_floating=args.relative_floating
+            relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
         )
         return 0
     elif args.command == "toggle-nofocus":
-        window_properties.toggle_nofocus(relative_floating=args.relative_floating)
+        window_properties.toggle_nofocus(
+            relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
+        )
         return 0
     elif args.command == "toggle-floating":
-        window_properties.toggle_floating(relative_floating=args.relative_floating)
+        window_properties.toggle_floating(
+            relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
+        )
         return 0
     elif args.command == "toggle-fullscreen-nodim":
         window_properties.toggle_fullscreen_without_dimming(
-            relative_floating=args.relative_floating
+            relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
         )
         return 0
     elif args.command == "toggle-double-size":
         window_properties.toggle_double_size(
-            relative_floating=args.relative_floating
+            relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
         )
         return 0
     elif args.command == "snap-to-corner":
@@ -386,17 +442,22 @@ Examples:
             corner=args.corner,
             window_address=args.address,
             relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
         )
     elif args.command == "move-to-monitor":
         return monitor_movement.move_window_to_monitor(
             direction=args.direction,
             debug=args.debug,
             relative_floating=args.relative_floating,
+            sneaky=args.sneaky,
         )
     elif args.command == "toggle-stash":
         return stash_manager.toggle_monitor_stash()
     elif args.command == "move-to-stash":
         return stash_manager.move_to_monitor_stash(stash_name=args.stash)
+    elif args.command == "toggle-sneaky":
+        window_properties.toggle_sneaky_tag(relative_floating=args.relative_floating)
+        return 0
     else:
         parser.print_help()
         return 1

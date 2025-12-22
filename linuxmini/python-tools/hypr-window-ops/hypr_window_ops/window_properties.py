@@ -15,7 +15,7 @@ def get_active_window():
     return window_manager.run_hyprctl(["activewindow", "-j"])
 
 
-def pin_window_without_dimming(relative_floating=False):
+def pin_window_without_dimming(relative_floating=False, sneaky=False):
     """Pin a floating window without dimming, toggling if already pinned."""
     window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
@@ -28,6 +28,9 @@ def pin_window_without_dimming(relative_floating=False):
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "0"]
         )
+        # Remove sneaky tag when unpinning
+        if sneaky:
+            window_manager.remove_sneaky_tag(window_id)
     else:
         # Float the window first if it's not already floating
         if not floating:
@@ -43,9 +46,12 @@ def pin_window_without_dimming(relative_floating=False):
         snap_windows.snap_window_to_corner(
             corner="lower-right", window_address=window_id
         )
+        # Apply sneaky tag if requested
+        if sneaky:
+            window_manager.apply_sneaky_tag(window_id)
 
 
-def toggle_nofocus(relative_floating=False):
+def toggle_nofocus(relative_floating=False, sneaky=False):
     """Toggle nofocus property for floating pinned windows."""
     window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
@@ -59,6 +65,9 @@ def toggle_nofocus(relative_floating=False):
         # append window_id to nofocus_windows file
         with open("/tmp/nofocus_windows", "a") as f:
             f.write(window_id + "\n")
+        # Apply sneaky tag if requested
+        if sneaky:
+            window_manager.apply_sneaky_tag(window_id)
     else:
         try:
             # get nofocus_windows from file
@@ -89,7 +98,7 @@ def toggle_nofocus(relative_floating=False):
             pass  # If the file doesn't exist, there's nothing to do
 
 
-def toggle_floating(relative_floating=False):
+def toggle_floating(relative_floating=False, sneaky=False):
     """Toggle floating state of a window."""
     active_window = get_active_window()
     is_currently_floating = active_window.get("floating", False)
@@ -99,6 +108,9 @@ def toggle_floating(relative_floating=False):
         window_info = window_manager.get_target_window(relative_floating)
         window_id = window_info.get("address")
         window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
+        # Remove sneaky tag when switching to tiled
+        if sneaky:
+            window_manager.remove_sneaky_tag(window_id)
     else:
         # Activating tiled -> floating: always use active window
         window_info = window_manager.get_target_window(
@@ -111,9 +123,12 @@ def toggle_floating(relative_floating=False):
         window_manager.run_hyprctl_command(
             ["dispatch", "resizeactive", "exact", new_width, new_height]
         )
+        # Apply sneaky tag if requested
+        if sneaky:
+            window_manager.apply_sneaky_tag(window_id)
 
 
-def toggle_double_size(relative_floating=False):
+def toggle_double_size(relative_floating=False, sneaky=False):
     """Toggle double size of a floating window."""
     # Get target window without changing focus
     window_info = window_manager.get_target_window(relative_floating)
@@ -128,6 +143,10 @@ def toggle_double_size(relative_floating=False):
     if not floating:
         print("🚫 Window is not floating. Cannot toggle double size.")
         return
+
+    # Apply sneaky tag if requested and floating
+    if sneaky and floating:
+        window_manager.apply_sneaky_tag(window_id)
 
     current_width = window_info["size"][0]
     current_height = window_info["size"][1]
@@ -260,7 +279,25 @@ def toggle_double_size(relative_floating=False):
         print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {corner})")
 
 
-def toggle_fullscreen_without_dimming(relative_floating=False):
+def toggle_sneaky_tag(relative_floating=False):
+    """Toggle sneaky tag on a window without modifying its state."""
+    window_info = window_manager.get_target_window(relative_floating)
+    window_id = window_info.get("address")
+
+    # Check if window has sneaky tag
+    has_sneaky = "sneaky" in window_info.get("tags", [])
+
+    if has_sneaky:
+        # Remove sneaky tag
+        window_manager.remove_sneaky_tag(window_id)
+        print("✅ Sneaky tag removed")
+    else:
+        # Add sneaky tag
+        window_manager.apply_sneaky_tag(window_id)
+        print("✅ Sneaky tag applied")
+
+
+def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
     """Toggle fullscreen without dimming, managing pinned/floating state."""
     window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
@@ -269,6 +306,10 @@ def toggle_fullscreen_without_dimming(relative_floating=False):
     pinned = window_info.get("pinned")
 
     state_file = "/tmp/fullscreen_window_states"
+
+    # Apply sneaky tag if requested and floating
+    if sneaky and floating:
+        window_manager.apply_sneaky_tag(window_id)
 
     if fullscreen:
         # Exit fullscreen and restore previous state
