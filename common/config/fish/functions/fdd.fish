@@ -1,5 +1,5 @@
-# ~/.config/fish/functions/dd.fish
-function dd -d "Frecent directory selector"
+# ~/.config/fish/functions/fdd.fish
+function fdd -d "Frecent directory selector"
     if test (count $argv) -eq 0
         frecent --dirs --interactive
     else

@@ -1,5 +1,5 @@
-# ~/.config/fish/functions/aa.fish
-function aa -d "Frecent all items selector"
+# ~/.config/fish/functions/faa.fish
+function faa -d "Frecent all items selector"
     if test (count $argv) -eq 0
         frecent --all --interactive
     else

@@ -63,6 +63,22 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, level=0, sym
     # Create machine_dir if it doesn't exist
     machine_dir.mkdir(parents=True, exist_ok=True)
 
+    # Clean up broken symlinks that were created by setup.py
+    # (i.e., symlinks pointing to locations within dotfiles directory)
+    if machine_dir.exists():
+        for item in machine_dir.iterdir():
+            if item.is_symlink() and not item.exists():
+                # Broken symlink - check if it points within dotfiles
+                try:
+                    target = item.resolve(strict=False)
+                    if str(target).startswith(str(dotfiles_dir)):
+                        # This was created by setup.py, safe to remove
+                        item.unlink()
+                        if level == 0:
+                            print(f"🗑️  Removed broken symlink: {item.name}")
+                except (OSError, RuntimeError):
+                    pass
+
     if symlink_paths is None:
         symlink_paths = []
 

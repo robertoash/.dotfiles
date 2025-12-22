@@ -1,5 +1,5 @@
-# ~/.config/fish/functions/ff.fish
-function ff -d "Frecent file selector"
+# ~/.config/fish/functions/fff.fish
+function fff -d "Frecent file selector"
     if test (count $argv) -eq 0
         frecent --files --interactive
     else
