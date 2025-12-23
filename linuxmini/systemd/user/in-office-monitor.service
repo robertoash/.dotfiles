@@ -1,0 +1,13 @@
+[Unit]
+Description=In-office monitor for DPMS control
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/rash/.config/scripts/hyprland/idle_management/in_office_monitor.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

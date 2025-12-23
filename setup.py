@@ -355,36 +355,12 @@ if machine_config["is_macos"]:
             else:
                 print(f"  ⚠️  Failed to load {plist_file.name}: {result.stderr.strip()}")
 
-# Step 8: Setup systemd user services (Linux only)
+# Step 8: Reload systemd daemon (Linux only)
 if machine_config["is_linux"]:
-    systemd_user_dir = config_dir / "systemd" / "user"
+    systemd_user_dir = machine_dir / "systemd" / "user"
 
     if systemd_user_dir.exists():
-        print("\n⚙️  Step 8: Setting up systemd user services...")
-        # Find all service files in subdirectories (not top-level)
-        service_files = []
-        for subdir in systemd_user_dir.iterdir():
-            if subdir.is_dir() and subdir.name.startswith("_"):
-                # Find all unit files in this subdirectory
-                for unit_file in subdir.glob("*"):
-                    if unit_file.is_file() and unit_file.suffix in [".service", ".timer", ".path", ".socket"]:
-                        service_files.append(unit_file)
-
-        # Create symlinks in the top-level directory
-        for service_file in service_files:
-            symlink_target = systemd_user_dir / service_file.name
-
-            # Remove existing file/symlink if it exists
-            if symlink_target.exists() or symlink_target.is_symlink():
-                if symlink_target.is_symlink() and symlink_target.resolve() == service_file.resolve():
-                    # Already a correct symlink, skip
-                    continue
-                symlink_target.unlink()
-
-            # Create symlink
-            symlink_target.symlink_to(service_file)
-            print(f"  📎 {service_file.name} -> {service_file.parent.name}/")
-
+        print("\n⚙️  Step 8: Reloading systemd user daemon...")
         # Reload systemd daemon
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
         print("  🔄 Systemd user daemon reloaded")
