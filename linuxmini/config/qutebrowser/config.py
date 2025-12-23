@@ -261,6 +261,45 @@ c.url.searchengines = {
 
 # === KEYBINDINGS ===
 
+# Smart HTTPS: default to https unless explicitly http://
+@cmdutils.register()
+@cmdutils.argument('win_id', value=cmdutils.Value.win_id)
+def open_smart(url: str = "", tab: bool = False, bg: bool = False, private: bool = False, win_id=None):
+    """Open URL with smart HTTPS defaulting."""
+    from qutebrowser.commands import runners
+
+    # If URL explicitly starts with http://, respect it
+    if url.startswith("http://"):
+        cmd = "open"
+    else:
+        # Otherwise force HTTPS
+        cmd = "open -s"
+
+    # Add flags
+    if private:
+        cmd += " -p"
+    if bg:
+        cmd += " -b"
+    elif tab:
+        cmd += " -t"
+
+    # Add URL if provided
+    if url:
+        cmd += f" {url}"
+
+    # Execute the command
+    commandrunner = runners.CommandRunner(win_id)
+    commandrunner.run_safely(cmd)
+
+# Bind keys to use smart HTTPS
+config.bind("o", "cmd-set-text -s :open-smart ")
+config.bind("O", "cmd-set-text -s :open-smart --tab ")
+config.bind("go", "cmd-set-text :open-smart {url:pretty}")
+config.bind("gO", "cmd-set-text :open-smart --tab {url:pretty}")
+
+# Update P to use smart HTTPS for private browsing
+config.bind("P", "cmd-set-text -s :open-smart --private ")
+
 # Vim-style navigation
 config.bind("j", "cmd-repeat 15 scroll down")
 config.bind("k", "cmd-repeat 15 scroll up")
