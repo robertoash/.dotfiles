@@ -51,12 +51,37 @@ def toggle_monitor_stash():
 
 
 def move_to_monitor_stash(stash_name=None):
-    """Move the active window to the appropriate monitor's stash workspace.
-    
+    """Toggle window between stash and regular workspace.
+
+    If the window is in a special workspace (stash), moves it to the regular workspace.
+    If the window is in a regular workspace, moves it to the stash.
+
     Args:
         stash_name: Optional specific stash name to use (e.g., "stash-left", "stash-right").
                    If not provided, automatically determines based on current monitor.
     """
+    # Get active window to check current workspace
+    active_window = window_manager.run_hyprctl(["activewindow", "-j"])
+    if not active_window:
+        print("No active window")
+        return 1
+
+    current_workspace_id = active_window.get("workspace", {}).get("id")
+
+    # If already in a special workspace (negative ID), move to regular workspace
+    if current_workspace_id and current_workspace_id < 0:
+        monitor = get_active_monitor()
+        if not monitor:
+            print("Could not determine active monitor")
+            return 1
+
+        # Move to the active regular workspace on this monitor
+        target_workspace = monitor.get("activeWorkspace", {}).get("id")
+        window_manager.run_hyprctl_command(["dispatch", "movetoworkspacesilent", str(target_workspace)])
+        print(f"Moved window from special workspace to workspace {target_workspace}")
+        return 0
+
+    # Otherwise, move to stash
     if stash_name:
         # Use the provided stash name
         stash = stash_name
@@ -66,11 +91,11 @@ def move_to_monitor_stash(stash_name=None):
         if not monitor:
             print("Could not determine active monitor")
             return 1
-        
+
         # Determine which stash to use based on monitor
         monitor_name = monitor.get("name", "")
         monitor_desc = monitor.get("description", "")
-        
+
         # Map monitors to their stash workspaces
         if "HDMI-A-1" in monitor_name or "L32p-30" in monitor_desc:
             stash = "stash-right"
@@ -80,9 +105,9 @@ def move_to_monitor_stash(stash_name=None):
             # Default fallback
             print(f"Unknown monitor: {monitor_name} ({monitor_desc}), using stash-left")
             stash = "stash-left"
-    
+
     # Move the active window to the appropriate stash
     window_manager.run_hyprctl_command(["dispatch", "movetoworkspacesilent", f"special:{stash}"])
-    
+
     print(f"Moved window to {stash}")
     return 0
