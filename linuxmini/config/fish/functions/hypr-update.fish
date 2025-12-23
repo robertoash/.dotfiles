@@ -2,7 +2,7 @@ function hypr-update --description "Update all Hyprland-related packages"
     # Main Hyprland applications
     set main_apps \
         hyprland-git \
-        hypridle \
+        hypridle-git \
         hyprlock-git \
         hyprpaper-git
 
@@ -20,7 +20,8 @@ function hypr-update --description "Update all Hyprland-related packages"
         hyprtoolkit-git \
         hyprutils-git \
         hyprwayland-scanner-git \
-        hyprwire-git
+        hyprwire-git \
+        xdg-desktop-portal-hyprland-git
 
     # Desktop portal
     set portal xdg-desktop-portal-hyprland

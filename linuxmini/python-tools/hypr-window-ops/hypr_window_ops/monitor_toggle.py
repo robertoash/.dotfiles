@@ -38,7 +38,7 @@ def toggle_active_monitor():
     Toggle focus to the next monitor and restore last active window in target workspace.
 
     This function:
-    1. Saves the current active window for the current workspace
+    1. Saves the current active window for the current workspace (including special workspaces)
     2. Switches to the next monitor
     3. Restores the last active window in the target monitor's workspace
     """
@@ -65,7 +65,13 @@ def toggle_active_monitor():
 
     next_index = (focused_index + 1) % len(monitors)
     next_monitor = monitors[next_index]
-    target_workspace_id = next_monitor["activeWorkspace"]["id"]
+
+    # Check if a special workspace is visible on target monitor, use that instead of activeWorkspace
+    special_ws = next_monitor.get("specialWorkspace", {})
+    if special_ws.get("id", 0) != 0:
+        target_workspace_id = special_ws.get("id")
+    else:
+        target_workspace_id = next_monitor["activeWorkspace"]["id"]
 
     # Switch to the monitor first
     wm.run_hyprctl_command(["dispatch", "focusmonitor", next_monitor["name"]])

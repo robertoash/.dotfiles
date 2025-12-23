@@ -15,16 +15,18 @@ def get_active_monitor():
     return None
 
 
-def get_windows_on_monitor(monitor_id):
+def get_windows_on_monitor(monitor_id, workspace_id=None):
     """
     Get all cycleable windows on a specific monitor.
 
     Filters out:
     - Pinned windows
-    - Special workspaces (negative IDs)
     - Unmapped windows
 
-    Includes both tiled and floating windows.
+    If workspace_id is provided, only returns windows on that workspace.
+    Otherwise, includes all workspaces on the monitor.
+
+    Includes both tiled and floating windows, and special workspaces.
     Windows are sorted by position (top to bottom, left to right).
     """
     clients = wm.get_clients()
@@ -37,7 +39,7 @@ def get_windows_on_monitor(monitor_id):
         if c.get("monitor") == monitor_id
         and not c.get("pinned", False)  # Exclude pinned windows
         and c.get("mapped", True)  # Only mapped windows
-        and c.get("workspace", {}).get("id", -1) >= 0  # Exclude special workspaces
+        and (workspace_id is None or c.get("workspace", {}).get("id") == workspace_id)
     ]
 
     # Sort by position (top to bottom, left to right) for consistent ordering
@@ -48,10 +50,10 @@ def get_windows_on_monitor(monitor_id):
 
 def cycle_windows():
     """
-    Cycle focus through windows on the current monitor.
+    Cycle focus through windows on the current workspace.
 
-    Cycles through all tiled and floating windows on the active monitor,
-    excluding pinned windows and special workspaces.
+    Cycles through all tiled and floating windows on the active workspace,
+    including special workspaces when visible.
     """
     active_window = wm.run_hyprctl(["activewindow", "-j"])
     active_monitor = get_active_monitor()
@@ -60,7 +62,14 @@ def cycle_windows():
         return 1
 
     monitor_id = active_monitor["id"]
-    windows = get_windows_on_monitor(monitor_id)
+
+    # Get workspace ID from active window (handles both regular and special workspaces)
+    workspace_id = active_window.get("workspace", {}).get("id") if active_window else None
+    if workspace_id is None:
+        # Fallback to monitor's active workspace if no active window
+        workspace_id = active_monitor.get("activeWorkspace", {}).get("id")
+
+    windows = get_windows_on_monitor(monitor_id, workspace_id)
 
     if len(windows) <= 1:
         # Nothing to cycle
