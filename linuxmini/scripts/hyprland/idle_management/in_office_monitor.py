@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+import os
 import subprocess
 import time
 
@@ -50,7 +51,8 @@ def turn_dpms_on():
 
     try:
         logging.info("in_office turned ON - turning displays on (DPMS on)")
-        subprocess.run(get_system_command("hyprctl_dpms_on"), check=True)
+        env = os.environ.copy()
+        subprocess.run(get_system_command("hyprctl_dpms_on"), check=True, env=env)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS on: {e}")
@@ -61,7 +63,8 @@ def turn_dpms_off():
     """Turn DPMS off using hyprctl."""
     try:
         logging.info("Turning displays off (DPMS off)")
-        subprocess.run(get_system_command("hyprctl_dpms_off"), check=True)
+        env = os.environ.copy()
+        subprocess.run(get_system_command("hyprctl_dpms_off"), check=True, env=env)
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS off: {e}")
@@ -80,7 +83,8 @@ def lock_computer():
             return True
 
         logging.info("Locking computer with hyprlock")
-        subprocess.Popen(get_system_command("hyprlock"))
+        env = os.environ.copy()
+        subprocess.Popen(get_system_command("hyprlock"), env=env)
         return True
     except Exception as e:
         logging.error(f"Failed to lock computer: {e}")
@@ -127,8 +131,6 @@ def main():
 
     # Create PID file
     try:
-        import os
-
         pid_file.write_text(str(os.getpid()))
         logging.info("In-office monitor started")
     except Exception as e:
