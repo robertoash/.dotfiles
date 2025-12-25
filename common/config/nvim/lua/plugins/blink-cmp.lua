@@ -16,6 +16,7 @@ return {
 			opts = {},
 		},
 		"folke/lazydev.nvim",
+		"saghen/blink.compat",
 	},
 	opts = {
 		keymap = {
@@ -37,7 +38,7 @@ return {
 		},
 
 		sources = {
-			default = { "lsp", "path", "snippets", "lazydev" },
+			default = { "lsp", "path", "snippets", "lazydev", "cmp_ai" },
 			providers = {
 				lazydev = {
 					module = "lazydev.integrations.blink",
@@ -47,6 +48,12 @@ return {
 					opts = {
 						show_hidden_files_by_default = true,
 					},
+				},
+				cmp_ai = {
+					name = "cmp_ai",
+					module = "blink.compat.source",
+					score_offset = -3,
+					async = true,
 				},
 			},
 		},
