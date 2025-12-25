@@ -9,6 +9,7 @@ ExecStart=/usr/bin/hyprpaper
 ExecStartPost=/bin/sleep 3
 ExecStartPost=/usr/bin/hyprctl hyprpaper wallpaper "DP-1,/home/rash/.config/wallpaper/hypr_left"
 ExecStartPost=/usr/bin/hyprctl hyprpaper wallpaper "DP-2,/home/rash/.config/wallpaper/hypr_right"
+PassEnvironment=HYPRLAND_INSTANCE_SIGNATURE
 Restart=on-failure
 RestartSec=5
 
