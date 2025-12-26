@@ -54,7 +54,7 @@ focus_follows_mouse yes
 bindsym $alt+space exec rofi -show drun
 
 # Terminal and common apps
-bindsym $mod+$ctrl+$alt+Return exec wezterm start --always-new-process --class wezterm --cwd ~/.dotfiles-nix/
+bindsym $mod+$ctrl+$alt+Return exec wezterm start --always-new-process --class wezterm --cwd ~/.dotfiles/
 bindsym $mod+$ctrl+$alt+t exec wezterm start --always-new-process --class thoth_notes -- thoth
 bindsym $mod+$ctrl+$alt+c exec wezterm start --always-new-process --class calculator --cwd /tmp -- qalc
 

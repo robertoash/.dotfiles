@@ -1,5 +1,5 @@
 # App shortcuts
-cmd + ctrl + alt - return : wezterm start --always-new-process --cwd ~/.dotfiles-nix/
+cmd + ctrl + alt - return : wezterm start --always-new-process --cwd ~/.dotfiles/
 
 # Window/Display Focus (triggers Amethyst shortcuts)
 # Cmd+Tab: Switch monitor focus (triggers Amethyst's Ctrl+Shift+Option+k)

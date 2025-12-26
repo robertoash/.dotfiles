@@ -12,7 +12,7 @@ function dbt --description 'dbt Cloud CLI wrapper with custom dag subcommand'
     else if test (count $argv) -ge 1; and test "$argv[1]" = "dag"
         # Remove "dag" from arguments and pass the rest to the script
         set -e argv[1]
-        ~/.dotfiles-nix/config/workmbp/scripts/dbt_dag_viz.py $argv
+        ~/.dotfiles/workmbp/scripts/dbt_dag_viz.py $argv
     else
         # dbt Cloud CLI uses dbt_cloud.yml directly, no profile needed
         command dbt $argv

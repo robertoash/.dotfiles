@@ -71,7 +71,7 @@ window-rule {
 binds {
     // Application launchers (matching Hyprland ALT+Space)
     Super+Space hotkey-overlay-title="App launcher" { spawn "rofi" "-show" "drun"; }
-    Super+Ctrl+Alt+Return hotkey-overlay-title="Terminal" { spawn "wezterm" "start" "--always-new-process" "--class" "wezterm" "--cwd" "/home/rash/.dotfiles-nix/"; }
+    Super+Ctrl+Alt+Return hotkey-overlay-title="Terminal" { spawn "wezterm" "start" "--always-new-process" "--class" "wezterm" "--cwd" "/home/rash/.dotfiles/"; }
     Super+Ctrl+Alt+T hotkey-overlay-title="Notes (Thoth)" { spawn "wezterm" "start" "--always-new-process" "--class" "thoth_notes" "--" "thoth"; }
     Super+Ctrl+Alt+C hotkey-overlay-title="Calculator" { spawn "wezterm" "start" "--always-new-process" "--class" "calculator" "--cwd" "/tmp" "--" "qalc"; }
 
