@@ -20,7 +20,7 @@
     "command": "uvx",
     "args": ["mcp-obsidian"],
     "env": {
-      "UV_PYTHON": "/home/rash/.nix-profile/bin/python3",
+      "UV_PYTHON": "/usr/bin/python3",
       "OBSIDIAN_API_KEY": "{{OBSIDIAN_API_KEY}}",
       "OBSIDIAN_HOST": "localhost",
       "OBSIDIAN_PORT": "27123"
