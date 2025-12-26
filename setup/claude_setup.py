@@ -55,13 +55,18 @@ def substitute_secrets(template_str, secrets):
     return template_str
 
 
-def setup_claude_config(dotfiles_dir):
+def setup_claude_config(dotfiles_dir, hostname=None):
     """Setup Claude Code MCP servers with encrypted secrets"""
     dotfiles_dir = Path(dotfiles_dir)
 
+    if hostname is None:
+        import socket
+        hostname = socket.gethostname()
+
     # Paths
     secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
-    template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
+    common_template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
+    machine_template_file = dotfiles_dir / hostname / ".claude" / "mcp-servers-template.json"
     claude_json_path = Path.home() / ".claude.json"
 
     print("\n🔐 Setting up Claude Code configuration...")
@@ -78,18 +83,31 @@ def setup_claude_config(dotfiles_dir):
         # Check if sops is installed
         subprocess.run(["sops", "--version"], capture_output=True, check=True, env=env)
 
-        # Check if secrets and template files exist
-        if secrets_file.exists() and template_file.exists():
+        # Check if at least common template exists
+        if secrets_file.exists() and common_template_file.exists():
             # Decrypt secrets
             secrets = decrypt_secrets(secrets_file)
             if secrets:
-                # Load template
-                with open(template_file) as f:
-                    template_str = f.read()
+                # Load common template
+                with open(common_template_file) as f:
+                    common_template_str = f.read()
 
-                # Substitute secrets
-                mcp_servers_str = substitute_secrets(template_str, secrets)
-                mcp_servers = json.loads(mcp_servers_str)
+                # Substitute secrets in common template
+                common_mcp_str = substitute_secrets(common_template_str, secrets)
+                mcp_servers = json.loads(common_mcp_str)
+
+                # Load and merge machine-specific template if it exists
+                if machine_template_file.exists():
+                    with open(machine_template_file) as f:
+                        machine_template_str = f.read()
+
+                    # Substitute secrets in machine-specific template
+                    machine_mcp_str = substitute_secrets(machine_template_str, secrets)
+                    machine_mcp_servers = json.loads(machine_mcp_str)
+
+                    # Merge machine-specific servers (they override common ones)
+                    mcp_servers.update(machine_mcp_servers)
+                    print(f"  📦 Merged {len(machine_mcp_servers)} machine-specific MCP server(s) from {hostname}")
 
                 # Load existing .claude.json or create new one
                 if claude_json_path.exists():
@@ -125,8 +143,8 @@ def setup_claude_config(dotfiles_dir):
         else:
             if not secrets_file.exists():
                 print(f"⚠️  Secrets file not found: {secrets_file}")
-            if not template_file.exists():
-                print(f"⚠️  Template not found: {template_file}")
+            if not common_template_file.exists():
+                print(f"⚠️  Common template not found: {common_template_file}")
             print("⚠️  Skipping MCP servers setup.")
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("⚠️  sops not found. Skipping MCP servers setup.")

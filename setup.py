@@ -322,7 +322,7 @@ else:
     print(f"⚠️  SSH authorized_keys source not found: {authorized_keys_source}")
 
 # Step 6: Setup Claude Code configuration
-setup_claude_config(dotfiles_dir)
+setup_claude_config(dotfiles_dir, hostname)
 
 # Step 7: Setup launch agents (macOS only)
 if machine_config["is_macos"]:

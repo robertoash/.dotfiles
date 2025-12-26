@@ -1,0 +1,11 @@
+{
+  "dbt": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["dbt-mcp"],
+    "env": {
+      "DBT_PROJECT_DIR": "/Users/rash/dev/dbt/dbt_production",
+      "DBT_PATH": "/opt/homebrew/bin/dbt"
+    }
+  }
+}
