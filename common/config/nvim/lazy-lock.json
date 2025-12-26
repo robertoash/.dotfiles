@@ -2,13 +2,13 @@
   "Comment.nvim": { "branch": "master", "commit": "e30b7f2008e52442154b66f7c519bfd2f1e32acb" },
   "LuaSnip": { "branch": "master", "commit": "5a1e39223db9a0498024a77b8441169d260c8c25" },
   "blink.cmp": { "branch": "main", "commit": "b19413d214068f316c78978b08264ed1c41830ec" },
-  "claudecode.nvim": { "branch": "main", "commit": "6091df0e8edcdc92526cec23bbb42f63c0bb5ff2" },
+  "claudecode.nvim": { "branch": "main", "commit": "0de96a855a095ed4595bbd3a50ba7f49d694f2b6" },
   "conform.nvim": { "branch": "master", "commit": "5420c4b5ea0aeb99c09cfbd4fd0b70d257b44f25" },
   "diagram.nvim": { "branch": "master", "commit": "99f0415ac157d69e7208bc93504fb70d180d6b44" },
   "fidget.nvim": { "branch": "main", "commit": "64463022a1f2ff1318ab22a2ea4125ed9313a483" },
   "flash.nvim": { "branch": "main", "commit": "fcea7ff883235d9024dc41e638f164a450c14ca2" },
   "git-conflict.nvim": { "branch": "main", "commit": "4bbfdd92d547d2862a75b4e80afaf30e73f7bbb4" },
-  "gitsigns.nvim": { "branch": "main", "commit": "5813e4878748805f1518cee7abb50fd7205a3a48" },
+  "gitsigns.nvim": { "branch": "main", "commit": "e895b811bc63d8e9b9c93216f1fe99c51280c769" },
   "harpoon": { "branch": "harpoon2", "commit": "87b1a3506211538f460786c23f98ec63ad9af4e5" },
   "hererocks": { "branch": "master", "commit": "555a2672e26d13c8b79d92c82562ea6ab19f7aa1" },
   "image.nvim": { "branch": "master", "commit": "446a8a5cc7a3eae3185ee0c697732c32a5547a0b" },
@@ -47,5 +47,5 @@
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" },
   "wrapwidth": { "branch": "main", "commit": "a766191a1cd24ebb95d669ebd4a440c50d7f4422" },
   "yanky.nvim": { "branch": "main", "commit": "04fc42b94305d94948c9c197f679336668af3292" },
-  "yazi.nvim": { "branch": "main", "commit": "28a7e22ea49161a96bf982acec6cf5dbaedbd854" }
+  "yazi.nvim": { "branch": "main", "commit": "7e2f49b72218f62fe73adbf221d85cd27ebf9f2b" }
 }
