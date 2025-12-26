@@ -7,7 +7,7 @@ ConditionPathExists=%t/hypr
 
 [Service]
 ExecStartPre=/bin/sleep 1
-ExecStart=/usr/bin/dunst -conf /home/rash/.config/dunst/dunst.config
+ExecStart=/usr/bin/dunst -conf /home/rash/.config/dunst/dunstrc
 # Only show notification if marker file exists, then remove it
 ExecStartPost=/bin/bash -c 'if [ -f "${XDG_RUNTIME_DIR}/dunst/restarted" ]; then sleep 0.5 && dunstify "Dunst has been restarted 🎉" --icon=dialog-information --timeout=3000 && rm "${XDG_RUNTIME_DIR}/dunst/restarted"; fi'
 Restart=on-failure
