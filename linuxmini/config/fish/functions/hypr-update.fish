@@ -9,7 +9,8 @@ function hypr-update --description "Update all Hyprland-related packages"
     # Extended tools and utilities
     set extended_tools \
         hyprland-guiutils-git \
-        pyprland-git
+        pyprland-git \
+        hyprlock-git
 
     # Hyprland libraries and protocols
     set libraries \
@@ -24,7 +25,7 @@ function hypr-update --description "Update all Hyprland-related packages"
         xdg-desktop-portal-hyprland-git
 
     # Desktop portal
-    set portal xdg-desktop-portal-hyprland
+    set portal xdg-desktop-portal-hyprland-git
 
     # Combine all packages
     set all_packages $main_apps $extended_tools $libraries $portal
