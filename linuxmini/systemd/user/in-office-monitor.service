@@ -6,7 +6,7 @@ After=graphical-session.target
 [Service]
 Type=simple
 ExecStart=/home/rash/.config/scripts/hyprland/idle_management/in_office_monitor.py
-PassEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+PassEnvironment=HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY HASS_SERVER HASS_TOKEN
 Restart=on-failure
 RestartSec=5
 

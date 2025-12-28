@@ -60,11 +60,27 @@ def turn_dpms_on():
 
 
 def turn_dpms_off():
-    """Turn DPMS off using hyprctl."""
+    """Turn DPMS off using hyprctl and turn off Home Assistant devices."""
     try:
         logging.info("Turning displays off (DPMS off)")
         env = os.environ.copy()
         subprocess.run(get_system_command("hyprctl_dpms_off"), check=True, env=env)
+
+        # Turn off Home Assistant devices
+        logging.info("Turning off Home Assistant devices")
+        subprocess.run(
+            ["hass-cli", "service", "call", "switch.turn_off",
+             "--arguments", "entity_id=switch.robs_office_big_lamp"],
+            check=False,
+            env=env
+        )
+        subprocess.run(
+            ["hass-cli", "service", "call", "switch.turn_off",
+             "--arguments", "entity_id=switch.box"],
+            check=False,
+            env=env
+        )
+
         return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to turn DPMS off: {e}")
