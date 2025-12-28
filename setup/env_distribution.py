@@ -28,9 +28,20 @@ def load_env_config(dotfiles_dir: Path) -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
+def expand_home(val: str, home_dir: str) -> str:
+    """Expand $HOME and ~ in a value."""
+    val = str(val).replace("$HOME", home_dir)
+    if val.startswith("~/"):
+        val = val.replace("~/", f"{home_dir}/", 1)
+    elif val == "~":
+        val = home_dir
+    return val
+
+
 def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
     """
     Generate systemd environment.d file from global + machine-specific vars.
+    PATH is merged: machine-specific paths are prepended to global paths.
     Returns the file content as a string.
     """
     lines = [
@@ -41,6 +52,27 @@ def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
     ]
 
     home_dir = str(Path.home())
+    machine_vars = {}
+    if "machines" in config and machine in config["machines"] and config["machines"][machine]:
+        machine_vars = config["machines"][machine]
+
+    # Build merged PATH: machine_paths + system_paths + global_custom_paths
+    path_components = []
+
+    # 1. Machine-specific paths (prepended)
+    if "PATH" in machine_vars:
+        machine_path = expand_home(machine_vars["PATH"], home_dir)
+        path_components.append(machine_path)
+
+    # 2. Standard system paths
+    path_components.append("/usr/local/bin:/usr/bin:/bin")
+
+    # 3. Global custom paths (from env_vars.yaml global.PATH, stripping $PATH:)
+    if "global" in config and "PATH" in config["global"]:
+        global_path = expand_home(config["global"]["PATH"], home_dir)
+        custom_paths = global_path.replace("$PATH:", "").strip()
+        if custom_paths:
+            path_components.append(custom_paths)
 
     # Add global variables
     if "global" in config:
@@ -49,35 +81,23 @@ def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
             # Skip GTK_THEME - it goes in theme.conf
             if key == "GTK_THEME":
                 continue
-            # Expand $HOME and ~ to actual home directory
-            val = str(val).replace("$HOME", home_dir)
-            if val.startswith("~/"):
-                val = val.replace("~/", f"{home_dir}/", 1)
-            elif val == "~":
-                val = home_dir
-            # For PATH, expand to full system paths (systemd doesn't support $PATH)
+            # Skip PATH - handled separately with merging
             if key == "PATH":
-                # Extract custom paths and prepend standard system paths
-                custom_paths = val.replace("$PATH:", "").strip()
-                val = f"/usr/local/bin:/usr/bin:/bin:{custom_paths}"
+                continue
+            val = expand_home(val, home_dir)
             lines.append(f"{key}={val}")
+        # Add merged PATH
+        lines.append(f"PATH={':'.join(path_components)}")
         lines.append("")
 
-    # Add machine-specific overrides
-    if "machines" in config and machine in config["machines"]:
-        machine_vars = config["machines"][machine]
-        # Skip if machine section is None or empty (only has comments in YAML)
-        if machine_vars:
-            lines.append(f"# {machine}-specific variables")
-            for key, val in machine_vars.items():
-                # Expand $HOME and ~ to actual home directory
-                val = str(val).replace("$HOME", home_dir)
-                if val.startswith("~/"):
-                    val = val.replace("~/", f"{home_dir}/", 1)
-                elif val == "~":
-                    val = home_dir
-                lines.append(f"{key}={val}")
-            lines.append("")
+    # Add machine-specific overrides (excluding PATH, already merged)
+    non_path_machine_vars = {k: v for k, v in machine_vars.items() if k != "PATH"}
+    if non_path_machine_vars:
+        lines.append(f"# {machine}-specific variables")
+        for key, val in non_path_machine_vars.items():
+            val = expand_home(val, home_dir)
+            lines.append(f"{key}={val}")
+        lines.append("")
 
     return "\n".join(lines)
 

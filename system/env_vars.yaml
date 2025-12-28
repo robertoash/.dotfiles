@@ -109,12 +109,10 @@ machines:
     PYTHONPATH: $HOME/.dotfiles/linuxmini/scripts
 
   workmbp:
-    # Python path (if needed)
-    # PYTHONPATH: $HOME/.dotfiles/workmbp/scripts
-
-    # Homebrew (set dynamically by shell based on architecture)
-    # HOMEBREW_PREFIX, HOMEBREW_CELLAR, HOMEBREW_REPOSITORY set by 00_homebrew.fish
-    # MANPATH, INFOPATH extended by 00_homebrew.fish
+    # Homebrew paths (prepended to global PATH by env_distribution.py)
+    PATH: /opt/homebrew/bin:/opt/homebrew/sbin
+    # Note: HOMEBREW_PREFIX, HOMEBREW_CELLAR, HOMEBREW_REPOSITORY, MANPATH, INFOPATH
+    # are set dynamically by 00_homebrew.fish based on architecture
 
 # ==============================================================================
 # SECRETS - Names only (values from SOPS, loaded by shell)
