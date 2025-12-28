@@ -59,3 +59,4 @@ common/config/nchat
 *.cache
 linuxmini/scripts/_cache/iptv/xtream
 .serena
+common/config/serena/logs

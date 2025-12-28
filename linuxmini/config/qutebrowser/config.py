@@ -264,39 +264,35 @@ c.url.searchengines = {
 # Smart HTTPS: default to https unless explicitly http://
 from qutebrowser.completion.models import urlmodel
 
-@cmdutils.register()
+@cmdutils.register(maxsplit=0)
 @cmdutils.argument('win_id', value=cmdutils.Value.win_id)
 @cmdutils.argument('url', completion=urlmodel.url)
 def open_smart(url: str = "", tab: bool = False, bg: bool = False, private: bool = False, win_id=None):
     """Open URL with smart HTTPS defaulting."""
     from qutebrowser.commands import runners
-
-    # If URL explicitly starts with http://, respect it
-    if url.startswith("http://"):
-        cmd = "open"
-    # If URL starts with https:// or a scheme, use it as-is
-    elif url.startswith("https://") or "://" in url:
-        cmd = "open"
-    # If it looks like a URL (has dots and no spaces), force HTTPS
-    elif url and "." in url and " " not in url and not url.startswith("!"):
-        cmd = "open -s"
+    
+    # Detect URLs: has dots, no spaces, and doesn't start with http://
+    is_url = (url and "." in url and " " not in url and 
+              not url.startswith("!") and not url.startswith("http://"))
+    
+    if is_url:
+        cmd = "open -s"  # Force HTTPS for URLs
     else:
-        # Otherwise, let qutebrowser's auto_search handle it (search query)
-        cmd = "open"
-
-    # Add flags
+        cmd = "open"  # Everything else: searches, quickmarks, search engines
+    
+    # Add optional flags
     if private:
         cmd += " -p"
     if bg:
         cmd += " -b"
     elif tab:
         cmd += " -t"
-
-    # Add URL if provided
+    
+    # Add the URL/search/quickmark (no quoting - maxsplit commands ignore quotes)
     if url:
         cmd += f" {url}"
-
-    # Execute the command
+    
+    # Execute
     commandrunner = runners.CommandRunner(win_id)
     commandrunner.run_safely(cmd)
 
