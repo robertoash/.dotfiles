@@ -275,9 +275,15 @@ def open_smart(url: str = "", tab: bool = False, bg: bool = False, private: bool
     # If URL explicitly starts with http://, respect it
     if url.startswith("http://"):
         cmd = "open"
-    else:
-        # Otherwise force HTTPS
+    # If URL starts with https:// or a scheme, use it as-is
+    elif url.startswith("https://") or "://" in url:
+        cmd = "open"
+    # If it looks like a URL (has dots and no spaces), force HTTPS
+    elif url and "." in url and " " not in url and not url.startswith("!"):
         cmd = "open -s"
+    else:
+        # Otherwise, let qutebrowser's auto_search handle it (search query)
+        cmd = "open"
 
     # Add flags
     if private:
