@@ -1,2 +1,0 @@
-# Hook direnv
-eval "$(direnv hook zsh)"
