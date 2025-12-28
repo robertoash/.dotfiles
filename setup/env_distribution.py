@@ -40,10 +40,26 @@ def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
         "",
     ]
 
+    home_dir = str(Path.home())
+
     # Add global variables
     if "global" in config:
         lines.append("# Global variables")
         for key, val in config["global"].items():
+            # Skip GTK_THEME - it goes in theme.conf
+            if key == "GTK_THEME":
+                continue
+            # Expand $HOME and ~ to actual home directory
+            val = str(val).replace("$HOME", home_dir)
+            if val.startswith("~/"):
+                val = val.replace("~/", f"{home_dir}/", 1)
+            elif val == "~":
+                val = home_dir
+            # For PATH, expand to full system paths (systemd doesn't support $PATH)
+            if key == "PATH":
+                # Extract custom paths and prepend standard system paths
+                custom_paths = val.replace("$PATH:", "").strip()
+                val = f"/usr/local/bin:/usr/bin:/bin:{custom_paths}"
             lines.append(f"{key}={val}")
         lines.append("")
 
@@ -51,6 +67,12 @@ def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
     if "machines" in config and machine in config["machines"]:
         lines.append(f"# {machine}-specific variables")
         for key, val in config["machines"][machine].items():
+            # Expand $HOME and ~ to actual home directory
+            val = str(val).replace("$HOME", home_dir)
+            if val.startswith("~/"):
+                val = val.replace("~/", f"{home_dir}/", 1)
+            elif val == "~":
+                val = home_dir
             lines.append(f"{key}={val}")
         lines.append("")
 
@@ -70,11 +92,13 @@ def generate_hyprland_env_file(config: Dict[str, Any]) -> str:
         "# PATH - needed early for Hyprland to launch applications",
     ]
 
+    home_dir = str(Path.home())
+
     # Add PATH from global if it exists
     if "global" in config and "PATH" in config["global"]:
         path_value = config["global"]["PATH"]
-        # Remove the $PATH: prefix for Hyprland format
-        path_value = path_value.replace("$PATH:", "").replace("$HOME", "/home/rash")
+        # Keep $PATH for appending, just expand $HOME
+        path_value = path_value.replace("$HOME", home_dir)
         lines.append(f"env = PATH,{path_value}")
         lines.append("")
 
@@ -83,6 +107,8 @@ def generate_hyprland_env_file(config: Dict[str, Any]) -> str:
         lines.append("# Hyprland/Wayland-specific variables")
         lines.append("# NOTE: DISPLAY and WAYLAND_DISPLAY are set by Hyprland automatically - don't override")
         for key, val in config["hyprland_only"].items():
+            # Expand $HOME if present
+            val = str(val).replace("$HOME", home_dir)
             lines.append(f"env = {key},{val}")
         lines.append("")
 
