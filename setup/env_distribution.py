@@ -65,16 +65,19 @@ def generate_systemd_env_file(config: Dict[str, Any], machine: str) -> str:
 
     # Add machine-specific overrides
     if "machines" in config and machine in config["machines"]:
-        lines.append(f"# {machine}-specific variables")
-        for key, val in config["machines"][machine].items():
-            # Expand $HOME and ~ to actual home directory
-            val = str(val).replace("$HOME", home_dir)
-            if val.startswith("~/"):
-                val = val.replace("~/", f"{home_dir}/", 1)
-            elif val == "~":
-                val = home_dir
-            lines.append(f"{key}={val}")
-        lines.append("")
+        machine_vars = config["machines"][machine]
+        # Skip if machine section is None or empty (only has comments in YAML)
+        if machine_vars:
+            lines.append(f"# {machine}-specific variables")
+            for key, val in machine_vars.items():
+                # Expand $HOME and ~ to actual home directory
+                val = str(val).replace("$HOME", home_dir)
+                if val.startswith("~/"):
+                    val = val.replace("~/", f"{home_dir}/", 1)
+                elif val == "~":
+                    val = home_dir
+                lines.append(f"{key}={val}")
+            lines.append("")
 
     return "\n".join(lines)
 
