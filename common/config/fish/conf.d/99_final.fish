@@ -3,8 +3,6 @@
 
 # Load Starship prompt
 if command -v starship >/dev/null 2>&1
-    # Set config location
-    set -gx STARSHIP_CONFIG ~/.config/starship/starship.toml
     starship init fish | source
 end
 

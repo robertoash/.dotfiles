@@ -1,7 +1,8 @@
 # ~/.config/fish/conf.d/00_environment.fish
 # Environment Variables Configuration
 #
-# NOTE: Environment variables are centralized in ~/.config/environment.d/env_vars.conf
+# NOTE: Environment variables are centralized in ~/.dotfiles/system/env_vars.yaml
+# That file is distributed by setup.py to ~/.config/environment.d/env_vars.conf
 # This uses systemd user environment (works across all shells and applications)
 #
 # Import systemd user environment into fish
@@ -19,6 +20,9 @@ end
 
 # Set SHELL to fish (systemd has /bin/bash)
 set -gx SHELL /usr/bin/fish
+
+# Set TERM_PROGRAM for WezTerm (helps applications detect terminal capabilities)
+set -gx TERM_PROGRAM WezTerm
 
 # Load linuxmini-specific sops secrets
 if status is-interactive

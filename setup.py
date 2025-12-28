@@ -9,6 +9,7 @@ from pathlib import Path
 # Add setup to path for imports
 sys.path.insert(0, str(Path(__file__).parent / "setup"))
 from claude_setup import setup_claude_config
+from env_distribution import distribute_env_vars
 from machines import get_machine_config
 
 # Get hostname and paths
@@ -323,6 +324,9 @@ else:
 
 # Step 6: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
+
+# Step 6.5: Distribute environment variables from system/env_vars.yaml
+distribute_env_vars(dotfiles_dir, hostname, verbose=True)
 
 # Step 7: Setup launch agents (macOS only)
 if machine_config["is_macos"]:
