@@ -58,3 +58,4 @@ common/config/nchat
 .claude.json.backup
 *.cache
 linuxmini/scripts/_cache/iptv/xtream
+.serena
