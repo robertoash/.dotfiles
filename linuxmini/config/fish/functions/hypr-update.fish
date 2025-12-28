@@ -38,7 +38,25 @@ function hypr-update --description "Update all Hyprland-related packages"
     echo "🔌 Portal: $portal"
     echo ""
 
-    yay -S --devel $all_packages
+    # Check if --confirm flag is present
+    set -l confirm_mode no
+    set -l filtered_args
+    for arg in $argv
+        if test "$arg" = "--confirm"
+            set confirm_mode yes
+        else
+            set -a filtered_args $arg
+        end
+    end
+
+    # --devel checks git repos for new commits
+    # Note: May rebuild some packages even if unchanged, but ensures all updates are caught
+    # Runs with --noconfirm by default unless --confirm is passed
+    if test "$confirm_mode" = no
+        yay -S --devel --noconfirm $filtered_args $all_packages
+    else
+        yay -S --devel $filtered_args $all_packages
+    end
 
     if test $status -eq 0
         echo ""

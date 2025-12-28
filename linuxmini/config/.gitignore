@@ -284,15 +284,7 @@ qutebrowser/profiles/linuxmini/rash/.gitkeep
 qutebrowser/profiles/linuxmini/rash/config/__pycache__
 qutebrowser/profiles/linuxmini/rash/config/qsettings
 qutebrowser/profiles/linuxmini/rash/config/userscripts
-qutebrowser/profiles/linuxmini/rash/runtime/ipc-3e38ef642f0490926b684f70ed5a8824
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-0f1_fqzk
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-c6bad9vb
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-divept5_
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-jaznk_3h
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-ks93tqnv
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-lfwo6gmt
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-sbbubz2a
-qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-wmvy4l72
+qutebrowser/profiles/linuxmini/rash/runtime/
 qutebrowser/userscripts/__pycache__
 qutebrowser/userscripts/cleanup_history_builtin.py
 qutebrowser/userscripts/cleanup_history_external.py
