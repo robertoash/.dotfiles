@@ -38,7 +38,7 @@ function hypr-update --description "Update all Hyprland-related packages"
     echo "🔌 Portal: $portal"
     echo ""
 
-    yay -S --needed --devel $all_packages
+    yay -S --devel $all_packages
 
     if test $status -eq 0
         echo ""
