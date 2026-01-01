@@ -44,7 +44,6 @@ def substitute_secrets(template_str, secrets):
     """Replace {{PLACEHOLDER}} with actual secret values"""
     replacements = {
         "{{CLAUDE_GITHUB_TOKEN}}": secrets.get("github-token", ""),
-        "{{CLAUDE_HA_TOKEN_CONFIG}}": secrets.get("ha-token-config", ""),
         "{{CLAUDE_HA_TOKEN_GLOBAL}}": secrets.get("ha-token-global", ""),
         "{{OBSIDIAN_API_KEY}}": secrets.get("obsidian-api-key", ""),
     }
