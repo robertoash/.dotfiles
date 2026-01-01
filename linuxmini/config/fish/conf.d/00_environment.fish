@@ -18,11 +18,20 @@ for line in (systemctl --user show-environment 2>/dev/null)
     end
 end
 
+# Load shell-only environment variables from env_vars.yaml
+if command -v yq >/dev/null 2>&1; and test -f ~/.dotfiles/system/env_vars.yaml
+    for line in (yq -r '.shell_only | to_entries | .[] | "\(.key)=\(.value)"' ~/.dotfiles/system/env_vars.yaml 2>/dev/null)
+        set -l parts (string split -m 1 = $line)
+        if test (count $parts) -eq 2
+            # Expand $HOME in values
+            set -l value (string replace -a '$HOME' $HOME -- $parts[2])
+            set -gx $parts[1] $value
+        end
+    end
+end
+
 # Set SHELL to fish (systemd has /bin/bash)
 set -gx SHELL /usr/bin/fish
-
-# Set TERM_PROGRAM for WezTerm (helps applications detect terminal capabilities)
-set -gx TERM_PROGRAM WezTerm
 
 # Load linuxmini-specific sops secrets
 if status is-interactive

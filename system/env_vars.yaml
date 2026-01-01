@@ -19,8 +19,7 @@ global:
   IDE: cursor
   NOTE_EDITOR: obsidian
   TERMINAL: wezterm
-  BROWSER: /home/rash/.local/bin/qute_profile rash %s
-  BROWSER_CLEAN: /home/rash/.local/bin/qute_profile rash
+
 
   # Terminal
   COLORTERM: truecolor
@@ -41,13 +40,11 @@ global:
 
   # FZF
   FD_IGNORE_FILE: $HOME/.config/fd/ignore
-  FZF_DEFAULT_COMMAND: fd .
 
   # Tool settings
   DOCKER_BUILDKIT: "1"
   WALK_MAIN_COLOR: "#010111"
   WALK_REMOVE_CMD: trash
-  WALK_STATUS_BAR: Size() + ' ' + Mode()
 
   # Development
   CURRENT_PROJECT_DIR: /home/rash/dev/apps
@@ -97,7 +94,19 @@ hyprland_only:
 # SHELL ONLY - Interactive shell variables (not needed system-wide)
 # ==============================================================================
 shell_only:
+  # Applications
+  BROWSER: /home/rash/.local/bin/qute_profile rash %s
+  BROWSER_CLEAN: /home/rash/.local/bin/qute_profile rash
+  
+  # FZF
+  FZF_DEFAULT_COMMAND: fd .
+  
+  # Walk file manager
+  WALK_STATUS_BAR: Size() + ' ' + Mode()
+  
+  # Terminal
   TERM_PROGRAM: WezTerm
+  
   # PYTHONPATH is set per-machine in shell config due to machine-specific paths
 
 # ==============================================================================
