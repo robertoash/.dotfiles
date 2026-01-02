@@ -50,6 +50,9 @@ linuxmini/kanata/last_state.json
 linuxmini/sunshine/sunshine.log
 common/config/nchat
 
+# Yazi plugins (managed by ya pack)
+common/config/yazi/plugins/
+
 # Runtime
 **/raycast/extensions/
 
