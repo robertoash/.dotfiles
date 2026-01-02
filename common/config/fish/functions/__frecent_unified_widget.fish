@@ -4,6 +4,12 @@ function __frecent_unified_widget
     set -l token (commandline -t)
     set -l tokens (string split ' ' $cmd)
 
+    # Check for fd triggers first (fdf, fdd, fda)
+    if string match -q -r '^fd[fda]$' "$token"
+        __fd_unified_widget
+        return
+    end
+
     # Check if current token is a trigger (ff, dd, aa)
     switch "$token"
         case ff
