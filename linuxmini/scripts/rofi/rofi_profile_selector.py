@@ -112,6 +112,24 @@ class ProfileSelector:
             # User cancelled or rofi failed
             return ""
 
+    def show_application_menu(self) -> str:
+        """Show rofi menu for application selection and return the selected application."""
+        applications = list(self.applications.keys())
+        applications_str = "\n".join(applications)
+
+        try:
+            result = subprocess.run(
+                ["rofi", "-dmenu", "-i", "-p", "Select browser:"],
+                input=applications_str,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            return result.stdout.strip()
+        except subprocess.CalledProcessError:
+            # User cancelled or rofi failed
+            return ""
+
     def launch_profile(self, app_name: str, profile: str, url: str = None) -> bool:
         """Launch the specified profile for the given application."""
         if not profile:
@@ -197,23 +215,28 @@ class ProfileSelector:
 
 def main():
     """Main entry point."""
-    if len(sys.argv) < 2:
-        print(
-            "Usage: rofi_profile_selector.py <application_name> [url]", file=sys.stderr
-        )
-        print("Available applications: qutebrowser, chromium", file=sys.stderr)
-        sys.exit(1)
-
-    app_name = sys.argv[1].lower()
-
+    selector = ProfileSelector()
+    
     # Check for URL from command line or environment variable
     url = None
-    if len(sys.argv) > 2:
-        url = sys.argv[2]
-    elif "MEETING_URL" in os.environ:
+    app_name = None
+    
+    if len(sys.argv) >= 2:
+        app_name = sys.argv[1].lower()
+        if len(sys.argv) > 2:
+            url = sys.argv[2]
+    
+    if not app_name:
+        # No application specified, show browser selection menu
+        app_name = selector.show_application_menu()
+        if not app_name:
+            # User cancelled
+            sys.exit(0)
+    
+    # Check for MEETING_URL environment variable if no URL from command line
+    if not url and "MEETING_URL" in os.environ:
         url = os.environ["MEETING_URL"]
-
-    selector = ProfileSelector()
+    
     selector.run_selector(app_name, url)
 
 

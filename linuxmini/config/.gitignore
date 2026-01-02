@@ -216,6 +216,7 @@ fish/conf.d/startup_functions
 fish/config.fish
 fish/fish_variables
 fish/fish_welcome_img.jpg
+fish/functions/__fd_unified_widget.fish
 fish/functions/__frecent_unified_widget.fish
 fish/functions/__smart_cwd_hook.fish
 fish/functions/accept_next_path_segment.fish
