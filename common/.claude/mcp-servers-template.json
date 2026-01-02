@@ -40,5 +40,11 @@
     "command": "npx",
     "args": ["-y", "@lepion/mcp-server-mermaid"],
     "env": {}
+  },
+  "beads": {
+    "type": "stdio",
+    "command": "beads-mcp",
+    "args": [],
+    "env": {}
   }
 }
