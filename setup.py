@@ -331,13 +331,36 @@ setup_claude_config(dotfiles_dir, hostname)
 # Step 6.5: Distribute environment variables from system/env_vars.yaml
 distribute_env_vars(dotfiles_dir, hostname, verbose=True)
 
-# Step 7: Setup launch agents (macOS only)
+# Step 7: Rsync desktop files (Linux only)
+if machine_config["is_linux"]:
+    desktop_files_source = machine_dir / "local" / "share" / "applications"
+    desktop_files_target = home / ".local" / "share" / "applications"
+
+    if desktop_files_source.exists():
+        print("\n🖥️  Step 7: Syncing desktop files...")
+        desktop_files_target.mkdir(parents=True, exist_ok=True)
+        
+        # Use rsync to mirror the directory
+        result = subprocess.run(
+            ["rsync", "-av", "--delete", f"{desktop_files_source}/", f"{desktop_files_target}/"],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            # Count synced files
+            synced_files = [line for line in result.stdout.split("\n") if line.endswith(".desktop")]
+            print(f"  ✅ Synced {len(synced_files)} desktop files")
+        else:
+            print(f"  ⚠️  rsync failed: {result.stderr.strip()}")
+
+# Step 8: Setup launch agents (macOS only)
 if machine_config["is_macos"]:
     launchagents_source_dir = machine_dir / "launchagents"
     launchagents_target_dir = home / "Library" / "LaunchAgents"
 
     if launchagents_source_dir.exists():
-        print("\n🚀 Step 7: Setting up macOS launch agents...")
+        print("\n🚀 Step 8: Setting up macOS launch agents...")
         launchagents_target_dir.mkdir(parents=True, exist_ok=True)
 
         # Find all plist files
@@ -362,12 +385,12 @@ if machine_config["is_macos"]:
             else:
                 print(f"  ⚠️  Failed to load {plist_file.name}: {result.stderr.strip()}")
 
-# Step 8: Reload systemd daemon (Linux only)
+# Step 9: Reload systemd daemon (Linux only)
 if machine_config["is_linux"]:
     systemd_user_dir = machine_dir / "systemd" / "user"
 
     if systemd_user_dir.exists():
-        print("\n⚙️  Step 8: Reloading systemd user daemon...")
+        print("\n⚙️  Step 9: Reloading systemd user daemon...")
         # Reload systemd daemon
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
         print("  🔄 Systemd user daemon reloaded")

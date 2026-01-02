@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Yazi
+Icon=yazi
+Exec=wezterm start --class yazi-term -- /usr/bin/yazi
+Terminal=false
+Categories=Utility;FileManager;
+MimeType=inode/directory;
+Type=Application

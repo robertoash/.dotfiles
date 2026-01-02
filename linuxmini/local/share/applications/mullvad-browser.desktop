@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mullvad Browser
+GenericName=Web Browser
+Icon=mullvad-browser
+Exec=mullvad-browser %u
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
+StartupNotify=true
+Type=Application

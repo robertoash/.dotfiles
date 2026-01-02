@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Mullvad VPN
+GenericName=VPN Client
+Icon=mullvad-vpn
+Exec=mullvad-vpn %u
+Categories=Network;Security;
+StartupNotify=true
+Type=Application
