@@ -18,3 +18,8 @@ end
 if test -f ~/.config/broot/launcher/fish/br
     source ~/.config/broot/launcher/fish/br
 end
+
+# npm global packages
+if test -d ~/.npm-global/bin
+    fish_add_path ~/.npm-global/bin
+end
