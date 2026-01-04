@@ -241,8 +241,8 @@
             "ignored-sinks": ["Easy Effects Sink"]
         },
         "scroll-step": 5.0,
-        "on-click": "~/.config/scripts/waybar/audio.py --toggle",
-        "on-click-right": "pavucontrol -t 3",
+        "on-click": "pavucontrol -t 3",
+        "on-click-right": "~/.config/scripts/waybar/audio.py --toggle",
         "on-scroll-up": "~/.config/scripts/waybar/audio.py --inc",
         "on-scroll-down": "~/.config/scripts/waybar/audio.py --dec",
         "tooltip-format": "{icon} {desc} | {volume}%",
