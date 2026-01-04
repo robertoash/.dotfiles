@@ -89,61 +89,111 @@ def infer_corner_from_cursor(window_info):
         return None  # Cursor not near any corner
 
 
-def detect_current_corner(window_info):
-    """Detect which corner the window is currently positioned in on its monitor."""
-    geometry = get_window_geometry(window_info)
+def get_monitor_reserved(monitor):
+    """
+    Extract reserved space from monitor info.
+    The reserved array format appears to be [left, top, right, bottom] in JSON output.
+    Returns dict with 'top', 'bottom', 'left', 'right' keys.
+    """
+    reserved = monitor.get("reserved", [0, 0, 0, 0])
+    # Based on empirical testing: [left, top, right, bottom]
+    return {
+        "left": reserved[0],
+        "top": reserved[1],
+        "right": reserved[2],
+        "bottom": reserved[3],
+    }
 
-    # Get monitor info
+
+def get_window_monitor(window_info):
+    """
+    Get the monitor that contains the window.
+    Returns monitor info with corrected dimensions accounting for transform/rotation.
+    """
+    # Use the window's monitor field instead of coordinate calculation
+    # because monitors can overlap in coordinate space
+    window_monitor_id = window_info.get("monitor")
+    if window_monitor_id is None:
+        return None
+
     monitors = window_manager.run_hyprctl(["monitors", "-j"])
-    current_monitor = None
 
-    # Find which monitor the window is on
+    # Find monitor by ID
     for monitor in monitors:
-        mon_x = monitor["x"]
-        mon_y = monitor["y"]
-        mon_width = monitor["width"]
-        mon_height = monitor["height"]
+        if monitor.get("id") == window_monitor_id:
+            # Account for transform/rotation
+            # transform=1 or transform=3 means 90° or 270° rotation (portrait mode)
+            # In these cases, width and height are swapped in actual screen space
+            transform = monitor.get("transform", 0)
+            if transform in [1, 3]:
+                # Swap width and height for portrait monitors
+                corrected_monitor = monitor.copy()
+                corrected_monitor["width"], corrected_monitor["height"] = monitor["height"], monitor["width"]
+                return corrected_monitor
+            return monitor
 
-        # Check if window center is within this monitor
-        window_center_x = geometry["x"] + geometry["width"] // 2
-        window_center_y = geometry["y"] + geometry["height"] // 2
+    return None
 
-        if (
-            mon_x <= window_center_x < mon_x + mon_width
-            and mon_y <= window_center_y < mon_y + mon_height
-        ):
-            current_monitor = monitor
-            break
+
+def detect_current_corner(window_info):
+    """
+    Detect which corner the window is currently positioned in on its monitor.
+    Returns corner name if window is actually snapped to a corner, otherwise None.
+
+    Note: Hyprland's movewindow command automatically accounts for reserved space
+    (like waybar), so we need to check against those adjusted positions.
+    """
+    geometry = get_window_geometry(window_info)
+    current_monitor = get_window_monitor(window_info)
 
     if not current_monitor:
         return None
 
-    # Calculate relative position within monitor
+    # Get gaps and reserved space
+    gaps_out = window_manager.get_hyprland_gaps_out()
+    reserved = get_monitor_reserved(current_monitor)
+    snap_threshold = 10  # pixels tolerance for considering window "snapped"
+
     mon_x = current_monitor["x"]
     mon_y = current_monitor["y"]
     mon_width = current_monitor["width"]
     mon_height = current_monitor["height"]
 
-    # Check which corner window is closest to
     window_x = geometry["x"]
     window_y = geometry["y"]
+    window_right = window_x + geometry["width"]
+    window_bottom = window_y + geometry["height"]
 
-    # Distance to each corner
-    distances = {
-        "upper-left": ((window_x - mon_x) ** 2 + (window_y - mon_y) ** 2) ** 0.5,
-        "upper-right": ((window_x - (mon_x + mon_width)) ** 2 + (window_y - mon_y) ** 2)
-        ** 0.5,
-        "lower-left": ((window_x - mon_x) ** 2 + (window_y - (mon_y + mon_height)) ** 2)
-        ** 0.5,
-        "lower-right": (
-            (window_x - (mon_x + mon_width)) ** 2
-            + (window_y - (mon_y + mon_height)) ** 2
-        )
-        ** 0.5,
+    # Calculate expected snap positions (matching what movewindow + gaps_out produces)
+    # Hyprland's movewindow accounts for reserved space automatically
+    expected_positions = {
+        "upper-left": {
+            "x": mon_x + gaps_out,
+            "y": mon_y + reserved["top"] + gaps_out,
+        },
+        "upper-right": {
+            "x": mon_x + mon_width - geometry["width"] - gaps_out,
+            "y": mon_y + reserved["top"] + gaps_out,
+        },
+        "lower-left": {
+            "x": mon_x + gaps_out,
+            "y": mon_y + mon_height - geometry["height"] - reserved["bottom"] - gaps_out,
+        },
+        "lower-right": {
+            "x": mon_x + mon_width - geometry["width"] - gaps_out,
+            "y": mon_y + mon_height - geometry["height"] - reserved["bottom"] - gaps_out,
+        },
     }
 
-    # Return the closest corner
-    return min(distances, key=distances.get)
+    # Check each corner for snap alignment
+    for corner, expected in expected_positions.items():
+        if (
+            abs(window_x - expected["x"]) < snap_threshold
+            and abs(window_y - expected["y"]) < snap_threshold
+        ):
+            return corner
+
+    return None
 
 
 def mirror_corner(corner):

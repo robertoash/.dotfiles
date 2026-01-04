@@ -206,11 +206,48 @@ def toggle_double_size(relative_floating=False, sneaky=False):
             print(f"✅ Window restored to {orig_state['width']}x{orig_state['height']}")
         else:
             # Window is not doubled, double it and save original size/position
-            # Detect which corner the window is in
+            # Detect which corner the window is snapped to (if any)
             corner = snap_windows.detect_current_corner(window_info)
 
-            new_width = current_width * 2
-            new_height = current_height * 2
+            # Get monitor info for bounds checking
+            monitor = snap_windows.get_window_monitor(window_info)
+            if not monitor:
+                print("❌ Could not determine window's monitor")
+                return
+
+            gaps_out = window_manager.get_hyprland_gaps_out()
+            border_size = window_manager.get_hyprland_border_size()
+            reserved = snap_windows.get_monitor_reserved(monitor)
+            mon_x = monitor["x"]
+            mon_y = monitor["y"]
+            mon_width = monitor["width"]
+            mon_height = monitor["height"]
+
+            # Calculate usable monitor area (accounting for gaps, borders, and reserved space)
+            # Floating windows should align with tiled windows: gaps_out + border_size * 2
+            edge_offset = gaps_out + border_size * 2
+            usable_min_x = mon_x + edge_offset
+            usable_min_y = mon_y + reserved["top"] + edge_offset
+            usable_max_x = mon_x + mon_width - edge_offset
+            usable_max_y = mon_y + mon_height - reserved["bottom"] - edge_offset
+
+            # Calculate max available size
+            max_available_width = usable_max_x - usable_min_x
+            max_available_height = usable_max_y - usable_min_y
+
+            # Calculate doubled size, maintaining aspect ratio if capped
+            target_width = current_width * 2
+            target_height = current_height * 2
+
+            # Calculate scale factors needed to fit
+            width_scale = max_available_width / target_width if target_width > max_available_width else 1.0
+            height_scale = max_available_height / target_height if target_height > max_available_height else 1.0
+
+            # Use the most restrictive scale to maintain aspect ratio
+            scale = min(width_scale, height_scale)
+
+            new_width = int(target_width * scale)
+            new_height = int(target_height * scale)
 
             doubled_states[window_id] = {
                 "width": current_width, "height": current_height,
@@ -227,17 +264,70 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                 f"exact {new_width} {new_height},address:{window_id}"
             ])
 
-            # Calculate offset to keep corner in place
-            # Default resize grows from top-left, so we need to compensate
+            # Calculate offset based on anchoring strategy
             x_offset = 0
             y_offset = 0
 
-            if corner in ["upper-right", "lower-right"]:
-                x_offset = -current_width
-            if corner in ["lower-left", "lower-right"]:
-                y_offset = -current_height
+            if corner:
+                # Window is snapped to a corner - anchor at that corner
+                # Offset by the actual size increase to keep corner in place
+                width_increase = new_width - current_width
+                height_increase = new_height - current_height
 
-            # Apply offset if needed to anchor the corner
+                if corner in ["upper-right", "lower-right"]:
+                    x_offset = -width_increase
+                if corner in ["lower-left", "lower-right"]:
+                    y_offset = -height_increase
+                anchor_type = f"corner: {corner}"
+            else:
+                # Window is not snapped - anchor at center
+                # Offset by half the size increase to keep center in the same position
+                width_increase = new_width - current_width
+                height_increase = new_height - current_height
+                x_offset = -width_increase // 2
+                y_offset = -height_increase // 2
+                anchor_type = "center"
+
+            # Calculate new position after offset
+            new_x = current_x + x_offset
+            new_y = current_y + y_offset
+            new_right = new_x + new_width
+            new_bottom = new_y + new_height
+
+            # Clamp to monitor bounds, but respect corner anchoring
+            # When corner-anchored, don't clamp the anchored edges
+            if corner:
+                # Only clamp the edges opposite to the anchored corner
+                if corner in ["upper-left", "lower-left"]:
+                    # Left is anchored, only check right
+                    if new_right > usable_max_x:
+                        x_offset -= (new_right - usable_max_x)
+                else:  # upper-right, lower-right
+                    # Right is anchored, only check left
+                    if new_x < usable_min_x:
+                        x_offset += (usable_min_x - new_x)
+
+                if corner in ["upper-left", "upper-right"]:
+                    # Top is anchored, only check bottom
+                    if new_bottom > usable_max_y:
+                        y_offset -= (new_bottom - usable_max_y)
+                else:  # lower-left, lower-right
+                    # Bottom is anchored, only check top
+                    if new_y < usable_min_y:
+                        y_offset += (usable_min_y - new_y)
+            else:
+                # No corner anchor (center mode), clamp all edges
+                if new_x < usable_min_x:
+                    x_offset += (usable_min_x - new_x)
+                elif new_right > usable_max_x:
+                    x_offset -= (new_right - usable_max_x)
+
+                if new_y < usable_min_y:
+                    y_offset += (usable_min_y - new_y)
+                elif new_bottom > usable_max_y:
+                    y_offset -= (new_bottom - usable_max_y)
+
+            # Apply offset if needed
             if x_offset != 0 or y_offset != 0:
                 window_manager.run_hyprctl_command([
                     "dispatch", "movewindowpixel",
@@ -245,15 +335,52 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                     f"{x_offset} {y_offset},address:{window_id}"
                 ])
 
-            print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {corner})")
+            print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {anchor_type})")
 
     except FileNotFoundError:
         # No state file exists, so window isn't doubled - double it
-        # Detect which corner the window is in
+        # Detect which corner the window is snapped to (if any)
         corner = snap_windows.detect_current_corner(window_info)
 
-        new_width = current_width * 2
-        new_height = current_height * 2
+        # Get monitor info for bounds checking
+        monitor = snap_windows.get_window_monitor(window_info)
+        if not monitor:
+            print("❌ Could not determine window's monitor")
+            return
+
+        gaps_out = window_manager.get_hyprland_gaps_out()
+        border_size = window_manager.get_hyprland_border_size()
+        reserved = snap_windows.get_monitor_reserved(monitor)
+        mon_x = monitor["x"]
+        mon_y = monitor["y"]
+        mon_width = monitor["width"]
+        mon_height = monitor["height"]
+
+        # Calculate usable monitor area (accounting for gaps, borders, and reserved space)
+        # Floating windows should align with tiled windows: gaps_out + border_size * 2
+        edge_offset = gaps_out + border_size * 2
+        usable_min_x = mon_x + edge_offset
+        usable_min_y = mon_y + reserved["top"] + edge_offset
+        usable_max_x = mon_x + mon_width - edge_offset
+        usable_max_y = mon_y + mon_height - reserved["bottom"] - edge_offset
+
+        # Calculate max available size
+        max_available_width = usable_max_x - usable_min_x
+        max_available_height = usable_max_y - usable_min_y
+
+        # Calculate doubled size, maintaining aspect ratio if capped
+        target_width = current_width * 2
+        target_height = current_height * 2
+
+        # Calculate scale factors needed to fit
+        width_scale = max_available_width / target_width if target_width > max_available_width else 1.0
+        height_scale = max_available_height / target_height if target_height > max_available_height else 1.0
+
+        # Use the most restrictive scale to maintain aspect ratio
+        scale = min(width_scale, height_scale)
+
+        new_width = int(target_width * scale)
+        new_height = int(target_height * scale)
 
         with open(state_file, "w") as f:
             f.write(f"{window_id}:{current_width}:{current_height}:{current_x}:{current_y}\n")
@@ -264,16 +391,70 @@ def toggle_double_size(relative_floating=False, sneaky=False):
             f"exact {new_width} {new_height},address:{window_id}"
         ])
 
-        # Calculate offset to keep corner in place
+        # Calculate offset based on anchoring strategy
         x_offset = 0
         y_offset = 0
 
-        if corner in ["upper-right", "lower-right"]:
-            x_offset = -current_width
-        if corner in ["lower-left", "lower-right"]:
-            y_offset = -current_height
+        if corner:
+            # Window is snapped to a corner - anchor at that corner
+            # Offset by the actual size increase to keep corner in place
+            width_increase = new_width - current_width
+            height_increase = new_height - current_height
 
-        # Apply offset if needed to anchor the corner
+            if corner in ["upper-right", "lower-right"]:
+                x_offset = -width_increase
+            if corner in ["lower-left", "lower-right"]:
+                y_offset = -height_increase
+            anchor_type = f"corner: {corner}"
+        else:
+            # Window is not snapped - anchor at center
+            # Offset by half the size increase to keep center in the same position
+            width_increase = new_width - current_width
+            height_increase = new_height - current_height
+            x_offset = -width_increase // 2
+            y_offset = -height_increase // 2
+            anchor_type = "center"
+
+        # Calculate new position after offset
+        new_x = current_x + x_offset
+        new_y = current_y + y_offset
+        new_right = new_x + new_width
+        new_bottom = new_y + new_height
+
+        # Clamp to monitor bounds, but respect corner anchoring
+        # When corner-anchored, don't clamp the anchored edges
+        if corner:
+            # Only clamp the edges opposite to the anchored corner
+            if corner in ["upper-left", "lower-left"]:
+                # Left is anchored, only check right
+                if new_right > usable_max_x:
+                    x_offset -= (new_right - usable_max_x)
+            else:  # upper-right, lower-right
+                # Right is anchored, only check left
+                if new_x < usable_min_x:
+                    x_offset += (usable_min_x - new_x)
+
+            if corner in ["upper-left", "upper-right"]:
+                # Top is anchored, only check bottom
+                if new_bottom > usable_max_y:
+                    y_offset -= (new_bottom - usable_max_y)
+            else:  # lower-left, lower-right
+                # Bottom is anchored, only check top
+                if new_y < usable_min_y:
+                    y_offset += (usable_min_y - new_y)
+        else:
+            # No corner anchor (center mode), clamp all edges
+            if new_x < usable_min_x:
+                x_offset += (usable_min_x - new_x)
+            elif new_right > usable_max_x:
+                x_offset -= (new_right - usable_max_x)
+
+            if new_y < usable_min_y:
+                y_offset += (usable_min_y - new_y)
+            elif new_bottom > usable_max_y:
+                y_offset -= (new_bottom - usable_max_y)
+
+        # Apply offset if needed
         if x_offset != 0 or y_offset != 0:
             window_manager.run_hyprctl_command([
                 "dispatch", "movewindowpixel",
@@ -281,7 +462,7 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                 f"{x_offset} {y_offset},address:{window_id}"
             ])
 
-        print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {corner})")
+        print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {anchor_type})")
 
 
 def toggle_sneaky_tag(relative_floating=False):

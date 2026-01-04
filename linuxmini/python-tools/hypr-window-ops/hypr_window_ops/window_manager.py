@@ -49,6 +49,23 @@ def get_hyprland_gaps_out():
         return 0
 
 
+def get_hyprland_border_size():
+    """
+    Get the border_size value from Hyprland using hyprctl.
+
+    Returns:
+        int: The border_size value (default: 0 if not found or on error)
+    """
+    try:
+        result = run_hyprctl(["getoption", "general:border_size", "-j"])
+        if result and "int" in result:
+            return result["int"]
+        return 0
+    except Exception as e:
+        print(f"Warning: Could not read border_size: {e}")
+        return 0
+
+
 def get_clients():
     """Get all clients/windows."""
     return run_hyprctl(["clients", "-j"])
