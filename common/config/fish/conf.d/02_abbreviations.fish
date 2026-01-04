@@ -2,6 +2,7 @@
 
 # Apps
 abbr br broot
+abbr hk hypr-keybinds
 abbr del "trash put"
 abbr lg lazygit
 abbr lzd lazydocker

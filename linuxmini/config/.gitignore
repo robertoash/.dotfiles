@@ -239,6 +239,7 @@ fish/functions/gcalt.fish
 fish/functions/gcalw.fish
 fish/functions/getsize.fish
 fish/functions/hass-cli.fish
+fish/functions/hypr-keybinds.fish
 fish/functions/insert_fre_file.fish
 fish/functions/insert_zoxide_dir.fish
 fish/functions/integrity.fish
