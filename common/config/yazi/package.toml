@@ -40,8 +40,8 @@ hash = "d072da9b073684d46ba31aa5051e33c3"
 
 [[plugin.deps]]
 use = "uhs-robert/sshfs"
-rev = "75a025c"
-hash = "e1cebecfee70daef1f97aa083209340c"
+rev = "5edff3b"
+hash = "e92138f6eb884bef96d92b2d114ac927"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:mount"
@@ -68,7 +68,5 @@ use = "yazi-rs/plugins:smart-paste"
 rev = "03cdd4b"
 hash = "75fd60b2df7115e0a6ca31a6a804d320"
 
-[[flavor.deps]]
-use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "9276ffa"
-hash = "8d7799e4598ff079fa5ee5c770d9bc08"
+[flavor]
+deps = []
