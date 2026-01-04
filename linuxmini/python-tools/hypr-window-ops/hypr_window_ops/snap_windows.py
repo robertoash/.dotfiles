@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from . import window_manager
+from . import monitor_utils, window_manager
 
 CORNER_THRESHOLD = 50  # px
 
@@ -9,16 +9,6 @@ def get_cursor_position():
     """Get current cursor position."""
     cursor_info = window_manager.run_hyprctl(["cursorpos", "-j"])
     return cursor_info["x"], cursor_info["y"]
-
-
-def get_window_geometry(window_info):
-    """Extract window geometry from window info."""
-    return {
-        "x": window_info["at"][0],
-        "y": window_info["at"][1],
-        "width": window_info["size"][0],
-        "height": window_info["size"][1],
-    }
 
 
 def move_window_to_corner(corner, window_address=None):
@@ -62,7 +52,7 @@ def move_window_to_corner(corner, window_address=None):
 
 def infer_corner_from_cursor(window_info):
     """Infer which corner to snap to based on cursor position relative to window."""
-    geometry = get_window_geometry(window_info)
+    geometry = monitor_utils.get_window_geometry(window_info)
     click_x, click_y = get_cursor_position()
 
     if (
@@ -87,124 +77,6 @@ def infer_corner_from_cursor(window_info):
         return ["d", "r"]  # lower-right
     else:
         return None  # Cursor not near any corner
-
-
-def get_monitor_reserved(monitor):
-    """
-    Extract reserved space from monitor info.
-    The reserved array format appears to be [left, top, right, bottom] in JSON output.
-    Returns dict with 'top', 'bottom', 'left', 'right' keys.
-    """
-    reserved = monitor.get("reserved", [0, 0, 0, 0])
-    # Based on empirical testing: [left, top, right, bottom]
-    return {
-        "left": reserved[0],
-        "top": reserved[1],
-        "right": reserved[2],
-        "bottom": reserved[3],
-    }
-
-
-def get_window_monitor(window_info):
-    """
-    Get the monitor that contains the window.
-    Returns monitor info with corrected dimensions accounting for transform/rotation.
-    """
-    # Use the window's monitor field instead of coordinate calculation
-    # because monitors can overlap in coordinate space
-    window_monitor_id = window_info.get("monitor")
-    if window_monitor_id is None:
-        return None
-
-    monitors = window_manager.run_hyprctl(["monitors", "-j"])
-
-    # Find monitor by ID
-    for monitor in monitors:
-        if monitor.get("id") == window_monitor_id:
-            # Account for transform/rotation
-            # transform=1 or transform=3 means 90° or 270° rotation (portrait mode)
-            # In these cases, width and height are swapped in actual screen space
-            transform = monitor.get("transform", 0)
-            if transform in [1, 3]:
-                # Swap width and height for portrait monitors
-                corrected_monitor = monitor.copy()
-                corrected_monitor["width"], corrected_monitor["height"] = monitor["height"], monitor["width"]
-                return corrected_monitor
-            return monitor
-
-    return None
-
-
-def detect_current_corner(window_info):
-    """
-    Detect which corner the window is currently positioned in on its monitor.
-    Returns corner name if window is actually snapped to a corner, otherwise None.
-
-    Note: Hyprland's movewindow command automatically accounts for reserved space
-    (like waybar), so we need to check against those adjusted positions.
-    """
-    geometry = get_window_geometry(window_info)
-    current_monitor = get_window_monitor(window_info)
-
-    if not current_monitor:
-        return None
-
-    # Get gaps and reserved space
-    gaps_out = window_manager.get_hyprland_gaps_out()
-    reserved = get_monitor_reserved(current_monitor)
-    snap_threshold = 10  # pixels tolerance for considering window "snapped"
-
-    mon_x = current_monitor["x"]
-    mon_y = current_monitor["y"]
-    mon_width = current_monitor["width"]
-    mon_height = current_monitor["height"]
-
-    window_x = geometry["x"]
-    window_y = geometry["y"]
-    window_right = window_x + geometry["width"]
-    window_bottom = window_y + geometry["height"]
-
-    # Calculate expected snap positions (matching what movewindow + gaps_out produces)
-    # Hyprland's movewindow accounts for reserved space automatically
-    expected_positions = {
-        "upper-left": {
-            "x": mon_x + gaps_out,
-            "y": mon_y + reserved["top"] + gaps_out,
-        },
-        "upper-right": {
-            "x": mon_x + mon_width - geometry["width"] - gaps_out,
-            "y": mon_y + reserved["top"] + gaps_out,
-        },
-        "lower-left": {
-            "x": mon_x + gaps_out,
-            "y": mon_y + mon_height - geometry["height"] - reserved["bottom"] - gaps_out,
-        },
-        "lower-right": {
-            "x": mon_x + mon_width - geometry["width"] - gaps_out,
-            "y": mon_y + mon_height - geometry["height"] - reserved["bottom"] - gaps_out,
-        },
-    }
-
-    # Check each corner for snap alignment
-    for corner, expected in expected_positions.items():
-        if (
-            abs(window_x - expected["x"]) < snap_threshold
-            and abs(window_y - expected["y"]) < snap_threshold
-        ):
-            return corner
-
-    return None
-
-
-def mirror_corner(corner):
-    """Mirror a corner position horizontally (left <-> right)."""
-    mirror_map = {
-        "upper-left": "upper-right",
-        "upper-right": "upper-left",
-        "lower-left": "lower-right",
-        "lower-right": "lower-left",
-    }
-    return mirror_map.get(corner, corner)
 
 
 def snap_window_to_corner(corner=None, window_address=None, relative_floating=False, sneaky=False):

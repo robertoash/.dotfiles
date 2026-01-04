@@ -2,7 +2,7 @@
 
 import subprocess
 
-from . import snap_windows, window_manager
+from . import monitor_utils, snap_windows, window_manager
 
 
 def run_command(cmd):
@@ -207,29 +207,20 @@ def toggle_double_size(relative_floating=False, sneaky=False):
         else:
             # Window is not doubled, double it and save original size/position
             # Detect which corner the window is snapped to (if any)
-            corner = snap_windows.detect_current_corner(window_info)
+            corner = monitor_utils.detect_window_corner(window_info)
 
             # Get monitor info for bounds checking
-            monitor = snap_windows.get_window_monitor(window_info)
+            monitor = monitor_utils.get_monitor_with_transform(window_info)
             if not monitor:
                 print("❌ Could not determine window's monitor")
                 return
 
-            gaps_out = window_manager.get_hyprland_gaps_out()
-            border_size = window_manager.get_hyprland_border_size()
-            reserved = snap_windows.get_monitor_reserved(monitor)
-            mon_x = monitor["x"]
-            mon_y = monitor["y"]
-            mon_width = monitor["width"]
-            mon_height = monitor["height"]
-
-            # Calculate usable monitor area (accounting for gaps, borders, and reserved space)
-            # Floating windows should align with tiled windows: gaps_out + border_size * 2
-            edge_offset = gaps_out + border_size * 2
-            usable_min_x = mon_x + edge_offset
-            usable_min_y = mon_y + reserved["top"] + edge_offset
-            usable_max_x = mon_x + mon_width - edge_offset
-            usable_max_y = mon_y + mon_height - reserved["bottom"] - edge_offset
+            # Get usable area using shared utilities
+            usable_area = monitor_utils.get_monitor_usable_area(monitor)
+            usable_min_x = usable_area["min_x"]
+            usable_min_y = usable_area["min_y"]
+            usable_max_x = usable_area["max_x"]
+            usable_max_y = usable_area["max_y"]
 
             # Calculate max available size
             max_available_width = usable_max_x - usable_min_x
@@ -340,29 +331,20 @@ def toggle_double_size(relative_floating=False, sneaky=False):
     except FileNotFoundError:
         # No state file exists, so window isn't doubled - double it
         # Detect which corner the window is snapped to (if any)
-        corner = snap_windows.detect_current_corner(window_info)
+        corner = monitor_utils.detect_window_corner(window_info)
 
         # Get monitor info for bounds checking
-        monitor = snap_windows.get_window_monitor(window_info)
+        monitor = monitor_utils.get_monitor_with_transform(window_info)
         if not monitor:
             print("❌ Could not determine window's monitor")
             return
 
-        gaps_out = window_manager.get_hyprland_gaps_out()
-        border_size = window_manager.get_hyprland_border_size()
-        reserved = snap_windows.get_monitor_reserved(monitor)
-        mon_x = monitor["x"]
-        mon_y = monitor["y"]
-        mon_width = monitor["width"]
-        mon_height = monitor["height"]
-
-        # Calculate usable monitor area (accounting for gaps, borders, and reserved space)
-        # Floating windows should align with tiled windows: gaps_out + border_size * 2
-        edge_offset = gaps_out + border_size * 2
-        usable_min_x = mon_x + edge_offset
-        usable_min_y = mon_y + reserved["top"] + edge_offset
-        usable_max_x = mon_x + mon_width - edge_offset
-        usable_max_y = mon_y + mon_height - reserved["bottom"] - edge_offset
+        # Get usable area using shared utilities
+        usable_area = monitor_utils.get_monitor_usable_area(monitor)
+        usable_min_x = usable_area["min_x"]
+        usable_min_y = usable_area["min_y"]
+        usable_max_x = usable_area["max_x"]
+        usable_max_y = usable_area["max_y"]
 
         # Calculate max available size
         max_available_width = usable_max_x - usable_min_x
