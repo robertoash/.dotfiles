@@ -178,8 +178,11 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                         }
 
         if window_id in doubled_states:
-            # Window is doubled, restore original size and position
+            # Window is doubled, restore original size
             orig_state = doubled_states[window_id]
+
+            # Detect current corner (where window is NOW, not where it was originally)
+            current_corner = monitor_utils.detect_window_corner(window_info)
 
             # Resize using resizewindowpixel with address (no focus change needed)
             window_manager.run_hyprctl_command([
@@ -187,23 +190,21 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                 f"exact {orig_state['width']} {orig_state['height']},address:{window_id}"
             ])
 
-            # Restore original position
-            x_offset = orig_state["x"] - current_x
-            y_offset = orig_state["y"] - current_y
-            if x_offset != 0 or y_offset != 0:
-                window_manager.run_hyprctl_command([
-                    "dispatch", "movewindowpixel",
-                    "--",
-                    f"{x_offset} {y_offset},address:{window_id}"
-                ])
+            # Snap to current corner (or center if not snapped)
+            if current_corner:
+                snap_windows.snap_window_to_corner(
+                    corner=current_corner,
+                    window_address=window_id
+                )
+                print(f"✅ Window restored to {orig_state['width']}x{orig_state['height']} and snapped to {current_corner}")
+            else:
+                print(f"✅ Window restored to {orig_state['width']}x{orig_state['height']}")
 
             # Remove from state file
             del doubled_states[window_id]
             with open(state_file, "w") as f:
                 for addr, state in doubled_states.items():
                     f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
-
-            print(f"✅ Window restored to {orig_state['width']}x{orig_state['height']}")
         else:
             # Window is not doubled, double it and save original size/position
             # Detect which corner the window is snapped to (if any)
