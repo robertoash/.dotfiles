@@ -12,19 +12,19 @@ layout {
     tab name="config" focus=true split_direction="vertical" {
         pane size="65%" command="fish" {
             args "-c" "nvim; exec fish"
-            cwd "/home/rash/.config"
+            cwd "/home/rash/.dotfiles"
         }
         pane size="35%" {
-            cwd "/home/rash/.config"
+            cwd "/home/rash/.dotfiles"
         }
     }
-    tab name="surgefactor" split_direction="vertical" {
-        pane size="65%" command="fish" {
-            args "-c" "nvim; exec fish"
-            cwd "/home/rash/dev/apps/surgefactor"
-        }
-        pane size="35%" {
-            cwd "/home/rash/dev/apps/surgefactor"
-        }
-    }
+//     tab name="surgefactor" split_direction="vertical" {
+//         pane size="65%" command="fish" {
+//             args "-c" "nvim; exec fish"
+//             cwd "/home/rash/dev/apps/surgefactor"
+//         }
+//         pane size="35%" {
+//             cwd "/home/rash/dev/apps/surgefactor"
+//         }
+//     }
 }
