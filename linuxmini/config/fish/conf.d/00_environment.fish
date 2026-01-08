@@ -33,6 +33,11 @@ end
 # Set SHELL to fish (systemd has /bin/bash)
 set -gx SHELL /usr/bin/fish
 
+# Unset NPM_CONFIG_PREFIX inherited from /usr/bin/claude wrapper
+# Claude Code sets this to /nonexistent to prevent self-detection,
+# but we want npm to use the prefix from ~/.npmrc instead
+set -e NPM_CONFIG_PREFIX
+
 # Load linuxmini-specific sops secrets
 if status is-interactive
     function __load_linuxmini_sops_secrets --on-event fish_prompt
