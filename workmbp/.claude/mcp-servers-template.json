@@ -7,5 +7,15 @@
       "DBT_PROJECT_DIR": "/Users/rash/dev/dbt/dbt_production",
       "DBT_PATH": "/opt/homebrew/bin/dbt"
     }
+  },
+  "atlassian": {
+    "type": "stdio",
+    "command": "uvx",
+    "args": ["mcp-atlassian"],
+    "env": {
+      "JIRA_URL": "{{JIRA_URL}}",
+      "JIRA_USERNAME": "{{JIRA_USERNAME}}",
+      "JIRA_API_TOKEN": "{{JIRA_API_TOKEN}}"
+    }
   }
 }
