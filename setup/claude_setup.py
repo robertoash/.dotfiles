@@ -46,6 +46,9 @@ def substitute_secrets(template_str, secrets):
         "{{CLAUDE_GITHUB_TOKEN}}": secrets.get("github-token", ""),
         "{{CLAUDE_HA_TOKEN_GLOBAL}}": secrets.get("ha-token-global", ""),
         "{{OBSIDIAN_API_KEY}}": secrets.get("obsidian-api-key", ""),
+        "{{JIRA_URL}}": secrets.get("jira-url", ""),
+        "{{JIRA_USERNAME}}": secrets.get("jira-username", ""),
+        "{{JIRA_API_TOKEN}}": secrets.get("jira-api-token", ""),
     }
 
     for placeholder, value in replacements.items():
@@ -63,7 +66,8 @@ def setup_claude_config(dotfiles_dir, hostname=None):
         hostname = socket.gethostname()
 
     # Paths
-    secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
+    common_secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
+    machine_secrets_file = dotfiles_dir / hostname / "secrets" / f"{hostname}.yml"
     common_template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
     machine_template_file = dotfiles_dir / hostname / ".claude" / "mcp-servers-template.json"
     claude_json_path = Path.home() / ".claude.json"
@@ -83,9 +87,17 @@ def setup_claude_config(dotfiles_dir, hostname=None):
         subprocess.run(["sops", "--version"], capture_output=True, check=True, env=env)
 
         # Check if at least common template exists
-        if secrets_file.exists() and common_template_file.exists():
-            # Decrypt secrets
-            secrets = decrypt_secrets(secrets_file)
+        if common_secrets_file.exists() and common_template_file.exists():
+            # Decrypt common secrets
+            secrets = decrypt_secrets(common_secrets_file)
+
+            # Load and merge machine-specific secrets if they exist
+            if machine_secrets_file.exists():
+                machine_secrets = decrypt_secrets(machine_secrets_file)
+                if machine_secrets:
+                    secrets.update(machine_secrets)
+                    print(f"  🔑 Merged secrets from {hostname}/secrets/{hostname}.yml")
+
             if secrets:
                 # Load common template
                 with open(common_template_file) as f:
@@ -140,8 +152,8 @@ def setup_claude_config(dotfiles_dir, hostname=None):
             else:
                 print("⚠️  Failed to decrypt secrets. Skipping MCP servers setup.")
         else:
-            if not secrets_file.exists():
-                print(f"⚠️  Secrets file not found: {secrets_file}")
+            if not common_secrets_file.exists():
+                print(f"⚠️  Secrets file not found: {common_secrets_file}")
             if not common_template_file.exists():
                 print(f"⚠️  Common template not found: {common_template_file}")
             print("⚠️  Skipping MCP servers setup.")
