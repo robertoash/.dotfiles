@@ -1,0 +1,100 @@
+# w3m keymap - qutebrowser-style bindings
+# Based on ~/.dotfiles/common/config/qutebrowser/config.py
+
+# === NAVIGATION (j/k/h/l style) ===
+# Vim-style scrolling (j/k for down/up)
+# Note: w3m's UP/DOWN are inverted - UP scrolls page down, DOWN scrolls page up
+keymap j UP
+keymap k DOWN
+keymap h LEFT
+keymap l RIGHT
+
+# Page scrolling (Ctrl+j/k for page down/up)
+keymap C-j NEXT_PAGE
+keymap C-k PREV_PAGE
+
+# Home/End
+keymap gg BEGIN
+keymap G END
+
+# Arrow keys also work (for kanata vim-nav layer)
+keymap Down UP
+keymap Up DOWN
+keymap Left LEFT
+keymap Right RIGHT
+keymap C-Down NEXT_PAGE
+keymap C-Up PREV_PAGE
+
+# === TAB MANAGEMENT (J/K for tab switching) ===
+keymap J NEXT_TAB
+keymap K PREV_TAB
+keymap D TAB_GOTO
+
+# Tab operations
+keymap t NEW_TAB
+keymap d CLOSE_TAB
+keymap u UNDO
+keymap C-S-j TAB_RIGHT
+keymap C-S-k TAB_LEFT
+
+# === URL OPENING ===
+# o/O for open (like qutebrowser)
+keymap o GOTO
+keymap O NEW_TAB
+keymap go GOTO
+
+# === LINKS ===
+# Enter to follow link
+keymap RET GOTO_LINK
+keymap C-RET TAB_LINK
+
+# Link navigation
+keymap TAB NEXT_LINK
+keymap S-TAB PREV_LINK
+keymap f MOVE_LIST_MENU
+keymap F LIST_MENU
+
+# === HISTORY & NAVIGATION ===
+keymap H BACK
+keymap L NEXT
+keymap C-o BACK
+
+# === CLIPBOARD (yank) ===
+keymap ys EXTERN 'printf "%s" "$W3M_URL" | wl-copy'
+keymap C-c EXTERN 'printf "%s" "$W3M_URL" | wl-copy'
+
+# === SEARCH ===
+keymap / SEARCH
+keymap ? SEARCH_BACK
+keymap n SEARCH_NEXT
+keymap N SEARCH_PREV
+
+# === PAGE OPERATIONS ===
+keymap r RELOAD
+keymap R RELOAD
+keymap C-r RELOAD
+
+# Image toggle
+keymap I DISPLAY_IMAGE
+
+# === BOOKMARKS & HISTORY ===
+keymap b BOOKMARK
+keymap B VIEW_BOOKMARK
+keymap C-h HISTORY
+
+# === MISC ===
+keymap q QUIT
+keymap ZZ QUIT
+keymap : COMMAND
+
+# Help
+keymap ? HELP
+
+# Options menu
+keymap SPC NEXT_PAGE
+keymap S-SPC PREV_PAGE
+
+# === UNBIND DEFAULTS THAT CONFLICT ===
+# Remove defaults that we've remapped
+keymap w NULL
+keymap W NULL

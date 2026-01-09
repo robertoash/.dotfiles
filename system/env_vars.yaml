@@ -97,16 +97,17 @@ shell_only:
   # Applications
   BROWSER: /home/rash/.local/bin/qute_profile rash %s
   BROWSER_CLEAN: /home/rash/.local/bin/qute_profile rash
-  
+  W3M_DIR: $HOME/.config/w3m
+
   # FZF
   FZF_DEFAULT_COMMAND: fd .
-  
+
   # Walk file manager
   WALK_STATUS_BAR: Size() + ' ' + Mode()
-  
+
   # Terminal
   TERM_PROGRAM: WezTerm
-  
+
   # PYTHONPATH is set per-machine in shell config due to machine-specific paths
 
 # ==============================================================================
