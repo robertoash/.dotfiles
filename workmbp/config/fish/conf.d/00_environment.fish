@@ -34,6 +34,18 @@ for env_file in ~/.config/environment.d/*.conf
     end
 end
 
+# Load shell-only environment variables from env_vars.yaml
+if command -v yq >/dev/null 2>&1; and test -f ~/.dotfiles/system/env_vars.yaml
+    for line in (yq -r '.shell_only | to_entries | .[] | "\(.key)=\(.value)"' ~/.dotfiles/system/env_vars.yaml 2>/dev/null)
+        set -l parts (string split -m 1 = $line)
+        if test (count $parts) -eq 2
+            # Expand $HOME in values
+            set -l value (string replace -a '$HOME' $HOME -- $parts[2])
+            set -gx $parts[1] $value
+        end
+    end
+end
+
 # Set SHELL to fish
 set -gx SHELL (which fish)
 
