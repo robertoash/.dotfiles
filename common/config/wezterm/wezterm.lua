@@ -140,6 +140,8 @@ config.font = wezterm.font_with_fallback({
 })
 config.font_size = 14
 
+config.warn_about_missing_glyphs = false
+
 -- ========================================
 -- WINDOW & LAYOUT
 -- ========================================

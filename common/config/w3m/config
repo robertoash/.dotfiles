@@ -1,0 +1,15 @@
+# Image display settings for WezTerm (iTerm2 protocol)
+# Note: Kitty protocol (4) causes divide-by-zero crashes
+# Sixel protocol (2) not compiled in Arch w3m package
+inline_img_protocol 3
+imgdisplay iterm2
+
+# Display settings
+color 1
+display_image 1
+auto_image 1
+image_scale 25
+max_load_image 4
+
+# Behavior
+confirm_qq 0
