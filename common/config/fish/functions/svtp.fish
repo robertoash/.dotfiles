@@ -41,18 +41,18 @@ function svtp --description "Browse and play SVT Play videos with fzf"
         set input (string join " " $argv)
 
         # Check if it's already a full video URL (/video/...)
-        if string match -q "http*" $input
+        if string match -q "http*" -- $input
             set url $input
             mpv $mpv_flags $url &; disown
             return 0
-        else if string match -q "/video/*" $input
+        else if string match -q "/video/*" -- $input
             set url "https://www.svtplay.se$input"
             mpv $mpv_flags $url &; disown
             return 0
         # For other paths or slugs, try to extract the actual video URL(s)
         else
             # Build the series/show page URL
-            if string match -q "/*" $input
+            if string match -q "/*" -- $input
                 set page_url "https://www.svtplay.se$input"
                 set slug (echo $input | string replace "/" "")
             else

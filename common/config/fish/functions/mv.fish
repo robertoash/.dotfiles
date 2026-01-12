@@ -58,7 +58,7 @@ function mv -d "Move files and auto-update fre database"
 
         # Increase to match old score (subtract 1 because --add already added 1 visit)
         # Validate old_score is a valid number before using it
-        if string match -qr '^[0-9.]+$' "$old_score"
+        if string match -qr '^[0-9.]+$' -- "$old_score"
             set -l increase_amount (math "$old_score - 1")
             if test "$increase_amount" -gt 0
                 fre --increase "$increase_amount" "$abs_dest" 2>/dev/null

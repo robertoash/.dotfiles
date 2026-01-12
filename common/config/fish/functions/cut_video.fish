@@ -54,7 +54,7 @@ function cut_video
     # Handle overwriting scenario
     if test "$input_video" = "$output_file"
         # Create temp file for overwriting scenario
-        set temp_file (mktemp --suffix=".$(string match -r '\.[^.]+$' $input_video | string sub -s 2)")
+        set temp_file (mktemp --suffix=".$(string match -r '\.[^.]+$' -- $input_video | string sub -s 2)")
         set ffmpeg_cmd "$ffmpeg_cmd \"$temp_file\" && trash-put \"$input_video\" && mv \"$temp_file\" \"$output_file\""
     else
         set ffmpeg_cmd "$ffmpeg_cmd \"$output_file\""

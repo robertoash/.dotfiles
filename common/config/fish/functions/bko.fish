@@ -94,7 +94,7 @@ function bko
                 if test -z "$argv[1]"
                     fzf_url
                 else
-                    if string match -q -r '^[0-9]+$' "$argv[1]"
+                    if string match -q -r '^[0-9]+$' -- "$argv[1]"
                         extract_url_from_index "$argv[1]"
                     else
                         extract_url_from_string "$argv[1]"
@@ -102,7 +102,7 @@ function bko
                 end
                 return
             case '*'
-                if string match -q -r '^[0-9]+$' "$argv[1]"
+                if string match -q -r '^[0-9]+$' -- "$argv[1]"
                     open_from_index "$argv[1]"
                 else
                     open_first_match_from_string "$argv[1]"

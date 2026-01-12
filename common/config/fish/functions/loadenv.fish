@@ -48,11 +48,11 @@ function loadenv
         set lineNumber (math $lineNumber + 1)
 
         # Skip empty lines and comment lines
-        if string match -qr '^\s*$|^\s*#' $line
+        if string match -qr '^\s*$|^\s*#' -- $line
             continue
         end
 
-        if not string match -qr '^[A-Za-z_][A-Za-z0-9_]*=' $line
+        if not string match -qr '^[A-Za-z_][A-Za-z0-9_]*=' -- $line
             echo "Error: invalid declaration (line $lineNumber): $line"
             return 1
         end
@@ -65,12 +65,12 @@ function loadenv
         set -l double_quoted_value_regex '^"(.*)"\s*(?:#.*)*$'
         set -l single_quoted_value_regex '^\'(.*)\'\s*(?:#.*)*$'
         set -l plain_value_regex '^([^\'"\s]*)\s*(?:#.*)*$'
-        if string match -qgr $double_quoted_value_regex $after_equals_sign
-            set value (string match -gr $double_quoted_value_regex $after_equals_sign)
-        else if string match -qgr $single_quoted_value_regex $after_equals_sign
-            set value (string match -gr $single_quoted_value_regex $after_equals_sign)
-        else if string match -qgr $plain_value_regex $after_equals_sign
-            set value (string match -gr $plain_value_regex $after_equals_sign)
+        if string match -qgr $double_quoted_value_regex -- $after_equals_sign
+            set value (string match -gr $double_quoted_value_regex -- $after_equals_sign)
+        else if string match -qgr $single_quoted_value_regex -- $after_equals_sign
+            set value (string match -gr $single_quoted_value_regex -- $after_equals_sign)
+        else if string match -qgr $plain_value_regex -- $after_equals_sign
+            set value (string match -gr $plain_value_regex -- $after_equals_sign)
         else
             echo "Error: invalid value (line $lineNumber): $line"
             return 1

@@ -91,9 +91,9 @@ function snake_case_all
     # Step 1: Remove extension
     set -l extension ""
     set -l base_name $input_name
-    if string match -q "*.*" $input_name
+    if string match -q "*.*" -- $input_name
       set base_name (string replace -r '\.[^.]*$' '' $input_name)
-      set extension (string match -r '\.[^.]*$' $input_name)
+      set extension (string match -r '\.[^.]*$' -- $input_name)
     end
 
     # Step 2: Remove leading and trailing spaces + convert to lowercase
@@ -185,9 +185,9 @@ function snake_case_all
             set -l ext_part ""
 
             # Separate extension if present
-            if string match -q "*.*" $new_name
+            if string match -q "*.*" -- $new_name
               set base_part (string replace -r '\.[^.]*$' '' $new_name)
-              set ext_part (string match -r '\.[^.]*$' $new_name)
+              set ext_part (string match -r '\.[^.]*$' -- $new_name)
             end
 
             # Try sequential numbers until we find an available name

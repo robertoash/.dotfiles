@@ -18,7 +18,7 @@ function fre-cleanup -d "Remove non-existent files from fre database"
 
         # Convert relative to absolute if needed
         set -l full_path "$path"
-        if not string match -q '/*' "$path"
+        if not string match -q '/*' -- "$path"
             set full_path "$HOME/$path"
         end
 

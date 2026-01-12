@@ -149,7 +149,7 @@ function _video_tools_downscale_batch
     # Ask for compression quality
     echo ""
     read -P "Use best compression? (slower, ~50% smaller, visually lossless) [y/N]: " best_choice
-    if string match -qi "y*" $best_choice
+    if string match -qi "y*" -- $best_choice
         set use_best 1
     else
         set use_best 0
@@ -250,7 +250,7 @@ function _video_tools_trim_single
     end
 
     # If it's just a filename (no directory separator), place in same dir as input
-    if not string match -q "*/*" "$output_file"
+    if not string match -q "*/*" -- "$output_file"
         set input_dir (dirname "$input")
         set output "$input_dir/$output_file"
     else
@@ -377,7 +377,7 @@ function _video_tools_split_single
             echo "  Will save (auto-confirmed)"
         else
             read -P "  Save this chunk? [Y/n]: " save_choice
-            if test -z "$save_choice"; or string match -qi "y*" $save_choice
+            if test -z "$save_choice"; or string match -qi "y*" -- $save_choice
                 set -a chunks_to_save $i
                 echo "  Will save"
             else
@@ -448,7 +448,7 @@ function _video_tools_split_single
         else
             # Ask for final confirmation
             read -P "Really delete original file? [y/N]: " final_confirm
-            if string match -qi "y*" $final_confirm
+            if string match -qi "y*" -- $final_confirm
                 rm "$input"
                 echo "Original file deleted."
             else
@@ -469,11 +469,11 @@ function _video_tools_timestamp_to_seconds
 
     # Strip leading zeros from each part to avoid octal interpretation, preserving decimals
     for i in (seq 1 (count $parts))
-        if string match -qr '\.' $parts[$i]
+        if string match -qr '\.' -- $parts[$i]
             # Contains decimal point - strip leading zeros but keep '0' before decimal if needed
             set parts[$i] (string replace -r '^0+([1-9]|0?\.)' '$1' $parts[$i])
             # Ensure we have a leading zero before decimal point
-            if string match -qr '^\.' $parts[$i]
+            if string match -qr '^\.' -- $parts[$i]
                 set parts[$i] "0$parts[$i]"
             end
         else
@@ -594,7 +594,7 @@ function _video_tools_ask_downscale_config
     # Ask for compression quality
     echo ""
     read -P "Use best compression? (slower, ~50% smaller, visually lossless) [y/N]: " best_choice
-    if string match -qi "y*" $best_choice
+    if string match -qi "y*" -- $best_choice
         set use_best 1
     else
         set use_best 0
@@ -619,7 +619,7 @@ function _video_tools_ask_downscale_config
                 return 1
             end
             # If it's just a filename (no directory separator), place in same dir as input
-            if not string match -q "*/*" "$output_file"
+            if not string match -q "*/*" -- "$output_file"
                 set input_dir (dirname "$input")
                 set output_path "$input_dir/$output_file"
             else
@@ -784,7 +784,7 @@ function _video_tools_process_downscale
                 else
                     read -P "Permanently delete original? [y/N]: " confirm
 
-                    if string match -qi "y*" $confirm
+                    if string match -qi "y*" -- $confirm
                         rm "$input"
                         mv "$output" "$input"
                         echo "Success! Original deleted."
