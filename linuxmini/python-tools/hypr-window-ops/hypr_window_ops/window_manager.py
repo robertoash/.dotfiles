@@ -18,13 +18,7 @@ def run_hyprctl(command):
 
 def run_hyprctl_command(command):
     """Run a hyprctl command that doesn't return JSON (like dispatch, setprop)."""
-    # Debug output
-    if "movewindowpixel" in command:
-        print(f"Debug: hyprctl command: {['hyprctl'] + command}")
     result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
-    if "movewindowpixel" in command:
-        print(f"Debug: result stdout: {result.stdout}")
-        print(f"Debug: result stderr: {result.stderr}")
     return result.returncode == 0
 
 
@@ -211,15 +205,23 @@ def get_target_floating_window(for_toggle_floating_activation=False):
     if for_toggle_floating_activation:
         return None
 
+    # No floating windows found: use active window
+    if total_floating == 0:
+        return None
+
     # Exactly 1 floating total
     if total_floating == 1:
         return floating_in_visible[0]
 
-    # Exactly 1 floating on current monitor
-    if count_on_current == 1:
+    # Multiple floating windows exist: prefer one on current monitor
+    if count_on_current > 0:
         return floating_on_current[0]
 
-    # Default: use active window
+    # Multiple floating windows but none on current monitor
+    if total_floating > 0:
+        return floating_in_visible[0]
+
+    # Fallback: use active window
     return None
 
 

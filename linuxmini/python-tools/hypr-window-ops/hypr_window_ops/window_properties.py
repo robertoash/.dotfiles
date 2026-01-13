@@ -468,8 +468,14 @@ def toggle_sneaky_tag(relative_floating=False):
 
 def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
     """Toggle fullscreen without dimming, managing pinned/floating state."""
+    # Store original active window to restore focus later
+    original_active = window_manager.run_hyprctl(["activewindow", "-j"])
+    original_address = original_active.get("address") if original_active else None
+    original_monitor = original_active.get("monitor") if original_active else None
+
     window_info = window_manager.get_target_window(relative_floating)
     window_id = window_info.get("address")
+    target_monitor = window_info.get("monitor")
     fullscreen = window_info.get("fullscreen")
     floating = window_info.get("floating")
     pinned = window_info.get("pinned")
@@ -480,14 +486,20 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
     if sneaky and floating:
         window_manager.apply_sneaky_tag(window_id)
 
+    should_restore_focus = False
     if fullscreen:
         # Exit fullscreen and restore previous state
-        window_manager.run_hyprctl_command(["dispatch", "fullscreen", f"address:{window_id}"])
+        # Focus the window first, then toggle fullscreen (fullscreen doesn't accept address selectors)
+        window_manager.run_hyprctl_command(["dispatch", "focuswindow", f"address:{window_id}"])
+        window_manager.run_hyprctl_command(["dispatch", "fullscreen"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "0"]
         )
+        # Always restore focus when exiting fullscreen
+        should_restore_focus = True
 
         # Restore previous state
+        saved_original_address = None
         try:
             with open(state_file, "r") as f:
                 states = {}
@@ -500,13 +512,17 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
                                 parts[1] == "True",
                                 parts[2] == "True",
                             )
+                            # Also read original_address if present (4th field)
+                            original_addr = parts[3] if len(parts) >= 4 and parts[3] else None
                             states[addr] = {
                                 "floating": was_floating,
                                 "pinned": was_pinned,
+                                "original_address": original_addr,
                             }
 
             if window_id in states:
                 saved_state = states[window_id]
+                saved_original_address = saved_state.get("original_address")
 
                 # Restore floating state first
                 if saved_state["floating"] and not floating:
@@ -553,27 +569,48 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
                                 parts[1] == "True",
                                 parts[2] == "True",
                             )
+                            # Also read original_address if present (4th field)
+                            original_addr = parts[3] if len(parts) >= 4 else None
                             existing_states[addr] = {
                                 "floating": was_floating,
                                 "pinned": was_pinned,
+                                "original_address": original_addr,
                             }
         except FileNotFoundError:
             pass
 
-        # Add current window state
-        existing_states[window_id] = {"floating": floating, "pinned": pinned}
+        # Add current window state, including the original active window
+        existing_states[window_id] = {
+            "floating": floating,
+            "pinned": pinned,
+            "original_address": original_address if original_address != window_id else None
+        }
 
         # Write all states back
         with open(state_file, "w") as f:
             for addr, state in existing_states.items():
-                f.write(f"{addr}:{state['floating']}:{state['pinned']}\n")
+                orig_addr = state.get('original_address', '') or ''
+                f.write(f"{addr}:{state['floating']}:{state['pinned']}:{orig_addr}\n")
 
         # Unpin if pinned before going fullscreen
         if pinned:
             window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
 
         # Enter fullscreen and set nodim property
-        window_manager.run_hyprctl_command(["dispatch", "fullscreen", f"address:{window_id}"])
+        # Focus the window first, then toggle fullscreen (fullscreen doesn't accept address selectors)
+        window_manager.run_hyprctl_command(["dispatch", "focuswindow", f"address:{window_id}"])
+        window_manager.run_hyprctl_command(["dispatch", "fullscreen"])
         window_manager.run_hyprctl_command(
             ["setprop", f"address:{window_id}", "nodim", "1"]
         )
+        # Only restore focus when entering fullscreen if the window is on a different monitor
+        # (otherwise focusing back will exit the fullscreen)
+        if original_monitor != target_monitor:
+            should_restore_focus = True
+
+    # Restore focus to the original active window if needed
+    # When exiting fullscreen, use saved_original_address if available (from when we entered fullscreen)
+    # When entering fullscreen, use current original_address
+    restore_to_address = saved_original_address if 'saved_original_address' in locals() and saved_original_address else original_address
+    if should_restore_focus and relative_floating and restore_to_address and restore_to_address != window_id:
+        window_manager.run_hyprctl_command(["dispatch", "focuswindow", f"address:{restore_to_address}"])
