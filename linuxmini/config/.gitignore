@@ -58,6 +58,7 @@
 !task/
 !tgt/
 !theme_it/
+!topgrade/
 !thefuck/
 !vim/
 !waybar/
@@ -114,6 +115,7 @@
 !tgt/**/*
 !theme_it/**/*
 !thefuck/**/*
+!topgrade/**/*
 !vim/**/*
 !waybar/**/*
 !wezterm/**/*
