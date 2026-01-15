@@ -66,3 +66,4 @@ common/config/serena/logs
 common/config/w3m/cookie
 common/config/w3m/history
 common/config/yazi/package.toml
+logs
