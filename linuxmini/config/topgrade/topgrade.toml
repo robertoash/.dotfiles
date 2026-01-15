@@ -109,7 +109,7 @@
 
 # Custom commands
 [commands]
-"Beads Viewer (bv)" = "/opt/homebrew/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
+"Beads Viewer" = "/usr/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
 
 
 [python]
