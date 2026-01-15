@@ -109,8 +109,8 @@
 
 # Custom commands
 [commands]
-"Beads Viewer (bv)" = "/opt/homebrew/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
-"dbt Fusion" = "/Users/rash/.local/bin/dbtf system update"
+"Beads Viewer (bv)" = "echo TOPGRADE_BV >> /tmp/topgrade.log; /opt/homebrew/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
+"dbt Fusion"        = "echo TOPGRADE_DBTF >> /tmp/topgrade.log; /Users/rash/.local/bin/dbtf system update"
 
 
 [python]
