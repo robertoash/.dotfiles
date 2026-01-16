@@ -119,24 +119,31 @@ verbs: [
     #     execution: ":focus {git-root}"
     # }
 
-    # A popular set of shortcuts for going up and down:
-    #
-    # {
-    #     key: ctrl-k
-    #     execution: ":line_up"
-    # }
-    # {
-    #     key: ctrl-j
-    #     execution: ":line_down"
-    # }
-    # {
-    #     key: ctrl-u
-    #     execution: ":page_up"
-    # }
-    # {
-    #     key: ctrl-d
-    #     execution: ":page_down"
-    # }
+    # Navigation keybinds mirroring yazi configuration
+    {
+        key: ctrl-k
+        internal: ":line_up 5"
+    }
+    {
+        key: ctrl-j
+        internal: ":line_down 5"
+    }
+    {
+        key: ctrl-u
+        internal: ":page_up"
+    }
+    {
+        key: ctrl-d
+        internal: ":page_down"
+    }
+    {
+        key: ctrl-h
+        internal: ":parent"
+    }
+    {
+        key: ctrl-l
+        internal: ":open_stay"
+    }
 
     # If you develop using git, you might like to often switch
     # to the git status filter:
