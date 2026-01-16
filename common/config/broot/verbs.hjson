@@ -110,6 +110,12 @@ verbs: [
     #     execution: ":focus {git-root}"
     # }
 
+    # Quit broot
+    {
+        key: q
+        internal: ":quit"
+    }
+
     # Navigation keybinds mirroring yazi configuration
     {
         key: k
