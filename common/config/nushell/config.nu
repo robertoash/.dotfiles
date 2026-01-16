@@ -16,3 +16,5 @@
 # You can also pretty-print and page through the documentation for configuration
 # options using:
 #     config nu --doc | nu-highlight | less -R
+
+use '/home/rash/.config/broot/launcher/nushell/br' *

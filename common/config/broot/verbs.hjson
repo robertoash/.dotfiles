@@ -137,11 +137,11 @@ verbs: [
         internal: ":page_down"
     }
     {
-        key: ctrl-h
+        key: alt-h
         internal: ":parent"
     }
     {
-        key: ctrl-l
+        key: alt-l
         internal: ":open_stay"
     }
 
