@@ -9,16 +9,15 @@
 
 verbs: [
 
-    # Ctrl-e for editing text files in $EDITOR
+    # Smart Enter keybinds: Ctrl = stay in broot, Alt = leave broot
     {
         invocation: edit
         shortcut: e
-        key: ctrl-e
+        key: ctrl-enter
         apply_to: text_file
         execution: "$EDITOR {file}"
         leave_broot: false
     }
-    # Smart Alt-Enter: text files in $EDITOR, others use xdg-open, directories cd
     {
         key: alt-enter
         apply_to: text_file
