@@ -195,6 +195,7 @@ scripts/hyprland/idle_management/feast_done_wrapper.sh
 espanso/match/secrets.yaml
 
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
+broot
 btop/btop.conf
 btop/btop.log
 btop/btop.log.1
