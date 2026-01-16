@@ -113,6 +113,14 @@ verbs: [
 
     # Navigation keybinds mirroring yazi configuration
     {
+        key: k
+        internal: ":line_up"
+    }
+    {
+        key: j
+        internal: ":line_down"
+    }
+    {
         key: ctrl-k
         internal: ":line_up 5"
     }
@@ -127,6 +135,14 @@ verbs: [
     {
         key: ctrl-d
         internal: ":page_down"
+    }
+    {
+        key: h
+        internal: ":parent"
+    }
+    {
+        key: l
+        internal: ":open_stay"
     }
     {
         key: alt-h
