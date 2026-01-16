@@ -9,11 +9,10 @@
 
 verbs: [
 
-    # Smart Enter keybinds: Ctrl = stay in broot, Alt = leave broot
+    # Smart Enter keybinds: e = stay in broot, Alt-Enter = leave broot
     {
         invocation: edit
-        shortcut: e
-        key: ctrl-enter
+        key: e
         apply_to: text_file
         execution: "$EDITOR {file}"
         leave_broot: false
