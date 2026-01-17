@@ -4,6 +4,11 @@
 # IMPORTANT: Always test changes with visudo before deploying
 # Syntax: username ALL = NOPASSWD: /path/to/command [args]
 
+# Sudo password timeout (in minutes)
+# Default is usually 5 or 15 minutes
+# 0 = always ask, -1 = never expire (once per boot), N = expire after N minutes
+Defaults timestamp_timeout=30
+
 # User-specific passwordless commands
 # Replace 'rash' with your username or use %group for group-based rules
 
@@ -25,3 +30,10 @@
 
 # Backup script (already symlinked to /usr/local/bin/)
 rash ALL = NOPASSWD: /usr/local/bin/run_bkup_script
+
+# Commands used by setup.py
+rash ALL = NOPASSWD: /usr/bin/ln -sf *
+rash ALL = NOPASSWD: /usr/bin/tee -a /etc/hosts
+rash ALL = NOPASSWD: /usr/bin/visudo -cf *
+rash ALL = NOPASSWD: /usr/bin/install -m 0440 *
+rash ALL = NOPASSWD: /usr/bin/crontab *
