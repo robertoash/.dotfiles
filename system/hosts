@@ -1,0 +1,11 @@
+# Additional /etc/hosts entries for linuxmini
+# These will be automatically added to /etc/hosts by setup.py
+
+10.20.10.80   oden
+10.20.10.95   oldhp
+10.20.10.90   dockerlab
+10.20.10.92   offlinelab
+10.20.10.91   cloudflare-tunnel
+10.20.10.100  haos
+10.20.10.11   linuxmini
+10.20.10.18   workmbp

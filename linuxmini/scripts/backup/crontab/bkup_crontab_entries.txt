@@ -3,14 +3,11 @@
 # Run the old_hp backup script at 3:00 AM every day
 0 3 * * * run_bkup_script --script oldhp
 
-# Run the Proxmox backup script at 3:00 AM every day
-0 3 * * * run_bkup_script --script proxmox
+# Run the oden backup script at 3:00 AM every day
+0 3 * * * run_bkup_script --script oden
 
 # Run the buku backup script at 3:00 AM every day
 0 3 * * * run_bkup_script --script buku
-
-# Run the IPTV backup script 4 times a day at specific times
-30 5,11,13,18 * * * run_bkup_script --script iptv
 
 #### Sudo Crontab
 

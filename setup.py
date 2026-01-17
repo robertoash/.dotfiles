@@ -309,20 +309,31 @@ scripts_dir = machine_dir / "scripts"
 if scripts_dir.exists():
     create_symlink(scripts_dir, config_dir / "scripts", "scripts")
 
-# Machine-specific local directory - symlink subdirectories to ~/.local
-local_dir = machine_dir / "local"
-if local_dir.exists():
-    local_target_dir = home / ".local"
-    local_target_dir.mkdir(parents=True, exist_ok=True)
-    for item in local_dir.iterdir():
-        if item.is_dir():
-            target = local_target_dir / item.name
-            create_symlink(item, target, f"local/{item.name}")
+# Machine-specific local/bin directory - symlink individual files
+local_bin_dir = machine_dir / "local" / "bin"
+if local_bin_dir.exists():
+    local_bin_target = home / ".local" / "bin"
+    local_bin_target.mkdir(parents=True, exist_ok=True)
+    for script in local_bin_dir.iterdir():
+        if script.is_file():
+            target = local_bin_target / script.name
+            create_symlink(script, target, f"local/bin/{script.name}")
 
-# Step 5: Setup SSH authorized_keys
-print("\n🔐 Step 5: Setting up SSH authorized_keys...")
+# Step 5: Setup SSH config and authorized_keys
+print("\n🔐 Step 5: Setting up SSH config and authorized_keys...")
 ssh_dir = home / ".ssh"
 ssh_dir.mkdir(mode=0o700, exist_ok=True)
+
+# Symlink SSH config from dotfiles
+ssh_config_source = dotfiles_dir / "common" / "ssh" / "config"
+ssh_config_target = ssh_dir / "config"
+
+if ssh_config_source.exists():
+    # Ensure source file has correct permissions (600)
+    subprocess.run(["chmod", "600", str(ssh_config_source)], check=True)
+    create_symlink(ssh_config_source, ssh_config_target, "SSH config")
+else:
+    print(f"⚠️  SSH config source not found: {ssh_config_source}")
 
 # Symlink authorized_keys from dotfiles
 authorized_keys_source = dotfiles_dir / "common" / "ssh" / "authorized_keys"
@@ -331,14 +342,61 @@ authorized_keys_target = ssh_dir / "authorized_keys"
 if authorized_keys_source.exists():
     # Ensure source file has correct permissions (600)
     subprocess.run(["chmod", "600", str(authorized_keys_source)], check=True)
-    create_symlink(authorized_keys_source, authorized_keys_target, "SSH keys")
+    create_symlink(authorized_keys_source, authorized_keys_target, "SSH authorized_keys")
 else:
     print(f"⚠️  SSH authorized_keys source not found: {authorized_keys_source}")
 
-# Step 6: Setup Claude Code configuration
+# Step 6: Setup /etc/hosts entries
+print("\n🌐 Step 6: Setting up /etc/hosts entries...")
+hosts_file = dotfiles_dir / "system" / "hosts"
+
+if hosts_file.exists():
+    # Read the hosts entries
+    hosts_content = hosts_file.read_text()
+    hosts_entries = []
+
+    for line in hosts_content.split('\n'):
+        line = line.strip()
+        if line and not line.startswith('#'):
+            hosts_entries.append(line)
+
+    if hosts_entries:
+        # Check if entries already exist in /etc/hosts
+        try:
+            etc_hosts = Path("/etc/hosts").read_text()
+            marker = "# === DOTFILES MANAGED HOSTS ==="
+
+            if marker not in etc_hosts:
+                print(f"  ℹ️  Found {len(hosts_entries)} host entries to add")
+                print("  🔒 Adding entries to /etc/hosts (requires sudo)...")
+
+                # Build the content to append
+                hosts_content_to_add = f"\n{marker}\n"
+                for entry in hosts_entries:
+                    hosts_content_to_add += f"{entry}\n"
+                hosts_content_to_add += "# === END DOTFILES MANAGED HOSTS ===\n"
+
+                # Use sudo tee to append to /etc/hosts
+                result = subprocess.run(
+                    ["sudo", "tee", "-a", "/etc/hosts"],
+                    input=hosts_content_to_add,
+                    text=True,
+                    capture_output=True
+                )
+
+                if result.returncode == 0:
+                    print(f"  ✅ Added {len(hosts_entries)} host entries to /etc/hosts")
+                else:
+                    print(f"  ⚠️  Failed to add hosts: {result.stderr.strip()}")
+            else:
+                print("  ✅ /etc/hosts entries already present")
+        except PermissionError:
+            print("  ⚠️  Cannot read /etc/hosts (permission denied)")
+
+# Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
 
-# Step 6.5: Distribute environment variables from system/env_vars.yaml
+# Step 6.6: Distribute environment variables from system/env_vars.yaml
 distribute_env_vars(dotfiles_dir, hostname, verbose=True)
 
 # Step 7: Rsync desktop files (Linux only)
@@ -404,6 +462,106 @@ if machine_config["is_linux"]:
         # Reload systemd daemon
         subprocess.run(["systemctl", "--user", "daemon-reload"], check=False)
         print("  🔄 Systemd user daemon reloaded")
+
+# Step 10: Setup backup crontab (Linux only)
+if machine_config["is_linux"]:
+    backup_crontab_file = machine_dir / "scripts" / "backup" / "crontab" / "bkup_crontab_entries.txt"
+
+    if backup_crontab_file.exists():
+        print("\n📅 Step 10: Setting up backup crontab...")
+
+        # Check if cronie is installed
+        cronie_check = subprocess.run(["which", "crontab"], capture_output=True)
+
+        if cronie_check.returncode == 0:
+            # Read crontab entries file
+            crontab_content = backup_crontab_file.read_text()
+
+            # Extract user crontab entries (before "#### Sudo Crontab")
+            user_entries = []
+            sudo_entries = []
+            in_sudo_section = False
+
+            for line in crontab_content.split('\n'):
+                line = line.strip()
+                if line.startswith("#### Sudo Crontab"):
+                    in_sudo_section = True
+                    continue
+                if line and not line.startswith('#'):
+                    if in_sudo_section:
+                        # Remove 'sudo' from the command for sudo crontab
+                        sudo_entries.append(line.replace('sudo ', '', 1))
+                    else:
+                        user_entries.append(line)
+
+            if user_entries:
+                # Get existing crontab
+                existing_result = subprocess.run(["crontab", "-l"], capture_output=True, text=True)
+                existing_crontab = existing_result.stdout if existing_result.returncode == 0 else ""
+
+                # Check if backup entries already exist
+                marker = "# === BACKUP CRONTAB ENTRIES ==="
+                if marker not in existing_crontab:
+                    # Append new entries
+                    new_crontab = existing_crontab.rstrip()
+                    if new_crontab:
+                        new_crontab += "\n\n"
+                    new_crontab += f"{marker}\n"
+                    new_crontab += "\n".join(user_entries) + "\n"
+
+                    # Load new crontab
+                    load_result = subprocess.run(
+                        ["crontab", "-"],
+                        input=new_crontab,
+                        text=True,
+                        capture_output=True
+                    )
+
+                    if load_result.returncode == 0:
+                        print(f"  ✅ Loaded {len(user_entries)} user crontab entries")
+                    else:
+                        print(f"  ⚠️  Failed to load crontab: {load_result.stderr.strip()}")
+                else:
+                    print("  ℹ️  Backup crontab entries already loaded")
+
+            # Setup sudo crontab automatically
+            if sudo_entries:
+                print("\n  🔒 Setting up root crontab (requires sudo)...")
+
+                # Get existing root crontab
+                existing_result = subprocess.run(
+                    ["sudo", "crontab", "-l"],
+                    capture_output=True,
+                    text=True
+                )
+                existing_root_crontab = existing_result.stdout if existing_result.returncode == 0 else ""
+
+                # Check if backup entries already exist
+                root_marker = "# === BACKUP CRONTAB ENTRIES ==="
+                if root_marker not in existing_root_crontab:
+                    # Append new entries
+                    new_root_crontab = existing_root_crontab.rstrip()
+                    if new_root_crontab:
+                        new_root_crontab += "\n\n"
+                    new_root_crontab += f"{root_marker}\n"
+                    new_root_crontab += "\n".join(sudo_entries) + "\n"
+
+                    # Load new root crontab
+                    load_result = subprocess.run(
+                        ["sudo", "crontab", "-"],
+                        input=new_root_crontab,
+                        text=True,
+                        capture_output=True
+                    )
+
+                    if load_result.returncode == 0:
+                        print(f"  ✅ Loaded {len(sudo_entries)} root crontab entries")
+                    else:
+                        print(f"  ⚠️  Failed to load root crontab: {load_result.stderr.strip()}")
+                else:
+                    print("  ℹ️  Root backup crontab entries already loaded")
+        else:
+            print("  ⚠️  crontab not found - install cronie package")
 
 # Print warnings about existing valid symlinks if any
 if symlink_warnings:
