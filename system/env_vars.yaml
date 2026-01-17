@@ -56,9 +56,6 @@ global:
   # Claude Code
   CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "true"
 
-  # Serena
-  SERENA_HOME: /home/rash/.config/serena
-
   # Thoth
   THOTH_NOTES_DIR: ~/thoth
 

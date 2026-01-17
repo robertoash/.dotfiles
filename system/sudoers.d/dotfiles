@@ -1,0 +1,27 @@
+# Passwordless sudo configuration for dotfiles-managed commands
+# This file should be installed to /etc/sudoers.d/dotfiles
+#
+# IMPORTANT: Always test changes with visudo before deploying
+# Syntax: username ALL = NOPASSWD: /path/to/command [args]
+
+# User-specific passwordless commands
+# Replace 'rash' with your username or use %group for group-based rules
+
+# Example: Allow systemctl commands for specific services
+# rash ALL = NOPASSWD: /usr/bin/systemctl restart nginx.service
+# rash ALL = NOPASSWD: /usr/bin/systemctl start nginx.service
+# rash ALL = NOPASSWD: /usr/bin/systemctl stop nginx.service
+
+# Example: Allow package management (use with caution!)
+# rash ALL = NOPASSWD: /usr/bin/pacman -Syu
+# rash ALL = NOPASSWD: /usr/bin/apt update
+# rash ALL = NOPASSWD: /usr/bin/apt upgrade
+
+# Example: Command aliases for better organization
+# Cmnd_Alias BACKUP_CMDS = /usr/local/bin/run_bkup_script, /usr/bin/rsync
+# rash ALL = NOPASSWD: BACKUP_CMDS
+
+# Add your specific commands below:
+
+# Backup script (already symlinked to /usr/local/bin/)
+rash ALL = NOPASSWD: /usr/local/bin/run_bkup_script
