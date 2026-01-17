@@ -1,12 +1,12 @@
 [Unit]
-Description=Spotify Player Daemon
-Documentation=https://github.com/aome510/spotify-player
+Description=Spotifyd Spotify Daemon
+Documentation=https://github.com/Spotifyd/spotifyd
 After=pipewire.service network-online.target
 Wants=network-online.target
 
 [Service]
-Type=forking
-ExecStart=%h/.cargo/bin/spotify_player --daemon
+Type=simple
+ExecStart=/usr/bin/spotifyd --no-daemon --config-path %h/.config/spotifyd/spotifyd.conf
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal
