@@ -338,8 +338,10 @@ def main():
 
     logging.debug("Configuring reconnect delay...")
     client.reconnect_delay_set(min_delay=1, max_delay=300)
-    logging.debug("Enabling MQTT logger...")
-    client.enable_logger()
+    # Note: client.enable_logger() is very verbose and generates excessive logs
+    # Only enable for debugging specific MQTT issues
+    # logging.debug("Enabling MQTT logger...")
+    # client.enable_logger()
 
     try:
         logging.debug(f"Connecting to MQTT broker at {broker}:{connectport}...")

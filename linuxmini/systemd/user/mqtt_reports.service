@@ -10,7 +10,7 @@ Environment=PYTHONPATH=/home/rash/.config/scripts
 Environment=VIRTUAL_ENV=/home/rash/.config/scripts/mqtt/.venv
 Environment=PATH=/home/rash/.config/scripts/mqtt/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
 ExecStartPre=/usr/bin/bash -c "source /home/rash/.config/scripts/mqtt/.env && echo 'Environment variables loaded'"
-ExecStart=/usr/bin/bash -c "source /home/rash/.config/scripts/mqtt/.venv/bin/activate && /home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_reports --debug"
+ExecStart=/usr/bin/bash -c "source /home/rash/.config/scripts/mqtt/.venv/bin/activate && /home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_reports"
 Restart=on-failure
 RestartSec=5
 WorkingDirectory=/home/rash/.config/scripts/mqtt

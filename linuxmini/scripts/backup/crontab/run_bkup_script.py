@@ -20,6 +20,7 @@ script_mapping = {
     "take-root-snapshot": "take_root_snapshot.py",
     "take-home-snapshot": "take_home_snapshot.py",
     "take-all-snapshots": "all",
+    "cleanup-logs": "cleanup_logs.py",
 }
 
 

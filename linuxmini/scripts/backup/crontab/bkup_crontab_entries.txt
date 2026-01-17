@@ -9,6 +9,9 @@
 # Run the buku backup script at 3:00 AM every day
 0 3 * * * run_bkup_script --script buku
 
+# Clean up old log files (keep last 7 days) at 2:00 AM every Sunday
+0 2 * * 0 run_bkup_script --script cleanup-logs
+
 #### Sudo Crontab
 
 # Clean up old snapshots at 2:50 AM every day
