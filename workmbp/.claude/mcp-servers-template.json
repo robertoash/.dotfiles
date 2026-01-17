@@ -19,5 +19,10 @@
       "JIRA_PROJECTS_FILTER": "AN2",
       "CONFLUENCE_SPACES_FILTER": "AN"
     }
+  },
+  "claude-flow": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["claude-flow@v3alpha", "mcp", "start"]
   }
 }
