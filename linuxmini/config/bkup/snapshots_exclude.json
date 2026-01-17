@@ -1,0 +1,52 @@
+{
+  "root_exclusions": [
+    "tmp",
+    "var/tmp",
+    "var/cache",
+    "proc",
+    "sys",
+    "dev",
+    "run",
+    "mnt",
+    "lost+found",
+    "swapfile",
+    ".snapshots"
+  ],
+  "system_exclusions": [
+    "var/lib/systemd/coredump",
+    "var/spool"
+  ],
+  "home_exclusions": [
+    ".cache",
+    ".local/share/Trash",
+    ".thumbnails",
+    ".local/share/nvim/lazy",
+    ".local/share/nvim/mason",
+    ".local/share/nvim/tree-sitter-*-tmp",
+    "go/pkg",
+    "Insync",
+    ".cursor/extensions",
+    ".insightface/models",
+    ".claude/debug",
+    ".claude/plugins",
+    ".TVLite",
+    ".dotfiles/linuxmini/scripts/_logs",
+    ".dotfiles/linuxmini/scripts/_cache",
+    ".dotfiles/linuxmini/config/qutebrowser/profiles",
+    ".dotfiles/__pycache__",
+    ".var/app",
+    ".local/share/Steam",
+    ".npm",
+    ".cargo/registry",
+    ".cargo/git",
+    ".rustup/toolchains",
+    ".mozilla/firefox/*/Cache",
+    ".mozilla/firefox/*/cache2",
+    ".config/chromium/*/Cache",
+    ".config/Code/Cache",
+    ".config/Code/CachedData",
+    "node_modules",
+    ".pyenv/versions",
+    ".local/share/virtualenvs"
+  ]
+}
