@@ -77,4 +77,6 @@ token_count_estimator: CHAR_COUNT
 
 # The list of registered project paths (updated automatically).
 projects:
-  - /home/rash/.dotfiles
+- /home/rash/.dotfiles
+fixed_tools: []
+jetbrains_plugin_server_address: 127.0.0.1

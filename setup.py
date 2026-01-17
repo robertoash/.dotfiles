@@ -309,6 +309,16 @@ scripts_dir = machine_dir / "scripts"
 if scripts_dir.exists():
     create_symlink(scripts_dir, config_dir / "scripts", "scripts")
 
+# Machine-specific local directory - symlink subdirectories to ~/.local
+local_dir = machine_dir / "local"
+if local_dir.exists():
+    local_target_dir = home / ".local"
+    local_target_dir.mkdir(parents=True, exist_ok=True)
+    for item in local_dir.iterdir():
+        if item.is_dir():
+            target = local_target_dir / item.name
+            create_symlink(item, target, f"local/{item.name}")
+
 # Step 5: Setup SSH authorized_keys
 print("\n🔐 Step 5: Setting up SSH authorized_keys...")
 ssh_dir = home / ".ssh"
