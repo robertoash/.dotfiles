@@ -194,6 +194,8 @@ nchat/version
 scripts/hyprland/idle_management/feast_done_wrapper.sh
 espanso/match/secrets.yaml
 
+fish/functions/br.fish
+
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
 broot
 btop/btop.conf
@@ -316,4 +318,3 @@ xdg
 yazi
 zellij/config.kdl.template
 # === END AUTO-GENERATED SYMLINKS ===
-fish/functions/br.fish
