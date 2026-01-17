@@ -1,29 +1,10 @@
 {
-  "github": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-github"],
-    "env": {
-      "GITHUB_PERSONAL_ACCESS_TOKEN": "{{CLAUDE_GITHUB_TOKEN}}"
-    }
-  },
   "memory": {
     "type": "stdio",
     "command": "npx",
     "args": ["-y", "@modelcontextprotocol/server-memory"],
     "env": {
       "MEMORY_FILE_PATH": "/home/rash/.claude/memory.json"
-    }
-  },
-  "obsidian": {
-    "type": "stdio",
-    "command": "uvx",
-    "args": ["mcp-obsidian"],
-    "env": {
-      "UV_PYTHON": "/usr/bin/python3",
-      "OBSIDIAN_API_KEY": "{{OBSIDIAN_API_KEY}}",
-      "OBSIDIAN_HOST": "localhost",
-      "OBSIDIAN_PORT": "27123"
     }
   },
   "hass-mcp": {
@@ -34,12 +15,6 @@
       "HA_URL": "http://10.20.10.100:8123",
       "HA_TOKEN": "{{CLAUDE_HA_TOKEN_GLOBAL}}"
     }
-  },
-  "mcp-mermaid": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "@lepion/mcp-server-mermaid"],
-    "env": {}
   },
   "beads": {
     "type": "stdio",
