@@ -67,3 +67,4 @@ common/config/w3m/cookie
 common/config/w3m/history
 common/config/yazi/package.toml
 logs
+linuxmini/scripts/_cache
