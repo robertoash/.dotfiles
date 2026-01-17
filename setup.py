@@ -319,6 +319,21 @@ if local_bin_dir.exists():
             target = local_bin_target / script.name
             create_symlink(script, target, f"local/bin/{script.name}")
 
+            # For run_bkup_script, also symlink to /usr/local/bin for root access
+            if script.name == "run_bkup_script" and machine_config["is_linux"]:
+                usr_local_bin_target = Path("/usr/local/bin") / script.name
+                if not usr_local_bin_target.exists():
+                    print(f"\n  🔒 Creating system-wide symlink for {script.name} (requires sudo)...")
+                    result = subprocess.run(
+                        ["sudo", "ln", "-sf", str(target), str(usr_local_bin_target)],
+                        capture_output=True,
+                        text=True
+                    )
+                    if result.returncode == 0:
+                        print(f"  ✅ Symlinked to /usr/local/bin/{script.name}")
+                    else:
+                        print(f"  ⚠️  Failed to create system symlink: {result.stderr.strip()}")
+
 # Step 5: Setup SSH config and authorized_keys
 print("\n🔐 Step 5: Setting up SSH config and authorized_keys...")
 ssh_dir = home / ".ssh"
@@ -346,52 +361,53 @@ if authorized_keys_source.exists():
 else:
     print(f"⚠️  SSH authorized_keys source not found: {authorized_keys_source}")
 
-# Step 6: Setup /etc/hosts entries
-print("\n🌐 Step 6: Setting up /etc/hosts entries...")
-hosts_file = dotfiles_dir / "system" / "hosts"
+# Step 6: Setup /etc/hosts entries (Linux only)
+if machine_config["is_linux"]:
+    print("\n🌐 Step 6: Setting up /etc/hosts entries...")
+    hosts_file = dotfiles_dir / "system" / "hosts"
 
-if hosts_file.exists():
-    # Read the hosts entries
-    hosts_content = hosts_file.read_text()
-    hosts_entries = []
+    if hosts_file.exists():
+        # Read the hosts entries
+        hosts_content = hosts_file.read_text()
+        hosts_entries = []
 
-    for line in hosts_content.split('\n'):
-        line = line.strip()
-        if line and not line.startswith('#'):
-            hosts_entries.append(line)
+        for line in hosts_content.split('\n'):
+            line = line.strip()
+            if line and not line.startswith('#'):
+                hosts_entries.append(line)
 
-    if hosts_entries:
-        # Check if entries already exist in /etc/hosts
-        try:
-            etc_hosts = Path("/etc/hosts").read_text()
-            marker = "# === DOTFILES MANAGED HOSTS ==="
+        if hosts_entries:
+            # Check if entries already exist in /etc/hosts
+            try:
+                etc_hosts = Path("/etc/hosts").read_text()
+                marker = "# === DOTFILES MANAGED HOSTS ==="
 
-            if marker not in etc_hosts:
-                print(f"  ℹ️  Found {len(hosts_entries)} host entries to add")
-                print("  🔒 Adding entries to /etc/hosts (requires sudo)...")
+                if marker not in etc_hosts:
+                    print(f"  ℹ️  Found {len(hosts_entries)} host entries to add")
+                    print("  🔒 Adding entries to /etc/hosts (requires sudo)...")
 
-                # Build the content to append
-                hosts_content_to_add = f"\n{marker}\n"
-                for entry in hosts_entries:
-                    hosts_content_to_add += f"{entry}\n"
-                hosts_content_to_add += "# === END DOTFILES MANAGED HOSTS ===\n"
+                    # Build the content to append
+                    hosts_content_to_add = f"\n{marker}\n"
+                    for entry in hosts_entries:
+                        hosts_content_to_add += f"{entry}\n"
+                    hosts_content_to_add += "# === END DOTFILES MANAGED HOSTS ===\n"
 
-                # Use sudo tee to append to /etc/hosts
-                result = subprocess.run(
-                    ["sudo", "tee", "-a", "/etc/hosts"],
-                    input=hosts_content_to_add,
-                    text=True,
-                    capture_output=True
-                )
+                    # Use sudo tee to append to /etc/hosts
+                    result = subprocess.run(
+                        ["sudo", "tee", "-a", "/etc/hosts"],
+                        input=hosts_content_to_add,
+                        text=True,
+                        capture_output=True
+                    )
 
-                if result.returncode == 0:
-                    print(f"  ✅ Added {len(hosts_entries)} host entries to /etc/hosts")
+                    if result.returncode == 0:
+                        print(f"  ✅ Added {len(hosts_entries)} host entries to /etc/hosts")
+                    else:
+                        print(f"  ⚠️  Failed to add hosts: {result.stderr.strip()}")
                 else:
-                    print(f"  ⚠️  Failed to add hosts: {result.stderr.strip()}")
-            else:
-                print("  ✅ /etc/hosts entries already present")
-        except PermissionError:
-            print("  ⚠️  Cannot read /etc/hosts (permission denied)")
+                    print("  ✅ /etc/hosts entries already present")
+            except (PermissionError, FileNotFoundError) as e:
+                print(f"  ⚠️  Cannot access /etc/hosts: {e}")
 
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
