@@ -15,6 +15,7 @@
 !alacritty/
 !atuin/
 !bat/
+!bkup/
 !dunst/
 !environment.d/
 !espanso/
@@ -73,6 +74,7 @@
 !alacritty/**/*
 !atuin/**/*
 !bat/**/*
+!bkup/**/*
 !dunst/**/*
 !environment.d/**/*
 !espanso/**/*
