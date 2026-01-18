@@ -43,30 +43,53 @@ def setup_crontab(dotfiles_dir, hostname):
                 existing_result = subprocess.run(["crontab", "-l"], capture_output=True, text=True)
                 existing_crontab = existing_result.stdout if existing_result.returncode == 0 else ""
 
-                # Check if backup entries already exist
-                marker = "# === BACKUP CRONTAB ENTRIES ==="
-                if marker not in existing_crontab:
-                    # Append new entries
-                    new_crontab = existing_crontab.rstrip()
-                    if new_crontab:
-                        new_crontab += "\n\n"
-                    new_crontab += f"{marker}\n"
-                    new_crontab += "\n".join(user_entries) + "\n"
+                # Build a map of managed entries by their identifier
+                managed_entries = {}
+                for entry in user_entries:
+                    if "# managed:dotfiles:" in entry:
+                        # Extract identifier from comment
+                        identifier = entry.split("# managed:dotfiles:")[-1].strip()
+                        managed_entries[identifier] = entry
 
-                    # Load new crontab
-                    load_result = subprocess.run(
-                        ["crontab", "-"],
-                        input=new_crontab,
-                        text=True,
-                        capture_output=True
-                    )
+                # Process existing crontab: update managed entries, keep others
+                lines = existing_crontab.split('\n')
+                new_lines = []
+                updated_identifiers = set()
 
-                    if load_result.returncode == 0:
-                        print(f"  ✅ Loaded {len(user_entries)} user crontab entries")
+                for line in lines:
+                    if "# managed:dotfiles:" in line:
+                        # Extract identifier from existing line
+                        identifier = line.split("# managed:dotfiles:")[-1].strip()
+                        if identifier in managed_entries:
+                            # Replace with updated entry
+                            new_lines.append(managed_entries[identifier])
+                            updated_identifiers.add(identifier)
+                        else:
+                            # Entry no longer in source, skip it
+                            pass
                     else:
-                        print(f"  ⚠️  Failed to load crontab: {load_result.stderr.strip()}")
+                        # Keep non-managed entries
+                        new_lines.append(line)
+
+                # Add new managed entries that weren't in existing crontab
+                for identifier, entry in managed_entries.items():
+                    if identifier not in updated_identifiers:
+                        new_lines.append(entry)
+
+                new_crontab = '\n'.join(new_lines).strip() + "\n"
+
+                # Load new crontab
+                load_result = subprocess.run(
+                    ["crontab", "-"],
+                    input=new_crontab,
+                    text=True,
+                    capture_output=True
+                )
+
+                if load_result.returncode == 0:
+                    print(f"  ✅ Loaded {len(managed_entries)} user crontab entries")
                 else:
-                    print("  ℹ️  Backup crontab entries already loaded")
+                    print(f"  ⚠️  Failed to load crontab: {load_result.stderr.strip()}")
 
             # Setup sudo crontab automatically
             if sudo_entries:
@@ -80,29 +103,52 @@ def setup_crontab(dotfiles_dir, hostname):
                 )
                 existing_root_crontab = existing_result.stdout if existing_result.returncode == 0 else ""
 
-                # Check if backup entries already exist
-                root_marker = "# === BACKUP CRONTAB ENTRIES ==="
-                if root_marker not in existing_root_crontab:
-                    # Append new entries
-                    new_root_crontab = existing_root_crontab.rstrip()
-                    if new_root_crontab:
-                        new_root_crontab += "\n\n"
-                    new_root_crontab += f"{root_marker}\n"
-                    new_root_crontab += "\n".join(sudo_entries) + "\n"
+                # Build a map of managed entries by their identifier
+                managed_root_entries = {}
+                for entry in sudo_entries:
+                    if "# managed:dotfiles:" in entry:
+                        # Extract identifier from comment
+                        identifier = entry.split("# managed:dotfiles:")[-1].strip()
+                        managed_root_entries[identifier] = entry
 
-                    # Load new root crontab
-                    load_result = subprocess.run(
-                        ["sudo", "crontab", "-"],
-                        input=new_root_crontab,
-                        text=True,
-                        capture_output=True
-                    )
+                # Process existing crontab: update managed entries, keep others
+                lines = existing_root_crontab.split('\n')
+                new_lines = []
+                updated_identifiers = set()
 
-                    if load_result.returncode == 0:
-                        print(f"  ✅ Loaded {len(sudo_entries)} root crontab entries")
+                for line in lines:
+                    if "# managed:dotfiles:" in line:
+                        # Extract identifier from existing line
+                        identifier = line.split("# managed:dotfiles:")[-1].strip()
+                        if identifier in managed_root_entries:
+                            # Replace with updated entry
+                            new_lines.append(managed_root_entries[identifier])
+                            updated_identifiers.add(identifier)
+                        else:
+                            # Entry no longer in source, skip it
+                            pass
                     else:
-                        print(f"  ⚠️  Failed to load root crontab: {load_result.stderr.strip()}")
+                        # Keep non-managed entries
+                        new_lines.append(line)
+
+                # Add new managed entries that weren't in existing crontab
+                for identifier, entry in managed_root_entries.items():
+                    if identifier not in updated_identifiers:
+                        new_lines.append(entry)
+
+                new_root_crontab = '\n'.join(new_lines).strip() + "\n"
+
+                # Load new root crontab
+                load_result = subprocess.run(
+                    ["sudo", "crontab", "-"],
+                    input=new_root_crontab,
+                    text=True,
+                    capture_output=True
+                )
+
+                if load_result.returncode == 0:
+                    print(f"  ✅ Loaded {len(managed_root_entries)} root crontab entries")
                 else:
-                    print("  ℹ️  Root backup crontab entries already loaded")
+                    print(f"  ⚠️  Failed to load root crontab: {load_result.stderr.strip()}")
         else:
             print("  ⚠️  crontab not found - install cronie package")

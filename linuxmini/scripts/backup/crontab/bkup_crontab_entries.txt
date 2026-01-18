@@ -1,21 +1,21 @@
 #### Rash Crontab
 
 # Run the old_hp backup script at 3:00 AM every day
-0 3 * * * run_bkup_script --script oldhp
+0 3 * * * /home/rash/.local/bin/run_bkup_script --script oldhp  # managed:dotfiles:oldhp
 
 # Run the oden backup script at 3:00 AM every day
-0 3 * * * run_bkup_script --script oden
+0 3 * * * /home/rash/.local/bin/run_bkup_script --script oden  # managed:dotfiles:oden
 
 # Run the buku backup script at 3:00 AM every day
-0 3 * * * run_bkup_script --script buku
+0 3 * * * /home/rash/.local/bin/run_bkup_script --script buku  # managed:dotfiles:buku
 
 # Clean up old log files (keep last 7 days) at 2:00 AM every Sunday
-0 2 * * 0 run_bkup_script --script cleanup-logs
+0 2 * * 0 /home/rash/.local/bin/run_bkup_script --script cleanup-logs  # managed:dotfiles:cleanup-logs
 
 #### Sudo Crontab
 
 # Clean up old snapshots at 2:50 AM every day
-50 2 * * * run_bkup_script --script snapshot-keep
+50 2 * * * /home/rash/.local/bin/run_bkup_script --script snapshot-keep  # managed:dotfiles:snapshot-keep
 
 # Backup system at 3:00 AM every day
-0 3 * * * run_bkup_script --script take-snapshot
+0 3 * * * /home/rash/.local/bin/run_bkup_script --script take-all-snapshots  # managed:dotfiles:take-all-snapshots
