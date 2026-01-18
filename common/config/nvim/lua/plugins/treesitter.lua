@@ -1,10 +1,11 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs",
-		opts = {
-			ensure_installed = {
+		branch = "main",
+		build = function()
+			-- Install parsers after plugin is built/updated
+			local ts = require("nvim-treesitter")
+			ts.install({
 				"bash",
 				"c",
 				"diff",
@@ -21,26 +22,36 @@ return {
 				"vim",
 				"vimdoc",
 				"yaml",
-			},
-			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
+			})
+		end,
+		config = function()
+			-- Enable highlighting via autocommand
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "*",
+				callback = function()
+					pcall(vim.treesitter.start)
+				end,
+			})
+
+			-- Enable indentation for supported languages
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = { "bash", "c", "html", "lua", "python", "sql", "vim", "yaml" },
+				callback = function()
+					vim.bo.indentexpr = "v:lua.require'nvim-treesitter.indent'.get_indent(v:lnum)"
+				end,
+			})
+		end,
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
 		config = function()
 			require("treesitter-context").setup({
-				enable = true, -- Enable this plugin
-				max_lines = 0, -- No limit on the number of lines for the context
-				trim_scope = "outer", -- Trim outer context when it exceeds the window height
-				mode = "cursor", -- Line used to calculate context is the cursor line
-				separator = "─", -- Clean box-drawing line
+				enable = true,
+				max_lines = 0,
+				trim_scope = "outer",
+				mode = "cursor",
+				separator = "─",
 			})
 		end,
 	},
 }
-
