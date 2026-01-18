@@ -1,0 +1,11 @@
+[Unit]
+Description=Ultimate fallback lock timer (ignores all inhibitors)
+After=graphical-session.target
+
+[Timer]
+OnActiveSec=30min
+OnUnitActiveSec=30min
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

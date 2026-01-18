@@ -3,10 +3,17 @@ Description=MQTT Listener Service
 After=network.target
 
 [Service]
-ExecStart=/bin/bash -c '/home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_listener'
-Restart=always
+Type=simple
+RuntimeDirectory=mqtt
+RuntimeDirectoryMode=755
+Environment=PYTHONPATH=/home/rash/.config/scripts
+ExecStartPre=/usr/bin/bash -c "source /home/rash/.config/scripts/mqtt/.env && echo 'Environment variables loaded'"
+ExecStart=/home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_listener
+Restart=on-failure
 RestartSec=5
 WorkingDirectory=/home/rash/.config/scripts/mqtt
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=default.target

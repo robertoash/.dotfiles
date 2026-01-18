@@ -106,9 +106,7 @@ def configure_logging(args):
 
 def set_mqtt_client():
     logging.debug("Creating MQTT client...")
-    client = mqtt.Client(
-        client_id=clientname, callback_api_version=mqtt.CallbackAPIVersion.VERSION2
-    )
+    client = mqtt.Client(client_id=clientname)
     logging.debug(f"Setting credentials for user: {os.environ['mqtt_user']}")
     client.username_pw_set(
         username=os.environ["mqtt_user"], password=os.environ["mqtt_password"]
@@ -145,11 +143,9 @@ def safe_reconnect(client):
             logging.debug("Reconnection state reset")
 
 
-def on_connect(client, userdata, flags, rc, properties=None):
+def on_connect(client, userdata, flags, rc):
     global broker_online, reconnecting
-    logging.debug(
-        f"on_connect called with rc={rc}, flags={flags}, properties={properties}"
-    )
+    logging.debug(f"on_connect called with rc={rc}, flags={flags}")
     if rc == 0:
         logging.info("Connected OK to MQTT broker")
         broker_online = True
@@ -179,12 +175,9 @@ def on_connect(client, userdata, flags, rc, properties=None):
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
-def on_disconnect(client, userdata, rc, *args, properties=None):
+def on_disconnect(client, userdata, rc):
     global broker_online
-    logging.debug(
-        f"on_disconnect called with client={client}, userdata={userdata}, "
-        f"rc={rc}, args={args}, properties={properties}"
-    )
+    logging.debug(f"on_disconnect called with rc={rc}")
 
     if isinstance(rc, mqtt.DisconnectFlags):
         if rc.is_disconnect_packet_from_server:
@@ -234,8 +227,8 @@ def on_message(client, userdata, message):
             broker_online = True
 
 
-def on_publish(client, userdata, mid, reason_code, properties=None):
-    logging.debug(f"Publish complete for message id: {mid}, reason code: {reason_code}")
+def on_publish(client, userdata, mid):
+    logging.debug(f"Publish complete for message id: {mid}")
 
 
 def publish_file_contents(client, file_path):
