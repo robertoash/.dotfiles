@@ -40,9 +40,8 @@ __pycache__/
 *.pyo
 
 # System files
-linuxmini/systemd/user/default.target.wants
-linuxmini/systemd/user/pipewire.service.wants
-linuxmini/systemd/user/sockets.target.wants
+# Systemd auto-generated .wants directories
+**/*.wants/
 linuxmini/python-tools/hypr-window-ops/hypr_window_ops/__pycache__
 linuxmini/python-tools/kanata-tools/kanata_tools/__pycache__
 linuxmini/scripts/_logs/
