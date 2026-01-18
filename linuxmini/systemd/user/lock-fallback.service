@@ -1,6 +1,7 @@
 [Unit]
 Description=Ultimate fallback lock service
 ConditionEnvironment=WAYLAND_DISPLAY
+ConditionPathExists=!/tmp/waybar/manual_override
 
 [Service]
 Type=oneshot
