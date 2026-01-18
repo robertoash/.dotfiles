@@ -4,6 +4,7 @@
 
 -- Load custom configurations
 require("custom.options")
+require("custom.autocmds")
 
 --=============================================================================
 -- LAZY.NVIM SETUP (PLUGIN MANAGER)

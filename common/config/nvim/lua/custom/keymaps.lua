@@ -1078,34 +1078,15 @@ local oil_keymaps = {
 	},
 }
 
---[[
-    =====================================================================
-    GIT-CONFLICT.NVIM KEYMAPS (handled by plugin setup)
-    =====================================================================
-    These mappings are set automatically by git-conflict.setup() when
-    default_mappings = true, and are only active in buffers with git
-    conflicts. Documented here for reference:
-
-    CONFLICT RESOLUTION:
-      co        - choose ours (keep current changes)
-      ct        - choose theirs (accept incoming changes)
-      cb        - choose both (keep both changes)
-      c0        - choose none (delete both changes)
-
-    CONFLICT NAVIGATION:
-      ]x        - next conflict
-      [x        - previous conflict
-
-    COMMANDS (available in conflicted buffers):
-      :GitConflictChooseOurs      - select the current changes
-      :GitConflictChooseTheirs    - select the incoming changes
-      :GitConflictChooseBoth      - select both changes
-      :GitConflictChooseNone      - select none of the changes
-      :GitConflictNextConflict    - move to the next conflict
-      :GitConflictPrevConflict    - move to the previous conflict
-      :GitConflictListQf          - list all conflicts in quickfix
-    =====================================================================
---]]
+-- Conflict marker keymaps (for buffers with git conflicts)
+local conflict_marker_mappings = {
+	{ "n", "co", "<cmd>Conflict ours<cr>", { desc = "Choose ours" } },
+	{ "n", "ct", "<cmd>Conflict theirs<cr>", { desc = "Choose theirs" } },
+	{ "n", "cb", "<cmd>Conflict both<cr>", { desc = "Choose both" } },
+	{ "n", "c0", "<cmd>Conflict none<cr>", { desc = "Choose none" } },
+	{ "n", "]x", "<cmd>Conflict next<cr>", { desc = "Next conflict" } },
+	{ "n", "[x", "<cmd>Conflict prev<cr>", { desc = "Previous conflict" } },
+}
 
 -- Function to get Oil keymaps for the setup
 local M = {}
@@ -1175,6 +1156,17 @@ local autocmd_definitions = {
 			for _, mapping in ipairs(markdown_visual_line_mappings) do
 				local mode, lhs, rhs = mapping[1], mapping[2], mapping[3]
 				vim.keymap.set(mode, lhs, rhs, opts)
+			end
+		end,
+	},
+	conflict_marker_keymaps = {
+		event = "User",
+		pattern = "ConflictMarkerSetup",
+		desc = "Set conflict marker keymaps for conflicted buffers",
+		callback = function()
+			for _, mapping in ipairs(conflict_marker_mappings) do
+				local mode, lhs, rhs, opts = mapping[1], mapping[2], mapping[3], mapping[4]
+				vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", opts, { buffer = true }))
 			end
 		end,
 	},
@@ -1248,6 +1240,7 @@ local all_autocmds = {
 	"terminal_window_nav",
 	"oil_disable_noice",
 	"markdown_visual_lines",
+	"conflict_marker_keymaps",
 }
 
 -- Apply loops
