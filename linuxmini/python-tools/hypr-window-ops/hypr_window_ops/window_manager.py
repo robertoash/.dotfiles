@@ -314,14 +314,14 @@ def focus_window(address):
     run_hyprctl_command(["dispatch", "focuswindow", f"address:{address}"])
 
 
-def apply_sneaky_tag(address):
-    """Apply the 'sneaky' tag to a window."""
-    run_hyprctl_command(["dispatch", "tagwindow", "+sneaky", f"address:{address}"])
+def apply_tag(address, tag):
+    """Apply a tag to a window."""
+    run_hyprctl_command(["dispatch", "tagwindow", f"+{tag}", f"address:{address}"])
 
 
-def remove_sneaky_tag(address):
-    """Remove the 'sneaky' tag from a window."""
-    run_hyprctl_command(["dispatch", "tagwindow", "--", "-sneaky", f"address:{address}"])
+def remove_tag(address, tag):
+    """Remove a tag from a window."""
+    run_hyprctl_command(["dispatch", "tagwindow", "--", f"-{tag}", f"address:{address}"])
 
 
 def get_sneaky_windows():

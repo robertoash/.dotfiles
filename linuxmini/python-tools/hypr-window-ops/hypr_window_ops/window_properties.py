@@ -30,7 +30,7 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
         )
         # Remove sneaky tag when unpinning
         if sneaky:
-            window_manager.remove_sneaky_tag(window_id)
+            window_manager.remove_tag(window_id, "sneaky")
     else:
         # Float the window first if it's not already floating
         if not floating:
@@ -53,7 +53,7 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
         )
         # Apply sneaky tag if requested
         if sneaky:
-            window_manager.apply_sneaky_tag(window_id)
+            window_manager.apply_tag(window_id, "sneaky")
 
 
 def toggle_nofocus(relative_floating=False, sneaky=False):
@@ -72,7 +72,7 @@ def toggle_nofocus(relative_floating=False, sneaky=False):
             f.write(window_id + "\n")
         # Apply sneaky tag if requested
         if sneaky:
-            window_manager.apply_sneaky_tag(window_id)
+            window_manager.apply_tag(window_id, "sneaky")
     else:
         try:
             # get nofocus_windows from file
@@ -115,7 +115,7 @@ def toggle_floating(relative_floating=False, sneaky=False):
         window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
         # Remove sneaky tag when switching to tiled
         if sneaky:
-            window_manager.remove_sneaky_tag(window_id)
+            window_manager.remove_tag(window_id, "sneaky")
     else:
         # Activating tiled -> floating: always use active window
         window_info = window_manager.get_target_window(
@@ -130,7 +130,7 @@ def toggle_floating(relative_floating=False, sneaky=False):
         )
         # Apply sneaky tag if requested
         if sneaky:
-            window_manager.apply_sneaky_tag(window_id)
+            window_manager.apply_tag(window_id, "sneaky")
 
 
 def toggle_double_size(relative_floating=False, sneaky=False):
@@ -143,6 +143,7 @@ def toggle_double_size(relative_floating=False, sneaky=False):
 
     window_id = window_info.get("address")
     floating = window_info.get("floating")
+    window_class = window_info.get("class", "").lower()
 
     # Check if window is floating
     if not floating:
@@ -151,7 +152,7 @@ def toggle_double_size(relative_floating=False, sneaky=False):
 
     # Apply sneaky tag if requested and floating
     if sneaky and floating:
-        window_manager.apply_sneaky_tag(window_id)
+        window_manager.apply_tag(window_id, "sneaky")
 
     current_width = window_info["size"][0]
     current_height = window_info["size"][1]
@@ -205,6 +206,10 @@ def toggle_double_size(relative_floating=False, sneaky=False):
             with open(state_file, "w") as f:
                 for addr, state in doubled_states.items():
                     f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
+
+            # Remove large-video tag for mpv/vlc windows when un-doubling
+            if "mpv" in window_class or "vlc" in window_class:
+                window_manager.remove_tag(window_id, "large-video")
         else:
             # Window is not doubled, double it and save original size/position
             # Detect which corner the window is snapped to (if any)
@@ -327,6 +332,10 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                     f"{x_offset} {y_offset},address:{window_id}"
                 ])
 
+            # Apply large-video tag for mpv/vlc windows when doubling
+            if "mpv" in window_class or "vlc" in window_class:
+                window_manager.apply_tag(window_id, "large-video")
+
             print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {anchor_type})")
 
     except FileNotFoundError:
@@ -445,6 +454,10 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                 f"{x_offset} {y_offset},address:{window_id}"
             ])
 
+        # Apply large-video tag for mpv/vlc windows when doubling
+        if "mpv" in window_class or "vlc" in window_class:
+            window_manager.apply_tag(window_id, "large-video")
+
         print(f"✅ Window doubled to {new_width}x{new_height} (anchored at {anchor_type})")
 
 
@@ -458,11 +471,11 @@ def toggle_sneaky_tag(relative_floating=False):
 
     if has_sneaky:
         # Remove sneaky tag
-        window_manager.remove_sneaky_tag(window_id)
+        window_manager.remove_tag(window_id, "sneaky")
         print("✅ Sneaky tag removed")
     else:
         # Add sneaky tag
-        window_manager.apply_sneaky_tag(window_id)
+        window_manager.apply_tag(window_id, "sneaky")
         print("✅ Sneaky tag applied")
 
 
@@ -484,7 +497,7 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
 
     # Apply sneaky tag if requested and floating
     if sneaky and floating:
-        window_manager.apply_sneaky_tag(window_id)
+        window_manager.apply_tag(window_id, "sneaky")
 
     should_restore_focus = False
     if fullscreen:

@@ -143,7 +143,7 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
 
     # Apply sneaky tag if requested
     if sneaky:
-        window_manager.apply_sneaky_tag(target_address)
+        window_manager.apply_tag(target_address, "sneaky")
 
     # Get corner name for feedback
     corner_names = {

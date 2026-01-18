@@ -305,7 +305,7 @@ def move_window_to_monitor(direction, debug=False, relative_floating=False, snea
 
     # Apply sneaky tag if requested
     if sneaky:
-        window_manager.apply_sneaky_tag(window_address)
+        window_manager.apply_tag(window_address, "sneaky")
 
     # Verify final state
     if debug:
