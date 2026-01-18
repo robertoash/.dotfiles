@@ -216,27 +216,37 @@ class ProfileSelector:
 def main():
     """Main entry point."""
     selector = ProfileSelector()
-    
+
     # Check for URL from command line or environment variable
     url = None
     app_name = None
-    
+
     if len(sys.argv) >= 2:
-        app_name = sys.argv[1].lower()
-        if len(sys.argv) > 2:
-            url = sys.argv[2]
-    
+        first_arg = sys.argv[1]
+        # Check if first argument is a URL (called from desktop entry)
+        if first_arg.startswith(('http://', 'https://', 'about:', 'file://')):
+            url = first_arg
+            # Show browser selection since no app specified
+            app_name = selector.show_application_menu()
+            if not app_name:
+                sys.exit(0)
+        else:
+            # First argument is the application name
+            app_name = first_arg.lower()
+            if len(sys.argv) > 2:
+                url = sys.argv[2]
+
     if not app_name:
         # No application specified, show browser selection menu
         app_name = selector.show_application_menu()
         if not app_name:
             # User cancelled
             sys.exit(0)
-    
+
     # Check for MEETING_URL environment variable if no URL from command line
     if not url and "MEETING_URL" in os.environ:
         url = os.environ["MEETING_URL"]
-    
+
     selector.run_selector(app_name, url)
 
 
