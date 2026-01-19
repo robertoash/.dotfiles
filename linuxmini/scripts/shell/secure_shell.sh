@@ -21,7 +21,13 @@ fi
 
 # Copy fish config synchronously - needed for proper shell startup with starship/completions/etc
 cp -r ~/.config/fish "$FISH_CONFIG"
-# Ensure all fish config files are fully written to disk
+
+# Copy yazi config so custom keybindings (like !) work in secure shell
+if [ -d ~/.config/yazi ]; then
+    cp -r ~/.config/yazi "$SECURE_XDG_CONFIG_HOME/yazi"
+fi
+
+# Ensure all config files are fully written to disk
 sync
 
 # Valid history session name (letters/numbers/underscores only)
