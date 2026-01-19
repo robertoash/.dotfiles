@@ -117,12 +117,18 @@ def generate_hyprland_env_file(config: Dict[str, Any]) -> str:
 
     home_dir = str(Path.home())
 
-    # Add PATH from global if it exists
+    # Add PATH from global if it exists - build absolute path to avoid duplication
     if "global" in config and "PATH" in config["global"]:
-        path_value = config["global"]["PATH"]
-        # Keep $PATH for appending, just expand $HOME
-        path_value = path_value.replace("$HOME", home_dir)
-        lines.append(f"env = PATH,{path_value}")
+        # Build absolute PATH (don't use $PATH to avoid duplication on re-evaluation)
+        path_components = ["/usr/local/bin:/usr/bin:/bin"]
+
+        global_path = expand_home(config["global"]["PATH"], home_dir)
+        custom_paths = global_path.replace("$PATH:", "").strip()
+        if custom_paths:
+            path_components.append(custom_paths)
+
+        absolute_path = ":".join(path_components)
+        lines.append(f"env = PATH,{absolute_path}")
         lines.append("")
 
     # Add Hyprland-specific variables
