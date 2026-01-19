@@ -1,10 +1,62 @@
 function svtp --description "Browse and play SVT Play videos with fzf"
     set API_CONTENT "https://contento.svt.se/graphql"
 
-    # Set mpv flags based on hostname
-    set mpv_flags --really-quiet --no-terminal
+    # Check for debug flag
+    set debug_mode 0
+    if contains -- --debug $argv
+        set debug_mode 1
+        set argv (string match -v -- --debug $argv)
+    end
+
+    # Set mpv flags based on hostname and debug mode
+    if test $debug_mode -eq 1
+        set mpv_flags
+    else
+        set mpv_flags --really-quiet --no-terminal
+    end
     if test (hostname) = "linuxmini"
         set mpv_flags $mpv_flags --wayland-app-id=mpv-svtplay
+    end
+
+    # Helper function to play a video URL (handles live streams via SVT API)
+    function _play_video
+        set url $argv[1]
+        set debug $argv[2]
+        set flags $argv[3..-1]
+
+        # Extract video ID from URL
+        set video_id (echo $url | grep -oP '/video/\K[^/]+')
+
+        if test -n "$video_id"
+            # Check SVT API for stream info
+            echo "Checking stream info..." >&2
+            set api_response (curl -s "https://api.svt.se/videoplayer-api/video/$video_id")
+            set is_live (echo $api_response | jq -r '.live // false')
+
+            if test "$is_live" = "true"
+                # Live stream - get HLS URL from API (not cmaf)
+                set hls_url (echo $api_response | jq -r '.videoReferences[] | select(.format == "hls") | .url')
+
+                if test -n "$hls_url"
+                    echo "Starting live stream..." >&2
+                    if test "$debug" = "1"
+                        mpv $flags "$hls_url"
+                    else
+                        mpv $flags "$hls_url" &; disown
+                    end
+                    return 0
+                end
+            end
+        end
+
+        # Not a live stream or couldn't get HLS URL - use yt-dlp via mpv
+        echo "Starting playback..." >&2
+        if test "$debug" = "1"
+            mpv $flags $url
+        else
+            mpv $flags $url &; disown
+        end
+        return 0
     end
 
     # Function to fetch all selections from startForSvtPlay
@@ -43,76 +95,78 @@ function svtp --description "Browse and play SVT Play videos with fzf"
         # Check if it's already a full video URL (/video/...)
         if string match -q "http*" -- $input
             set url $input
-            mpv $mpv_flags $url &; disown
-            return 0
         else if string match -q "/video/*" -- $input
             set url "https://www.svtplay.se$input"
-            mpv $mpv_flags $url &; disown
-            return 0
-        # For other paths or slugs, try to extract the actual video URL(s)
         else
-            # Build the series/show page URL
-            if string match -q "/*" -- $input
-                set page_url "https://www.svtplay.se$input"
-                set slug (echo $input | string replace "/" "")
-            else
-                set slug (string lower $input | string replace -a " " "-")
-                set page_url "https://www.svtplay.se/$slug"
+            set url ""
+        end
+
+        # If we have a direct video URL, play it
+        if test -n "$url"
+            _play_video $url $debug_mode $mpv_flags
+            return 0
+        end
+
+        # For other paths or slugs, try to extract the actual video URL(s)
+        # Build the series/show page URL
+        if string match -q "/*" -- $input
+            set page_url "https://www.svtplay.se$input"
+            set slug (echo $input | string replace "/" "")
+        else
+            set slug (string lower $input | string replace -a " " "-")
+            set page_url "https://www.svtplay.se/$slug"
+        end
+
+        echo "Fetching from: $page_url" >&2
+
+        # Fetch the page
+        set page_content (curl -s "$page_url")
+
+        # Extract all unique video URLs and filter by slug to avoid recommendations
+        set video_urls (echo $page_content | grep -oP '"/video/[^"?]+' | string replace -a '"' '' | string replace -a '\\' '' | grep "/$slug" | sort -u)
+        set video_count (echo $video_urls | wc -w)
+
+        if test $video_count -eq 0
+            echo "No videos found" >&2
+            return 1
+        else if test $video_count -eq 1
+            # Single video - play directly
+            set url "https://www.svtplay.se$video_urls"
+            _play_video $url $debug_mode $mpv_flags
+            return 0
+        else
+            # Multiple videos - it's a series, show in fzf
+            echo "Found $video_count episodes" >&2
+
+            # Create temp file with episodes
+            set episodes_file (mktemp)
+
+            # Extract episode titles and URLs
+            for video_url in $video_urls
+                # Get the episode part from URL (last segment)
+                set episode_name (echo $video_url | awk -F'/' '{print $NF}' | string replace -a "-" " ")
+                echo "$episode_name\thttps://www.svtplay.se$video_url" >> $episodes_file
             end
 
-            echo "Fetching from: $page_url" >&2
+            # Show in fzf
+            set selected (cat $episodes_file | \
+                fzf --delimiter='\t' \
+                    --with-nth=1 \
+                    --preview 'echo {2}' \
+                    --preview-window=down:3:wrap \
+                    --prompt="Select episode > " \
+                    --height=40%)
 
-            # Fetch the page
-            set page_content (curl -s "$page_url")
+            rm -f $episodes_file
 
-            # Extract all unique video URLs and filter by slug to avoid recommendations
-            set video_urls (echo $page_content | grep -oP '"/video/[^"?]+' | string replace -a '"' '' | string replace -a '\\' '' | grep "/$slug" | sort -u)
-            set video_count (echo $video_urls | wc -w)
-
-            if test $video_count -eq 0
-                echo "No videos found" >&2
-                return 1
-            else if test $video_count -eq 1
-                # Single video - play directly
-                set url "https://www.svtplay.se$video_urls"
-                echo "Playing: $url" >&2
-                mpv $mpv_flags $url &; disown
-                return 0
-            else
-                # Multiple videos - it's a series, show in fzf
-                echo "Found $video_count episodes" >&2
-
-                # Create temp file with episodes
-                set episodes_file (mktemp)
-
-                # Extract episode titles and URLs
-                for video_url in $video_urls
-                    # Get the episode part from URL (last segment)
-                    set episode_name (echo $video_url | awk -F'/' '{print $NF}' | string replace -a "-" " ")
-                    echo "$episode_name\thttps://www.svtplay.se$video_url" >> $episodes_file
-                end
-
-                # Show in fzf
-                set selected (cat $episodes_file | \
-                    fzf --delimiter='\t' \
-                        --with-nth=1 \
-                        --preview 'echo {2}' \
-                        --preview-window=down:3:wrap \
-                        --prompt="Select episode > " \
-                        --height=40%)
-
-                rm -f $episodes_file
-
-                if test -z "$selected"
-                    echo "No episode selected" >&2
-                    return 0
-                end
-
-                set url (echo $selected | awk -F '\t' '{print $NF}')
-                echo "Playing: $url" >&2
-                mpv $mpv_flags $url &; disown
+            if test -z "$selected"
+                echo "No episode selected" >&2
                 return 0
             end
+
+            set url (echo $selected | awk -F '\t' '{print $NF}')
+            _play_video $url $debug_mode $mpv_flags
+            return 0
         end
     end
 
@@ -193,6 +247,5 @@ function svtp --description "Browse and play SVT Play videos with fzf"
         return 1
     end
 
-    echo "Playing: $url" >&2
-    mpv $mpv_flags $url &; disown
+    _play_video $url $debug_mode $mpv_flags
 end
