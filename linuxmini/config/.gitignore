@@ -288,10 +288,12 @@ nvim
 qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
 qutebrowser/.claude
+qutebrowser/config.py
 qutebrowser/profiles/linuxmini/.claude
 qutebrowser/profiles/linuxmini/jobhunt
 qutebrowser/profiles/linuxmini/rash/.gitkeep
 qutebrowser/profiles/linuxmini/rash/config/__pycache__
+qutebrowser/profiles/linuxmini/rash/config/config.py
 qutebrowser/profiles/linuxmini/rash/config/qsettings
 qutebrowser/profiles/linuxmini/rash/config/userscripts
 qutebrowser/profiles/linuxmini/rash/runtime/ipc-3e38ef642f0490926b684f70ed5a8824
@@ -303,9 +305,9 @@ qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-ks93tqnv
 qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-lfwo6gmt
 qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-sbbubz2a
 qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-wmvy4l72
-qutebrowser/userscripts/__pycache__
-qutebrowser/userscripts/cleanup_history_builtin.py
-qutebrowser/userscripts/cleanup_history_external.py
+qutebrowser/profiles/oldmbp
+qutebrowser/profiles/workmbp
+qutebrowser/userscripts
 spotify-player/theme.toml
 spotify-player/themes
 spotify-player/themes.bkup
