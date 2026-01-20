@@ -410,10 +410,26 @@ if profile_name == "rash":
     c.content.autoplay = True
     c.content.notifications.enabled = True
     c.content.cookies.accept = "no-3rdparty"
+    # Visual theme: Blue accent
+    c.colors.tabs.bar.bg = "#1a1b26"
+    c.colors.tabs.selected.odd.bg = "#7aa2f7"
+    c.colors.tabs.selected.odd.fg = "#1a1b26"
+    c.colors.tabs.selected.even.bg = "#7aa2f7"
+    c.colors.tabs.selected.even.fg = "#1a1b26"
+    c.colors.statusbar.normal.bg = "#1a1b26"
+
 elif profile_name == "jobhunt":
     c.url.start_pages = "https://www.linkedin.com"
     c.content.autoplay = False
     c.content.cookies.accept = "no-3rdparty"
+    # Visual theme: Green accent
+    c.colors.tabs.bar.bg = "#1a261a"
+    c.colors.tabs.selected.odd.bg = "#9ece6a"
+    c.colors.tabs.selected.odd.fg = "#1a1b26"
+    c.colors.tabs.selected.even.bg = "#9ece6a"
+    c.colors.tabs.selected.even.fg = "#1a1b26"
+    c.colors.statusbar.normal.bg = "#1a261a"
+
 else:
     # Default profile (macOS single-profile setup)
     c.url.start_pages = "https://www.startpage.com"
