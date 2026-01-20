@@ -22,7 +22,8 @@
 # sudo_command = "sudo"
 
 # Disable specific steps - same options as the command line flag
-# disable = ["system", "emacs"]
+# Disable vim step on workmbp - linuxmini is primary for plugin versions
+disable = ["vim"]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
@@ -111,6 +112,7 @@
 [commands]
 "Beads Viewer" = "/opt/homebrew/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
 "dbt Fusion" = "/Users/rash/.local/bin/dbtf system update"
+"Neovim Restore" = "nvim --headless '+Lazy! restore' +qa"
 
 
 [python]
