@@ -4,23 +4,23 @@ function __fd_unified_widget
     set -l token (commandline -t)
     set -l tokens (string split ' ' $cmd)
 
-    # Check if current token is a trigger (fdf, fdd, fda)
+    # Check if current token is a trigger (fff, ffd, ffa)
     switch "$token"
-        case fdf
+        case fff
             set -l result (fd -Hi --no-ignore-vcs -t f | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
             return
-        case fdd
+        case ffd
             set -l result (fd -Hi --no-ignore-vcs -t d | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
             return
-        case fda
+        case ffa
             set -l result (fd -Hi --no-ignore-vcs | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")

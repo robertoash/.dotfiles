@@ -21,6 +21,18 @@
         ],
         "3": [
             {
+                "name": "chrome_work",
+                "command": "chrome_profile work",
+                "is_master": true
+            },
+            {
+                "name": "workmbp_terminal",
+                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm -- ssh workmbp",
+                "is_master": false
+            }
+        ],
+        "4": [
+            {
                 "name": "config_terminal",
                 "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
                 "is_master": false

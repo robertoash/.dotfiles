@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    echo "Usage: qute_profile <profile> [url...]"
+    echo "Launch qutebrowser with a specific profile"
+    echo ""
+    echo "Arguments:"
+    echo "  profile    Profile name (directory under ~/.config/qutebrowser/profiles)"
+    echo "  url        Optional URLs to open"
+    exit 0
+fi
+
 PROFILE=$1
 shift  # Remove the profile argument
 
