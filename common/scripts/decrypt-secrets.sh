@@ -16,7 +16,7 @@ DOTFILES="$HOME/.dotfiles"
 
 # Get hostname - use /etc/hostname on Linux, hostname command on macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    HOSTNAME=$(/usr/bin/hostname -s)
+    HOSTNAME=$(hostname -s)
 else
     HOSTNAME=$(cat /etc/hostname)
 fi

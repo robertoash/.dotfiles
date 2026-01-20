@@ -67,7 +67,7 @@ def setup_claude_config(dotfiles_dir, hostname=None):
 
     # Paths
     common_secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
-    machine_secrets_file = dotfiles_dir / hostname / "secrets" / f"{hostname}.yml"
+    machine_secrets_file = dotfiles_dir / hostname / "secrets" / f"{hostname}.yaml"
     common_template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
     machine_template_file = dotfiles_dir / hostname / ".claude" / "mcp-servers-template.json"
     claude_json_path = Path.home() / ".claude.json"
@@ -96,7 +96,7 @@ def setup_claude_config(dotfiles_dir, hostname=None):
                 machine_secrets = decrypt_secrets(machine_secrets_file)
                 if machine_secrets:
                     secrets.update(machine_secrets)
-                    print(f"  🔑 Merged secrets from {hostname}/secrets/{hostname}.yml")
+                    print(f"  🔑 Merged secrets from {hostname}/secrets/{hostname}.yaml")
 
             if secrets:
                 # Load common template
