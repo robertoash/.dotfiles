@@ -1,6 +1,6 @@
 -- ~/.config/yazi/init.lua
 
--- smart-enter plugin
+-- smart-enter plugin (unused now, burn plugin handles Enter)
 require("smart-enter"):setup({
 	open_multi = false,
 })

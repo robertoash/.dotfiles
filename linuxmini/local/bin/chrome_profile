@@ -20,6 +20,10 @@ if [ ! -d "$CHROME_BASE" ]; then
     exit 1
 fi
 
-# Pass all remaining arguments to chromium
-chromium --profile-directory="$PROFILE" "$@" &
+# Add session restore flags for all profiles except "app"
+if [ "$PROFILE" != "app" ]; then
+    chromium --profile-directory="$PROFILE" --restore-last-session --disable-session-crashed-bubble "$@" &
+else
+    chromium --profile-directory="$PROFILE" "$@" &
+fi
 disown
