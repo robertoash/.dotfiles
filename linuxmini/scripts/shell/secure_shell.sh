@@ -30,18 +30,6 @@ fi
 # Ensure all config files are fully written to disk
 sync
 
-# Valid history session name (letters/numbers/underscores only)
-SESSION_ID="secure_shell_$(date +%s)_$RANDOM"
-
-# Inject secure config into conf.d (history & SMART_CWD) - AFTER copy completes
-cat > "$FISH_CONFIG/conf.d/99-secure-shell.fish" <<EOF
-# Secure shell: Ephemeral Fish history and Starship SMART_CWD
-
-set -gx fish_history $SESSION_ID
-
-set -gx SECURE_SHELL 1
-EOF
-
 # Link buku database directory to real location
 ln -s ~/.local/share/buku "$SECURE_XDG_DATA_HOME/buku"
 
