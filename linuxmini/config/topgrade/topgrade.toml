@@ -22,8 +22,7 @@ pre_sudo = true
 # sudo_command = "sudo"
 
 # Disable specific steps - same options as the command line flag
-# TEMPORARY TEST: disable vim to test Lazy restore behavior
-disable = ["vim"]
+# disable = ["system", "emacs"]
 
 # Ignore failures for these steps
 # ignore_failures = ["powershell"]
@@ -111,7 +110,6 @@ disable = ["vim"]
 # Custom commands
 [commands]
 "Beads Viewer" = "/usr/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
-"Neovim Restore" = "nvim --headless '+Lazy! restore' +qa"
 
 
 [python]
