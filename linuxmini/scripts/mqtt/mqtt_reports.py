@@ -74,7 +74,7 @@ def ensure_files_exist():
             elif "mini" in file_path and (
                 not content or content not in ["active", "inactive"]
             ):
-                content = "inactive"
+                content = "active"  # Initialize to active on boot to prevent immediate locking
             elif "idle_detection_status" in file_path and (
                 not content or content not in ["in_progress", "inactive"]
             ):
