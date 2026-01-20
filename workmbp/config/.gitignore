@@ -18,6 +18,7 @@ fish/conf.d/06_keybindings.fish
 fish/conf.d/08_gcloud.fish
 fish/conf.d/09_completions.fish
 fish/conf.d/10_load_startup_functions.fish
+fish/conf.d/99-secure-shell.fish
 fish/conf.d/99_final.fish
 fish/conf.d/autovenv.fish
 fish/conf.d/startup_functions
