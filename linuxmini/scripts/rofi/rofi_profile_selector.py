@@ -29,7 +29,7 @@ class ProfileSelector:
             "chromium": {
                 "profiles": chromium_profiles,
                 "command_template": (
-                    "/home/rash/.local/bin/chromium_launch --profile {profile}"
+                    "/home/rash/.local/bin/chrome_launch --profile {profile}"
                 ),
             },
         }

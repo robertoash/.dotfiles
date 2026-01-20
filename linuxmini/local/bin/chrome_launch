@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
+    echo "Usage: chrome_launch --profile <name>"
+    echo "Launch Chromium with a profile or zen app"
+    echo ""
+    echo "Options:"
+    echo "  --profile    Profile name or zen app name"
+    echo ""
+    echo "If profile exists in ~/.config/chromium/, launches that profile."
+    echo "Otherwise, checks zen_apps.json for app URL and launches with 'app' profile."
+    exit 0
+fi
+
+# Parse --profile argument
+if [ "$1" = "--profile" ]; then
+    PROFILE="$2"
+else
+    echo "❌ Usage: chrome_launch --profile <name>"
+    exit 1
+fi
+
+if [ -z "$PROFILE" ]; then
+    echo "❌ Profile name required"
+    exit 1
+fi
+
+# Check if it's an actual chromium profile directory
+CHROME_BASE="$HOME/.config/chromium/$PROFILE"
+if [ -d "$CHROME_BASE" ]; then
+    # It's a real profile, use chrome_profile directly
+    exec chrome_profile "$PROFILE"
+fi
+
+# Otherwise, check if it's a zen app
+ZEN_APPS_JSON="$HOME/.config/hypr/script_configs/zen_apps.json"
+if [ ! -f "$ZEN_APPS_JSON" ]; then
+    echo "❌ Profile '$PROFILE' doesn't exist and zen_apps.json not found"
+    exit 1
+fi
+
+# Extract URL from zen_apps.json (check both url and extension sections)
+APP_URL=$(jq -r --arg app "$PROFILE" '.url[$app].app_url // .extension[$app].app_url // empty' "$ZEN_APPS_JSON")
+
+if [ -z "$APP_URL" ]; then
+    echo "❌ Profile '$PROFILE' not found in chromium profiles or zen_apps.json"
+    exit 1
+fi
+
+# Launch with app profile and the URL
+exec chrome_profile app "$APP_URL"
