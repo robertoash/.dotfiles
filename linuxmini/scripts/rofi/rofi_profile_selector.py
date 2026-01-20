@@ -23,7 +23,7 @@ class ProfileSelector:
         
         self.applications = {
             "qutebrowser": {
-                "profiles": ["rash", "company"],
+                "profiles": ["rash", "jobhunt"],
                 "command_template": "/home/rash/.local/bin/qute_profile {profile}",
             },
             "chromium": {

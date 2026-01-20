@@ -289,7 +289,6 @@ qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
 qutebrowser/.claude
 qutebrowser/profiles/linuxmini/.claude
-qutebrowser/profiles/linuxmini/company
 qutebrowser/profiles/linuxmini/jobhunt
 qutebrowser/profiles/linuxmini/rash/.gitkeep
 qutebrowser/profiles/linuxmini/rash/config/__pycache__
