@@ -62,7 +62,7 @@
         "13": [
             {
                 "name": "perplexity",
-                "command": "chromium_launch --profile perplexity",
+                "command": "chrome_profile perplexity",
                 "is_master": true
             },
             {
@@ -74,7 +74,7 @@
         "14": [
             {
                 "name": "overseerr",
-                "command": "chromium_launch --profile overseerr",
+                "command": "chrome_profile overseerr",
                 "is_master": true
             }
         ]

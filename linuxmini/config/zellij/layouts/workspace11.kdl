@@ -12,7 +12,7 @@ layout {
     tab name="workmbp" focus=true {
         pane split_direction="horizontal" {
             pane size="65%" command="fish" {
-                args "-c" "ssh -m workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
+                args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
                 name "growth_report_migration"
             }
             pane size="35%" split_direction="vertical" {
