@@ -26,6 +26,12 @@ function rr
 
         sync
     end
+
+    # Disown all background jobs to prevent "jobs active" warning on exec
+    for job in (jobs -p)
+        disown $job 2>/dev/null
+    end
+
     clear
     exec fish
 end
