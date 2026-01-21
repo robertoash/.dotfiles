@@ -113,6 +113,7 @@ disable = ["vim"]
 "Beads Viewer" = "/opt/homebrew/bin/go install github.com/Dicklesworthstone/beads_viewer/cmd/bv@latest"
 "dbt Fusion" = "/Users/rash/.local/bin/dbtf system update"
 "Neovim Restore" = "nvim --headless '+Lazy! restore' +qa"
+"WezTerm Nightly" = "brew upgrade --cask wezterm@nightly --no-quarantine --greedy-latest"
 
 
 [python]

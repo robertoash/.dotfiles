@@ -115,8 +115,13 @@ end
 if is_hyprland() then
 	-- Hyprland: no decorations
 	config.window_decorations = "NONE"
+elseif is_macos then
+	-- macOS: title bar with resize capability and matching background color
+	config.initial_cols = 175
+	config.initial_rows = 42
+	config.window_decorations = "TITLE|RESIZE|MACOS_USE_BACKGROUND_COLOR_AS_TITLEBAR_COLOR"
 else
-	-- macOS / other DEs: native decorations with window size
+	-- Other DEs: standard resize decorations
 	config.initial_cols = 175
 	config.initial_rows = 42
 	config.window_decorations = "RESIZE"
