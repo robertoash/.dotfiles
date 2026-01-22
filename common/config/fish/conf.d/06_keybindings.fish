@@ -118,9 +118,10 @@ for mode in insert default visual
     bind -M $mode \e\[27\;5\;9~ accept_next_path_segment
 end
 
-# Frecent triggers - ff<Tab>, dd<Tab>, aa<Tab>
+# Smart context-aware Tab completion with fzf
+# Also handles triggers: ff, dd, aa, fff, fdd, faa
 for mode in insert default visual
-    bind -M $mode \t __frecent_unified_widget
+    bind -M $mode \t __smart_tab_complete
 end
 
 # Multi-dot directory expansion (cd ... -> expands to parent path as you type)

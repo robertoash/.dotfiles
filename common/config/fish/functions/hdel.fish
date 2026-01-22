@@ -27,8 +27,8 @@ function hdel --description 'Delete history entries matching a pattern'
         # Regex mode: filter history with string match
         set matches (history | string match -r "$pattern")
     else
-        # Contains mode: filter history with string contains
-        set matches (history | string match -r ".*$pattern.*")
+        # Contains mode: use glob pattern (literal string matching)
+        set matches (history | string match "*$pattern*")
     end
 
     if test (count $matches) -eq 0
