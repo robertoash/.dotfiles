@@ -23,7 +23,7 @@ Status can be checked with:
 
 # Mapping of files to topics
 topic_to_file = {
-    "homeassistant/input_boolean.rob_in_office/status": "/tmp/mqtt/in_office_status",
+    "homeassistant/binary_sensor.rob_in_office/status": "/tmp/mqtt/in_office_status",
 }
 
 # MQTT connection parameters
