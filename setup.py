@@ -23,6 +23,7 @@ from merge_setup import merge_common_directories
 from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
 from systemd_setup import reload_systemd_daemon
+from zen_app_windowrules import generate_zen_app_windowrules
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -57,6 +58,10 @@ setup_beads_integration(dotfiles_dir)
 
 # Step 6.6: Distribute environment variables
 distribute_env_vars(dotfiles_dir, hostname, verbose=True)
+
+# Step 6.7: Generate zen app window rules (Linux only)
+if machine_config["is_linux"]:
+    generate_zen_app_windowrules(dotfiles_dir, hostname, verbose=True)
 
 # Step 7: Rsync desktop files (Linux only)
 if machine_config["is_linux"]:

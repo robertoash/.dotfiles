@@ -48,7 +48,14 @@
   "extension": {
     "dashlane": {
       "profile_directory": "app",
-      "app_url": "chrome-extension://fdjamakpfbbddfjaooikfcpapjohcfmg/popup/index.html"
+      "app_url": "chrome-extension://fdjamakpfbbddfjaooikfcpapjohcfmg/popup/index.html",
+      "window_rules": {
+        "float": true,
+        "pin": true,
+        "size": "550 850",
+        "move": "100% 100%",
+        "keep_aspect_ratio": true
+      }
     }
   }
 }
