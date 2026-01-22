@@ -188,14 +188,6 @@ def on_disconnect(client, userdata, rc):
     else:
         logging.warning(f"Disconnected for reason {rc}")
 
-    for arg in args:
-        if isinstance(arg, mqtt.ReasonCode):
-            logging.warning(f"Reason code for disconnection: {arg}")
-        elif isinstance(arg, mqtt.Properties):
-            logging.debug(f"Disconnection properties: {arg}")
-        else:
-            logging.warning(f"Unknown argument in on_disconnect: {arg}")
-
     logging.debug("Publishing offline status...")
     client.publish(
         "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
