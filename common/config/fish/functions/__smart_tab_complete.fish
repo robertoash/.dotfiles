@@ -155,37 +155,21 @@ function __smart_tab_complete
     # === LAUNCH APPROPRIATE FZF ===
     switch $completion_type
         case dirs
-            # Use frecent for directories, fall back to fd only if frecent has no data (not user cancel)
-            set -l result (frecent --dirs --interactive 2>/dev/null)
-            set -l frecent_status $status
-            # Only fall back to fd if frecent exited 0 but empty (no data), not if user cancelled (non-zero)
-            if test -z "$result"; and test $frecent_status -eq 0
-                set result (fd -Hi --no-ignore-vcs -t d | fzf --height 40% --reverse)
-            end
+            set -l result (fd -Hi --no-ignore-vcs -t d | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case files
-            # Use frecent for files, fall back to fd only if frecent has no data
-            set -l result (frecent --files --interactive 2>/dev/null)
-            set -l frecent_status $status
-            if test -z "$result"; and test $frecent_status -eq 0
-                set result (fd -Hi --no-ignore-vcs -t f | fzf --height 40% --reverse)
-            end
+            set -l result (fd -Hi --no-ignore-vcs -t f | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case both
-            # Use frecent for all, fall back to fd only if frecent has no data
-            set -l result (frecent --all --interactive 2>/dev/null)
-            set -l frecent_status $status
-            if test -z "$result"; and test $frecent_status -eq 0
-                set result (fd -Hi --no-ignore-vcs | fzf --height 40% --reverse)
-            end
+            set -l result (fd -Hi --no-ignore-vcs | fzf --height 40% --reverse)
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end

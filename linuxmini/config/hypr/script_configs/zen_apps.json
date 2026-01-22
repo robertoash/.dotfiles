@@ -52,8 +52,8 @@
       "window_rules": {
         "float": true,
         "pin": true,
-        "size": "550 850",
-        "move": "100% 100%",
+        "size": "525 840",
+        "move": "(monitor_w-window_w-26) (monitor_h-window_h-26)",
         "keep_aspect_ratio": true
       }
     }
