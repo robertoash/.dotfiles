@@ -128,6 +128,11 @@ def on_connect(client, userdata, flags, rc):
         logging.error(f'Connection failed. Returned code "{rc}"')
 
 
+def on_connect_fail(client, userdata):
+    """Called when TCP connection to broker fails."""
+    logging.warning("TCP connection to MQTT broker failed, will retry...")
+
+
 def on_disconnect(client, userdata, rc):
     global broker_online
     logging.debug(f"on_disconnect called with rc={rc}")
@@ -206,6 +211,7 @@ def main():
 
     client = set_mqtt_client()
     client.on_connect = on_connect
+    client.on_connect_fail = on_connect_fail
     client.on_disconnect = on_disconnect
     client.on_message = on_message
 
