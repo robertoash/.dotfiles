@@ -3,7 +3,7 @@
 # Core System
 ## Shell & Environment
 if not set -q SECURE_SHELL
-    alias cd='z'
+    alias cd='__smart_cd'
 end
 
 ## Backup Tools

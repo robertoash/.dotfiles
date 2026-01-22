@@ -4,8 +4,8 @@ function __frecent_unified_widget
     set -l token (commandline -t)
     set -l tokens (string split ' ' $cmd)
 
-    # Check for fd triggers first (fff, ffd, ffa)
-    if string match -q -r '^ff[fda]$' -- "$token"
+    # Check for fd triggers first (fff, fdd, faa)
+    if string match -q -r '^f(ff|dd|aa)$' -- "$token"
         __fd_unified_widget
         return
     end

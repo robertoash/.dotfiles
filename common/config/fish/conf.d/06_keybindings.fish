@@ -122,3 +122,6 @@ end
 for mode in insert default visual
     bind -M $mode \t __frecent_unified_widget
 end
+
+# Multi-dot directory expansion (cd ... -> expands to parent path as you type)
+bind -M insert . __dot_expand_widget

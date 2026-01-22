@@ -40,6 +40,7 @@ abbr gtc "sgpt -c"
 abbr fd "fd -Hi --no-ignore-vcs"
 abbr fdf "fd -Hi --no-ignore-vcs -t f"
 abbr fdd "fd -Hi --no-ignore-vcs -t d"
+abbr faa "fd -Hi --no-ignore-vcs"
 
 # Ugrep
 abbr ug "ugrep -I --ignore-files"
