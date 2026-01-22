@@ -145,7 +145,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
             for video_url in $video_urls
                 # Get the episode part from URL (last segment)
                 set episode_name (echo $video_url | awk -F'/' '{print $NF}' | string replace -a "-" " ")
-                echo "$episode_name\thttps://www.svtplay.se$video_url" >> $episodes_file
+                printf '%s\t%s\n' "$episode_name" "https://www.svtplay.se$video_url" >> $episodes_file
             end
 
             # Show in fzf
