@@ -9,7 +9,16 @@ layout {
         }
     }
     
-    tab name="config" focus=true split_direction="vertical" {
+    tab name="ttydal" focus=true split_direction="vertical" {
+        pane size="65%" command="fish" {
+            args "-c" "nvim; exec fish"
+            cwd "/home/rash/ext_repos/ttydal"
+        }
+        pane size="35%" {
+            cwd "/home/rash/ext_repos/ttydal"
+        }
+    }
+    tab name="config" split_direction="vertical" {
         pane size="65%" command="fish" {
             args "-c" "nvim; exec fish"
             cwd "/home/rash/.dotfiles"
