@@ -60,7 +60,7 @@ MANAGERS = {
         "restore": lambda pkg, ver=None: ["fisher", "install", pkg],
     },
     "npm": {
-        "retrieve": ["sh", "-c", "npm list -g --depth=0 | grep '@'"],
+        "retrieve": ["sh", "-c", "unset NPM_CONFIG_PREFIX && npm list -g --depth=0 | grep '@'"],
         "parse": lambda line: line.strip()[4:].rsplit("@", 1),
         "restore": lambda pkg, ver=None: ["npm", "install", "-g", pkg],
     },
@@ -157,10 +157,8 @@ if __name__ == "__main__":
         action = "save"
 
     if filename is None:
-        filename = os.path.join(
-            os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config")),
-            "all_packages.txt",
-        )
+        hostname = os.uname().nodename
+        filename = os.path.expanduser(f"~/.dotfiles/{hostname}/config/all_packages.txt")
 
     if action == "save":
         save_packages(filename)
