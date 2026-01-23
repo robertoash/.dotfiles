@@ -155,21 +155,21 @@ function __smart_tab_complete
     # === LAUNCH APPROPRIATE FZF ===
     switch $completion_type
         case dirs
-            set -l result (fd -Hi --no-ignore-vcs -t d | fzf --height 40% --reverse)
+            set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1; fd -Hi --no-ignore-vcs -t d --min-depth 2; end | fzf --height 40% --reverse --query "$token")
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case files
-            set -l result (fd -Hi --no-ignore-vcs -t f | fzf --height 40% --reverse)
+            set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1; fd -Hi --no-ignore-vcs -t f --min-depth 2; end | fzf --height 40% --reverse --query "$token")
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case both
-            set -l result (fd -Hi --no-ignore-vcs | fzf --height 40% --reverse)
+            set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1; fd -Hi --no-ignore-vcs --min-depth 2; end | fzf --height 40% --reverse --query "$token")
             if test -n "$result"
                 commandline -t -- (string escape "$result")
             end
