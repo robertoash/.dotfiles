@@ -43,6 +43,10 @@
     "ha": {
       "profile_directory": "app",
       "app_url": "https://ha.rashlab.net"
+    },
+    "primevideo": {
+      "profile_directory": "app",
+      "app_url": "https://www.primevideo.com"
     }
   },
   "extension": {

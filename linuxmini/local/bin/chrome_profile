@@ -24,6 +24,6 @@ fi
 if [ "$PROFILE" != "app" ]; then
     chromium --profile-directory="$PROFILE" --restore-last-session --disable-session-crashed-bubble "$@" &
 else
-    chromium --profile-directory="$PROFILE" "$@" &
+    chromium --profile-directory="$PROFILE" --disable-session-crashed-bubble "$@" &
 fi
 disown
