@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
-    echo "Usage: chrome_launch --profile <name>"
+    echo "Usage: chrome_launch --profile <name> [url...]"
     echo "Launch Chromium with a profile or zen app"
     echo ""
     echo "Options:"
     echo "  --profile    Profile name or zen app name"
+    echo "  url          Optional URLs to open"
     echo ""
     echo "If profile exists in ~/.config/chromium/, launches that profile."
     echo "Otherwise, checks zen_apps.json for app URL and launches with 'app' profile."
@@ -15,8 +16,9 @@ fi
 # Parse --profile argument
 if [ "$1" = "--profile" ]; then
     PROFILE="$2"
+    shift 2  # Remove --profile and profile name, leaving URLs in $@
 else
-    echo "❌ Usage: chrome_launch --profile <name>"
+    echo "❌ Usage: chrome_launch --profile <name> [url...]"
     exit 1
 fi
 
@@ -29,7 +31,7 @@ fi
 CHROME_BASE="$HOME/.config/chromium/$PROFILE"
 if [ -d "$CHROME_BASE" ]; then
     # It's a real profile, use chrome_profile directly
-    exec chrome_profile "$PROFILE"
+    exec chrome_profile "$PROFILE" "$@"
 fi
 
 # Otherwise, check if it's a zen app
@@ -47,5 +49,5 @@ if [ -z "$APP_URL" ]; then
     exit 1
 fi
 
-# Launch with app profile in zen/app mode
-exec chrome_profile app "--app=$APP_URL"
+# Launch with app profile in zen/app mode, pass any additional URLs
+exec chrome_profile app "--app=$APP_URL" "$@"
