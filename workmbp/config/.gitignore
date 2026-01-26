@@ -23,9 +23,12 @@ fish/conf.d/99_final.fish
 fish/conf.d/autovenv.fish
 fish/conf.d/startup_functions
 fish/fish_welcome_img.jpg
+fish/functions/__dot_expand_widget.fish
 fish/functions/__fd_unified_widget.fish
 fish/functions/__frecent_unified_widget.fish
+fish/functions/__smart_cd.fish
 fish/functions/__smart_cwd_hook.fish
+fish/functions/__smart_tab_complete.fish
 fish/functions/accept_next_path_segment.fish
 fish/functions/bk_swap.fish
 fish/functions/bko.fish
@@ -46,6 +49,7 @@ fish/functions/gcalt.fish
 fish/functions/gcalw.fish
 fish/functions/getsize.fish
 fish/functions/hass-cli.fish
+fish/functions/hdel.fish
 fish/functions/hypr-keybinds.fish
 fish/functions/insert_fre_file.fish
 fish/functions/insert_zoxide_dir.fish
