@@ -534,6 +534,15 @@
         "on-click-right": "~/.config/hypr/scripts/ChangeBlur.sh",
         "interval" : 86400, // once every day
         "tooltip": true
+    },
+
+    "custom/hyprwhspr": {
+        "format": "{}",
+        "exec": "/usr/lib/hyprwhspr/config/hyprland/hyprwhspr-tray.sh status",
+        "interval": 1,
+        "return-type": "json",
+        "on-click": "/usr/lib/hyprwhspr/config/hyprland/hyprwhspr-tray.sh record",
+        "tooltip": true
     }
 
 }

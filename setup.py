@@ -16,10 +16,13 @@ from claude_setup import setup_claude_config
 from config_symlinks import symlink_configs
 from crontab_setup import setup_crontab
 from desktop_setup import setup_desktop_files, setup_launch_agents
+from dictation_setup import setup_dictation
 from env_distribution import distribute_env_vars
 from hosts_setup import setup_hosts
 from machines import get_machine_config
 from merge_setup import merge_common_directories
+from pam_setup import setup_pam
+from security_setup import setup_security
 from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
 from systemd_setup import reload_systemd_daemon
@@ -50,11 +53,25 @@ if machine_config["is_linux"]:
 if machine_config["is_linux"]:
     setup_sudoers(dotfiles_dir)
 
+# Step 6.2: Setup /etc/security/ configuration (Linux only)
+if machine_config["is_linux"]:
+    setup_security(dotfiles_dir)
+
+# Step 6.3: Setup PAM configuration (Linux only)
+if machine_config["is_linux"]:
+    setup_pam(dotfiles_dir)
+
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
 
 # Step 6.5.1: Setup beads integration
 setup_beads_integration(dotfiles_dir)
+
+# Step 6.5.2: Setup system-wide voice dictation (Linux with Wayland only)
+# This works in ALL applications including Claude Code, browsers, terminals, etc.
+# Set skip_install=True and skip_setup=True after initial setup
+if machine_config["is_linux"]:
+    setup_dictation(skip_install=False, skip_setup=False)
 
 # Step 6.6: Distribute environment variables
 distribute_env_vars(dotfiles_dir, hostname, verbose=True)

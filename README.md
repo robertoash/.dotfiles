@@ -80,3 +80,17 @@ Services are organized in subdirectories under `systemd/user/`:
 - `_dunst/` - Notification daemon services
 
 The `setup.py` script automatically creates symlinks from these subdirectories to the top-level `systemd/user/` directory, allowing systemd to discover them. Symlinks are gitignored while actual service files in subdirectories are tracked.
+
+## Voice Dictation (Linux + Wayland)
+
+System-wide voice-to-text using **hyprwhspr** (works in Claude Code, browsers, terminals, etc.):
+
+1. Run `python setup.py` (installs hyprwhspr)
+2. Log out and back in
+3. Add to `~/.dotfiles/linuxmini/config/hypr/hyprland.conf`:
+   ```
+   bindd = SUPER ALT, D, Speech-to-text, exec, hyprwhspr record
+   ```
+4. Press Super+Alt+D to start/stop dictation
+
+Config: `~/.config/hyprwhspr/config.json` | Commands: `hyprwhspr status`, `hyprwhspr config`

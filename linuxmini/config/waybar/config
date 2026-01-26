@@ -36,6 +36,8 @@
 	],
 
 	"modules-right": [
+		"custom/hyprwhspr",
+		"custom/separator#dot-line",
 		"clock#sal",
 		"custom/separator#dot-line",
 		"custom/tibber_text",

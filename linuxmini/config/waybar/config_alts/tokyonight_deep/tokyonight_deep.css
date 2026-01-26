@@ -454,3 +454,41 @@ window#waybar.hidden {
 #waybar.empty .modules-center {
     opacity: 0;
 }
+
+/* hyprwhspr Waybar Styling */
+#custom-hyprwhspr {
+    min-width: 12px;
+    margin: 2px 0px;
+    padding: 4px 4px;
+    font-size: 13px;
+    font-weight: bold;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    transition: color 150ms ease-in-out, border-color 150ms ease-in-out;
+}
+
+#custom-hyprwhspr.ready {
+    color: inherit;
+    border-color: transparent;
+}
+
+#custom-hyprwhspr.recording {
+    color: #E75143;
+    border-bottom-color: #E75143;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
+
+#custom-hyprwhspr.stopped {
+    color: inherit;
+    border-color: transparent;
+}
+
+#custom-hyprwhspr.error {
+    color: #d97706;
+    border-bottom-color: #d97706;
+}
+
+#custom-hyprwhspr:hover {
+    opacity: 0.8;
+}
