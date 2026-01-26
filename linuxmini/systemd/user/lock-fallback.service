@@ -1,8 +1,0 @@
-[Unit]
-Description=Ultimate fallback lock service
-ConditionEnvironment=WAYLAND_DISPLAY
-ConditionPathExists=!/tmp/waybar/manual_override
-
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/bash -c 'pidof hyprlock || hyprlock'
