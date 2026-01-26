@@ -180,4 +180,46 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     else:
         print(f"⚠️  CLAUDE.md not found at {claude_md_source}")
 
+    # Merge settings.json from dotfiles into ~/.claude/settings.json
+    settings_source = dotfiles_dir / "common" / ".claude" / "settings.json"
+    settings_target = Path.home() / ".claude" / "settings.json"
+
+    if settings_source.exists():
+        # Create ~/.claude directory if it doesn't exist
+        settings_target.parent.mkdir(parents=True, exist_ok=True)
+
+        # Load source settings
+        with open(settings_source) as f:
+            source_settings = json.load(f)
+
+        # Load existing settings or create new
+        if settings_target.exists():
+            with open(settings_target) as f:
+                target_settings = json.load(f)
+        else:
+            target_settings = {}
+
+        # Merge settings (source overwrites target for matching keys)
+        # But preserve user-specific settings that aren't in the template
+        for key, value in source_settings.items():
+            if key == "permissions":
+                # Merge permissions specially - combine allow/deny/ask lists
+                if "permissions" not in target_settings:
+                    target_settings["permissions"] = {}
+
+                for perm_type in ["allow", "deny", "ask"]:
+                    if perm_type in value:
+                        target_settings["permissions"][perm_type] = value[perm_type]
+            else:
+                # For other keys, source takes precedence
+                target_settings[key] = value
+
+        # Write merged settings
+        with open(settings_target, "w") as f:
+            json.dump(target_settings, f, indent=2)
+
+        print(f"✅ Updated {settings_target} with dotfiles settings")
+    else:
+        print(f"⚠️  settings.json not found at {settings_source}")
+
     return True
