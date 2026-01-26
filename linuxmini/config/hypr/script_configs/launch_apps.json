@@ -1,82 +1,61 @@
 {
-    "personal": {
-        "1": [
-            {
-                "name": "browser_personal",
-                "command": "qute_profile rash",
-                "is_master": true
-            },
-            {
-                "name": "browser_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
-                "is_master": false
-            }
-        ],
-        "2": [
-            {
-                "name": "nvim_zellij",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace2",
-                "is_master": true
-            }
-        ],
-        "3": [
-            {
-                "name": "chrome_work",
-                "command": "chrome_profile work",
-                "is_master": true
-            },
-            {
-                "name": "workmbp_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm -- ssh workmbp",
-                "is_master": false
-            }
-        ],
-        "4": [
-            {
-                "name": "config_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
-                "is_master": false
-            }
-        ],
-        "11": [
-            {
-                "name": "workmbp_zellij",
-                "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace11",
-                "is_master": true
-            }
-        ],
-        "12": [
-            {
-                "name": "claude_zen",
-                "command": "claude-desktop-native --force-device-scale-factor=1.4",
-                "is_master": true,
-                "launch_delay": 1.0,
-                "no_focus": true
-            },
-            {
-                "name": "claude_terminal",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
-                "is_master": false
-            }
-        ],
-        "13": [
-            {
-                "name": "perplexity",
-                "command": "chrome_launch --profile perplexity",
-                "is_master": true
-            },
-            {
-                "name": "nvim_obsidian_zellij",
-                "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
-                "is_master": false
-            }
-        ],
-        "14": [
-            {
-                "name": "overseerr",
-                "command": "chrome_launch --profile overseerr",
-                "is_master": true
-            }
-        ]
-    }
+  "personal": {
+    "1": [
+      {
+        "name": "browser_personal",
+        "command": "qute_profile rash",
+        "is_master": true
+      },
+      {
+        "name": "browser_terminal",
+        "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
+        "is_master": false
+      }
+    ],
+    "2": [
+      {
+        "name": "nvim_zellij",
+        "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace2",
+        "is_master": true
+      }
+    ],
+    "3": [
+      {
+        "name": "chrome_work",
+        "command": "chrome_profile work",
+        "is_master": true
+      },
+      {
+        "name": "workmbp_terminal",
+        "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm -- ssh workmbp",
+        "is_master": false
+      }
+    ],
+    "11": [
+      {
+        "name": "workmbp_zellij",
+        "command": "wezterm start --always-new-process --class wezterm --cwd '/home/rash/.dotfiles' -- zellij --layout workspace11",
+        "is_master": true
+      }
+    ],
+    "12": [
+      {
+        "name": "perplexity",
+        "command": "chrome_launch --profile perplexity",
+        "is_master": true
+      },
+      {
+        "name": "nvim_obsidian_zellij",
+        "command": "wezterm start --always-new-process --cwd '/home/rash/.dotfiles' --class wezterm",
+        "is_master": false
+      }
+    ],
+    "13": [
+      {
+        "name": "overseerr",
+        "command": "chrome_launch --profile overseerr",
+        "is_master": true
+      }
+    ]
+  }
 }
