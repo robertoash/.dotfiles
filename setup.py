@@ -40,6 +40,29 @@ print(f"🚀 Setting up dotfiles for {hostname}...")
 # Step 1: Merge common directories into machine-specific directories
 merge_common_directories(dotfiles_dir, hostname)
 
+# Step 1.5: Merge linuxcommon into Linux machines (linuxmini, oldmbp)
+if machine_config["is_linux"] and (dotfiles_dir / "linuxcommon").exists():
+    print("\n🐧 Merging linuxcommon directories into Linux machine...")
+    from merge_setup import merge_common_directories as merge_linux_common
+    # Use same merge function but with linuxcommon as source
+    linuxcommon_config = dotfiles_dir / "linuxcommon" / "config"
+    machine_config_dir = dotfiles_dir / hostname / "config"
+    if linuxcommon_config.exists() and machine_config_dir.exists():
+        from symlinks import merge_common_into_machine
+        from merge_setup import count_files_to_process, update_gitignore
+
+        total = count_files_to_process(linuxcommon_config, machine_config_dir)
+        progress_info = {"current": 0, "total": total, "name": "linuxcommon/config"}
+        print(f"🐧 Merging linuxcommon/config... (0/{total} processed)", end='', flush=True)
+
+        all_symlink_paths = merge_common_into_machine(
+            linuxcommon_config, machine_config_dir, machine_config_dir, dotfiles_dir, progress_info=progress_info
+        )
+        print()
+
+        if all_symlink_paths:
+            update_gitignore(machine_config_dir.parent, all_symlink_paths, dotfiles_dir)
+
 # Step 2-3: Symlink configs to ~/.config and handle special cases
 symlink_warnings = symlink_configs(dotfiles_dir, hostname, home, machine_config)
 
