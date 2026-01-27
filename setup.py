@@ -117,9 +117,9 @@ if machine_config["is_linux"]:
 if machine_config["is_macos"]:
     setup_launch_agents(dotfiles_dir, hostname, home)
 
-# Step 9: Reload systemd daemon (Linux only)
+# Step 9: Setup systemd services and reload daemon (Linux only)
 if machine_config["is_linux"]:
-    reload_systemd_daemon(dotfiles_dir, hostname)
+    reload_systemd_daemon(dotfiles_dir, hostname, machine_config)
 
 # Step 10: Setup backup crontab (Linux only)
 if machine_config["is_linux"]:
