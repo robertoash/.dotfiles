@@ -1,3 +1,5 @@
+Include /Users/rash/.colima/ssh_config
+
 # Common SSH Config
 
 Host oden
