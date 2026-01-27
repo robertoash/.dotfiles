@@ -1,0 +1,9 @@
+@theme "~/.config/rofi/current_theme"
+configuration {
+    display-drun: "Applications:";
+    display-window: "Windows:";
+    drun-display-format: "{name}";
+    modi: "run,drun";
+    steal-focus: true;
+    hide-scrollbar: true;
+}
