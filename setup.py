@@ -21,6 +21,7 @@ from env_distribution import distribute_env_vars
 from hosts_setup import setup_hosts
 from machines import get_machine_config
 from merge_setup import merge_common_directories
+from pacman_setup import setup_pacman
 from pam_setup import setup_pam
 from security_setup import setup_security
 from ssh_setup import setup_ssh
@@ -61,6 +62,10 @@ if machine_config["is_linux"]:
 if machine_config["is_linux"]:
     setup_pam(dotfiles_dir)
 
+# Step 6.4: Setup pacman configuration (Arch Linux only)
+if machine_config["is_linux"]:
+    setup_pacman(dotfiles_dir)
+
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
 
@@ -70,14 +75,15 @@ setup_beads_integration(dotfiles_dir)
 # Step 6.5.2: Setup system-wide voice dictation (Linux with Wayland only)
 # This works in ALL applications including Claude Code, browsers, terminals, etc.
 # Set skip_install=True and skip_setup=True after initial setup
-if machine_config["is_linux"]:
+if machine_config["is_linux"] and hostname == "linuxmini":
     setup_dictation(skip_install=False, skip_setup=False)
 
 # Step 6.6: Distribute environment variables
 distribute_env_vars(dotfiles_dir, hostname, verbose=True)
 
-# Step 6.7: Generate zen app window rules (Linux only)
-if machine_config["is_linux"]:
+# Step 6.7: Generate zen app window rules (Linux only, Hyprland only)
+hypr_config_exists = (dotfiles_dir / hostname / "config" / "hypr" / "script_configs" / "zen_apps.json").exists()
+if machine_config["is_linux"] and hypr_config_exists:
     generate_zen_app_windowrules(dotfiles_dir, hostname, verbose=True)
 
 # Step 7: Rsync desktop files (Linux only)
