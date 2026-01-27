@@ -1,0 +1,12 @@
+[Unit]
+Description=Restart Waybar when config changes
+StartLimitInterval=30s
+StartLimitBurst=10
+
+[Service]
+Type=oneshot
+# Create a marker file in user's runtime directory, then restart waybar
+ExecStart=/bin/sh -c 'mkdir -p "${XDG_RUNTIME_DIR}/waybar" && touch "${XDG_RUNTIME_DIR}/waybar/restarted" && /usr/bin/systemctl --user restart waybar.service'
+
+[Install]
+WantedBy=graphical-session.target

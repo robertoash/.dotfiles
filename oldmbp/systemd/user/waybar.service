@@ -4,9 +4,10 @@ After=graphical-session.target
 PartOf=graphical-session.target
 
 [Service]
-Environment=XDG_CURRENT_DESKTOP=Hyprland
+Environment=XDG_CURRENT_DESKTOP=niri
 Environment=WAYLAND_DISPLAY=wayland-1
 ExecStartPre=/usr/bin/mkdir -p ${XDG_RUNTIME_DIR}/waybar
+ExecStartPre=/bin/sh -c 'systemctl --user set-environment NIRI_SOCKET=$(ls ${XDG_RUNTIME_DIR}/niri.*.sock 2>/dev/null | head -1)'
 ExecStart=/usr/bin/waybar -c /home/rash/.config/waybar/config -s /home/rash/.config/waybar/style.css
 # Only show notification if marker file exists, then remove it
 ExecStartPost=/bin/bash -c 'if [ -f "${XDG_RUNTIME_DIR}/waybar/restarted" ]; then sleep 0.5 && dunstify "Waybar has been restarted 🎉" --icon=dialog-information --timeout=3000 && rm "${XDG_RUNTIME_DIR}/waybar/restarted"; fi'

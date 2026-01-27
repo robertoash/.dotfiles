@@ -1,26 +1,132 @@
+//* ---- 💫 https://github.com/JaKooLit 💫 ---- *//
+
 {
-    // NIRI WORKSPACES
-    "niri/workspaces": {
-        "all-outputs": true,
-        "format": "{icon}"
-    },
-
-    "niri/window": {
-        "format": "{title}",
-        "icon": true,
-        "icon-size": 16
-    },
-
     // HYPRLAND WORKSPACES. CHOOSE as desired and place on waybar configs
-    // NUMBERS Style
-    "hyprland/workspaces#numbers": {
+    // CIRCLES Style
+    "hyprland/workspaces": {
         "active-only": false,
-        "all-outputs": false,
+        "all-outputs": true,
         "format": "{icon}",
         "show-special": false,
         "on-click": "activate",
         "on-scroll-up": "hyprctl dispatch workspace e+1",
-        "on-scroll-down": "hyprctl dispatch workspace e-1"
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        "format-icons": {
+            "active": "",
+            "default": ""
+        }
+    },
+
+    // ROMAN Numerals style
+    "hyprland/workspaces#roman": {
+        "active-only":false,
+        "all-outputs": true,
+        "format": "{icon}",
+        "show-special": false,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "persistent-workspaces":{
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        "format-icons": {
+            "1": "I",
+            "2": "II",
+            "3": "III",
+            "4": "IV",
+            "5": "V",
+            "6": "VI",
+            "7": "VII",
+            "8": "VIII",
+            "9": "IX",
+            "10": "X"
+
+        }
+    },
+
+    // PACMAN Style
+    "hyprland/workspaces#pacman": {
+        "active-only":false,
+        "all-outputs": true,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "show-special": false,
+        "persistent-workspaces":{
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        "format": "{icon}",
+        "format-icons": {
+            "active": " 󰮯 ",
+            "default": "󰊠",
+            "persistent":"󰊠"
+        }
+    },
+
+    "hyprland/workspaces#kanji": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "format": "{icon}",
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": []
+        },
+        "format-icons": {
+            "1": "一",
+            "2": "二",
+            "3": "三",
+            "4": "四",
+            "5": "五",
+            "6": "六",
+            "7": "七",
+            "8": "八",
+            "9": "九",
+            "10": "十"
+        }
+    },
+
+    //  NUMBERS and ICONS style
+    "hyprland/workspaces#4": {
+        "format": " {name} {icon} ",
+        //"format": " {icon} ",
+        "show-special": false,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
+        "all-outputs": true,
+        "sort-by-number": true,
+        "format-icons": {
+            "1": " ",
+            "2": " ",
+            "3": " ",
+            "4": " ",
+            "5": " ",
+            "6": " ",
+            "7": "",
+            "8": " ",
+            "9": "",
+            "10": "10",
+            "focused": "",
+            "default": ""
+        }
     },
 
     // GROUP
@@ -70,6 +176,33 @@
         "smooth-scrolling-threshold": 1
     },
 
+    "battery": {
+        //"interval": 5,
+        "align": 0,
+        "rotate": 0,
+        //"bat": "BAT1",
+        //"adapter": "ACAD",
+        "full-at": 100,
+        "design-capacity": false,
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "{capacity}%",
+        "format-plugged": "󱘖 {capacity}%",
+        "format-alt-click": "click",
+        "format-full": "{icon} Full",
+        "format-alt": "{icon} {time}",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "format-time": "{H}h {M}min",
+        "tooltip": true,
+        "tooltip-format": "{timeTo} {power}w",
+        "on-click-middle": "~/.config/hypr/scripts/ChangeBlur.sh",
+        "on-click-right": "~/.config/hypr/scripts/Wlogout.sh"
+    },
+
     "bluetooth": {
         "format": "",
         "format-disabled": "󰂳",
@@ -83,8 +216,9 @@
 
     "clock": {
         "interval": 1,
+        //"format": " {:%I:%M %p}", // AM PM format
         "format": " {:%H:%M:%S}",
-        "format-alt": " {:%H:%M   %Y-%m-%d %A}",
+        "format-alt": " {:%H:%M   %Y, %d %B, %A}",
         "tooltip-format": "<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode"          : "year",
@@ -100,13 +234,12 @@
             }
         }
     },
-
-    "clock#sal": {
-        "timezone": "America/El_Salvador",
-        "format": "  {:%H:%M}",
-        "format-alt": "  {:%H:%M:%S}",
-        "tooltip-format": "San Salvador, El Salvador\n{:%Y-%m-%d %H:%M:%S}",
-        "interval": 1
+    "actions":  {
+        "on-click-right": "mode",
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
     },
 
     "cpu": {
@@ -128,6 +261,14 @@
         "tooltip-format": "{used} used out of {total} on {path} ({percentage_used}%)"
     },
 
+    "hyprland/language": {
+        "format": "Lang: {}",
+        "format-en": "US",
+        "format-tr": "Korea",
+        "keyboard-name": "at-translated-set-2-keyboard",
+        "on-click": "hyprctl switchxkblayout $SET_KB next"
+    },
+
     "hyprland/submap": {
         "format": "<span style=\"italic\">  {}</span>", // Icon: expand-arrows-alt
         "tooltip": false
@@ -140,10 +281,9 @@
         "offscreen-css" : true,
         "offscreen-css-text": "(inactive)",
         "rewrite": {
-            "vivaldi-stable > (.*)": "  > $1",
-            "org.qutebrowser.qutebrowser > (.*)": "  > $1",
+            "Vivaldi-stable > (.*)": "  > $1",
             "code-insiders-url-handler > (.*) - (.*) \\(Workspace\\) - .*": "󰨞 > $1 - $2",
-            "wezterm > (.*)": "  > $1"
+            "Alacritty > (.*)": "alacritty > $1"
         }
     },
 
@@ -157,7 +297,7 @@
     },
 
     "keyboard-state": {
-        "numlock": true,
+        //"numlock": true,
         "capslock": true,
         "format": {
             "numlock": "N {icon}",
@@ -253,8 +393,8 @@
             "ignored-sinks": ["Easy Effects Sink"]
         },
         "scroll-step": 5.0,
-        "on-click": "pavucontrol -t 3",
-        "on-click-right": "~/.config/scripts/waybar/audio.py --toggle",
+        "on-click": "~/.config/scripts/waybar/audio.py --toggle",
+        "on-click-right": "pavucontrol -t 3",
         "on-scroll-up": "~/.config/scripts/waybar/audio.py --inc",
         "on-scroll-down": "~/.config/scripts/waybar/audio.py --dec",
         "tooltip-format": "{icon} {desc} | {volume}%",
@@ -290,8 +430,7 @@
 
     "tray": {
         "icon-size": 15,
-        "spacing": 8,
-        "show-passive-items": true
+        "spacing": 8
     },
 
     "wireplumber": {
@@ -327,12 +466,106 @@
         "tooltip": true
     },
 
+    "custom/keybinds": {
+        "format":"󰺁 HINT!",
+        "exec": "echo ; echo  Key Hints SUPER H",
+        "on-click": "~/.config/hypr/scripts/KeyHints.sh",
+        "interval" : 86400, // once every day
+        "tooltip": true
+    },
+
+    "custom/keyboard": {
+        "exec": "cat ~/.cache/kb_layout",
+        "interval": 1,
+        "format": " {}",
+        "on-click": "~/.config/hypr/scripts/SwitchKeyboardLayout.sh"
+    },
+
+    "custom/light_dark": {
+        "format": "{}",
+        "exec": "echo ; echo 󰔎 Dark-Light switcher",
+        "on-click": "~/.config/hypr/scripts/DarkLight.sh",
+        "on-click-right": "~/.config/hypr/scripts/WaybarStyles.sh",
+        "on-click-middle": "~/.config/hypr/scripts/Wallpaper.sh",
+        "interval" : 86400, // once every day
+        "tooltip": true
+    },
+
     "custom/lock": {
         "format": "󰌾",
         "exec": "echo ; echo 󰷛  screen lock",
         "interval" : 86400, // once every day
         "tooltip": true,
         "on-click": "~/.config/hypr/scripts/LockScreen.sh"
+    },
+
+    "custom/menu": {
+        "format": "{}",
+        "exec": "echo ; echo 󱓟 app launcher",
+        "interval" : 86400, // once every day
+        "tooltip": true,
+        "on-click": "pkill rofi || rofi -show drun -modi run,drun,filebrowser,window",
+        "on-click-middle": "~/.config/hypr/scripts/WallpaperSelect.sh",
+        "on-click-right": "~/.config/hypr/scripts/WaybarLayout.sh"
+    },
+
+    // This is a custom cava visualizer
+    "custom/cava_mviz": {
+        "exec": "~/.config/hypr/scripts/WaybarCava.sh",
+        "format": "{}"
+    },
+
+    "custom/playerctl": {
+        "format": "<span>{}</span>",
+        "return-type": "json",
+        "max-length": 35,
+        "exec": "playerctl -a metadata --format '{\"text\": \"{{artist}} ~ {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+        "on-click-middle": "playerctl play-pause",
+        "on-click": "playerctl previous",
+        "on-click-right": "playerctl next",
+        "scroll-step": 5.0,
+        "on-scroll-up": "~/.config/hypr/scripts/Volume.sh --inc",
+        "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
+        "smooth-scrolling-threshold": 1
+    },
+
+    "custom/power": {
+        "format": "⏻ ",
+        "exec": "echo ; echo 󰟡 power // blur",
+        "on-click": "~/.config/scripts/rofi/rofi_shutdown.sh",
+        "on-click-right": "~/.config/hypr/scripts/ChangeBlur.sh",
+        "interval" : 86400, // once every day
+        "tooltip": true
+    },
+
+    "custom/swaync": {
+        "tooltip":true,
+        "format": "{icon} {}",
+        "format-icons": {
+            "notification": "<span foreground='red'><sup></sup></span>",
+            "none": "",
+            "dnd-notification": "<span foreground='red'><sup></sup></span>",
+            "dnd-none": "",
+            "inhibited-notification": "<span foreground='red'><sup></sup></span>",
+            "inhibited-none": "",
+            "dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+            "dnd-inhibited-none": ""
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "swaync-client -swb",
+        "on-click": "sleep 0.1 && swaync-client -t -sw",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true
+    },
+
+    // NOTE:! This is only for Arch and Arch Based Distros
+    "custom/updater":{
+        "format": " {}",
+        "exec": "checkupdates | wc -l",
+        "exec-if": "[[ $(checkupdates | wc -l) ]]",
+        "interval": 15,
+        "on-click": "kitty -T update paru -Syu || yay -Syu && notify-send 'The system has been updated'"
     },
 
     "custom/weather": {
@@ -375,34 +608,16 @@
         "format": "{}",
         "tooltip": true
     },
+
+
     "custom/vpn": {
         "exec": "cat /tmp/waybar/vpn_status_output.json",
         "interval": 1,
         "return-type": "json",
         "on-click": "python3 ~/.config/scripts/waybar/mullvad_toggle.py",
         "on-click-right": "sh -c 'notify-send -t 5000 \"$(mullvad status)\"'"
-    },
-    "custom/hypridle": {
-        "format": "{}",
-        "exec": "jq -r '.text // \"⚫\"' /tmp/waybar/idle_status.json 2>/dev/null || echo '⚫'",
-        "interval": 1,
-        "on-click": "~/.config/scripts/waybar/toggle_hypridle.py",
-        "tooltip": false
-    },
-    "custom/current_profile": {
-        "format": "󱧶 {}",
-        "exec": "jq -r '._current // \"unknown\"' ~/.config/hypr/workspace_profiles.json",
-        "interval": 2
-    },
+      },
 
-    "custom/kanata_mode": {
-        "exec": "cat /tmp/kanata_status.json || echo '{\"text\":\"❌ ERROR\",\"class\":\"error\",\"tooltip\":\"Kanata status file not found\"}'",
-        "return-type": "json",
-        "interval": 1,
-        "format": "{}",
-        "on-click-right": "kanata-tools switch --layout",
-        "tooltip": true
-    },
 
     // Separators
     "custom/separator#dot": {
@@ -546,15 +761,6 @@
         "on-click": "~/.config/hypr/scripts/Wlogout.sh",
         "on-click-right": "~/.config/hypr/scripts/ChangeBlur.sh",
         "interval" : 86400, // once every day
-        "tooltip": true
-    },
-
-    "custom/hyprwhspr": {
-        "format": "{}",
-        "exec": "/usr/lib/hyprwhspr/config/hyprland/hyprwhspr-tray.sh status",
-        "interval": 1,
-        "return-type": "json",
-        "on-click": "/usr/lib/hyprwhspr/config/hyprland/hyprwhspr-tray.sh record",
         "tooltip": true
     }
 
