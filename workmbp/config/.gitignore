@@ -87,6 +87,8 @@ lazygit
 mpv
 ncdu
 nushell
+nvim/init.lua
+nvim/lua
 nzbget
 oxker
 palettes
