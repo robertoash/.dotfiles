@@ -7,6 +7,17 @@ from pathlib import Path
 
 from symlinks import merge_common_into_machine
 
+# Directories that follow the merge pattern: common -> linuxcommon -> machine
+# Each entry can be a string (simple dir) or tuple (source_subpath, machine_subpath)
+# e.g., "config" means common/config -> machine/config
+# e.g., ("systemd/user", "systemd/user") for nested paths
+MERGE_DIRS = [
+    "config",
+    "secrets",
+    "scripts",
+    ("systemd/user", "systemd/user"),
+]
+
 
 def count_files_to_process(common_path, machine_path):
     """Count total files that need to be processed for progress tracking"""
@@ -88,29 +99,80 @@ def update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir):
     print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({total_count} entries, {new_count} new)")
 
 
-def merge_common_directories(dotfiles_dir, hostname):
-    """Merge common directories (config, secrets) into machine-specific directories"""
-    print("\n🔀 Step 1: Merging common directories into machine-specific directories...")
+def _get_dir_paths(dir_entry):
+    """Parse a MERGE_DIRS entry into (subpath, display_name)"""
+    if isinstance(dir_entry, tuple):
+        return dir_entry[0], dir_entry[0]
+    return dir_entry, dir_entry
 
-    # Directories to merge: config, secrets, and scripts
-    merge_dirs = ["config", "secrets", "scripts"]
 
-    for dir_name in merge_dirs:
-        common_dir = dotfiles_dir / "common" / dir_name
-        machine_dir = dotfiles_dir / hostname / dir_name
+def _get_icon(dir_name):
+    """Get display icon for a directory type"""
+    icons = {"secrets": "🔐", "scripts": "📜", "systemd": "⚙️"}
+    for key, icon in icons.items():
+        if key in dir_name:
+            return icon
+    return "📦"
 
-        if not common_dir.exists() or not machine_dir.exists():
+
+def merge_from_source(source_base, machine_base, dotfiles_dir, label, dirs=None):
+    """
+    Merge directories from a source (common or linuxcommon) into machine-specific dirs.
+
+    Args:
+        source_base: Base path of source (e.g., dotfiles/common or dotfiles/linuxcommon)
+        machine_base: Base path of machine (e.g., dotfiles/linuxmini)
+        dotfiles_dir: Root dotfiles directory
+        label: Label for display (e.g., "common" or "linuxcommon")
+        dirs: List of directories to merge (defaults to MERGE_DIRS)
+    """
+    if dirs is None:
+        dirs = MERGE_DIRS
+
+    for dir_entry in dirs:
+        subpath, display_name = _get_dir_paths(dir_entry)
+
+        source_dir = source_base / subpath
+        machine_dir = machine_base / subpath
+
+        if not source_dir.exists() or not machine_dir.exists():
             continue
 
-        total = count_files_to_process(common_dir, machine_dir)
-        progress_info = {"current": 0, "total": total, "name": dir_name}
-        icon = "🔐" if dir_name == "secrets" else "📦"
-        print(f"{icon} Merging {dir_name}... (0/{total} processed)", end='', flush=True)
+        total = count_files_to_process(source_dir, machine_dir)
+        if total == 0:
+            continue
+
+        progress_info = {"current": 0, "total": total, "name": f"{label}/{display_name}"}
+        icon = _get_icon(display_name)
+        print(f"{icon} Merging {label}/{display_name}... (0/{total} processed)", end='', flush=True)
 
         all_symlink_paths = merge_common_into_machine(
-            common_dir, machine_dir, machine_dir, dotfiles_dir, progress_info=progress_info
+            source_dir, machine_dir, machine_dir, dotfiles_dir, progress_info=progress_info
         )
         print()
 
-        # Create/update .gitignore
-        update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir)
+        if all_symlink_paths:
+            update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir)
+
+
+def merge_common_directories(dotfiles_dir, hostname):
+    """Merge common directories into machine-specific directories"""
+    print("\n🔀 Step 1: Merging common directories into machine-specific directories...")
+
+    common_base = dotfiles_dir / "common"
+    machine_base = dotfiles_dir / hostname
+
+    merge_from_source(common_base, machine_base, dotfiles_dir, "common")
+
+
+def merge_linuxcommon_directories(dotfiles_dir, hostname):
+    """Merge linuxcommon directories into Linux machine-specific directories"""
+    print("\n🐧 Merging linuxcommon directories into Linux machine...")
+
+    linuxcommon_base = dotfiles_dir / "linuxcommon"
+    machine_base = dotfiles_dir / hostname
+
+    if not linuxcommon_base.exists():
+        return
+
+    merge_from_source(linuxcommon_base, machine_base, dotfiles_dir, "linuxcommon")
