@@ -5,18 +5,8 @@ Merge common directories into machine-specific directories.
 from collections import defaultdict
 from pathlib import Path
 
+from config import MERGE_DIRS
 from symlinks import merge_common_into_machine
-
-# Directories that follow the merge pattern: common -> linuxcommon -> machine
-# Each entry can be a string (simple dir) or tuple (source_subpath, machine_subpath)
-# e.g., "config" means common/config -> machine/config
-# e.g., ("systemd/user", "systemd/user") for nested paths
-MERGE_DIRS = [
-    "config",
-    "secrets",
-    "scripts",
-    ("systemd/user", "systemd/user"),
-]
 
 
 def count_files_to_process(common_path, machine_path):
@@ -99,13 +89,6 @@ def update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir):
     print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({total_count} entries, {new_count} new)")
 
 
-def _get_dir_paths(dir_entry):
-    """Parse a MERGE_DIRS entry into (subpath, display_name)"""
-    if isinstance(dir_entry, tuple):
-        return dir_entry[0], dir_entry[0]
-    return dir_entry, dir_entry
-
-
 def _get_icon(dir_name):
     """Get display icon for a directory type"""
     icons = {"secrets": "🔐", "scripts": "📜", "systemd": "⚙️"}
@@ -115,7 +98,7 @@ def _get_icon(dir_name):
     return "📦"
 
 
-def merge_from_source(source_base, machine_base, dotfiles_dir, label, dirs=None):
+def merge_from_source(source_base, machine_base, dotfiles_dir, label):
     """
     Merge directories from a source (common or linuxcommon) into machine-specific dirs.
 
@@ -124,16 +107,13 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label, dirs=None)
         machine_base: Base path of machine (e.g., dotfiles/linuxmini)
         dotfiles_dir: Root dotfiles directory
         label: Label for display (e.g., "common" or "linuxcommon")
-        dirs: List of directories to merge (defaults to MERGE_DIRS)
     """
-    if dirs is None:
-        dirs = MERGE_DIRS
+    for dir_name, dir_config in MERGE_DIRS.items():
+        source_path = dir_config["source"]
+        target_path = dir_config["target"]
 
-    for dir_entry in dirs:
-        subpath, display_name = _get_dir_paths(dir_entry)
-
-        source_dir = source_base / subpath
-        machine_dir = machine_base / subpath
+        source_dir = source_base / source_path
+        machine_dir = machine_base / target_path
 
         if not source_dir.exists() or not machine_dir.exists():
             continue
@@ -142,6 +122,7 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label, dirs=None)
         if total == 0:
             continue
 
+        display_name = source_path
         progress_info = {"current": 0, "total": total, "name": f"{label}/{display_name}"}
         icon = _get_icon(display_name)
         print(f"{icon} Merging {label}/{display_name}... (0/{total} processed)", end='', flush=True)

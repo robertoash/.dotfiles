@@ -5,92 +5,73 @@ Symlink configuration files to ~/.config and handle special cases.
 import subprocess
 from pathlib import Path
 
+from config import MERGE_DIRS
 from symlinks import create_symlink
 
 
 def symlink_configs(dotfiles_dir, hostname, home, machine_config):
-    """Symlink all configs to ~/.config"""
-    print("\n🔗 Step 2: Symlinking configs to ~/.config...")
+    """Symlink all configs based on MERGE_DIRS configuration"""
+    print("\n🔗 Step 2: Symlinking configs...")
 
-    config_dir = home / ".config"
-    config_dir.mkdir(exist_ok=True)
-
-    machine_config_dir = dotfiles_dir / hostname / "config"
-    common_config_dir = dotfiles_dir / "common" / "config"
+    machine_dir = dotfiles_dir / hostname
 
     # Track warnings about existing valid symlinks
     symlink_warnings = []
 
-    # Symlink machine-specific configs (which now contain merged common + machine files)
-    if machine_config_dir.exists():
-        for item in machine_config_dir.iterdir():
-            if item.name == ".gitignore":
-                continue  # Skip .gitignore - handled in Step 3 from machine directory
-            if item.is_dir() or item.is_file():
-                target = config_dir / item.name
-                create_symlink(item, target, f"{hostname}")
+    # Process each directory defined in MERGE_DIRS
+    for dir_name, dir_config in MERGE_DIRS.items():
+        target_path = dir_config["target"]
+        symlink_dest = dir_config["symlink"]
+        symlink_mode = dir_config["symlink_mode"]
 
-    # Symlink common configs that don't have machine-specific versions
-    if common_config_dir.exists():
-        for item in common_config_dir.iterdir():
-            target = config_dir / item.name
-            # Check if machine-specific version exists
-            machine_version = machine_config_dir / item.name if machine_config_dir.exists() else None
+        # Skip if no symlink configured (handled elsewhere)
+        if symlink_dest is None:
+            continue
 
-            # Skip if machine-specific version exists (it takes precedence)
-            if machine_version and machine_version.exists():
-                continue
+        source_dir = machine_dir / target_path
+        if not source_dir.exists():
+            continue
 
-            # Only symlink if not already linked from machine-specific
-            if target.is_symlink() and not target.exists():
-                # Broken symlink - replace it
-                create_symlink(item, target, "common")
-            elif target.is_symlink() and target.exists():
-                # Check if pointing to machine-specific version (which takes precedence)
-                if machine_version and machine_version.exists() and target.resolve() == machine_version.resolve():
-                    # Correctly pointing to machine version, no warning needed
-                    pass
-                elif target.resolve() != item.resolve():
-                    # Valid symlink pointing elsewhere - warn but don't replace
-                    symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
-            elif not target.exists():
-                # Doesn't exist - create it
-                create_symlink(item, target, "common")
+        if symlink_mode == "contents":
+            # Symlink each item inside the directory
+            symlink_dest.mkdir(parents=True, exist_ok=True)
+            for item in source_dir.iterdir():
+                if item.name == ".gitignore":
+                    continue
+                target = symlink_dest / item.name
+                _create_symlink_with_warning(item, target, hostname, symlink_warnings)
 
-    # Step 3: Symlink machine directories directly (not in config/)
-    machine_dir = dotfiles_dir / hostname
-    if machine_dir.exists():
-        for item in machine_dir.iterdir():
-            if item.name == "config":
-                continue  # Already handled above
-            if item.is_dir() or item.is_file():
-                target = config_dir / item.name
-                # Only create if doesn't exist or is a broken symlink
-                if target.is_symlink() and not target.exists():
-                    # Broken symlink - replace it
-                    create_symlink(item, target, f"{hostname} direct")
-                elif target.is_symlink() and target.exists():
-                    # Check if already pointing to this machine's version
-                    if target.resolve() == item.resolve():
-                        # Already correctly linked, no warning needed
-                        pass
-                    else:
-                        # Valid symlink pointing elsewhere - warn but don't replace
-                        symlink_warnings.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
-                elif not target.exists():
-                    # Doesn't exist - create it
-                    create_symlink(item, target, f"{hostname} direct")
+        elif symlink_mode == "directory":
+            # Symlink the entire directory
+            symlink_dest.parent.mkdir(parents=True, exist_ok=True)
+            _create_symlink_with_warning(source_dir, symlink_dest, dir_name, symlink_warnings)
 
-    # Handle special cases
+    # Handle special cases not covered by MERGE_DIRS
     _handle_special_cases(dotfiles_dir, hostname, home, machine_config)
 
     return symlink_warnings
 
 
+def _create_symlink_with_warning(source, target, label, warnings_list):
+    """Create symlink, tracking warnings for existing valid symlinks pointing elsewhere"""
+    if target.is_symlink() and not target.exists():
+        # Broken symlink - replace it
+        create_symlink(source, target, label)
+    elif target.is_symlink() and target.exists():
+        if target.resolve() == source.resolve():
+            # Already correctly linked
+            pass
+        else:
+            # Valid symlink pointing elsewhere - warn but don't replace
+            warnings_list.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
+    elif not target.exists():
+        # Doesn't exist - create it
+        create_symlink(source, target, label)
+
+
 def _handle_special_cases(dotfiles_dir, hostname, home, machine_config):
-    """Handle special symlink cases"""
+    """Handle special symlink cases not covered by MERGE_DIRS"""
     machine_dir = dotfiles_dir / hostname
-    config_dir = home / ".config"
 
     # Home directory dotfiles - automatically symlink everything in home/
     home_dir = machine_dir / "home"
@@ -98,17 +79,6 @@ def _handle_special_cases(dotfiles_dir, hostname, home, machine_config):
         for item in home_dir.iterdir():
             target = home / item.name
             create_symlink(item, target, "home")
-
-    # Secrets directory - symlink merged secrets to ~/secrets
-    machine_secrets_dir = machine_dir / "secrets"
-    if machine_secrets_dir.exists():
-        secrets_target = home / "secrets"
-        create_symlink(machine_secrets_dir, secrets_target, "secrets")
-
-    # Machine-specific scripts - symlink if they exist
-    scripts_dir = machine_dir / "scripts"
-    if scripts_dir.exists():
-        create_symlink(scripts_dir, config_dir / "scripts", "scripts")
 
     # Machine-specific local/bin directory - symlink individual files
     local_bin_dir = machine_dir / "local" / "bin"
