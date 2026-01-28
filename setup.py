@@ -28,6 +28,7 @@ from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
 from systemd_setup import reload_systemd_daemon
 from zen_app_windowrules import generate_zen_app_windowrules
+from zellij_mcp_setup import setup_zellij_mcp
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -73,6 +74,10 @@ if machine_config["is_linux"]:
 
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
+
+# Step 6.5.0.1: Setup Zellij MCP Server (for Claude Code integration)
+# Set skip_install=True after initial setup to speed up subsequent runs
+setup_zellij_mcp(dotfiles_dir, skip_install=False)
 
 # Step 6.5.1: Setup beads integration
 setup_beads_integration(dotfiles_dir)

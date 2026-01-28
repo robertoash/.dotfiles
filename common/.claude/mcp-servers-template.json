@@ -15,5 +15,10 @@
       "HA_URL": "http://10.20.10.100:8123",
       "HA_TOKEN": "{{CLAUDE_HA_TOKEN_GLOBAL}}"
     }
+  },
+  "zellij": {
+    "type": "stdio",
+    "command": "node",
+    "args": ["/home/rash/.local/share/zellij-mcp-server/dist/index.js"]
   }
 }
