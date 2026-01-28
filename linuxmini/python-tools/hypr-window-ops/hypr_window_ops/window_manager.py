@@ -159,9 +159,10 @@ def get_target_floating_window(for_toggle_floating_activation=False):
     if not active_window or "address" not in active_window:
         return None  # Fallback to active window (will be handled by caller)
 
-    # Early exit: if active is floating, use it
+    # Early exit: if active is floating, return it directly to avoid race conditions
+    # (previously returned None which caused caller to re-fetch, risking focus changes)
     if active_window.get("floating", False):
-        return None  # Signal to use active window
+        return active_window
 
     # Step 2: Get visible workspaces
     monitors = run_hyprctl(["monitors", "-j"])
