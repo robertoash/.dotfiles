@@ -172,7 +172,6 @@ fish/conf.d/secrets/secrets.fish
 fish/sources/secrets.fish
 yazi/flavors/catppuccin-mocha.yazi
 yazi/plugins
-nvim/lazy-lock.json
 yazi/package.toml
 systemd/user/default.target.wants
 systemd/user/graphical-session.target.wants
@@ -290,7 +289,6 @@ nchat/history
 nchat/profiles
 nchat/version
 nushell
-nvim
 qalculate/qalc.history
 qalculate/qalculate-gtk.cfg
 qutebrowser/.claude
