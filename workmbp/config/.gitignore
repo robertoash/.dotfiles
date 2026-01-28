@@ -33,6 +33,7 @@ fish/functions/accept_next_path_segment.fish
 fish/functions/bk_swap.fish
 fish/functions/bko.fish
 fish/functions/cdroot.fish
+fish/functions/cdtemp.fish
 fish/functions/cut_video.fish
 fish/functions/delete_gone_branches.fish
 fish/functions/down_d.fish
