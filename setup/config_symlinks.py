@@ -39,12 +39,12 @@ def symlink_configs(dotfiles_dir, hostname, home, machine_config):
                 if item.name == ".gitignore":
                     continue
                 target = symlink_dest / item.name
-                _create_symlink_with_warning(item, target, hostname, symlink_warnings)
+                _create_or_replace_symlink(item, target, hostname, symlink_warnings, dotfiles_dir)
 
         elif symlink_mode == "directory":
             # Symlink the entire directory
             symlink_dest.parent.mkdir(parents=True, exist_ok=True)
-            _create_symlink_with_warning(source_dir, symlink_dest, dir_name, symlink_warnings)
+            _create_or_replace_symlink(source_dir, symlink_dest, dir_name, symlink_warnings, dotfiles_dir)
 
     # Handle special cases not covered by MERGE_DIRS
     _handle_special_cases(dotfiles_dir, hostname, home, machine_config)
@@ -52,8 +52,8 @@ def symlink_configs(dotfiles_dir, hostname, home, machine_config):
     return symlink_warnings
 
 
-def _create_symlink_with_warning(source, target, label, warnings_list):
-    """Create symlink, tracking warnings for existing valid symlinks pointing elsewhere"""
+def _create_or_replace_symlink(source, target, label, warnings_list, dotfiles_dir):
+    """Create symlink, replacing if it points to a dotfiles location"""
     if target.is_symlink() and not target.exists():
         # Broken symlink - replace it
         create_symlink(source, target, label)
@@ -62,8 +62,14 @@ def _create_symlink_with_warning(source, target, label, warnings_list):
             # Already correctly linked
             pass
         else:
-            # Valid symlink pointing elsewhere - warn but don't replace
-            warnings_list.append(f"  ⚠️  {target} -> {target.resolve()} (not replaced)")
+            # Check if existing symlink points within dotfiles (managed by setup.py)
+            existing_target = target.resolve()
+            if str(existing_target).startswith(str(dotfiles_dir)):
+                # Points to dotfiles - safe to replace
+                create_symlink(source, target, label)
+            else:
+                # Points outside dotfiles - warn but don't replace
+                warnings_list.append(f"  ⚠️  {target} -> {existing_target} (not replaced)")
     elif not target.exists():
         # Doesn't exist - create it
         create_symlink(source, target, label)
