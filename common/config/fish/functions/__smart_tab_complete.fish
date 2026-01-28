@@ -167,26 +167,43 @@ function __smart_tab_complete
     end
 
     # === LAUNCH APPROPRIATE FZF ===
-    # Note: fd outputs paths relative to CWD, so no need to prepend path_prefix
+    # fd behavior differs for relative vs absolute paths:
+    # - Relative paths (../): fd outputs with prefix (../file) - don't prepend
+    # - Absolute paths (~/, /tmp/): fd outputs without prefix (file) - prepend needed
     switch $completion_type
         case dirs
             set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t d --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                # Prepend path_prefix only for absolute paths (starting with / or ~)
+                if string match -q -r '^[/~]' -- "$path_prefix"
+                    commandline -t -- (string escape "$path_prefix$result")
+                else
+                    commandline -t -- (string escape "$result")
+                end
             end
             commandline -f repaint
 
         case files
             set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t f --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                # Prepend path_prefix only for absolute paths (starting with / or ~)
+                if string match -q -r '^[/~]' -- "$path_prefix"
+                    commandline -t -- (string escape "$path_prefix$result")
+                else
+                    commandline -t -- (string escape "$result")
+                end
             end
             commandline -f repaint
 
         case both
             set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                # Prepend path_prefix only for absolute paths (starting with / or ~)
+                if string match -q -r '^[/~]' -- "$path_prefix"
+                    commandline -t -- (string escape "$path_prefix$result")
+                else
+                    commandline -t -- (string escape "$result")
+                end
             end
             commandline -f repaint
 
