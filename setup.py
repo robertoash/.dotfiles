@@ -63,6 +63,22 @@ if machine_config["is_linux"] and (dotfiles_dir / "linuxcommon").exists():
         if all_symlink_paths:
             update_gitignore(machine_config_dir, all_symlink_paths, dotfiles_dir)
 
+    # Also merge linuxcommon/systemd into machine's systemd
+    linuxcommon_systemd = dotfiles_dir / "linuxcommon" / "systemd" / "user"
+    machine_systemd_dir = dotfiles_dir / hostname / "systemd" / "user"
+    if linuxcommon_systemd.exists() and machine_systemd_dir.exists():
+        total = count_files_to_process(linuxcommon_systemd, machine_systemd_dir)
+        progress_info = {"current": 0, "total": total, "name": "linuxcommon/systemd"}
+        print(f"🐧 Merging linuxcommon/systemd... (0/{total} processed)", end='', flush=True)
+
+        all_symlink_paths = merge_common_into_machine(
+            linuxcommon_systemd, machine_systemd_dir, machine_systemd_dir, dotfiles_dir, progress_info=progress_info
+        )
+        print()
+
+        if all_symlink_paths:
+            update_gitignore(machine_systemd_dir, all_symlink_paths, dotfiles_dir)
+
 # Step 2-3: Symlink configs to ~/.config and handle special cases
 symlink_warnings = symlink_configs(dotfiles_dir, hostname, home, machine_config)
 
