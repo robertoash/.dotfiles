@@ -167,25 +167,26 @@ function __smart_tab_complete
     end
 
     # === LAUNCH APPROPRIATE FZF ===
+    # Note: fd outputs paths relative to CWD, so no need to prepend path_prefix
     switch $completion_type
         case dirs
             set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t d --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$path_prefix$result")
+                commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case files
             set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t f --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$path_prefix$result")
+                commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
         case both
             set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$path_prefix$result")
+                commandline -t -- (string escape "$result")
             end
             commandline -f repaint
 
