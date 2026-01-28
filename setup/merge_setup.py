@@ -53,8 +53,9 @@ def update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir):
 
     gitignore_entries = sorted(set(gitignore_entries))
 
-    # Preserve existing content
+    # Preserve existing content and merge with existing auto-generated entries
     existing_content = ""
+    existing_auto_entries = set()
     marker_start = "# === AUTO-GENERATED SYMLINKS (do not edit) ===\n"
     marker_end = "# === END AUTO-GENERATED SYMLINKS ===\n"
 
@@ -63,6 +64,9 @@ def update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir):
         if marker_start in existing:
             before = existing.split(marker_start)[0]
             if marker_end in existing:
+                # Extract existing auto-generated entries to merge with new ones
+                auto_section = existing.split(marker_start)[1].split(marker_end)[0]
+                existing_auto_entries = set(line.strip() for line in auto_section.strip().split('\n') if line.strip())
                 after = existing.split(marker_end)[1]
                 existing_content = before + after
             else:
@@ -70,15 +74,18 @@ def update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir):
         else:
             existing_content = existing
 
+    # Merge existing auto-generated entries with new ones
+    all_entries = sorted(set(gitignore_entries) | existing_auto_entries)
+
     gitignore_content = existing_content.rstrip() + "\n\n" if existing_content.strip() else ""
     gitignore_content += marker_start
-    gitignore_content += "\n".join(gitignore_entries) + "\n"
+    gitignore_content += "\n".join(all_entries) + "\n"
     gitignore_content += marker_end
 
     gitignore_path.write_text(gitignore_content)
-    before_count = len(all_symlink_paths)
-    after_count = len(gitignore_entries)
-    print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({after_count} entries, optimized from {before_count} symlinks)")
+    new_count = len(gitignore_entries)
+    total_count = len(all_entries)
+    print(f"📝 Updated {gitignore_path.relative_to(dotfiles_dir)} ({total_count} entries, {new_count} new)")
 
 
 def merge_common_directories(dotfiles_dir, hostname):

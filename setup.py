@@ -61,7 +61,7 @@ if machine_config["is_linux"] and (dotfiles_dir / "linuxcommon").exists():
         print()
 
         if all_symlink_paths:
-            update_gitignore(machine_config_dir.parent, all_symlink_paths, dotfiles_dir)
+            update_gitignore(machine_config_dir, all_symlink_paths, dotfiles_dir)
 
 # Step 2-3: Symlink configs to ~/.config and handle special cases
 symlink_warnings = symlink_configs(dotfiles_dir, hostname, home, machine_config)

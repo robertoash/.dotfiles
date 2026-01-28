@@ -207,6 +207,7 @@ btop/themes/tokyonight_deep.theme
 cjar/plates/share/next.md
 espanso
 fish/completions
+fish/conf.d/00_environment.fish
 fish/conf.d/00_setup_secrets.fish
 fish/conf.d/01_load_sops_scrts.fish
 fish/conf.d/02_abbreviations.fish
@@ -313,6 +314,7 @@ qutebrowser/profiles/linuxmini/rash/runtime/qutebrowser-userscript-wmvy4l72
 qutebrowser/profiles/oldmbp
 qutebrowser/profiles/workmbp
 qutebrowser/userscripts
+scripts
 spotify-player/theme.toml
 spotify-player/themes
 spotify-player/themes.bkup
