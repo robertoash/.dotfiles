@@ -16,11 +16,17 @@ When running inside a Zellij session, you have MCP tools to interact with panes.
 - The user asks to "show me" something
 
 **Showing files/diffs:**
-- Use `zellij action write-chars` to send vim commands to the nvim pane
-- For highlighting lines: `:LINE_NUM<CR>V5j` (jump to line, visual line mode, select N lines)
-- For showing diffs: Use `:Gitsigns diffthis<CR>` (shows vertical split: current buffer vs HEAD)
-- To close diff: `:diffoff<CR>` then `:q<CR>` to close the split
-- **CRITICAL**: Only one diff per nvim pane at a time. Close existing diffs before opening new ones
+- Use `zellij action` commands via Bash tool:
+```bash
+zellij action focus-previous-pane && sleep 0.3 && \
+zellij action write-chars ':edit /path/to/file' && zellij action write 13 && sleep 0.5 && \
+zellij action write-chars ':Gitsigns diffthis' && zellij action write 13 && sleep 0.3 && \
+zellij action focus-next-pane
+```
+- `write 13` sends Enter key (byte 13 = CR)
+- Timing: 0.3s for focus switch, 0.5s after opening file
+- To close diff first: Add `:diffoff | only` before `:edit` command
+- **CRITICAL**: Only one diff per nvim pane at a time. Close existing diffs before opening new ones.
 - NO floating panes for code viewing - always use existing nvim pane or splits within it
 
 ## Code Guidelines
