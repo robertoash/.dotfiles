@@ -6,6 +6,20 @@ function __smart_tab_complete
     set -l token (commandline -t)
     set -l cursor_pos (commandline -C)
 
+    # Extract path prefix and search base for relative/absolute paths
+    set -l search_dir "."
+    set -l path_prefix ""
+    set -l query_part "$token"
+
+    if string match -q -r '/' -- "$token"
+        # Token contains a path - extract directory portion
+        set path_prefix (string replace -r '[^/]*$' '' -- "$token")
+        set query_part (string replace -r '.*/' '' -- "$token")
+        if test -n "$path_prefix"; and test -d "$path_prefix"
+            set search_dir "$path_prefix"
+        end
+    end
+
     # === TRIGGER WORDS (existing functionality) ===
     # fd triggers: fff, fdd, faa
     if string match -q -r '^f(ff|dd|aa)$' -- "$token"
@@ -155,23 +169,23 @@ function __smart_tab_complete
     # === LAUNCH APPROPRIATE FZF ===
     switch $completion_type
         case dirs
-            set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1; fd -Hi --no-ignore-vcs -t d --min-depth 2; end | fzf --height 40% --reverse --query "$token")
+            set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t d --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                commandline -t -- (string escape "$path_prefix$result")
             end
             commandline -f repaint
 
         case files
-            set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1; fd -Hi --no-ignore-vcs -t f --min-depth 2; end | fzf --height 40% --reverse --query "$token")
+            set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t f --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                commandline -t -- (string escape "$path_prefix$result")
             end
             commandline -f repaint
 
         case both
-            set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1; fd -Hi --no-ignore-vcs --min-depth 2; end | fzf --height 40% --reverse --query "$token")
+            set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                commandline -t -- (string escape "$result")
+                commandline -t -- (string escape "$path_prefix$result")
             end
             commandline -f repaint
 
