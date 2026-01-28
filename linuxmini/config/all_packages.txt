@@ -25,8 +25,8 @@ cups###2:2.4.16-1###pacman
 cups-browsed###2.1.1-1###pacman
 dbeaver###25.3.2-1###pacman
 dex###0.10.1-1###pacman
-docker###1:29.1.4-1###pacman
-docker-compose###5.0.1-1###pacman
+docker###1:29.2.0-1###pacman
+docker-compose###5.0.2-1###pacman
 dunst###1.13.0-1###pacman
 efibootmgr###18-3###pacman
 espanso-wayland-git###2.3.0.r37.gbf4767e0-1###pacman
@@ -48,11 +48,11 @@ gtk4###1:4.20.3-1###pacman
 hyprcursor-git###0.1.13.r0.g44e91d4-1.31###pacman
 hyprgraphics-git###0.5.0.r2.g583331e-1###pacman
 hypridle-git###0.1.7.r3.g833eb85-1.4###pacman
-hyprland-git###0.53.3.r56.gbcb3427-1###pacman
+hyprland-git###0.53.3.r57.gc8b5023-1###pacman
 hyprland-guiutils-git###0.2.1.r0.gc2e9062-1.9###pacman
 hyprlang-git###0.6.8.r1.gd403737-1###pacman
 hyprlock-git###0.9.2.r9.gef3017f-1.7###pacman
-hyprpaper-git###0.8.2.r0.gea4809e-1###pacman
+hyprpaper-git###0.8.2.r1.geb71d0f-1###pacman
 hyprutils-git###0.11.0.r3.g51a4f93-1###pacman
 hyprwayland-scanner-git###0.4.5.r2.gf6cf414-1###pacman
 hyprwire-git###0.2.1.r34.ga45ca05-1###pacman
@@ -67,7 +67,7 @@ lazygit###0.58.1-1###pacman
 libappindicator###12.10.1-1###pacman
 libgit2###1:1.9.2-1###pacman
 libqalculate###5.9.0-1###pacman
-librewolf###147.0.1-3###pacman
+librewolf###147.0.2-1###pacman
 linux###6.18.6.arch1-1###pacman
 linux-firmware###20260110-1###pacman
 lsof###4.99.5-2###pacman
@@ -77,7 +77,7 @@ mkinitcpio###40-4###pacman
 mpv-mpris###1.1-4###pacman
 mullvad-browser-bin###15.0.4-1###pacman
 nano###8.7-1###pacman
-neovim-git###0.12.0.r2117.g76c77bd114-1###pacman
+neovim-git###0.12.0.r2131.g027b7d6bbb-1###pacman
 networkmanager###1.54.3-1###pacman
 noto-fonts###1:2026.01.01-1###pacman
 noto-fonts-emoji###1:2.051-1###pacman
@@ -148,7 +148,7 @@ brother-dcpl2530dw###4.0.0_1-1###aur
 buku###5.1-1###aur
 claude-code###2.1.20-1###aur
 fish-lsp###1.1.3-1###aur
-hyprwhspr###1.18.8-1###aur
+hyprwhspr###1.18.9-1###aur
 kanata-bin###1.10.1-1###aur
 mullvad-vpn-bin###2025.14-1###aur
 pyprland-git###r1684.e02a194-1###aur
@@ -180,7 +180,7 @@ cjar###v0.1.0###uv
 homeassistant-cli###v0.9.6###uv
 hypr-window-ops###v0.1.0###uv
 kanata-tools###v0.1.0###uv
-shell-gpt###v1.4.5###uv
+shell-gpt###v1.5.0###uv
 ttydal###v1.1.0###uv
 yt-dlp###v2025.12.8###uv
 TD-Sky/sudo###86205aa###ya
@@ -299,7 +299,7 @@ shellingham###1.5.4###pip3
 six###1.17.0###pip3
 smassh###3.2.1###pip3
 solaar###1.1.19###pip3
-sounddevice###0.5.3###pip3
+sounddevice###0.5.5###pip3
 soupsieve###2.8.3###pip3
 textual###7.3.0###pip3
 toml###0.10.2###pip3
