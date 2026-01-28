@@ -18,6 +18,11 @@ layout {
             cwd "/home/rash/ext_repos/ttydal"
         }
     }
+    tab name="dbt" {
+        pane command="ssh" {
+            args "workmbp" "-t" "cd ~/dev/dbt && nvim; exec fish"
+        }
+    }
     tab name="config" split_direction="vertical" {
         pane size="65%" command="fish" {
             args "-c" "nvim; exec fish"

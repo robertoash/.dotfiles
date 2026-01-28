@@ -151,7 +151,7 @@ fish-lsp###1.1.3-1###aur
 hyprwhspr###1.18.9-1###aur
 kanata-bin###1.10.1-1###aur
 mullvad-vpn-bin###2025.14-1###aur
-pyprland-git###r1684.e02a194-1###aur
+pyprland-git###r1685.2f5d401-1###aur
 smassh###3.2.1-2###aur
 sunshine###2025.924.154138-3###aur
 ttf-geist###1.6.0-1###aur
