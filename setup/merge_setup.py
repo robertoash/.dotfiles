@@ -92,8 +92,8 @@ def merge_common_directories(dotfiles_dir, hostname):
     """Merge common directories (config, secrets) into machine-specific directories"""
     print("\n🔀 Step 1: Merging common directories into machine-specific directories...")
 
-    # Directories to merge: config and secrets
-    merge_dirs = ["config", "secrets"]
+    # Directories to merge: config, secrets, and scripts
+    merge_dirs = ["config", "secrets", "scripts"]
 
     for dir_name in merge_dirs:
         common_dir = dotfiles_dir / "common" / dir_name

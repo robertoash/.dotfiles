@@ -315,6 +315,7 @@ qutebrowser/profiles/oldmbp
 qutebrowser/profiles/workmbp
 qutebrowser/userscripts
 scripts
+scripts/waybar
 spotify-player/theme.toml
 spotify-player/themes
 spotify-player/themes.bkup
