@@ -38,10 +38,15 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
             # Re-fetch window info after floating to get updated state
             window_info = window_manager.get_target_window(relative_floating)
             window_id = window_info.get("address")
-        # Resize to 1280x720
+
+        # Detect current corner before resizing
+        current_corner = monitor_utils.detect_window_corner(window_info)
+        target_corner = current_corner if current_corner else "lower-left"
+
+        # Resize to 1228x691 (16:9, doubles to 2456x1382 to match master window width)
         window_manager.run_hyprctl_command([
             "dispatch", "resizewindowpixel",
-            f"exact 1280 720,address:{window_id}"
+            f"exact 1228 691,address:{window_id}"
         ])
         # Pin the window and set nodim property
         window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
@@ -49,7 +54,7 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
             ["setprop", f"address:{window_id}", "nodim", "1"]
         )
         snap_windows.snap_window_to_corner(
-            corner="lower-right", window_address=window_id
+            corner=target_corner, window_address=window_id
         )
         # Apply sneaky tag if requested
         if sneaky:
@@ -122,8 +127,8 @@ def toggle_floating(relative_floating=False, sneaky=False):
             relative_floating, for_toggle_floating_activation=True
         )
         window_id = window_info.get("address")
-        new_width = "1280"
-        new_height = "720"
+        new_width = "1228"
+        new_height = "691"
         window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
         window_manager.run_hyprctl_command(
             ["dispatch", "resizeactive", "exact", new_width, new_height]
