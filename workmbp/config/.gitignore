@@ -69,6 +69,7 @@ fish/functions/rm.fish
 fish/functions/rr.fish
 fish/functions/sgpt_fish.fish
 fish/functions/snake_case_all.fish
+fish/functions/ssh-copy.fish
 fish/functions/svtp.fish
 fish/functions/tt.fish
 fish/functions/video-tools.fish
