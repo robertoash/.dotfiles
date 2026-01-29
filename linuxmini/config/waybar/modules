@@ -171,8 +171,8 @@
 
     "memory": {
         "interval": 10,
-        "format": "{used:0.1f}G ",
-        "format-alt": "{percentage}% ",
+        "format": "{used:0.1f}G  ",
+        "format-alt": "{percentage}%  ",
         "format-alt-click": "click",
         "tooltip": true,
         "tooltip-format": "{used:0.1f}GB/{total:0.1f}G",
@@ -401,6 +401,30 @@
         "interval": 1,
         "format": "{}",
         "on-click-right": "kanata-tools switch --layout",
+        "tooltip": true
+    },
+
+    "custom/special_workspaces": {
+        "exec": "~/.config/scripts/waybar/special_workspaces.py",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{}",
+        "tooltip": true
+    },
+
+    "custom/special_workspaces_left": {
+        "exec": "~/.config/scripts/waybar/special_workspaces.py left",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{}",
+        "tooltip": true
+    },
+
+    "custom/special_workspaces_right": {
+        "exec": "~/.config/scripts/waybar/special_workspaces.py right",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{}",
         "tooltip": true
     },
 

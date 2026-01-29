@@ -19,6 +19,8 @@
 	"modules-left": [
 		"hyprland/workspaces#numbers",
 		"custom/separator#dot-line",
+		"custom/special_workspaces",
+		"custom/separator#dot-line",
 		"cpu",
 		"custom/separator#dot-line",
 		"memory",
@@ -31,7 +33,6 @@
 		"custom/hypridle",
 		"custom/separator#dot-line",
 		"hyprland/window",
-		"custom/separator#blank_2",
 		"hyprland/submap"
 	],
 
@@ -74,6 +75,8 @@
 
 	"modules-left": [
 		"hyprland/workspaces#numbers",
+		"custom/separator#dot-line",
+		"custom/special_workspaces",
 		"custom/separator#dot-line",
 		"custom/kanata_mode",
 		"custom/separator#blank"
