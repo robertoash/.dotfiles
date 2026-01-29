@@ -10,6 +10,8 @@ linuxmini/sunshine/credentials/cakey.pem
 **/*.p8
 **/*.pem
 **/token*
+**/common/config/cjar/plates/
+**/common/config/cjar/plates/**/*
 
 # Exceptions for sops (scripts and service, not secrets)
 !linuxmini/systemd/user/sops-secrets.service
@@ -71,3 +73,6 @@ common/config/yazi/package.toml
 logs
 linuxmini/scripts/_cache
 common/config/qutebrowser/profiles/linuxmini/jobhunt/config/autoconfig.yml
+
+# bv (beads viewer) local config and caches
+.bv/
