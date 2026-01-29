@@ -372,6 +372,88 @@ Examples:
         help="Specific stash name to use (e.g., stash-left, stash-right)",
     )
 
+    # Toggle monitor secure
+    subparsers.add_parser(
+        "toggle-secure",
+        help="Toggle the secure workspace for the current monitor",
+        description="""
+Toggle the secure workspace for the currently active monitor only.
+Similar to stash, but for sensitive content.
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Toggle secure on current monitor
+  hypr-window-ops toggle-secure
+        """,
+    )
+
+    # Move to monitor secure
+    secure_parser = subparsers.add_parser(
+        "move-to-secure",
+        help="Move active window to monitor's secure workspace",
+        description="""
+Move the active window to a secure workspace. By default, it moves to the secure
+workspace bound to the current monitor (secure-left or secure-right).
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Move active window to current monitor's secure
+  hypr-window-ops move-to-secure
+
+  # Move active window to a specific secure
+  hypr-window-ops move-to-secure --secure secure-left
+        """,
+    )
+    secure_parser.add_argument(
+        "--secure",
+        help="Specific secure name to use (e.g., secure-left, secure-right)",
+    )
+
+    # Toggle monitor full (HYPER+F - general toggle)
+    subparsers.add_parser(
+        "toggle-full",
+        help="General toggle for full workspace",
+        description="""
+HYPER+F: General toggle for full workspace.
+
+Logic:
+- In special:full (video) -> hide special:full (peek)
+- In regular workspace:
+    - Full empty + video -> fullscreen + move to full + show
+    - Full empty + non-video -> show full
+    - Full not empty -> show full
+- In stash/secure -> fullscreen in place
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  hypr-window-ops toggle-full
+        """,
+    )
+
+    # Full video enter/exit (SUPER CTRL+F)
+    subparsers.add_parser(
+        "full-video",
+        help="Video enter/exit for full workspace",
+        description="""
+SUPER CTRL+F: Video enter/exit for full workspace.
+
+Logic:
+- In special:full (video) -> unfullscreen + move to regular + hide full (exit)
+- In regular OR other special workspace:
+    - Full empty + video -> fullscreen + move to full + show
+    - Full not empty + video -> error (taken)
+    - Non-video -> same as HYPER+F
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  hypr-window-ops full-video
+        """,
+    )
+
     # Toggle sneaky tag
     sneaky_parser = subparsers.add_parser(
         "toggle-sneaky",
@@ -490,6 +572,14 @@ Examples:
         return stash_manager.toggle_monitor_stash()
     elif args.command == "move-to-stash":
         return stash_manager.move_to_monitor_stash(stash_name=args.stash)
+    elif args.command == "toggle-secure":
+        return stash_manager.toggle_monitor_secure()
+    elif args.command == "move-to-secure":
+        return stash_manager.move_to_monitor_secure(secure_name=args.secure)
+    elif args.command == "toggle-full":
+        return stash_manager.toggle_monitor_full()
+    elif args.command == "full-video":
+        return stash_manager.full_video_enter_exit()
     elif args.command == "toggle-sneaky":
         window_properties.toggle_sneaky_tag(relative_floating=args.relative_floating)
         return 0
