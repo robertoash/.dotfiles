@@ -16,13 +16,25 @@ layout {
                 name "growth_report_migration"
             }
             pane size="35%" split_direction="vertical" {
-                pane command="fish" {
-                    args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
-                    name "growth_report_migration"
+                pane size="50%" split_direction="horizontal" {
+                    pane command="fish" {
+                        args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
+                        name "growth_report_migration"
+                    }
+                    pane command="fish" {
+                        args "-c" "ssh -t workmbp 'cd ~/dev/dbt/dbt_production && exec fish'"
+                        name "dbt_production"
+                    }
                 }
-                pane command="fish" {
-                    args "-c" "ssh -t workmbp 'cd ~/dev/dbt/dbt_production && exec fish'"
-                    name "dbt_production"
+                pane size="50%" split_direction="horizontal" {
+                    pane command="fish" {
+                        args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
+                        name "growth_report_migration"
+                    }
+                    pane command="fish" {
+                        args "-c" "ssh -t workmbp 'cd ~/dev/dbt/dbt_production && exec fish'"
+                        name "dbt_production"
+                    }
                 }
             }
         }
