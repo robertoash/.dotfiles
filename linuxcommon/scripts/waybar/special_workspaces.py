@@ -115,10 +115,10 @@ def main():
 
     # Secure
     if counts["secure"] > 0:
-        indicators.append(f"H 🟠")
+        indicators.append(f"X 🟠")
         tooltip_lines.append(f"Secure: {counts['secure']} window(s)")
     else:
-        indicators.append("H ⚫")
+        indicators.append("X ⚫")
 
     # Full
     if counts["full"] > 0:

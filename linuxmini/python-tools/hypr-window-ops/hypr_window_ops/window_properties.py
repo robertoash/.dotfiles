@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+import time
 
 from . import monitor_utils, snap_windows, window_manager
 
@@ -35,6 +36,7 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
         # Float the window first if it's not already floating
         if not floating:
             window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
+            time.sleep(0.05)  # Allow Hyprland to sync floating state before re-fetching
             # Re-fetch window info after floating to get updated state
             window_info = window_manager.get_target_window(relative_floating)
             window_id = window_info.get("address")
@@ -118,6 +120,7 @@ def toggle_floating(relative_floating=False, sneaky=False):
         window_info = window_manager.get_target_window(relative_floating)
         window_id = window_info.get("address")
         window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
+        time.sleep(0.05)  # Allow Hyprland to sync state
         # Remove sneaky tag when switching to tiled
         if sneaky:
             window_manager.remove_tag(window_id, "sneaky")
@@ -130,6 +133,7 @@ def toggle_floating(relative_floating=False, sneaky=False):
         new_width = "1228"
         new_height = "691"
         window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
+        time.sleep(0.05)  # Allow Hyprland to sync floating state before subsequent operations
         window_manager.run_hyprctl_command(
             ["dispatch", "resizeactive", "exact", new_width, new_height]
         )
@@ -545,8 +549,10 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
                 # Restore floating state first
                 if saved_state["floating"] and not floating:
                     window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{window_id}"])
+                    time.sleep(0.05)  # Allow Hyprland to sync state
                 elif not saved_state["floating"] and floating:
                     window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
+                    time.sleep(0.05)  # Allow Hyprland to sync state
 
                 # Restore pinned state
                 if saved_state["pinned"] and not pinned:
@@ -563,6 +569,7 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
                 # Default to tiled (no pin) if no previous state found
                 if floating:
                     window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
+                    time.sleep(0.05)  # Allow Hyprland to sync state
                 if pinned:
                     window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
 
@@ -570,6 +577,7 @@ def toggle_fullscreen_without_dimming(relative_floating=False, sneaky=False):
             # Default to tiled (no pin) if no state file found
             if floating:
                 window_manager.run_hyprctl_command(["dispatch", "settiled", f"address:{window_id}"])
+                time.sleep(0.05)  # Allow Hyprland to sync state
             if pinned:
                 window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
     else:
