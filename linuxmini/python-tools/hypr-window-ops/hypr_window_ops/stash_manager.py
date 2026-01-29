@@ -86,6 +86,22 @@ def is_full_workspace_empty(full_workspace):
     return len(windows_in_full) == 0
 
 
+def is_special_workspace_visible(workspace_name, monitor):
+    """Check if a special workspace is currently visible on a monitor.
+
+    Args:
+        workspace_name: Name of the special workspace without "special:" prefix (e.g., "full-left")
+        monitor: Monitor info dict from hyprctl
+
+    Returns:
+        bool: True if the workspace is visible, False otherwise
+    """
+    special_ws = monitor.get("specialWorkspace", {})
+    visible_name = special_ws.get("name", "")
+    # The monitor reports the full name with "special:" prefix when visible, empty string when not
+    return visible_name == f"special:{workspace_name}"
+
+
 def toggle_monitor_full():
     """HYPER+F: General toggle for full workspace.
 
@@ -96,26 +112,40 @@ def toggle_monitor_full():
         - Full empty + non-video -> show full
         - Full not empty -> show full
     - In stash/secure -> fullscreen in place (existing behavior)
+    - No active window + full visible and empty -> hide full
 
     Returns:
         0 on success, 1 on error
     """
     from . import window_properties
 
-    active_window = window_manager.run_hyprctl(["activewindow", "-j"])
-    if not active_window:
-        print("No active window")
-        return 1
-
     monitor = get_active_monitor()
     if not monitor:
         print("Could not determine active monitor", file=sys.stderr)
         return 1
 
+    full_workspace = get_monitor_workspace(monitor, "full")
+
+    # Check if no active window (e.g., just closed the last window)
+    active_window = window_manager.run_hyprctl(["activewindow", "-j"])
+    if not active_window or not active_window.get("address"):
+        # No active window - check if full workspace is visible and empty
+        is_visible = is_special_workspace_visible(full_workspace, monitor)
+        is_empty = is_full_workspace_empty(full_workspace)
+
+        if is_visible and is_empty:
+            # Hide the empty visible full workspace
+            window_manager.toggle_special_workspace(full_workspace)
+            print(f"Hidden empty {full_workspace}")
+            return 0
+        else:
+            # Can't determine what to do without active window
+            print("No active window and full workspace not visible/empty")
+            return 1
+
     window_class = active_window.get("class", "")
     current_workspace_name = active_window.get("workspace", {}).get("name")
     is_fullscreen = active_window.get("fullscreen", False)
-    full_workspace = get_monitor_workspace(monitor, "full")
 
     # Check if in special:full
     if current_workspace_name == f"special:{full_workspace}":
