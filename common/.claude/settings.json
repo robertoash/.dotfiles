@@ -80,7 +80,9 @@
       "Read(**/token)",
       "Read(**/*_token)",
       "Read(**/.netrc)",
-      "Bash(sudo *)"
+      "Bash(sudo *)",
+      "Bash(sed -i*)",
+      "Bash(awk * >*)"
     ],
     "ask": [
       "Edit",
