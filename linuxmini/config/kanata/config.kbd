@@ -50,7 +50,7 @@
   @tab-mods  q    w    e    r    t    y    u    i    o    p    å    ¨ ret
   @caps-multi-qwerty @a-met @s-ctl @d-alt @f-sft g    h    @j-sft @k-alt @l-ctl @ö-met ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
-  lctl lmet lalt        @spc-placeholder                 ralt        rctl
+  lctl lmet lalt        @spc-mods                 ralt        rctl
 )
 
 ;; ===============================================
@@ -65,11 +65,23 @@
   @tab-mods  q    w    f    p    g    j    l    u    y    ö    å    ¨ ret
   @caps-multi-colemak @a-met @r-ctl @s-alt @t-sft d    h    @n-sft @e-alt @i-ctl @o-met ä    '
   lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
-  lctl lmet lalt     @spc-placeholder                    ralt        rctl
+  lctl lmet lalt     @spc-mods                    ralt        rctl
 )
 
 
+;; ===============================================
+;; ARROW LAYER (Space-activated)
+;; ===============================================
 
+;; Arrow layer activated by holding space - ijkl=arrows, h=backspace, n=home, m=end, ö=Return
+(deflayer arrows
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    XX   XX   XX   XX   XX   XX   XX   up   XX   XX   XX   ¨ ret
+  _    XX   XX   XX   XX   XX   bspc left down rght ret  XX   '
+  lsft <    XX   XX   XX   XX   XX   home end  ,    .    -    rsft
+  lctl lmet lalt                 _                    ralt        rctl
+)
 
 ;; ===============================================
 ;; QWERTY OVERRIDE LAYER (Tab/Hyper-activated)
@@ -144,12 +156,12 @@
   ))
 
 
-  ;; Space placeholder for future functionality
-  spc-placeholder (switch
-    ;; If a key was pressed very recently, output space (allows fast typing and double-tap repeat)
+  ;; Space with arrow layer on hold - long hold time for responsiveness
+  spc-mods (switch
+    ;; If a key was pressed very recently, output space (prevents layer activation during fast typing)
     ((key-timing 1 less-than 120)) spc break
-    ;; Otherwise, tap-hold structure (currently just outputs space, ready for future mods)
-    () (tap-hold-release 50 250 spc spc) break
+    ;; Otherwise, use tap-hold for space/arrow layer with long hold threshold (350ms)
+    () (tap-hold-release 50 350 spc (layer-while-held arrows)) break
   )
 
   ;; ==============================================================================
@@ -171,16 +183,14 @@
     ((key-timing 1 less-than 150)) d break
     () (tap-hold-release 150 350 d (multi lalt (layer-while-held mods-left-only))) break
   )
-  f-sft (switch
-    ((key-timing 1 less-than 150)) f break
-    () (tap-hold-release 150 250 f lsft) break
-  )
+  ;; f-sft with typing streak removed for easier arrow layer activation
+  ;; OLD (with typing streak): f-sft (switch ((key-timing 1 less-than 150)) f break () (tap-hold-release 150 250 f lsft) break)
+  f-sft (tap-hold-release 150 250 f lsft)
 
   ;; Right hand mods with typing streak detection
-  j-sft (switch
-    ((key-timing 1 less-than 150)) j break
-    () (tap-hold-release 150 250 j rsft) break
-  )
+  ;; j-sft with typing streak removed for easier arrow layer activation
+  ;; OLD (with typing streak): j-sft (switch ((key-timing 1 less-than 150)) j break () (tap-hold-release 150 250 j rsft) break)
+  j-sft (tap-hold-release 150 250 j rsft)
   k-alt (switch
     ((key-timing 1 less-than 150)) k break
     () (tap-hold-release 150 350 k (multi lalt (layer-while-held mods-right-only))) break
@@ -218,16 +228,14 @@
     ((key-timing 1 less-than 150)) s break
     () (tap-hold-release 150 350 s (multi lalt (layer-while-held mods-left-only))) break
   )
-  t-sft (switch
-    ((key-timing 1 less-than 150)) t break
-    () (tap-hold-release 150 250 t lsft) break
-  )
+  ;; t-sft with typing streak removed for easier arrow layer activation
+  ;; OLD (with typing streak): t-sft (switch ((key-timing 1 less-than 150)) t break () (tap-hold-release 150 250 t lsft) break)
+  t-sft (tap-hold-release 150 250 t lsft)
 
   ;; Right hand Colemak mods (n e i o)
-  n-sft (switch
-    ((key-timing 1 less-than 150)) n break
-    () (tap-hold-release 150 250 n rsft) break
-  )
+  ;; n-sft with typing streak removed for easier arrow layer activation
+  ;; OLD (with typing streak): n-sft (switch ((key-timing 1 less-than 150)) n break () (tap-hold-release 150 250 n rsft) break)
+  n-sft (tap-hold-release 150 250 n rsft)
   e-alt (switch
     ((key-timing 1 less-than 150)) e break
     () (tap-hold-release 150 350 e (multi lalt (layer-while-held mods-right-only))) break
