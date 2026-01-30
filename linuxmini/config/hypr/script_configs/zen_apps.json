@@ -54,6 +54,10 @@
       "window_rules": {
         "workspace": "special:stash-left"
       }
+    },
+    "jellyfin": {
+      "profile_directory": "app",
+      "app_url": "http://10.20.10.92:8096/"
     }
   },
   "extension": {
