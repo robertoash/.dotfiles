@@ -41,6 +41,46 @@ def get_current_monitor_side():
         return "left"
 
 
+def get_active_special_workspace(monitor_side):
+    """Get the active special workspace for this monitor.
+
+    Args:
+        monitor_side: "left" or "right" indicating which monitor
+
+    Returns:
+        The active special workspace name or None
+    """
+    try:
+        result = subprocess.run(
+            ["hyprctl", "monitors", "-j"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        monitors = json.loads(result.stdout)
+
+        # Find the monitor for this side
+        for monitor in monitors:
+            monitor_desc = monitor.get("description", "")
+
+            # Match monitor by description
+            is_target_monitor = False
+            if monitor_side == "right" and "L32p-30" in monitor_desc:
+                is_target_monitor = True
+            elif monitor_side == "left" and "P27u-20" in monitor_desc:
+                is_target_monitor = True
+
+            if is_target_monitor:
+                # Check if a special workspace is active
+                special_ws = monitor.get("specialWorkspace", {})
+                if special_ws and special_ws.get("name"):
+                    return special_ws.get("name")
+
+        return None
+    except (subprocess.CalledProcessError, json.JSONDecodeError):
+        return None
+
+
 def get_special_workspace_counts(monitor_side):
     """Get count of windows in each special workspace for this monitor.
 
@@ -92,9 +132,19 @@ def main():
         return
 
     counts = get_special_workspace_counts(monitor_side)
+    active_workspace = get_active_special_workspace(monitor_side)
 
-    # If all are empty, show just a black circle
-    if all(count == 0 for count in counts.values()):
+    # Determine which workspace is active
+    active_ws = None
+    if active_workspace == f"special:stash-{monitor_side}":
+        active_ws = "stash"
+    elif active_workspace == f"special:secure-{monitor_side}":
+        active_ws = "secure"
+    elif active_workspace == f"special:full-{monitor_side}":
+        active_ws = "full"
+
+    # If all are empty AND we're not in a special workspace, show just a black circle
+    if all(count == 0 for count in counts.values()) and not active_ws:
         print(json.dumps({
             "text": " ⚫ ",
             "tooltip": "All special workspaces empty",
@@ -105,24 +155,37 @@ def main():
     # Build indicator text
     indicators = []
     tooltip_lines = []
+    css_class = "has-windows"
 
     # Stash
-    if counts["stash"] > 0:
-        indicators.append(f"S 🟠")
+    if active_ws == "stash":
+        indicators.append("STASH 🟢")
+        tooltip_lines.append(f"Stash: {counts['stash']} window(s) [ACTIVE]")
+        css_class = "active-in"
+    elif counts["stash"] > 0:
+        indicators.append("S 🟠")
         tooltip_lines.append(f"Stash: {counts['stash']} window(s)")
     else:
         indicators.append("S ⚫")
 
     # Secure
-    if counts["secure"] > 0:
-        indicators.append(f"X 🟠")
+    if active_ws == "secure":
+        indicators.append("SECURE 🟢")
+        tooltip_lines.append(f"Secure: {counts['secure']} window(s) [ACTIVE]")
+        css_class = "active-in"
+    elif counts["secure"] > 0:
+        indicators.append("X 🟠")
         tooltip_lines.append(f"Secure: {counts['secure']} window(s)")
     else:
         indicators.append("X ⚫")
 
     # Full
-    if counts["full"] > 0:
-        indicators.append(f"F 🟠")
+    if active_ws == "full":
+        indicators.append("FULL 🟢")
+        tooltip_lines.append(f"Full: {counts['full']} window(s) [ACTIVE]")
+        css_class = "active-in"
+    elif counts["full"] > 0:
+        indicators.append("F 🟠")
         tooltip_lines.append(f"Full: {counts['full']} window(s)")
     else:
         indicators.append("F ⚫")
@@ -133,7 +196,7 @@ def main():
     print(json.dumps({
         "text": text,
         "tooltip": tooltip,
-        "class": "active" if any(counts.values()) else "empty"
+        "class": css_class
     }))
 
 
