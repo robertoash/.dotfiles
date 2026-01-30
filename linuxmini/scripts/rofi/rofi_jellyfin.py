@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import time
 import pickle
+import yaml
 from jellyfin_apiclient_python import JellyfinClient as OfficialJellyfinClient
 
 CACHE_DIR = Path.home() / ".config/scripts/_cache/rofi_jellyfin"
