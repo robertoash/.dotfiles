@@ -103,7 +103,9 @@ def get_target_window(relative_floating=False, for_toggle_floating_activation=Fa
     return target
 
 
-def get_target_window_with_focus(relative_floating=False, for_toggle_floating_activation=False):
+def get_target_window_with_focus(
+    relative_floating=False, for_toggle_floating_activation=False
+):
     """
     Get the target window and focus it if needed (when using smart targeting).
     DEPRECATED: Use get_target_window() with address: syntax instead to avoid focus shifts.
@@ -152,7 +154,7 @@ def get_target_floating_window(for_toggle_floating_activation=False):
         3. Get all floating windows in visible workspaces
         4. Determine current monitor from active window
         5. Count total floating and floating on current monitor
-        6. Apply targeting rules based on count
+        6. Apply targeting rules based on count (prioritize video windows)
     """
     # Step 1: Get active window
     active_window = run_hyprctl(["activewindow", "-j"])
@@ -170,9 +172,7 @@ def get_target_floating_window(for_toggle_floating_activation=False):
         return None
 
     visible_workspace_ids = {
-        mon["activeWorkspace"]["id"]
-        for mon in monitors
-        if "activeWorkspace" in mon
+        mon["activeWorkspace"]["id"] for mon in monitors if "activeWorkspace" in mon
     }
 
     # Step 3: Get all clients and filter for floating in visible workspaces
@@ -214,12 +214,28 @@ def get_target_floating_window(for_toggle_floating_activation=False):
     if total_floating == 1:
         return floating_in_visible[0]
 
-    # Multiple floating windows exist: prefer one on current monitor
+    # Multiple floating windows exist: prefer video on current monitor
     if count_on_current > 0:
+        # Prioritize video windows on current monitor
+        video_on_current = [
+            w
+            for w in floating_on_current
+            if any(app in w.get("class", "").lower() for app in config.VIDEO_APPS)
+        ]
+        if video_on_current:
+            return video_on_current[0]
         return floating_on_current[0]
 
-    # Multiple floating windows but none on current monitor
+    # Multiple floating windows but none on current monitor: prefer video
     if total_floating > 0:
+        # Prioritize video windows on any visible workspace
+        video_windows = [
+            w
+            for w in floating_in_visible
+            if any(app in w.get("class", "").lower() for app in config.VIDEO_APPS)
+        ]
+        if video_windows:
+            return video_windows[0]
         return floating_in_visible[0]
 
     # Fallback: use active window
@@ -346,7 +362,9 @@ def apply_tag(address, tag):
 
 def remove_tag(address, tag):
     """Remove a tag from a window."""
-    run_hyprctl_command(["dispatch", "tagwindow", "--", f"-{tag}", f"address:{address}"])
+    run_hyprctl_command(
+        ["dispatch", "tagwindow", "--", f"-{tag}", f"address:{address}"]
+    )
 
 
 def get_sneaky_windows():
@@ -355,10 +373,7 @@ def get_sneaky_windows():
     if not all_clients:
         return []
 
-    return [
-        client for client in all_clients
-        if "sneaky" in client.get("tags", [])
-    ]
+    return [client for client in all_clients if "sneaky" in client.get("tags", [])]
 
 
 def toggle_special_workspace(workspace_name):

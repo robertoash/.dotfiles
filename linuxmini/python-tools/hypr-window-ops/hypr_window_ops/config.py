@@ -61,6 +61,9 @@ WINDOW_CREATION_DELAY = 1
 # Used by wait_for_window to avoid hanging indefinitely if a window fails to appear.
 MAX_WAIT_FOR_WINDOW = 1
 
+# VIDEO_APPS: List of video player app identifiers (used for smart window targeting)
+VIDEO_APPS = ["mpv", "vlc", "youtube", "svt", "xtream"]
+
 
 # Load APP_PROFILES from external JSON file
 def load_app_profiles():
