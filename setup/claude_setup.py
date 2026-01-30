@@ -222,4 +222,28 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     else:
         print(f"⚠️  settings.json not found at {settings_source}")
 
+    # Symlink commands directory from common to ~/.claude/commands
+    commands_source = dotfiles_dir / "common" / ".claude" / "commands"
+    commands_target = Path.home() / ".claude" / "commands"
+
+    if commands_source.exists():
+        # Create ~/.claude directory if it doesn't exist
+        commands_target.parent.mkdir(parents=True, exist_ok=True)
+
+        # Remove existing symlink or directory
+        if commands_target.exists() or commands_target.is_symlink():
+            if commands_target.is_symlink():
+                commands_target.unlink()
+            elif commands_target.is_dir():
+                import shutil
+                shutil.rmtree(commands_target)
+            else:
+                commands_target.unlink()
+
+        # Create symlink
+        commands_target.symlink_to(commands_source.resolve())
+        print(f"✅ Symlinked {commands_target} -> {commands_source}")
+    else:
+        print(f"⚠️  commands directory not found at {commands_source}")
+
     return True
