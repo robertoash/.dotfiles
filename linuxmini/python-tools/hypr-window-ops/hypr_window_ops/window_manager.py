@@ -227,12 +227,24 @@ def get_target_floating_window(for_toggle_floating_activation=False):
 
 
 def get_windows_in_workspace(workspace_id):
-    """Get all window addresses in a workspace."""
+    """Get all window addresses in a workspace.
+
+    Args:
+        workspace_id: Can be either an integer ID or a string like "special:name"
+    """
     clients = get_clients()
+
+    # If workspace_id is a string starting with "special:", get the actual ID
+    if isinstance(workspace_id, str) and workspace_id.startswith("special:"):
+        actual_id = get_workspace_id(workspace_id)
+        if actual_id is None:
+            return []
+        workspace_id = actual_id
+
     return [
         client["address"]
         for client in clients
-        if client["workspace"]["id"] == workspace_id
+        if client["workspace"]["id"] == int(workspace_id)
     ]
 
 
@@ -255,9 +267,21 @@ def get_window_addresses():
 
 
 def get_master_window_address(workspace_id):
-    """Get the address of the master window for a given workspace."""
+    """Get the address of the master window for a given workspace.
+
+    Args:
+        workspace_id: Can be either an integer ID or a string like "special:name"
+    """
     try:
         clients = get_clients()
+
+        # If workspace_id is a string starting with "special:", get the actual ID
+        if isinstance(workspace_id, str) and workspace_id.startswith("special:"):
+            actual_id = get_workspace_id(workspace_id)
+            if actual_id is None:
+                return None
+            workspace_id = actual_id
+
         workspace_clients = [
             c for c in clients if c.get("workspace", {}).get("id") == int(workspace_id)
         ]

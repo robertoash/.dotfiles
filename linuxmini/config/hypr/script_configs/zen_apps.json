@@ -47,6 +47,13 @@
     "primevideo": {
       "profile_directory": "app",
       "app_url": "https://www.primevideo.com"
+    },
+    "slack": {
+      "profile_directory": "app",
+      "app_url": "https://app.slack.com",
+      "window_rules": {
+        "workspace": "special:stash-left"
+      }
     }
   },
   "extension": {

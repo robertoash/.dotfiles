@@ -56,6 +56,13 @@
         "command": "chrome_launch --profile overseerr",
         "is_master": true
       }
+    ],
+    "special:stash-left": [
+      {
+        "name": "slack",
+        "command": "chrome_launch --profile slack",
+        "is_master": true
+      }
     ]
   }
 }

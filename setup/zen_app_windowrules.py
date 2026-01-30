@@ -85,7 +85,7 @@ def generate_windowrules_for_app(
     lines.append(f"# {app_name} ({app_type})")
 
     # Generate rules in a consistent order
-    rule_order = ["float", "pin", "size", "move", "keep_aspect_ratio"]
+    rule_order = ["workspace", "float", "pin", "size", "move", "keep_aspect_ratio"]
     for rule_type in rule_order:
         if rule_type in window_rules:
             rule_line = generate_window_rule_line(

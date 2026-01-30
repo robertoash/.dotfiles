@@ -20,7 +20,13 @@ def configure_logging(debug=False):
 def launch_and_manage(workspace, name, command, is_master, launch_delay=None, no_focus=False):
     """Switch workspace, launch application, and set as master if needed."""
     print(f"Switching to workspace {workspace}")
-    window_manager.switch_to_workspace(workspace)
+
+    # Handle special workspaces differently
+    if workspace.startswith("special:"):
+        special_name = workspace.replace("special:", "")
+        window_manager.toggle_special_workspace(special_name)
+    else:
+        window_manager.switch_to_workspace(workspace)
 
     existing_windows = window_manager.get_window_addresses()
 
@@ -71,7 +77,12 @@ def launch_and_manage(workspace, name, command, is_master, launch_delay=None, no
 
 def focus_workspace_master(workspace):
     """Focus the master window in a workspace."""
-    window_manager.switch_to_workspace(workspace)
+    # Handle special workspaces differently
+    if workspace.startswith("special:"):
+        special_name = workspace.replace("special:", "")
+        window_manager.toggle_special_workspace(special_name)
+    else:
+        window_manager.switch_to_workspace(workspace)
 
     master_address = window_manager.get_master_window_address(workspace)
     if master_address:  # Check if master address exists
@@ -98,7 +109,10 @@ def launch_profile_apps(
 
     for workspace, apps in profile_data.items():
         # Skip non-workspace keys like "staging_ws"
-        if not isinstance(workspace, str) or not workspace.isdigit():
+        # Allow numeric workspaces (e.g., "1", "12") and special workspaces (e.g., "special:stash-left")
+        if not isinstance(workspace, str):
+            continue
+        if not (workspace.isdigit() or workspace.startswith("special:")):
             continue
 
         for app in apps:
