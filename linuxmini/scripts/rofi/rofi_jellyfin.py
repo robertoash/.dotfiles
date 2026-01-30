@@ -9,25 +9,29 @@ import time
 import pickle
 from jellyfin_apiclient_python import JellyfinClient as OfficialJellyfinClient
 
-JELLYFIN_URL = "http://10.20.10.92:8096"
 CACHE_DIR = Path.home() / ".config/scripts/_cache/rofi_jellyfin"
 CACHE_EXPIRY = 300  # 5 minutes
 
-# Load API key from env file
-API_KEY = ""
-env_file = Path.home() / ".config/scripts/_secrets/jellyfin.env"
-if env_file.exists():
-    with open(env_file) as f:
-        for line in f:
-            if line.strip() and not line.startswith("#"):
-                key, _, value = line.partition("=")
-                if key.strip() == "JELLYFIN_API_KEY":
-                    API_KEY = value.strip().strip('"').strip("'")
-                    break
+# Load Jellyfin credentials from SOPS secrets
+JELLYFIN_URL = os.getenv("JELLYFIN_URL", "")
+API_KEY = os.getenv("JELLYFIN_API_KEY", "")
 
-# Fallback to environment variable if not in file
-if not API_KEY:
-    API_KEY = os.environ.get("JELLYFIN_API_KEY", "")
+# Fallback to reading from sops secrets files if env vars not set
+if not all([JELLYFIN_URL, API_KEY]):
+    secrets_dir = Path(os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "secrets"
+    jellyfin_secrets_file = secrets_dir / "jellyfin"
+
+    if jellyfin_secrets_file.exists():
+        try:
+            with jellyfin_secrets_file.open() as f:
+                jellyfin_data = yaml.safe_load(f)
+            JELLYFIN_URL = jellyfin_data.get("server", "")
+            API_KEY = jellyfin_data.get("api_key", "")
+        except Exception as e:
+            raise RuntimeError(f"❌ Failed to load secrets from {jellyfin_secrets_file}: {e}")
+
+if not all([JELLYFIN_URL, API_KEY]):
+    raise RuntimeError("❌ Missing Jellyfin credentials (check sops-secrets service)")
 
 
 class JellyfinClient:

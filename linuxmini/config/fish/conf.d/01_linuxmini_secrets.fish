@@ -13,6 +13,12 @@ if status is-interactive
                     set -gx XTREAM_PROXY_PASSWORD (yq -r '.upstream.password' "$secrets_dir/xtream" 2>/dev/null)
                 end
 
+                # Jellyfin (parse nested YAML structure)
+                if test -f "$secrets_dir/jellyfin"
+                    set -gx JELLYFIN_URL (yq -r '.server' "$secrets_dir/jellyfin" 2>/dev/null)
+                    set -gx JELLYFIN_API_KEY (yq -r '.api_key' "$secrets_dir/jellyfin" 2>/dev/null)
+                end
+
                 set -g __linuxmini_sops_secrets_loaded 1
             end
         end

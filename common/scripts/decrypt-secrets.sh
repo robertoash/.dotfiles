@@ -74,6 +74,12 @@ decrypt_file() {
 # Decrypt common secrets first (available to all machines)
 decrypt_file "$DOTFILES/common/secrets/common.yaml" "common"
 
+# Decrypt OS-specific secrets (Linux or macOS)
+if [[ "$OSTYPE" != "darwin"* ]]; then
+    # Linux-specific secrets
+    decrypt_file "$DOTFILES/linuxcommon/secrets/linuxcommon.yaml" "linuxcommon"
+fi
+
 # Decrypt machine-specific secrets (can override common secrets)
 # Try both .yaml and .yml extensions
 decrypt_file "$DOTFILES/$HOSTNAME/secrets/$HOSTNAME.yaml" "machine-specific"

@@ -21,6 +21,13 @@ creation_rules:
           - *linuxmini
           - *oldmbp
 
+  # Linuxcommon secrets (shared between Linux machines)
+  - path_regex: linuxcommon/secrets/linuxcommon\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini
+          - *oldmbp
+
   # Darwin/macOS-specific secrets
   - path_regex: secrets/darwin\.yaml$
     key_groups:
