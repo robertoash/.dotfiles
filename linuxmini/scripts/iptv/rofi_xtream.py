@@ -271,23 +271,31 @@ def get_series_info(series_id):
 
 # ========== STREAM HANDLING ==========
 
-def build_stream_url(stream_id, stream_type="live"):
-    """Build stream URL for MPV."""
+def build_stream_url(stream_id, stream_type="live", container_extension=None):
+    """Build stream URL for MPV.
+
+    IMPORTANT: The server requires the correct container extension:
+    - .mkv movies must use .mkv (returns 302 redirect)
+    - .mp4 movies must use .mp4 (returns 302 redirect)
+    - Using wrong extension returns HTTP 551
+    """
     if stream_type == "live":
         return f"{XTREAM_PROXY_SERVER}/live/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.ts"
     elif stream_type == "movie":
-        return f"{XTREAM_PROXY_SERVER}/movie/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.mp4"
+        ext = container_extension or "mkv"  # Fallback to mkv (most common)
+        return f"{XTREAM_PROXY_SERVER}/movie/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.{ext}"
     elif stream_type == "series":
-        return f"{XTREAM_PROXY_SERVER}/series/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.mp4"
+        ext = container_extension or "mkv"
+        return f"{XTREAM_PROXY_SERVER}/series/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.{ext}"
 
 def launch_mpv(stream_url, title):
     """Launch MPV with the stream."""
     logging.debug(f"[DEBUG] Launching MPV: {title}")
+    logging.debug(f"[DEBUG] Stream URL: {stream_url}")
 
     try:
         subprocess.Popen([
             "mpv",
-            "--quiet",
             "--force-window=immediate",
             "--cache=yes",
             "--cache-pause=no",
@@ -298,10 +306,14 @@ def launch_mpv(stream_url, title):
             "--stream-lavf-o=reconnect=1",
             "--stream-lavf-o=reconnect_streamed=1",
             "--stream-lavf-o=reconnect_delay_max=5",
+            "--stream-lavf-o=follow_redirects=1",
+            "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+            "--http-header-fields=Accept: */*",
+            f"--referrer={XTREAM_PROXY_SERVER}",
             "--wayland-app-id=rofi_xtream",
             f"--title=Xtream - {title}",
             stream_url
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        ], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
 
         # Copy URL to clipboard
         subprocess.run(["wl-copy", stream_url])
@@ -528,7 +540,7 @@ def handle_series_episodes(series):
     episodes = []
     for season_num, season_data in series_info["episodes"].items():
         for episode in season_data:
-            episode_title = f"S{season_num.zfill(2)}E{episode['episode_num'].zfill(2)} - {episode.get('title', 'Episode')}"
+            episode_title = f"S{str(season_num).zfill(2)}E{str(episode['episode_num']).zfill(2)} - {episode.get('title', 'Episode')}"
             episodes.append((episode_title, episode))
 
     if not episodes:
@@ -668,7 +680,8 @@ def main():
                     # Launch stream
                     stream_id = stream.get("stream_id")
                     title = apply_tweaks(stream.get("name", ""))
-                    stream_url = build_stream_url(stream_id, "live" if stream_type == "live" else "movie")
+                    container_ext = stream.get("container_extension")
+                    stream_url = build_stream_url(stream_id, "live" if stream_type == "live" else "movie", container_ext)
                     launch_mpv(stream_url, title)
                     return
 
@@ -677,8 +690,9 @@ def main():
                     episode = handle_series_episodes(stream)
                     if episode:
                         episode_id = episode.get("id")
+                        container_ext = episode.get("container_extension", "mp4")
                         title = f"{stream.get('name')} - {episode.get('title', 'Episode')}"
-                        stream_url = build_stream_url(episode_id, "series")
+                        stream_url = build_stream_url(episode_id, "series", container_ext)
                         launch_mpv(stream_url, title)
                         return
 
