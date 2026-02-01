@@ -76,3 +76,4 @@ common/config/qutebrowser/profiles/linuxmini/jobhunt/config/autoconfig.yml
 
 # bv (beads viewer) local config and caches
 .bv/
+common/config/qalculate/qalc.history
