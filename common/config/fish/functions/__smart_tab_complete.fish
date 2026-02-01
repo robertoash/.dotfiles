@@ -15,8 +15,12 @@ function __smart_tab_complete
         # Token contains a path - extract directory portion
         set path_prefix (string replace -r '[^/]*$' '' -- "$token")
         set query_part (string replace -r '.*/' '' -- "$token")
-        if test -n "$path_prefix"; and test -d "$path_prefix"
-            set search_dir "$path_prefix"
+        if test -n "$path_prefix"
+            # Expand tilde for directory test and search
+            set -l expanded_path (string replace -r '^~' $HOME -- "$path_prefix")
+            if test -d "$expanded_path"
+                set search_dir "$expanded_path"
+            end
         end
     end
 
@@ -167,43 +171,43 @@ function __smart_tab_complete
     end
 
     # === LAUNCH APPROPRIATE FZF ===
-    # fd behavior differs for relative vs absolute paths:
-    # - Relative paths (../): fd outputs with prefix (../file) - don't prepend
-    # - Absolute paths (~/, /tmp/): fd outputs without prefix (file) - prepend needed
     switch $completion_type
         case dirs
             set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t d --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                # Prepend path_prefix only for absolute paths (starting with / or ~)
-                if string match -q -r '^[/~]' -- "$path_prefix"
-                    commandline -t -- (string escape "$path_prefix$result")
-                else
-                    commandline -t -- (string escape "$result")
+                # If we expanded tilde, replace the expanded home path with tilde in result
+                if string match -q '~*' -- "$path_prefix"
+                    set result (string replace -r "^$HOME" '~' -- "$result")
                 end
+                # Use backslash escaping for spaces and special chars (allows continuation)
+                set result (string replace -a ' ' '\\ ' -- "$result")
+                commandline -t -- "$result"
             end
             commandline -f repaint
 
         case files
             set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t f --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                # Prepend path_prefix only for absolute paths (starting with / or ~)
-                if string match -q -r '^[/~]' -- "$path_prefix"
-                    commandline -t -- (string escape "$path_prefix$result")
-                else
-                    commandline -t -- (string escape "$result")
+                # If we expanded tilde, replace the expanded home path with tilde in result
+                if string match -q '~*' -- "$path_prefix"
+                    set result (string replace -r "^$HOME" '~' -- "$result")
                 end
+                # Use backslash escaping for spaces and special chars (allows continuation)
+                set result (string replace -a ' ' '\\ ' -- "$result")
+                commandline -t -- "$result"
             end
             commandline -f repaint
 
         case both
             set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
             if test -n "$result"
-                # Prepend path_prefix only for absolute paths (starting with / or ~)
-                if string match -q -r '^[/~]' -- "$path_prefix"
-                    commandline -t -- (string escape "$path_prefix$result")
-                else
-                    commandline -t -- (string escape "$result")
+                # If we expanded tilde, replace the expanded home path with tilde in result
+                if string match -q '~*' -- "$path_prefix"
+                    set result (string replace -r "^$HOME" '~' -- "$result")
                 end
+                # Use backslash escaping for spaces and special chars (allows continuation)
+                set result (string replace -a ' ' '\\ ' -- "$result")
+                commandline -t -- "$result"
             end
             commandline -f repaint
 
