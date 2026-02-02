@@ -19,6 +19,7 @@ global:
   IDE: cursor
   NOTE_EDITOR: obsidian
   TERMINAL: wezterm
+  BROWSER: /home/rash/.local/bin/qute_profile rash %s
 
 
   # Terminal
@@ -92,8 +93,6 @@ hyprland_only:
 # ==============================================================================
 shell_only:
   # Applications
-  BROWSER: /home/rash/.local/bin/qute_profile rash %s
-  BROWSER_CLEAN: /home/rash/.local/bin/qute_profile rash
   W3M_DIR: $HOME/.config/w3m
 
   # FZF
@@ -114,6 +113,8 @@ machines:
   linuxmini:
     # Python path for linuxmini scripts
     PYTHONPATH: $HOME/.dotfiles/linuxmini/scripts
+    # Use rofi profile selector for browser on Linux
+    BROWSER: rofi_profile_selector
 
   workmbp:
     # Homebrew paths (prepended to global PATH by env_distribution.py)

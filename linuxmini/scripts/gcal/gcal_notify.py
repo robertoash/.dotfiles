@@ -52,7 +52,6 @@ NOTIFICATION_TIMEOUT = 5000  # 5 seconds
 
 # Action Configuration
 PROFILE_SELECTOR_SCRIPT = "/home/rash/.config/scripts/rofi/rofi_profile_selector.py"
-DEFAULT_BROWSER = "vivaldi"  # Default browser for meeting links
 SNOOZE_MINUTES = 1  # How many minutes to snooze notifications
 
 # File Paths

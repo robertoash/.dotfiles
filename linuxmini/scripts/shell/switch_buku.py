@@ -86,10 +86,10 @@ class BukuDBSwitcher:
         
         # Save current database name
         self.current_db_file.write_text(target_db)
-        
+
         # Set BROWSER environment variable for buku integration
-        os.environ["BROWSER"] = str(Path.home() / ".config" / "scripts" / "shell" / "buku_browser_wrapper.py")
-        
+        os.environ["BROWSER"] = "buku_browser_wrapper"
+
         return True
 
     def get_current_db_info(self):
