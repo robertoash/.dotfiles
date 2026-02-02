@@ -59,6 +59,7 @@ fish/functions/last_mods.fish
 fish/functions/lkd.fish
 fish/functions/loadenv.fish
 fish/functions/mkdircd.fish
+fish/functions/mullvad.fish
 fish/functions/mv.fish
 fish/functions/no_paywall.fish
 fish/functions/npm.fish
@@ -71,6 +72,7 @@ fish/functions/sgpt_fish.fish
 fish/functions/snake_case_all.fish
 fish/functions/ssh-copy.fish
 fish/functions/svtp.fish
+fish/functions/tailscale.fish
 fish/functions/tt.fish
 fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
