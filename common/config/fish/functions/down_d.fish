@@ -68,18 +68,16 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             return
         end
 
-        # Build format string: try format_id matching, then exact dimensions, then caps
-        # format_id matching works for sites that use quality in the ID (like "1080p_HD")
-        # Dimension matching works for sites with detailed metadata
+        # Build format string: try exact height first, then fall back to closest below target
         switch $quality
             case 720
-                echo "bestvideo[format_id*=720]+bestaudio/bestvideo[height=720]+bestaudio/bestvideo[width=720]+bestaudio/bestvideo[height<=720][width<=720]+bestaudio/best"
+                echo "bestvideo[height=720]+bestaudio/best[height=720]/bestvideo[height<=720]+bestaudio/best[height<=720]/best"
             case 1080
-                echo "bestvideo[format_id*=1080]+bestaudio/bestvideo[height=1080]+bestaudio/bestvideo[width=1080]+bestaudio/bestvideo[height<=1080][width<=1080]+bestaudio/best"
+                echo "bestvideo[height=1080]+bestaudio/best[height=1080]/bestvideo[height<=1080]+bestaudio/best[height<=1080]/best"
             case 1440
-                echo "bestvideo[format_id*=1440]+bestaudio/bestvideo[height=1440]+bestaudio/bestvideo[width=1440]+bestaudio/bestvideo[height<=1440][width<=1440]+bestaudio/best"
+                echo "bestvideo[height=1440]+bestaudio/best[height=1440]/bestvideo[height<=1440]+bestaudio/best[height<=1440]/best"
             case 2160
-                echo "bestvideo[format_id*=2160]+bestaudio/bestvideo[height=2160]+bestaudio/bestvideo[width=2160]+bestaudio/bestvideo[height<=2160][width<=2160]+bestaudio/best"
+                echo "bestvideo[height=2160]+bestaudio/best[height=2160]/bestvideo[height<=2160]+bestaudio/best[height<=2160]/best"
         end
     end
 
