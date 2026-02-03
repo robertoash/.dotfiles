@@ -119,6 +119,8 @@ machines:
   workmbp:
     # Homebrew paths (prepended to global PATH by env_distribution.py)
     PATH: /opt/homebrew/bin:/opt/homebrew/sbin
+    # Dynamic library loading path for Homebrew libraries (needed by Python ctypes)
+    DYLD_LIBRARY_PATH: /opt/homebrew/lib
     # Note: HOMEBREW_PREFIX, HOMEBREW_CELLAR, HOMEBREW_REPOSITORY, MANPATH, INFOPATH
     # are set dynamically by 00_homebrew.fish based on architecture
 
