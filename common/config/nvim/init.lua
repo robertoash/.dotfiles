@@ -27,7 +27,7 @@ rtp:prepend(lazypath)
 --=============================================================================
 local function is_work_mac()
 	local hostname = vim.fn.hostname()
-	return hostname:match("^rash%-workmbp") ~= nil
+	return hostname:match("workmbp") ~= nil
 end
 
 --=============================================================================
@@ -76,7 +76,7 @@ local plugins = {
 -- Conditionally import work-specific plugins
 if is_work_mac() then
 	table.insert(plugins, { import = "plugins.dbtpal" })
-	table.insert(plugins, { import = "plugins.dadbod" })
+	table.insert(plugins, { import = "plugins.sqlit" })
 end
 
 require("lazy").setup(plugins, {

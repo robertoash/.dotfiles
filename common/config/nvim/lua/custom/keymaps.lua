@@ -16,16 +16,20 @@ if wk_ok then
 		{ "<leader>0", group = "T[0]ggle", mode = { "n", "v" } },
 		{ "<leader>=", group = "Apply format [=]", mode = { "n" } },
 		{ "<leader>P", group = "[P]rint", mode = { "n", "v" } },
-		{ "<leader>a", group = "[a]vante AI", mode = { "n", "v" } },
+		{ "<leader>a", group = "[a]pps", mode = { "n", "v" } },
+		{ "<leader>ag", group = "Lazy[g]it", mode = { "n", "v" } },
+		{ "<leader>aq", group = "S[q]lit", mode = { "n", "v" } },
+		{ "<leader>ay", group = "[y]azi", mode = { "n", "v" } },
 		{ "<leader>b", group = "[b]uffer Operations", mode = { "n", "v" } },
 		{ "<leader>b/", group = "Buffer Navigation [/]", mode = { "n", "v" } },
 		{ "<leader>bc", group = "Buffer [c]lose", mode = { "n", "v" } },
 		{ "<leader>c", group = "[c]laude Code", mode = { "n", "v" } },
 		{ "<leader>cd", group = "Claude Code [d]iff", mode = { "n", "v" } },
-		{ "<leader>d", group = "Working [d]ir / DBT / Database", mode = { "n", "v" } },
-		{ "<leader>db", group = "[d]ata[b]ase UI", mode = { "n", "v" } },
-		{ "<leader>dr", group = "DBT [r]un", mode = { "n", "v" } },
-		{ "<leader>dt", group = "DBT [t]est", mode = { "n", "v" } },
+		{ "<leader>d", group = "[d]irectory / [d]BT", mode = { "n", "v" } },
+		{ "<leader>dc", group = "Working [d]ir [c]hange", mode = { "n", "v" } },
+		{ "<leader>db", group = "[d][b]t Commands", mode = { "n", "v" } },
+		{ "<leader>dbr", group = "DBT [r]un", mode = { "n", "v" } },
+		{ "<leader>dbt", group = "DBT [t]est", mode = { "n", "v" } },
 		{ "<leader>f", group = "[f]ind", mode = { "n", "v" } },
 		{ "<leader>fr", group = "Find and [r]eplace", mode = { "n", "v" } },
 		{ "<leader>g", group = "[g]it", mode = { "n", "v" } },
@@ -51,13 +55,13 @@ end
 local working_dir_mappings = {
 	{
 		"n",
-		"<leader>d.",
+		"<leader>dc.",
 		":cd %:h | pwd<CR>",
 		{ desc = "CWD here [.]" },
 	},
 	{
 		"n",
-		"<leader>d/",
+		"<leader>dc/",
 		function()
 			local git_root = vim.fn.system("git rev-parse --show-toplevel 2>/dev/null"):gsub("\n", "")
 			if vim.v.shell_error == 0 then
@@ -73,41 +77,117 @@ local working_dir_mappings = {
 
 -- DBT mappings
 local dbt_mappings = {
+	-- Model picker (top-level for easy access)
 	{
 		"n",
-		"<leader>drf",
-		"<cmd>DbtRun<cr>",
-		{ desc = "DBT run [f]ile" },
-	},
-	{
-		"n",
-		"<leader>drp",
-		"<cmd>DbtRunAll<cr>",
-		{ desc = "DBT run [p]roject" },
-	},
-	{
-		"n",
-		"<leader>dtf",
-		"<cmd>DbtTest<cr>",
-		{ desc = "DBT test [f]ile" },
-	},
-	{
-		"n",
-		"<leader>dm",
+		"<leader>dbs",
 		function()
-			require("dbtpal.telescope").dbt_picker()
+			local ok, dbtpal_telescope = pcall(require, "dbtpal.telescope")
+			if ok then
+				dbtpal_telescope.dbt_picker()
+			else
+				vim.notify("dbtpal not loaded. Open a sql/md/yaml file first.", vim.log.levels.WARN)
+			end
 		end,
-		{ desc = "DBT [m]odel picker" },
+		{ desc = "DBT model [s]earch" },
+	},
+
+	-- Run commands (grouped under <leader>dbr)
+	{
+		"n",
+		"<leader>dbr.",
+		"<cmd>DbtRun<cr>",
+		{ desc = "Run current file [.]" },
+	},
+	{
+		"n",
+		"<leader>dbr%",
+		"<cmd>DbtRunAll<cr>",
+		{ desc = "Run all models [%]" },
+	},
+	{
+		"n",
+		"<leader>dbrm",
+		function()
+			local model = vim.fn.input("Model selector: ")
+			if model ~= "" then
+				require("dbtpal").run_model(model)
+			end
+		end,
+		{ desc = "Run specific [m]odel" },
+	},
+	{
+		"n",
+		"<leader>dbrc",
+		function()
+			require("dbtpal").run_children()
+		end,
+		{ desc = "Run [c]hildren (model+)" },
+	},
+	{
+		"n",
+		"<leader>dbrp",
+		function()
+			require("dbtpal").run_parents()
+		end,
+		{ desc = "Run [p]arents (+model)" },
+	},
+	{
+		"n",
+		"<leader>dbr+",
+		function()
+			require("dbtpal").run_family()
+		end,
+		{ desc = "Run family (+model+) [+]" },
+	},
+
+	-- Test commands (grouped under <leader>dbt)
+	{
+		"n",
+		"<leader>dbt.",
+		"<cmd>DbtTest<cr>",
+		{ desc = "Test current file [.]" },
+	},
+	{
+		"n",
+		"<leader>dbt%",
+		"<cmd>DbtTestAll<cr>",
+		{ desc = "Test all models [%]" },
+	},
+	{
+		"n",
+		"<leader>dbtm",
+		function()
+			local model = vim.fn.input("Model selector: ")
+			if model ~= "" then
+				require("dbtpal").test_model(model)
+			end
+		end,
+		{ desc = "Test specific [m]odel" },
+	},
+
+	-- Other dbt commands (top-level under <leader>db)
+	{
+		"n",
+		"<leader>dbc.",
+		"<cmd>DbtCompile<cr>",
+		{ desc = "DBT compile current file [.]" },
+	},
+	{
+		"n",
+		"<leader>dbb.",
+		"<cmd>DbtBuild<cr>",
+		{ desc = "DBT [b]uild current file [.]" },
 	},
 }
 
--- Dadbod (Database UI) mappings
-local dadbod_mappings = {
+-- Sqlit (SQL TUI) mappings
+local sqlit_mappings = {
 	{
 		"n",
-		"<leader>dbb",
-		"<cmd>DBUIToggle<cr>",
-		{ desc = "Toggle Data[b]ase UI" },
+		"<leader>aq",
+		"<cmd>Sqlit<cr>",
+		{ desc = "S[q]lit TUI" },
 	},
 }
 
@@ -154,7 +234,7 @@ local claudecode_mappings = {
 local lazygit_mappings = {
 	{
 		"n",
-		"<leader>gg",
+		"<leader>ag",
 		function()
 			Snacks.lazygit()
 		end,
@@ -739,7 +819,7 @@ local autopairs_mappings = {
 local yazi_mappings = {
 	{
 		{ "n", "v" },
-		"<leader>yy",
+		"<leader>ay",
 		function()
 			require("yazi").yazi()
 		end,
@@ -747,7 +827,7 @@ local yazi_mappings = {
 	},
 	{
 		"n",
-		"<leader>yw",
+		"<leader>ayw",
 		function()
 			require("yazi").yazi(nil, vim.fn.getcwd())
 		end,
@@ -755,7 +835,7 @@ local yazi_mappings = {
 	},
 	{
 		"n",
-		"<leader>y.",
+		"<leader>ay.",
 		function()
 			require("yazi").yazi(nil, vim.fn.expand("%:p:h"))
 		end,
@@ -1199,13 +1279,18 @@ end
 -- Apply all keymaps and autocmds
 -- =====================
 
+-- Machine detection
+local function is_work_mac()
+	local hostname = vim.fn.hostname()
+	return hostname:match("workmbp") ~= nil
+end
+
 -- List of all keymap groups to apply
 local all_keymaps = {
 	autopairs_mappings,
 	basic_mappings,
 	buffer_mappings,
 	claudecode_mappings,
-	dadbod_mappings,
 	dbt_mappings,
 	delete_to_blackhole_mappings,
 	diagnostic_mappings,
@@ -1234,6 +1319,11 @@ local all_keymaps = {
 	yanky_mappings,
 	yazi_mappings,
 }
+
+-- Add work-specific keymaps
+if is_work_mac() then
+	table.insert(all_keymaps, sqlit_mappings)
+end
 
 -- List of all autocmds to apply (reference by key name)
 local all_autocmds = {

@@ -1,0 +1,4 @@
+#!/bin/bash
+# Wrapper for dbtf to filter out non-JSON lines for dbtpal compatibility
+# Only output lines that are valid JSON objects (start with '{')
+dbtf "$@" 2>&1 | grep "^{"
