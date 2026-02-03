@@ -960,17 +960,62 @@ end
 -- Window Navigation
 -- ============================================================================
 
--- Focus next window on current screen
+-- Get all visible windows on a screen (for cycling on any screen, not just tiled)
+local function get_visible_windows_on_screen(screen)
+    local windows = {}
+    local all_windows = hs.window.allWindows()
+    local space_id = get_space_id(screen)
+
+    for _, win in ipairs(all_windows) do
+        if win:isVisible() and win:isStandard() and win:screen() == screen then
+            -- Check if window is on current space
+            local on_current_space = true
+            pcall(function()
+                local win_spaces = hs.spaces.windowSpaces(win)
+                if win_spaces and #win_spaces > 0 then
+                    on_current_space = false
+                    for _, ws in ipairs(win_spaces) do
+                        if tostring(ws) == space_id then
+                            on_current_space = true
+                            break
+                        end
+                    end
+                end
+            end)
+
+            if on_current_space then
+                table.insert(windows, win)
+            end
+        end
+    end
+
+    -- Sort by position (top-left to bottom-right) for consistent ordering
+    table.sort(windows, function(a, b)
+        local a_frame = a:frame()
+        local b_frame = b:frame()
+        if math.abs(a_frame.y - b_frame.y) < 50 then
+            return a_frame.x < b_frame.x
+        end
+        return a_frame.y < b_frame.y
+    end)
+
+    return windows
+end
+
+-- Focus next window on current screen (works on any screen)
 function WindowManagement.focus_next_window()
     local current = hs.window.focusedWindow()
     if not current then return end
 
     local screen = current:screen()
+    local windows
 
-    -- Skip window navigation on untiled screens (no tiling order)
-    if not is_tiling_enabled(screen) then return end
-
-    local windows = get_tileable_windows(screen)
+    -- Use tiled window order if tiling is enabled, otherwise get all visible windows
+    if is_tiling_enabled(screen) then
+        windows = get_tileable_windows(screen)
+    else
+        windows = get_visible_windows_on_screen(screen)
+    end
 
     if #windows <= 1 then return end
 
@@ -992,17 +1037,20 @@ function WindowManagement.focus_next_window()
     end
 end
 
--- Focus previous window on current screen
+-- Focus previous window on current screen (works on any screen)
 function WindowManagement.focus_prev_window()
     local current = hs.window.focusedWindow()
     if not current then return end
 
     local screen = current:screen()
+    local windows
 
-    -- Skip window navigation on untiled screens (no tiling order)
-    if not is_tiling_enabled(screen) then return end
-
-    local windows = get_tileable_windows(screen)
+    -- Use tiled window order if tiling is enabled, otherwise get all visible windows
+    if is_tiling_enabled(screen) then
+        windows = get_tileable_windows(screen)
+    else
+        windows = get_visible_windows_on_screen(screen)
+    end
 
     if #windows <= 1 then return end
 
@@ -1025,7 +1073,16 @@ function WindowManagement.focus_prev_window()
 end
 
 -- Focus next screen (cycle through monitors)
+-- Falls back to cycling windows if only one monitor is attached
 function WindowManagement.focus_next_screen()
+    -- Check if multiple monitors are attached
+    local screens = hs.screen.allScreens()
+    if #screens <= 1 then
+        -- Single monitor: fall back to window cycling
+        WindowManagement.focus_next_window()
+        return
+    end
+
     -- Use focused window's screen, not mouse position
     local current_window = hs.window.focusedWindow()
     local current_screen = current_window and current_window:screen() or hs.mouse.getCurrentScreen()
