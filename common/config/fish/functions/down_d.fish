@@ -60,6 +60,95 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
         return 1
     end
 
+    # Helper function to monitor parallel downloads with live progress
+    function monitor_downloads -a tmpdir -a pids -a url_map
+        set -l total_downloads (count $pids)
+        set -l active_pids $pids
+
+        echo ""
+        echo "Monitoring $total_downloads parallel downloads..."
+        echo ""
+
+        # Initialize display lines
+        for mapping in $url_map
+            set -l parts (string split '|' $mapping)
+            set -l url_hash $parts[1]
+            set -l url $parts[2]
+            set -l short_url (string sub -l 50 $url)
+            echo "[$url_hash] $short_url: Starting..."
+        end
+
+        # Move cursor up to start of progress lines
+        set -l num_lines (count $url_map)
+        tput cuu $num_lines
+
+        # Monitor loop
+        while test (count $active_pids) -gt 0
+            set -l line_num 0
+
+            for mapping in $url_map
+                set -l parts (string split '|' $mapping)
+                set -l url_hash $parts[1]
+                set -l url $parts[2]
+                set -l short_url (string sub -l 40 $url)
+                set -l status_file "$tmpdir/$url_hash.status"
+                set -l log_file "$tmpdir/$url_hash.log"
+
+                # Clear current line and rewrite
+                tput el
+
+                if test -f $status_file
+                    # Download completed
+                    set -l status (cat $status_file)
+                    if test "$status" = "success"
+                        echo -n "✅ [$url_hash] $short_url: Complete"
+                    else
+                        echo -n "❌ [$url_hash] $short_url: Failed"
+                    end
+                else if test -f $log_file
+                    # Extract latest progress from log
+                    set -l progress (tail -1 $log_file 2>/dev/null | grep -oP '\[download\].*' | string sub -l 80)
+                    if test -n "$progress"
+                        echo -n "⬇️  [$url_hash] $progress"
+                    else
+                        echo -n "⏳ [$url_hash] $short_url: Running..."
+                    end
+                else
+                    echo -n "⏳ [$url_hash] $short_url: Starting..."
+                end
+
+                # Move to next line (or wrap to first line)
+                set line_num (math $line_num + 1)
+                if test $line_num -lt $num_lines
+                    tput cud1
+                    tput cr
+                end
+            end
+
+            # Move cursor back to start
+            if test $num_lines -gt 1
+                tput cuu (math $num_lines - 1)
+            end
+            tput cr
+
+            # Check which PIDs are still active
+            set -l new_active_pids
+            for pid in $active_pids
+                if ps -p $pid >/dev/null 2>&1
+                    set -a new_active_pids $pid
+                end
+            end
+            set active_pids $new_active_pids
+
+            # Sleep briefly before next update
+            sleep 0.5
+        end
+
+        # Move cursor past all lines for final display
+        tput cud $num_lines
+        echo ""
+    end
+
     # Helper function to build format string
     function build_format_string -a url -a quality -a yt_dlp
         # If quality is "bestvideo+bestaudio/best" (default), just return it
@@ -81,109 +170,244 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
         end
     end
 
-    echo "Starting downloads with fast method..."
+    echo "Starting downloads with fast method (parallel processing)..."
 
     # TIER 1: Try fast method first (yt-dlp + axel, no impersonation)
+    set -l fast_pids
+    set -l fast_tmpdir (mktemp -d)
+    set -l fast_url_map
+
     for url in $urls
         if string match -q "*://*" -- $url
-            echo "Trying fast method for: $url"
-
             # Build format string based on video orientation
             set -l format_str (build_format_string "$url" "$quality_format" "$yt_dlp_path")
-            echo "Using format: $format_str"
 
-            # Fast method - axel with 16 connections
-            if not $yt_dlp_path -f $format_str --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16' $url
+            # Create unique temp file for this download's status and log
+            set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+            set -l status_file "$fast_tmpdir/$url_hash.status"
+            set -l log_file "$fast_tmpdir/$url_hash.log"
+
+            # Store mapping for monitoring
+            set -a fast_url_map "$url_hash|$url"
+
+            # Fast method - axel with 16 connections (run in background)
+            fish -c "
+                if $yt_dlp_path -f '$format_str' --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16' '$url' > '$log_file' 2>&1
+                    echo 'success' > '$status_file'
+                else
+                    echo 'failed' > '$status_file'
+                end
+            " &
+            set -a fast_pids $last_pid
+        end
+    end
+
+    # Monitor downloads with live progress
+    if test (count $fast_pids) -gt 0
+        monitor_downloads $fast_tmpdir $fast_pids $fast_url_map
+    end
+
+    # Collect failed URLs from status files
+    for url in $urls
+        set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+        set -l status_file "$fast_tmpdir/$url_hash"
+        if test -f $status_file
+            if string match -q "failed" (cat $status_file)
                 echo "Fast method failed for: $url"
                 set -a fast_failed_urls $url
             else
                 echo "Fast method succeeded for: $url"
             end
+        else
+            # No status file means something went wrong
+            set -a fast_failed_urls $url
         end
     end
+
+    # Cleanup temp directory
+    rm -rf $fast_tmpdir
     
     # TIER 2: Try medium method for fast failures (yt-dlp + axel + impersonation)
     if test (count $fast_failed_urls) -gt 0
         echo ""
-        echo "Retrying failed downloads with fast method + browser impersonation..."
+        echo "Retrying failed downloads with fast method + browser impersonation (parallel)..."
         echo "Failed URLs from fast method: "(count $fast_failed_urls)
-        
-        for url in $fast_failed_urls
-            echo "Trying fast+impersonation method for: $url"
 
+        set -l medium_pids
+        set -l medium_tmpdir (mktemp -d)
+        set -l medium_url_map
+
+        for url in $fast_failed_urls
             # Build format string based on video orientation
             set -l format_str (build_format_string "$url" "$quality_format" "$yt_dlp_path")
 
-            # Medium method - axel + impersonation + cookies
-            if not $yt_dlp_path -f $format_str \
-                        --no-abort-on-error \
-                        --add-metadata \
-                        --external-downloader axel \
-                        --external-downloader-args '-n 8' \
-                        --impersonate Edge:Windows \
-                        --cookies-from-browser firefox \
-                        $url
-                echo "Fast+impersonation method failed for: $url"
-                set -a medium_failed_urls $url
+            # Create unique temp file for this download's status and log
+            set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+            set -l status_file "$medium_tmpdir/$url_hash.status"
+            set -l log_file "$medium_tmpdir/$url_hash.log"
+
+            # Store mapping for monitoring
+            set -a medium_url_map "$url_hash|$url"
+
+            # Medium method - axel + impersonation + cookies (run in background)
+            fish -c "
+                if $yt_dlp_path -f '$format_str' \
+                            --no-abort-on-error \
+                            --add-metadata \
+                            --external-downloader axel \
+                            --external-downloader-args '-n 8' \
+                            --impersonate 'Edge:Windows' \
+                            --cookies-from-browser firefox \
+                            '$url' > '$log_file' 2>&1
+                    echo 'success' > '$status_file'
+                else
+                    echo 'failed' > '$status_file'
+                end
+            " &
+            set -a medium_pids $last_pid
+        end
+
+        # Monitor downloads with live progress
+        if test (count $medium_pids) -gt 0
+            monitor_downloads $medium_tmpdir $medium_pids $medium_url_map
+        end
+
+        # Collect failed URLs from status files
+        for url in $fast_failed_urls
+            set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+            set -l status_file "$medium_tmpdir/$url_hash"
+            if test -f $status_file
+                if string match -q "failed" (cat $status_file)
+                    echo "Fast+impersonation method failed for: $url"
+                    set -a medium_failed_urls $url
+                else
+                    echo "Fast+impersonation method succeeded for: $url"
+                end
             else
-                echo "Fast+impersonation method succeeded for: $url"
+                # No status file means something went wrong
+                set -a medium_failed_urls $url
             end
         end
+
+        # Cleanup temp directory
+        rm -rf $medium_tmpdir
     end
     
     # TIER 3: Try slow method for remaining failures (yt-dlp built-in downloader)
     if test (count $medium_failed_urls) -gt 0
         echo ""
-        echo "Retrying remaining failed downloads with slower method (sp_d)..."
+        echo "Retrying remaining failed downloads with slower method (parallel)..."
         echo "Failed URLs from medium method: "(count $medium_failed_urls)
-        
-        for url in $medium_failed_urls
-            echo "Trying slower method for: $url"
 
+        set -l slow_pids
+        set -l slow_tmpdir (mktemp -d)
+        set -l slow_url_map
+        set -l final_failed_urls
+
+        for url in $medium_failed_urls
             # Build format string based on video orientation
             set -l format_str (build_format_string "$url" "$quality_format" "$yt_dlp_path")
 
-            # Slow method - yt-dlp built-in with all compatibility features
-            if not $yt_dlp_path -f $format_str \
-                        --concurrent-fragments 4 \
-                        --no-abort-on-error \
-                        --legacy-server-connect \
-                        --add-metadata \
-                        --no-check-certificates \
-                        --impersonate Edge:Windows \
-                        --cookies-from-browser firefox \
-                        --username "$SP_USER" \
-                        --password "$SP_PASS" \
-                        --socket-timeout 30 \
-                        --retry-sleep linear=1::2 \
-                        --fragment-retries 5 \
-                        $url
-                echo "Slower method also failed for: $url"
+            # Create unique temp file for this download's status and log
+            set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+            set -l status_file "$slow_tmpdir/$url_hash.status"
+            set -l log_file "$slow_tmpdir/$url_hash.log"
+
+            # Store mapping for monitoring
+            set -a slow_url_map "$url_hash|$url"
+
+            # Slow method - yt-dlp built-in with all compatibility features (run in background)
+            fish -c "
+                if $yt_dlp_path -f '$format_str' \
+                            --concurrent-fragments 4 \
+                            --no-abort-on-error \
+                            --legacy-server-connect \
+                            --add-metadata \
+                            --no-check-certificates \
+                            --impersonate 'Edge:Windows' \
+                            --cookies-from-browser firefox \
+                            --username '$SP_USER' \
+                            --password '$SP_PASS' \
+                            --socket-timeout 30 \
+                            --retry-sleep linear=1::2 \
+                            --fragment-retries 5 \
+                            '$url' > '$log_file' 2>&1
+                    echo 'success' > '$status_file'
+                else
+                    echo 'failed' > '$status_file'
+                end
+            " &
+            set -a slow_pids $last_pid
+        end
+
+        # Monitor downloads with live progress
+        if test (count $slow_pids) -gt 0
+            monitor_downloads $slow_tmpdir $slow_pids $slow_url_map
+        end
+
+        # Collect results from status files
+        for url in $medium_failed_urls
+            set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
+            set -l status_file "$slow_tmpdir/$url_hash"
+            if test -f $status_file
+                if string match -q "failed" (cat $status_file)
+                    echo "Slower method also failed for: $url"
+                    set -a final_failed_urls $url
+                else
+                    echo "Slower method succeeded for: $url"
+                end
             else
-                echo "Slower method succeeded for: $url"
+                # No status file means something went wrong
+                echo "Slower method also failed for: $url"
+                set -a final_failed_urls $url
             end
         end
+
+        # Cleanup temp directory
+        rm -rf $slow_tmpdir
     end
     
     # Summary
+    echo ""
     if test (count $fast_failed_urls) -eq 0
-        echo ""
         echo "✅ All downloads completed successfully with fast method!"
     else if test (count $medium_failed_urls) -eq 0
-        echo ""
         echo "✅ All downloads completed! Some required browser impersonation."
         echo "📊 Download summary:"
         echo "  • Fast method: "(math (count $urls) - (count $fast_failed_urls))" successful"
         echo "  • Fast+impersonation method: "(count $fast_failed_urls)" successful"
     else
-        echo ""
-        echo "📊 Download summary:"
         set -l fast_success (math (count $urls) - (count $fast_failed_urls))
         set -l medium_success (math (count $fast_failed_urls) - (count $medium_failed_urls))
-        set -l slow_attempts (count $medium_failed_urls)
+        set -l slow_success 0
+        set -l total_failed 0
 
+        if test (count $medium_failed_urls) -gt 0
+            set slow_success (math (count $medium_failed_urls) - (count $final_failed_urls))
+            set total_failed (count $final_failed_urls)
+        end
+
+        if test $total_failed -eq 0
+            echo "✅ All downloads completed!"
+        else
+            echo "⚠️  Some downloads failed"
+        end
+
+        echo "📊 Download summary:"
         echo "  • Fast method: $fast_success successful"
         echo "  • Fast+impersonation method: $medium_success successful"
-        echo "  • Slow method attempts: $slow_attempts"
+
+        if test (count $medium_failed_urls) -gt 0
+            echo "  • Slow method: $slow_success successful"
+        end
+
+        if test $total_failed -gt 0
+            echo "  • Failed completely: $total_failed"
+            echo ""
+            echo "Failed URLs:"
+            for url in $final_failed_urls
+                echo "  - $url"
+            end
+        end
     end
 end
