@@ -61,7 +61,27 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
     end
 
     # Helper function to monitor parallel downloads with live progress
-    function monitor_downloads -a tmpdir -a pids -a url_map
+    function monitor_downloads -a tmpdir
+        # Remaining args are alternating: pid1 pid2 pid3... hash1|url1 hash2|url2...
+        # Need to figure out where PIDs end and mappings begin
+        # Strategy: Find first arg with '|' character
+        set -l all_args $argv[2..-1]
+        set -l pids
+        set -l url_map
+        set -l found_separator 0
+
+        for arg in $all_args
+            if string match -q "*|*" -- $arg
+                set found_separator 1
+            end
+
+            if test $found_separator -eq 0
+                set -a pids $arg
+            else
+                set -a url_map $arg
+            end
+        end
+
         set -l total_downloads (count $pids)
         set -l active_pids $pids
 
@@ -95,41 +115,43 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
                 set -l log_file "$tmpdir/$url_hash.log"
 
                 # Clear current line and rewrite
-                tput el
+                printf "\r%s" (tput el)
 
                 if test -f $status_file
                     # Download completed
-                    set -l status (cat $status_file)
-                    if test "$status" = "success"
-                        echo -n "✅ [$url_hash] $short_url: Complete"
+                    set -l dl_status (cat $status_file)
+                    if test "$dl_status" = "success"
+                        printf "✅ [$url_hash] $short_url: Complete"
                     else
-                        echo -n "❌ [$url_hash] $short_url: Failed"
+                        printf "❌ [$url_hash] $short_url: Failed"
                     end
                 else if test -f $log_file
-                    # Extract latest progress from log
-                    set -l progress (tail -1 $log_file 2>/dev/null | grep -oP '\[download\].*' | string sub -l 80)
+                    # Extract latest progress from log (look for [download] lines)
+                    set -l progress (tail -5 $log_file 2>/dev/null | grep '\[download\]' | tail -1 | string sub -l 80)
                     if test -n "$progress"
-                        echo -n "⬇️  [$url_hash] $progress"
+                        printf "⬇️  %s" $progress
                     else
-                        echo -n "⏳ [$url_hash] $short_url: Running..."
+                        printf "⏳ [$url_hash] $short_url: Running..."
                     end
                 else
-                    echo -n "⏳ [$url_hash] $short_url: Starting..."
+                    printf "⏳ [$url_hash] $short_url: Starting..."
                 end
 
                 # Move to next line (or wrap to first line)
                 set line_num (math $line_num + 1)
                 if test $line_num -lt $num_lines
-                    tput cud1
-                    tput cr
+                    printf "\n"
                 end
             end
+
+            # Flush output
+            printf "" >&2
 
             # Move cursor back to start
             if test $num_lines -gt 1
                 tput cuu (math $num_lines - 1)
             end
-            tput cr
+            printf "\r"
 
             # Check which PIDs are still active
             set -l new_active_pids
@@ -210,7 +232,7 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
     # Collect failed URLs from status files
     for url in $urls
         set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
-        set -l status_file "$fast_tmpdir/$url_hash"
+        set -l status_file "$fast_tmpdir/$url_hash.status"
         if test -f $status_file
             if string match -q "failed" (cat $status_file)
                 echo "Fast method failed for: $url"
@@ -275,7 +297,7 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
         # Collect failed URLs from status files
         for url in $fast_failed_urls
             set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
-            set -l status_file "$medium_tmpdir/$url_hash"
+            set -l status_file "$medium_tmpdir/$url_hash.status"
             if test -f $status_file
                 if string match -q "failed" (cat $status_file)
                     echo "Fast+impersonation method failed for: $url"
@@ -348,7 +370,7 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
         # Collect results from status files
         for url in $medium_failed_urls
             set -l url_hash (echo -n $url | md5sum | cut -d' ' -f1)
-            set -l status_file "$slow_tmpdir/$url_hash"
+            set -l status_file "$slow_tmpdir/$url_hash.status"
             if test -f $status_file
                 if string match -q "failed" (cat $status_file)
                     echo "Slower method also failed for: $url"
