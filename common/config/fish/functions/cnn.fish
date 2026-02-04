@@ -17,5 +17,5 @@ function cnn -d "Launch CNN stream with rofi_xtream MPV parameters"
         --wayland-app-id=cli_stream \
         --title='CNN Live' \
         http://uri69635.cdn-kok.me/live/48f07785de/f165bbc27a/324963.ts \
-        >/dev/null 2>&1 &
+        >/dev/null 2>&1 & disown
 end
