@@ -26,6 +26,7 @@ from pam_setup import setup_pam
 from security_setup import setup_security
 from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
+from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
 from zen_app_windowrules import generate_zen_app_windowrules
 from zellij_mcp_setup import setup_zellij_mcp
@@ -107,6 +108,10 @@ if machine_config["is_macos"]:
 # Step 9: Setup systemd services and reload daemon (Linux only)
 if machine_config["is_linux"]:
     reload_systemd_daemon(dotfiles_dir, hostname, machine_config)
+
+# Step 9.5: Setup systemd-resolved configuration (Linux only)
+if machine_config["is_linux"]:
+    setup_resolved(dotfiles_dir, hostname, machine_config)
 
 # Step 10: Setup backup crontab (Linux only)
 if machine_config["is_linux"]:
