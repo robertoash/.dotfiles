@@ -14,7 +14,8 @@ function cnn -d "Launch CNN stream with rofi_xtream MPV parameters"
         --user-agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36' \
         --http-header-fields='Accept: */*' \
         --referrer=http://uri69635.cdn-kok.me \
-        --wayland-app-id=cnn_stream \
+        --wayland-app-id=cli_stream \
         --title='CNN Live' \
-        http://uri69635.cdn-kok.me/live/48f07785de/f165bbc27a/324963.ts
+        http://uri69635.cdn-kok.me/live/48f07785de/f165bbc27a/324963.ts \
+        >/dev/null 2>&1 &
 end
