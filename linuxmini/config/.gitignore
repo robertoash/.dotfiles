@@ -241,6 +241,7 @@ fish/functions/cnn.fish
 fish/functions/cut_video.fish
 fish/functions/delete_gone_branches.fish
 fish/functions/down_d.fish
+fish/functions/down_d.fish.old
 fish/functions/empty_file.fish
 fish/functions/faa.fish
 fish/functions/fdd.fish
