@@ -84,27 +84,19 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
 
         set -l total_downloads (count $pids)
         set -l active_pids $pids
+        set -l completed_hashes
 
         echo ""
         echo "Monitoring $total_downloads parallel downloads..."
         echo ""
 
-        # Initialize display lines
-        for mapping in $url_map
-            set -l parts (string split '|' $mapping)
-            set -l url_hash $parts[1]
-            set -l url $parts[2]
-            set -l short_url (string sub -l 50 $url)
-            echo "[$url_hash] $short_url: Starting..."
-        end
-
-        # Move cursor up to start of progress lines
-        set -l num_lines (count $url_map)
-        tput cuu $num_lines
-
         # Monitor loop
+        set -l first_iteration 1
         while test (count $active_pids) -gt 0
-            set -l line_num 0
+            set -l active_line_count 0
+
+            # Build output for all active downloads
+            set -l output_lines
 
             for mapping in $url_map
                 set -l parts (string split '|' $mapping)
@@ -114,44 +106,59 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
                 set -l status_file "$tmpdir/$url_hash.status"
                 set -l log_file "$tmpdir/$url_hash.log"
 
-                # Clear current line and rewrite
-                printf "\r%s" (tput el)
+                # Skip if already completed
+                if contains $url_hash $completed_hashes
+                    continue
+                end
+
+                set -l line_text ""
 
                 if test -f $status_file
-                    # Download completed
+                    # Download completed - print permanently and mark as done
                     set -l dl_status (cat $status_file)
                     if test "$dl_status" = "success"
-                        printf "✅ [$url_hash] $short_url: Complete"
+                        set line_text "✅ [$url_hash] $short_url: Complete"
                     else
-                        printf "❌ [$url_hash] $short_url: Failed"
+                        set line_text "❌ [$url_hash] $short_url: Failed"
                     end
+                    echo $line_text
+                    set -a completed_hashes $url_hash
                 else if test -f $log_file
-                    # Extract latest progress from log (look for [download] lines)
-                    set -l progress (tail -5 $log_file 2>/dev/null | grep '\[download\]' | tail -1 | string sub -l 80)
-                    if test -n "$progress"
-                        printf "⬇️  %s" $progress
-                    else
-                        printf "⏳ [$url_hash] $short_url: Running..."
+                    # Extract latest progress from log (look for download progress indicators)
+                    # Check for yt-dlp format: [download]  26.7% of  430.74MiB at  296.05KiB/s ETA 18:12
+                    set -l progress (tail -10 $log_file 2>/dev/null | grep -E '\[download\].*%' | tail -1 | string trim | string sub -l 80)
+
+                    # If no yt-dlp progress, check for axel format: [ 26%]  ..........
+                    if test -z "$progress"
+                        set progress (tail -10 $log_file 2>/dev/null | grep -E '\[\s*[0-9]+%\]' | tail -1 | string trim | string sub -l 80)
                     end
+
+                    if test -n "$progress"
+                        set line_text "⬇️  $progress"
+                    else
+                        set line_text "⏳ [$url_hash] $short_url: Running..."
+                    end
+                    set -a output_lines $line_text
+                    set active_line_count (math $active_line_count + 1)
                 else
-                    printf "⏳ [$url_hash] $short_url: Starting..."
-                end
-
-                # Move to next line (or wrap to first line)
-                set line_num (math $line_num + 1)
-                if test $line_num -lt $num_lines
-                    printf "\n"
+                    set line_text "⏳ [$url_hash] $short_url: Starting..."
+                    set -a output_lines $line_text
+                    set active_line_count (math $active_line_count + 1)
                 end
             end
 
-            # Flush output
-            printf "" >&2
+            # Print active downloads (will be rewritten)
+            if test $active_line_count -gt 0
+                # Move cursor up on subsequent iterations
+                if test $first_iteration -eq 0
+                    tput cuu $active_line_count
+                end
+                set first_iteration 0
 
-            # Move cursor back to start
-            if test $num_lines -gt 1
-                tput cuu (math $num_lines - 1)
+                for line in $output_lines
+                    printf "\r%s%s\n" (tput el) $line
+                end
             end
-            printf "\r"
 
             # Check which PIDs are still active
             set -l new_active_pids
@@ -166,8 +173,27 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             sleep 0.5
         end
 
-        # Move cursor past all lines for final display
-        tput cud $num_lines
+        # Final check for any remaining completions
+        for mapping in $url_map
+            set -l parts (string split '|' $mapping)
+            set -l url_hash $parts[1]
+            set -l url $parts[2]
+            set -l short_url (string sub -l 40 $url)
+            set -l status_file "$tmpdir/$url_hash.status"
+
+            if not contains $url_hash $completed_hashes
+                if test -f $status_file
+                    set -l dl_status (cat $status_file)
+                    tput el
+                    if test "$dl_status" = "success"
+                        echo "✅ [$url_hash] $short_url: Complete"
+                    else
+                        echo "❌ [$url_hash] $short_url: Failed"
+                    end
+                end
+            end
+        end
+
         echo ""
     end
 
@@ -213,8 +239,9 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             set -a fast_url_map "$url_hash|$url"
 
             # Fast method - axel with 16 connections (run in background)
+            # Use stdbuf to force unbuffered output for real-time progress
             fish -c "
-                if $yt_dlp_path -f '$format_str' --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16' '$url' > '$log_file' 2>&1
+                if stdbuf -oL -eL $yt_dlp_path -f '$format_str' --no-abort-on-error --add-metadata --external-downloader axel --external-downloader-args '-n 16' '$url' > '$log_file' 2>&1
                     echo 'success' > '$status_file'
                 else
                     echo 'failed' > '$status_file'
@@ -272,8 +299,9 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             set -a medium_url_map "$url_hash|$url"
 
             # Medium method - axel + impersonation + cookies (run in background)
+            # Use stdbuf to force unbuffered output for real-time progress
             fish -c "
-                if $yt_dlp_path -f '$format_str' \
+                if stdbuf -oL -eL $yt_dlp_path -f '$format_str' \
                             --no-abort-on-error \
                             --add-metadata \
                             --external-downloader axel \
@@ -339,8 +367,9 @@ function down_d --description 'Download videos with yt-dlp, 3-tier fallback: fas
             set -a slow_url_map "$url_hash|$url"
 
             # Slow method - yt-dlp built-in with all compatibility features (run in background)
+            # Use stdbuf to force unbuffered output for real-time progress
             fish -c "
-                if $yt_dlp_path -f '$format_str' \
+                if stdbuf -oL -eL $yt_dlp_path -f '$format_str' \
                             --concurrent-fragments 4 \
                             --no-abort-on-error \
                             --legacy-server-connect \
