@@ -262,6 +262,7 @@ fish/functions/integrity.fish
 fish/functions/last_mods.fish
 fish/functions/lkd.fish
 fish/functions/loadenv.fish
+fish/functions/meme.fish
 fish/functions/mkdircd.fish
 fish/functions/mullvad.fish
 fish/functions/mv.fish
