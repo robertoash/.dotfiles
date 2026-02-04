@@ -201,12 +201,17 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
     """Create rich table showing download progress."""
     tier_names = {1: "Fast (Axel 16x)", 2: "Fast + Impersonation (Axel 8x)", 3: "Slow (yt-dlp)"}
 
-    table = Table(title=f"Tier {tier}: {tier_names[tier]}", show_header=True, header_style="bold magenta")
-    table.add_column("URL", style="cyan", width=40)
-    table.add_column("Status", width=12)
-    table.add_column("Progress", width=30)
-    table.add_column("Speed", width=12)
-    table.add_column("ETA", width=8)
+    table = Table(
+        title=f"Tier {tier}: {tier_names[tier]}",
+        show_header=True,
+        header_style="bold magenta",
+        expand=True  # Auto-expand to terminal width
+    )
+    table.add_column("URL", style="cyan", ratio=3, no_wrap=False)
+    table.add_column("Status", ratio=1, min_width=20)
+    table.add_column("Progress", ratio=2, min_width=25)
+    table.add_column("Speed", ratio=1, min_width=12)
+    table.add_column("ETA", ratio=1, min_width=8)
 
     for task_id, task in tasks.items():
         url_short = task.url[:37] + "..." if len(task.url) > 40 else task.url
@@ -218,7 +223,7 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
             status = "[red]❌ Failed[/red]"
             progress = f"[red]{task.error}[/red]"
         elif task.status == "downloading":
-            status = "[yellow]⬇️ Downloading[/yellow]"
+            status = "[yellow]⏬ Downloading[/yellow]"
             bar_width = 20
             filled = int(bar_width * task.progress_pct / 100)
             bar = "█" * filled + "░" * (bar_width - filled)
