@@ -60,7 +60,8 @@
       "mcp__zellij__zellij_edit_file",
       "mcp__zellij__zellij_write_to_pane",
       "mcp__zellij__zellij_focus_pane",
-      "Bash(mullvad status:*)"
+      "Bash(mullvad status:*)",
+      "Bash(pgrep:*)"
     ],
     "deny": [],
     "ask": [],
