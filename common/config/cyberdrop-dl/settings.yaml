@@ -189,7 +189,7 @@ file_size_limits:
 files:
   download_folder: .
   dump_json: false
-  input_file: ~/.config/cyberdrop-dl/URLs.txt
+  input_file: /home/rash/.config/cyberdrop-dl/URLs.txt
   save_pages_html: false
 ignore_options:
   exclude_after: null
