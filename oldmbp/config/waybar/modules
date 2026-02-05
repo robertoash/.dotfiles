@@ -191,7 +191,7 @@
         "on-scroll-down": "~/.config/hypr/scripts/Volume.sh --dec",
         "smooth-scrolling-threshold": 1,
         "player-icons": {
-            "chromium": "",
+            "brave": "",
             "default": "",
             "firefox": "",
             "kdeconnect": "",

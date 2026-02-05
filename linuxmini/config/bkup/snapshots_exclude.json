@@ -42,7 +42,7 @@
     ".rustup/toolchains",
     ".mozilla/firefox/*/Cache",
     ".mozilla/firefox/*/cache2",
-    ".config/chromium/*/Cache",
+    ".config/BraveSoftware/Brave-Browser/*/Cache",
     ".config/Code/Cache",
     ".config/Code/CachedData",
     "node_modules",

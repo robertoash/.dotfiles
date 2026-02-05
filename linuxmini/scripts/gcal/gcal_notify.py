@@ -467,7 +467,7 @@ class CalendarNotifier:
         """Open meeting URL using the rofi profile selector"""
         try:
             # Let user choose the browser via rofi
-            browsers = ["qutebrowser", "vivaldi", "chromium"]
+            browsers = ["qutebrowser", "vivaldi", "brave"]
             logger.info("Showing browser selection dialog...")
 
             browser_choice = subprocess.run(

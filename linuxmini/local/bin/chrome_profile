@@ -2,10 +2,10 @@
 
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo "Usage: chrome_profile <profile> [url...]"
-    echo "Launch Chromium with a specific profile"
+    echo "Launch Brave with a specific profile"
     echo ""
     echo "Arguments:"
-    echo "  profile    Profile name (directory under ~/.config/chromium)"
+    echo "  profile    Profile name (directory under ~/.config/BraveSoftware/Brave-Browser)"
     echo "  url        Optional URLs to open"
     exit 0
 fi
@@ -13,7 +13,7 @@ fi
 PROFILE=$1
 shift  # Remove the profile argument
 
-CHROME_BASE="$HOME/.config/chromium/$PROFILE"
+CHROME_BASE="$HOME/.config/BraveSoftware/Brave-Browser/$PROFILE"
 
 if [ ! -d "$CHROME_BASE" ]; then
     echo "❌ Profile '$PROFILE' doesn't exist."
@@ -22,8 +22,8 @@ fi
 
 # Add session restore flags for all profiles except "app"
 if [ "$PROFILE" != "app" ]; then
-    chromium --profile-directory="$PROFILE" --restore-last-session --disable-session-crashed-bubble "$@" &
+    brave --profile-directory="$PROFILE" --restore-last-session --disable-session-crashed-bubble "$@" &
 else
-    chromium --profile-directory="$PROFILE" --disable-session-crashed-bubble "$@" &
+    brave --profile-directory="$PROFILE" --disable-session-crashed-bubble "$@" &
 fi
 disown

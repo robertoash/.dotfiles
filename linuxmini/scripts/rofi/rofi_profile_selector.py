@@ -18,16 +18,16 @@ class ProfileSelector:
 
     def __init__(self):
         """Initialize the profile selector with application configurations."""
-        # Load chromium profiles from hypr_window_ops config
-        chromium_profiles = self._load_chromium_profiles()
-        
+        # Load brave profiles from hypr_window_ops config
+        brave_profiles = self._load_chromium_profiles()
+
         self.applications = {
             "qutebrowser": {
                 "profiles": ["rash", "jobhunt"],
                 "command_template": "/home/rash/.local/bin/qute_profile {profile}",
             },
-            "chromium": {
-                "profiles": chromium_profiles,
+            "brave": {
+                "profiles": brave_profiles,
                 "command_template": (
                     "/home/rash/.local/bin/chrome_launch --profile {profile}"
                 ),
@@ -35,7 +35,7 @@ class ProfileSelector:
         }
 
     def _load_chromium_profiles(self):
-        """Load chromium profiles from hypr_window_ops config."""
+        """Load brave profiles from hypr_window_ops config."""
         try:
             import sys
             from pathlib import Path
@@ -48,7 +48,7 @@ class ProfileSelector:
             
             return list(config.BROWSER_PROFILES.keys())
         except Exception as e:
-            print(f"Warning: Could not load chromium profiles from config, using defaults: {e}")
+            print(f"Warning: Could not load brave profiles from config, using defaults: {e}")
             return ["rash", "company", "app", "dash"]
 
     def _is_template_based(self, app_name: str) -> bool:

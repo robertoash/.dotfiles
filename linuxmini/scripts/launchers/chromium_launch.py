@@ -6,8 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 # === CONFIGURATION === #
-LOG_FILE = Path("/tmp/ungoogled_chromium_direct.log")
-CHROMIUM_BIN = "/usr/bin/chromium"  # Verify this path is correct
+LOG_FILE = Path("/tmp/brave_browser_direct.log")
+CHROMIUM_BIN = "/usr/bin/brave"
 CONFIG_FILE = Path.home() / ".config/hypr/script_configs/zen_apps.json"
 
 
@@ -45,7 +45,7 @@ def load_profiles():
         sys.exit(1)
 
 
-# Ungoogled Chromium command-line arguments
+# Brave command-line arguments
 BASE_ARGS = [
     "--new-window",
     "--new-instance",
@@ -123,11 +123,11 @@ def main():
     try:
         subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         log(
-            f"chromium_launch launched Ungoogled Chromium with profile {profile}"
+            f"chromium_launch launched Brave with profile {profile}"
             + (f" and URL {url}" if url else "")
         )
     except Exception as e:
-        log(f"Error launching Ungoogled Chromium: {e}")
+        log(f"Error launching Brave: {e}")
         sys.exit(1)
 
 

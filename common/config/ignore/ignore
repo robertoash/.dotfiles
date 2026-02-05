@@ -53,7 +53,7 @@ Slack
 __pycache__
 build
 builds
-chromium
+BraveSoftware/Brave-Browser
 cjar/dough
 common/cjar/dough
 dev/forks

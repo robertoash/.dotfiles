@@ -1,11 +1,11 @@
 [Desktop Entry]
-Name=Chromium
+Name=Brave
 GenericName=Web Browser
-Icon=chromium
-Exec=/home/rash/.config/scripts/rofi/rofi_profile_selector.py chromium
+Icon=brave
+Exec=/home/rash/.config/scripts/rofi/rofi_profile_selector.py brave
 Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;application/rss+xml;application/rdf+xml;image/gif;image/jpeg;image/png;image/webp;application/pdf;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=true
-StartupWMClass=Chromium-browser
+StartupWMClass=Brave-browser
 Keywords=Browser;Web;Internet;
 Type=Application

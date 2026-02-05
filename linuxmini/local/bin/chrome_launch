@@ -8,7 +8,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo "  --profile    Profile name or zen app name"
     echo "  url          Optional URLs to open"
     echo ""
-    echo "If profile exists in ~/.config/chromium/, launches that profile."
+    echo "If profile exists in ~/.config/BraveSoftware/Brave-Browser/, launches that profile."
     echo "Otherwise, checks zen_apps.json for app URL and launches with 'app' profile."
     exit 0
 fi
@@ -27,8 +27,8 @@ if [ -z "$PROFILE" ]; then
     exit 1
 fi
 
-# Check if it's an actual chromium profile directory
-CHROME_BASE="$HOME/.config/chromium/$PROFILE"
+# Check if it's an actual brave profile directory
+CHROME_BASE="$HOME/.config/BraveSoftware/Brave-Browser/$PROFILE"
 if [ -d "$CHROME_BASE" ]; then
     # It's a real profile, use chrome_profile directly
     exec chrome_profile "$PROFILE" "$@"
@@ -45,7 +45,7 @@ fi
 APP_URL=$(jq -r --arg app "$PROFILE" '.url[$app].app_url // .extension[$app].app_url // empty' "$ZEN_APPS_JSON")
 
 if [ -z "$APP_URL" ]; then
-    echo "❌ Profile '$PROFILE' not found in chromium profiles or zen_apps.json"
+    echo "❌ Profile '$PROFILE' not found in brave profiles or zen_apps.json"
     exit 1
 fi
 

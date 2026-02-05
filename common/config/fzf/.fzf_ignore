@@ -51,7 +51,7 @@ Slack
 __pycache__
 build
 builds
-chromium
+BraveSoftware/Brave-Browser
 dev/forks
 discord
 docker_data

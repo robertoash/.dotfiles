@@ -13,7 +13,7 @@ ROFI_CMD = [
 ]
 LAUNCH_CMD = ["mpv"]
 # Browser and profile to use for cookies
-BROWSER = "chromium"
+BROWSER = "brave"
 PROFILE = "app"
 
 
@@ -138,7 +138,7 @@ def parse_videos(output):
 
 def launch_video(video):
     """Fire the video into your eyeballs 👀"""
-    cmd = LAUNCH_CMD + [f"--title=Watch Later - {video['title']}", "--ytdl-raw-options=cookies-from-browser=chromium:app", video["url"]]
+    cmd = LAUNCH_CMD + [f"--title=Watch Later - {video['title']}", "--ytdl-raw-options=cookies-from-browser=brave:app", video["url"]]
     subprocess.Popen(cmd)
 
 
