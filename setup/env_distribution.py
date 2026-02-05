@@ -7,6 +7,7 @@ Reads system/env_vars.yaml and generates:
 """
 
 import socket
+import subprocess
 from pathlib import Path
 from typing import Dict, Any
 import yaml
@@ -144,6 +145,56 @@ def generate_hyprland_env_file(config: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def import_systemd_environment(verbose: bool = True) -> bool:
+    """
+    Import environment variables into the running systemd user session.
+    Parses the env file and uses systemctl set-environment for each variable.
+    Returns True if successful, False otherwise.
+    """
+    try:
+        # Check if systemd is available
+        subprocess.run(
+            ["systemctl", "--user", "show-environment"],
+            capture_output=True,
+            check=True
+        )
+
+        env_file = Path.home() / ".config" / "environment.d" / "env_vars.conf"
+        if not env_file.exists():
+            return False
+
+        # Parse the env file manually to handle values with spaces
+        var_count = 0
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                # Skip comments and empty lines
+                if not line or line.startswith("#"):
+                    continue
+
+                # Parse KEY=VALUE
+                if "=" in line:
+                    key, value = line.split("=", 1)
+                    # Use set-environment to set each variable
+                    subprocess.run(
+                        ["systemctl", "--user", "set-environment", f"{key}={value}"],
+                        check=True,
+                        capture_output=True
+                    )
+                    var_count += 1
+
+        if var_count > 0 and verbose:
+            print(f"  ✅ Imported {var_count} variables into systemd user environment")
+
+        return var_count > 0
+
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
+        # systemctl not available or command failed
+        if verbose:
+            print(f"  ⚠️  Could not import into systemd: {e}")
+        return False
+
+
 def distribute_env_vars(dotfiles_dir: Path, machine: str, verbose: bool = True) -> None:
     """
     Main distribution function.
@@ -182,8 +233,12 @@ def distribute_env_vars(dotfiles_dir: Path, machine: str, verbose: bool = True) 
         if verbose:
             print(f"  ✅ Generated {hypr_file}")
 
+    # 4. Import into running systemd session (Linux only)
+    import_systemd_environment(verbose)
+
     if verbose:
         print("  ✨ Environment variable distribution complete!")
+        print("  💡 Run 'exec fish' to reload your current shell")
 
 
 if __name__ == "__main__":
@@ -191,5 +246,3 @@ if __name__ == "__main__":
     dotfiles_dir = Path(__file__).parent.parent
     machine = get_current_machine()
     distribute_env_vars(dotfiles_dir, machine, verbose=True)
-    print("  💡 Reload systemd: systemctl --user daemon-reload")
-    print("  💡 Or restart your session to apply changes")
