@@ -206,6 +206,7 @@ btop/btop.log
 btop/btop.log.1
 btop/themes/tokyonight_deep.theme
 cjar/plates/share/next.md
+cyberdrop-dl
 espanso
 fish/completions
 fish/conf.d/00_environment.fish
@@ -239,6 +240,7 @@ fish/functions/cdroot.fish
 fish/functions/cdtemp.fish
 fish/functions/cnn.fish
 fish/functions/cut_video.fish
+fish/functions/cyberdrop-dl-patched.fish
 fish/functions/delete_gone_branches.fish
 fish/functions/down_d.fish
 fish/functions/down_d.fish.old

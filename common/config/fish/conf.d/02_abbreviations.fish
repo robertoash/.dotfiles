@@ -9,6 +9,7 @@ abbr note thoth
 abbr nv nvim
 abbr pip "uv pip"
 abbr yz yazi
+abbr cdl cyberdrop-dl-patched
 
 ## Buku Bookmarks
 abbr bka "buku --suggest -w --tag ''" # Buku write
