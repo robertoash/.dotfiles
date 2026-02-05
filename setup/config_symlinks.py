@@ -18,8 +18,14 @@ def symlink_configs(dotfiles_dir, hostname, home, machine_config):
     # Track warnings about existing valid symlinks
     symlink_warnings = []
 
+    # Sort by path depth (most specific first) to handle nested configs properly
+    sorted_dirs = sorted(MERGE_DIRS.items(), key=lambda x: x[0].count('/'), reverse=True)
+
+    # Track which subdirectories are handled by more specific rules
+    handled_items = set()
+
     # Process each directory defined in MERGE_DIRS
-    for dir_name, dir_config in MERGE_DIRS.items():
+    for dir_name, dir_config in sorted_dirs:
         target_path = dir_config["target"]
         symlink_dest = dir_config["symlink"]
         symlink_mode = dir_config["symlink_mode"]
@@ -38,13 +44,22 @@ def symlink_configs(dotfiles_dir, hostname, home, machine_config):
             for item in source_dir.iterdir():
                 if item.name == ".gitignore":
                     continue
-                target = symlink_dest / item.name
-                _create_or_replace_symlink(item, target, hostname, symlink_warnings, dotfiles_dir)
+
+                # Skip items handled by more specific rules
+                item_target = symlink_dest / item.name
+                if str(item_target) in handled_items:
+                    continue
+
+                _create_or_replace_symlink(item, item_target, hostname, symlink_warnings, dotfiles_dir)
+
+            # Mark this symlink destination as handled for parent directory processing
+            handled_items.add(str(symlink_dest))
 
         elif symlink_mode == "directory":
             # Symlink the entire directory
             symlink_dest.parent.mkdir(parents=True, exist_ok=True)
             _create_or_replace_symlink(source_dir, symlink_dest, dir_name, symlink_warnings, dotfiles_dir)
+            handled_items.add(str(symlink_dest))
 
     # Handle special cases not covered by MERGE_DIRS
     _handle_special_cases(dotfiles_dir, hostname, home, machine_config)

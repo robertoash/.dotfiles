@@ -21,12 +21,20 @@ from pathlib import Path
 #   symlink_mode: How to create symlinks
 #       - "contents": Symlink each item inside the directory to symlink/{item}
 #       - "directory": Symlink the entire directory to symlink path
+#   mixed_mode_dirs: List of subdirectory names that should be created as real directories
+#                    with their contents symlinked (allows runtime files alongside config)
 #
 MERGE_DIRS = {
     "config": {
         "source": "config",
         "target": "config",
         "symlink": Path.home() / ".config",
+        "symlink_mode": "contents",
+    },
+    "config/cyberdrop-dl": {
+        "source": "config/cyberdrop-dl",
+        "target": "config/cyberdrop-dl",
+        "symlink": Path.home() / ".config" / "cyberdrop-dl",
         "symlink_mode": "contents",
     },
     "secrets": {
