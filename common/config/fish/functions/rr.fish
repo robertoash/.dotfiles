@@ -2,8 +2,8 @@ function rr
     # If in secure_shell, regenerate entire tmp environment before reloading
     if set -q SECURE_SHELL
         # Clean up old temp dirs (except XDG parent dirs which we'll reuse)
-        rm -rf "$XDG_CONFIG_HOME/fish" "$XDG_CONFIG_HOME/yazi"
-        rm -rf "$XDG_DATA_HOME/nvim" "$XDG_DATA_HOME/yazi" "$XDG_DATA_HOME/buku"
+        command rm -rf "$XDG_CONFIG_HOME/fish" "$XDG_CONFIG_HOME/yazi"
+        command rm -rf "$XDG_DATA_HOME/nvim" "$XDG_DATA_HOME/yazi" "$XDG_DATA_HOME/buku"
 
         # Recopy fish config
         rsync -aL ~/.config/fish/ "$XDG_CONFIG_HOME/fish/"

@@ -18,7 +18,7 @@ function lkd
       open_in_browser_rash $url
     end
 
-    rm -f $tmpfile
+    command rm -f $tmpfile
   end
 end
 

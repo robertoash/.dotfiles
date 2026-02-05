@@ -157,7 +157,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
                     --prompt="Select episode > " \
                     --height=40%)
 
-            rm -f $episodes_file
+            command rm -f $episodes_file
 
             if test -z "$selected"
                 echo "No episode selected" >&2
@@ -181,7 +181,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
 
     if test -z "$menu_choice"
         echo "No selection made" >&2
-        rm -f $tmpfile
+        command rm -f $tmpfile
         return 0
     end
 
@@ -203,7 +203,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
 
             if test -z "$category"
                 echo "No category selected" >&2
-                rm -f $tmpfile
+                command rm -f $tmpfile
                 return 0
             end
 
@@ -219,7 +219,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
 
     if test ! -s $tmpfile
         echo "No results found" >&2
-        rm -f $tmpfile
+        command rm -f $tmpfile
         return 1
     end
 
@@ -232,7 +232,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
             --prompt="Select video > " \
             --height=40%)
 
-    rm -f $tmpfile
+    command rm -f $tmpfile
 
     if test -z "$selected"
         echo "No selection made" >&2

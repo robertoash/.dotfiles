@@ -17,7 +17,7 @@ function nzb_here
                 -o DebugTarget=none \
                 $file
                 # Delete .nzb file on success
-                rm $file
+                command rm $file
                 echo "Downloaded and deleted: $file"
             else
                 echo "Failed to download: $file (keeping file)"
@@ -26,7 +26,7 @@ function nzb_here
             # Normal mode
             if nzbget -c ~/.config/nzbget/nzbget.conf -o DestDir="$current_dir" $file
                 # Delete .nzb file on success
-                rm $file
+                command rm $file
                 echo "Downloaded and deleted: $file"
             else
                 echo "Failed to download: $file (keeping file)"

@@ -5,5 +5,5 @@ function yazi
     if set cwd (cat -- "$tmp") && test -n "$cwd" && test "$cwd" != "$PWD"
         builtin cd -- "$cwd"
     end
-    rm -f -- "$tmp"
+    command rm -f -- "$tmp"
 end

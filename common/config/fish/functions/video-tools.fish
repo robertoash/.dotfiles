@@ -443,13 +443,13 @@ function _video_tools_split_single
     if test $should_delete_original -eq 1
         # Skip confirmation if --no-confirm is set
         if test $_video_tools_no_confirm -eq 1
-            rm "$input"
+            command rm "$input"
             echo "Original file deleted."
         else
             # Ask for final confirmation
             read -P "Really delete original file? [y/N]: " final_confirm
             if string match -qi "y*" -- $final_confirm
-                rm "$input"
+                command rm "$input"
                 echo "Original file deleted."
             else
                 echo "Original file kept."
@@ -778,14 +778,14 @@ function _video_tools_process_downscale
 
                 # Check if no-confirm flag is set
                 if test $_video_tools_no_confirm -eq 1
-                    rm "$input"
+                    command rm "$input"
                     mv "$output" "$input"
                     echo "Success! Original deleted (auto-confirmed)."
                 else
                     read -P "Permanently delete original? [y/N]: " confirm
 
                     if string match -qi "y*" -- $confirm
-                        rm "$input"
+                        command rm "$input"
                         mv "$output" "$input"
                         echo "Success! Original deleted."
                     else
@@ -802,7 +802,7 @@ function _video_tools_process_downscale
     else
         echo "Error: Processing failed"
         if test $mode = force
-            rm -f "$output"
+            command rm -f "$output"
         end
         return 1
     end

@@ -13,7 +13,7 @@ function meme
         set temp_download (mktemp --suffix=.gif)
         if not curl -L -o "$temp_download" "$input_file"
             echo "Error: Failed to download from URL"
-            rm "$temp_download" 2>/dev/null
+            command rm "$temp_download" 2>/dev/null
             return 1
         end
         set input_file $temp_download
@@ -181,7 +181,7 @@ function meme
 
         # Add file size optimization - create temp file, check size, and optimize if needed
         set temp_output (mktemp --suffix=.gif)
-        set magick_cmd "$magick_cmd \"$temp_output\"; and if test (stat -c%s \"$temp_output\") -gt 5242880; echo 'Optimizing file size...'; and magick \"$temp_output\" -fuzz 5% -layers Optimize -colors 128 \"$output_file\"; and rm \"$temp_output\" 2>/dev/null; else; mv \"$temp_output\" \"$output_file\"; end"
+        set magick_cmd "$magick_cmd \"$temp_output\"; and if test (stat -c%s \"$temp_output\") -gt 5242880; echo 'Optimizing file size...'; and magick \"$temp_output\" -fuzz 5% -layers Optimize -colors 128 \"$output_file\"; and command rm \"$temp_output\" 2>/dev/null; else; mv \"$temp_output\" \"$output_file\"; end"
     else
         set magick_cmd "$magick_cmd \"$output_file\""
     end
@@ -191,7 +191,7 @@ function meme
 
     # Clean up downloaded file after command is prepared (silence output)
     if test -n "$downloaded_file"
-        set magick_cmd "$magick_cmd; and rm \"$input_file\" 2>/dev/null"
+        set magick_cmd "$magick_cmd; and command rm \"$input_file\" 2>/dev/null"
     end
 
     # Add echo to show output location
