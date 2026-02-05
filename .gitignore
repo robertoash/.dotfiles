@@ -56,6 +56,7 @@ common/config/yazi/plugins/
 
 # Exceptions for custom yazi plugins
 !common/config/yazi/plugins/smart-enter-custom.yazi/
+!common/config/yazi/plugins/select-files-only.yazi/
 
 # Runtime
 **/raycast/extensions/
