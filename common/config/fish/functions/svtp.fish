@@ -103,6 +103,16 @@ function svtp --description "Browse and play SVT Play videos with fzf"
             jq -r '.data.startForSvtPlay.selections[].items[].item | select(.urls) | "\(.name)\t\(.longDescription[0:150] // "")\thttps://www.svtplay.se\(.urls.svtplay)"'
     end
 
+    # Function to search for content by keyword
+    function _search_content
+        set search_term $argv[1]
+        echo '{"query":"{ search(querystring: \"'$search_term'\") { morePages totalHits hits { item { __typename ... on TvSeries { name longDescription urls { svtplay } } ... on TvShow { name longDescription urls { svtplay } } ... on Episode { name longDescription parent { name } urls { svtplay } } ... on Single { name longDescription urls { svtplay } } ... on KidsTvShow { name longDescription urls { svtplay } } } } } }"}' | \
+            curl -s -X POST "https://contento.svt.se/graphql" \
+                -H "Content-Type: application/json" \
+                -d @- | \
+            jq -r '.data.search.hits[].item | select(.urls.svtplay) | if .parent then "\(.parent.name) - \(.name)\t\(.longDescription[0:100] // "")\thttps://www.svtplay.se\(.urls.svtplay)" else "\(.name // "No title")\t\(.longDescription[0:100] // "")\thttps://www.svtplay.se\(.urls.svtplay)" end'
+    end
+
     # If URL or search term provided, play directly
     if test (count $argv) -gt 0
         set input (string join " " $argv)
@@ -122,60 +132,40 @@ function svtp --description "Browse and play SVT Play videos with fzf"
             return 0
         end
 
-        # For other paths or slugs, try to extract the actual video URL(s)
-        # Build the series/show page URL
-        if string match -q "/*" -- $input
-            set page_url "https://www.svtplay.se$input"
-            set slug (echo $input | string replace "/" "")
-        else
-            set slug (string lower $input | string replace -a " " "-")
-            set page_url "https://www.svtplay.se/$slug"
+        # Search for content using the SVT API
+        echo "Searching for: $input" >&2
+        set tmpfile (mktemp)
+        _search_content "$input" > $tmpfile
+
+        if test ! -s $tmpfile
+            echo "No results found for '$input'" >&2
+            command rm -f $tmpfile
+            return 1
         end
 
-        echo "Fetching from: $page_url" >&2
+        set result_count (wc -l < $tmpfile)
 
-        # Fetch the page
-        set page_content (curl -s "$page_url")
-
-        # Extract all unique video URLs and filter by slug to avoid recommendations
-        set video_urls (echo $page_content | grep -oP '"/video/[^"?]+' | string replace -a '"' '' | string replace -a '\\' '' | grep "/$slug" | sort -u)
-        set video_count (echo $video_urls | wc -w)
-
-        if test $video_count -eq 0
-            echo "No videos found" >&2
-            return 1
-        else if test $video_count -eq 1
-            # Single video - play directly
-            set url "https://www.svtplay.se$video_urls"
+        if test $result_count -eq 1
+            # Single result - play directly
+            set url (cat $tmpfile | awk -F '\t' '{print $NF}')
+            command rm -f $tmpfile
             _play_video $url $debug_mode $mpv_flags
             return 0
         else
-            # Multiple videos - it's a series, show in fzf
-            echo "Found $video_count episodes" >&2
-
-            # Create temp file with episodes
-            set episodes_file (mktemp)
-
-            # Extract episode titles and URLs
-            for video_url in $video_urls
-                # Get the episode part from URL (last segment)
-                set episode_name (echo $video_url | awk -F'/' '{print $NF}' | string replace -a "-" " ")
-                printf '%s\t%s\n' "$episode_name" "https://www.svtplay.se$video_url" >> $episodes_file
-            end
-
-            # Show in fzf
-            set selected (cat $episodes_file | \
+            # Multiple results - show in fzf
+            echo "Found $result_count results" >&2
+            set selected (cat $tmpfile | \
                 fzf --delimiter='\t' \
                     --with-nth=1 \
-                    --preview 'echo {2}' \
+                    --preview 'echo {2}; echo; echo {3}' \
                     --preview-window=down:3:wrap \
-                    --prompt="Select episode > " \
+                    --prompt="Select > " \
                     --height=40%)
 
-            command rm -f $episodes_file
+            command rm -f $tmpfile
 
             if test -z "$selected"
-                echo "No episode selected" >&2
+                echo "No selection made" >&2
                 return 0
             end
 
