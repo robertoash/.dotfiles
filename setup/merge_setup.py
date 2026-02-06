@@ -115,7 +115,7 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label):
         source_dir = source_base / source_path
         machine_dir = machine_base / target_path
 
-        if not source_dir.exists() or not machine_dir.exists():
+        if not source_dir.exists():
             continue
 
         total = count_files_to_process(source_dir, machine_dir)

@@ -31,6 +31,12 @@ MERGE_DIRS = {
         "symlink": Path.home() / ".config",
         "symlink_mode": "contents",
     },
+    ".ttydal": {
+        "source": "config/.ttydal",
+        "target": ".ttydal",
+        "symlink": Path.home() / ".ttydal",
+        "symlink_mode": "contents",
+    },
     "config/cyberdrop-dl": {
         "source": "config/cyberdrop-dl",
         "target": "config/cyberdrop-dl",
