@@ -106,11 +106,11 @@ function svtp --description "Browse and play SVT Play videos with fzf"
     # Function to search for content by keyword
     function _search_content
         set search_term $argv[1]
-        echo '{"query":"{ search(querystring: \"'$search_term'\") { morePages totalHits hits { item { __typename ... on TvSeries { name longDescription urls { svtplay } } ... on TvShow { name longDescription urls { svtplay } } ... on Episode { name longDescription parent { name } urls { svtplay } } ... on Single { name longDescription urls { svtplay } } ... on KidsTvShow { name longDescription urls { svtplay } } } } } }"}' | \
+        echo '{"query":"{searchPage(query:\"'$search_term'\",maxHits:100){flat{hits{teaser{name description item{urls{svtplay}}}categoryTeaser{heading slug}}}}}"}' | \
             curl -s -X POST "https://contento.svt.se/graphql" \
                 -H "Content-Type: application/json" \
                 -d @- | \
-            jq -r '.data.search.hits[].item | select(.urls.svtplay) | if .parent then "\(.parent.name) - \(.name)\t\(.longDescription[0:100] // "")\thttps://www.svtplay.se\(.urls.svtplay)" else "\(.name // "No title")\t\(.longDescription[0:100] // "")\thttps://www.svtplay.se\(.urls.svtplay)" end'
+            jq -r '.data.searchPage.flat.hits[] | if .teaser then .teaser | select(.item.urls.svtplay) | "\(.name)\t\(.description[0:100] // "")\thttps://www.svtplay.se\(.item.urls.svtplay)" elif .categoryTeaser then .categoryTeaser | "\(.heading | gsub("<em>|</em>";"";"g"))\t[Category]\thttps://www.svtplay.se/\(.slug)" else empty end'
     end
 
     # If URL or search term provided, play directly
