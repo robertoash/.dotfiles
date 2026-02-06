@@ -348,9 +348,8 @@
     },
 
     "custom/in_office_idle": {
-        "exec": "cat /tmp/waybar/in_office_idle_output.json",
+        "exec": "~/.config/scripts/waybar/in_office_idle_watch.sh",
         "return-type": "json",
-        "interval" : 1,
         "tooltip": true
     },
 
@@ -376,16 +375,14 @@
         "tooltip": true
     },
     "custom/vpn": {
-        "exec": "cat /tmp/waybar/vpn_status_output.json",
-        "interval": 1,
+        "exec": "~/.config/scripts/waybar/vpn_status_watch.sh",
         "return-type": "json",
         "on-click": "python3 ~/.config/scripts/waybar/mullvad_toggle.py",
         "on-click-right": "sh -c 'notify-send -t 5000 \"$(mullvad status)\"'"
     },
     "custom/hypridle": {
         "format": "{}",
-        "exec": "jq -r '.text // \"⚫\"' /tmp/waybar/idle_status.json 2>/dev/null || echo '⚫'",
-        "interval": 1,
+        "exec": "~/.config/scripts/waybar/hypridle_watch.sh",
         "on-click": "~/.config/scripts/waybar/toggle_hypridle.py",
         "tooltip": false
     },
