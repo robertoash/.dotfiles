@@ -398,7 +398,7 @@
     "custom/kanata_mode": {
         "exec": "cat /tmp/kanata_status.json || echo '{\"text\":\"❌ ERROR\",\"class\":\"error\",\"tooltip\":\"Kanata status file not found\"}'",
         "return-type": "json",
-        "interval": 1,
+        "interval": 0.2,
         "format": "{}",
         "on-click-right": "kanata-tools switch --layout",
         "tooltip": true
