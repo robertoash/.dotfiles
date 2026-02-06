@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import subprocess
 import time
 
@@ -342,6 +343,34 @@ def wait_for_window(existing_windows, timeout=None):
             return next(iter(new_windows))
         time.sleep(0.1)  # Check every 100ms
     print("Warning: Window did not appear within timeout.")
+    return None
+
+
+def wait_for_window_by_pid(pid, timeout=15):
+    """Wait for a Hyprland window with a matching PID to appear.
+
+    Args:
+        pid: Process ID to match against client pid fields.
+        timeout: Maximum seconds to wait (default: 15).
+
+    Returns:
+        Window address string if found, None if process died or timeout.
+    """
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        # Check if the process is still alive
+        try:
+            os.kill(pid, 0)
+        except OSError:
+            return None
+
+        clients = get_clients()
+        if clients:
+            for client in clients:
+                if client.get("pid") == pid:
+                    return client.get("address")
+
+        time.sleep(0.1)
     return None
 
 

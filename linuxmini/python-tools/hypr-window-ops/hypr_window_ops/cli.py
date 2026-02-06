@@ -13,6 +13,7 @@ from . import (
     stash_manager,
     switch_ws_on_monitor,
     window_cycling,
+    window_manager,
     window_properties,
 )
 
@@ -499,6 +500,25 @@ Examples:
         """,
     )
 
+    # Wait for window by PID
+    window_wait_parser = subparsers.add_parser(
+        "window-wait",
+        help="Wait for a window with a given PID to appear",
+        description="Block until a Hyprland window with the given PID appears, or the process dies/times out.",
+    )
+    window_wait_parser.add_argument(
+        "--pid",
+        type=int,
+        required=True,
+        help="Process ID to wait for",
+    )
+    window_wait_parser.add_argument(
+        "--timeout",
+        type=float,
+        default=15,
+        help="Timeout in seconds (default: %(default)s)",
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -587,6 +607,9 @@ Examples:
         return monitor_toggle.toggle_active_monitor()
     elif args.command == "cycle-windows":
         return window_cycling.cycle_windows()
+    elif args.command == "window-wait":
+        address = window_manager.wait_for_window_by_pid(args.pid, timeout=args.timeout)
+        return 0 if address else 1
     else:
         parser.print_help()
         return 1
