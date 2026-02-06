@@ -30,6 +30,7 @@ from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
 from zen_app_windowrules import generate_zen_app_windowrules
 from zellij_mcp_setup import setup_zellij_mcp
+from qmd_setup import setup_qmd
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -79,6 +80,10 @@ setup_claude_config(dotfiles_dir, hostname)
 # Step 6.5.0.1: Setup Zellij MCP Server (for Claude Code integration)
 # Set skip_install=True after initial setup to speed up subsequent runs
 setup_zellij_mcp(dotfiles_dir, skip_install=False)
+
+# Step 6.5.0.2: Setup qmd (Query Markup Documents - local semantic search)
+# Set skip_install=True after initial setup to speed up subsequent runs
+setup_qmd(dotfiles_dir, skip_install=False)
 
 # Step 6.5.1: Setup beads integration
 setup_beads_integration(dotfiles_dir)
