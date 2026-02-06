@@ -5,7 +5,7 @@ Setup desktop files and launch agents.
 import subprocess
 from pathlib import Path
 
-from symlinks import create_symlink
+from symlink_utils import create_symlink
 
 
 def setup_desktop_files(dotfiles_dir, hostname, home):

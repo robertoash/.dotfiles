@@ -6,7 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from config import MERGE_DIRS
-from symlinks import merge_common_into_machine
+from symlink_utils import merge_common_into_machine
 
 
 def count_files_to_process(common_path, machine_path):

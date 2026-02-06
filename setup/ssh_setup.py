@@ -5,7 +5,7 @@ Setup SSH config and authorized_keys.
 import subprocess
 from pathlib import Path
 
-from symlinks import create_symlink
+from symlink_utils import create_symlink
 
 
 def setup_ssh(dotfiles_dir, hostname, home):

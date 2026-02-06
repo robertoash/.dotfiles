@@ -6,7 +6,7 @@ import subprocess
 from pathlib import Path
 
 from config import MERGE_DIRS
-from symlinks import create_symlink
+from symlink_utils import create_symlink
 
 
 def symlink_configs(dotfiles_dir, hostname, home, machine_config):
