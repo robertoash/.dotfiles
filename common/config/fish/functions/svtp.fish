@@ -45,6 +45,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
                             mpv $flags "$hls_url"
                         else
                             mpv $flags "$hls_url" &
+                            disown
                             if not hypr-window-ops window-wait --pid $last_pid
                                 echo "svtp: Playback failed. Run with --debug for details." >&2
                                 return 1
@@ -64,6 +65,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
             mpv $flags $url
         else
             mpv $flags $url &
+            disown
             if not hypr-window-ops window-wait --pid $last_pid
                 echo "svtp: Playback failed. Run with --debug for details." >&2
                 return 1
