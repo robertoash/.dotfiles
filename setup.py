@@ -28,7 +28,7 @@ from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
 from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
-from zen_windowrule_setup import generate_zen_windowrule_setup
+from zen_windowrule_setup import generate_zen_app_windowrules
 from zellij_mcp_setup import setup_zellij_mcp
 from qmd_setup import setup_qmd
 
@@ -100,7 +100,7 @@ distribute_env_vars(dotfiles_dir, hostname, verbose=True)
 # Step 6.7: Generate zen app window rules (Linux only, Hyprland only)
 hypr_config_exists = (dotfiles_dir / hostname / "config" / "hypr" / "script_configs" / "zen_apps.json").exists()
 if machine_config["is_linux"] and hypr_config_exists:
-    generate_zen_windowrule_setup(dotfiles_dir, hostname, verbose=True)
+    generate_zen_app_windowrules(dotfiles_dir, hostname, verbose=True)
 
 # Step 7: Rsync desktop files (Linux only)
 if machine_config["is_linux"]:

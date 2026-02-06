@@ -20,5 +20,10 @@
     "type": "stdio",
     "command": "node",
     "args": ["/home/rash/.local/share/zellij-mcp-server/dist/index.js"]
+  },
+  "qmd": {
+    "type": "stdio",
+    "command": "qmd",
+    "args": ["mcp"]
   }
 }

@@ -82,7 +82,7 @@ mkinitcpio###40-4###pacman
 mpv-mpris###1.2-1###pacman
 mullvad-browser-bin###15.0.4-1###pacman
 nano###8.7.1-1###pacman
-neovim-git###0.12.0.r2216.gba6440c106-1###pacman
+neovim-git###0.12.0.r2217.g7720e52a0b-1###pacman
 networkmanager###1.54.3-1###pacman
 noto-fonts###1:2026.02.01-1###pacman
 noto-fonts-emoji###1:2.051-1###pacman
@@ -156,7 +156,7 @@ brother-dcpl2530dw###4.0.0_1-1###aur
 buku###5.1-1###aur
 claude-code###2.1.34-1###aur
 fish-lsp###1.1.3-1###aur
-hyprwhspr###1.18.14-1###aur
+hyprwhspr###1.18.15-1###aur
 kanata-bin###1.10.1-1###aur
 mullvad-vpn-bin###2025.14-1###aur
 pyprland-git###r1765.ecb5fef-1###aur
