@@ -19,15 +19,20 @@ return {
 				}
 			end
 		end,
-		formatters_by_ft = {
-			lua = { "stylua" },
-			python = { "black" },
-			sql = { "sqlfluff" },
-		},
-		formatters = {
+		formatters_by_ft = (function()
+			local ft = {
+				lua = { "stylua" },
+				python = { "black" },
+			}
+			if vim.fn.hostname():match("workmbp") then
+				ft.sql = { "sqlfluff" }
+			end
+			return ft
+		end)(),
+		formatters = vim.fn.hostname():match("workmbp") and {
 			sqlfluff = {
 				args = { "format", "--dialect=snowflake", "-" },
-			}
-		},
+			},
+		} or {},
 	},
 }

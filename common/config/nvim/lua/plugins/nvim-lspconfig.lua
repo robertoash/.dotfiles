@@ -171,22 +171,19 @@ return {
 					},
 				},
 			},
-			sqls = {
+		}
+
+		-- Work Mac only: SQL language server
+		if vim.fn.hostname():match("workmbp") then
+			servers.sqls = {
 				cmd = { "sqls" },
 				settings = {
 					sqls = {
-						connections = {
-							-- Snowflake connection (can also be in ~/.config/sqls/config.yml)
-							-- Uncomment and configure as needed:
-							-- {
-							--   driver = 'snowflake',
-							--   dataSourceName = 'username:password@account/database/schema?warehouse=warehouse_name',
-							-- }
-						}
-					}
-				}
-			},
-		}
+						connections = {},
+					},
+				},
+			}
+		end
 
 		-- Ensure the servers and tools above are installed
 		-- Note: sqls is installed manually, not Mason
