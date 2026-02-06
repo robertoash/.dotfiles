@@ -179,7 +179,7 @@ function svtp --description "Browse and play SVT Play videos with fzf"
 
     # Show main menu if no arguments
     echo "Loading menu..." >&2
-    set menu_choice (printf "Popular\nCategories\nAll Content" | \
+    set menu_choice (printf "Editor's Pick\nCategories\nAll Content" | \
         fzf --prompt="Select > " \
             --height=40% \
             --header="SVT Play Browser")
@@ -192,8 +192,8 @@ function svtp --description "Browse and play SVT Play videos with fzf"
 
     # Handle menu choice
     switch $menu_choice
-        case "Popular"
-            echo "Fetching popular content..." >&2
+        case "Editor's Pick"
+            echo "Fetching editor's picks..." >&2
             # Fetch from the "Populärt" (popular_start) selection
             _get_content_from_selection "popular_start" | sort -u > $tmpfile
 
