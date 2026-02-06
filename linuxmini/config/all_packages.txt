@@ -51,7 +51,7 @@ gtk4###1:4.20.3-1###pacman
 hyprcursor-git###0.1.13.r0.g44e91d4-1.32###pacman
 hyprgraphics-git###0.5.0.r2.g583331e-1###pacman
 hypridle-git###0.1.7.r3.g833eb85-1.5###pacman
-hyprland-git###0.53.3.r81.g9ce9ef2-1###pacman
+hyprland-git###0.53.3.r83.g8606bc2-1###pacman
 hyprland-guiutils-git###0.2.1.r0.gc2e9062-1.14###pacman
 hyprlang-git###0.6.8.r1.gd403737-1.1###pacman
 hyprlock-git###0.9.2.r9.gef3017f-1.8###pacman
@@ -82,7 +82,7 @@ mkinitcpio###40-4###pacman
 mpv-mpris###1.2-1###pacman
 mullvad-browser-bin###15.0.4-1###pacman
 nano###8.7.1-1###pacman
-neovim-git###0.12.0.r2207.ge198037148-1###pacman
+neovim-git###0.12.0.r2216.gba6440c106-1###pacman
 networkmanager###1.54.3-1###pacman
 noto-fonts###1:2026.02.01-1###pacman
 noto-fonts-emoji###1:2.051-1###pacman
@@ -101,7 +101,7 @@ pipewire-pulse###1:1.4.10-2###pacman
 poppler###26.01.0-1###pacman
 pv###1.10.3-1###pacman
 python-adblock###0.6.0-5###pacman
-python-curl_cffi###0.14.0-1###pacman
+python-curl_cffi###0.14.0-2###pacman
 python-dotenv###1.2.1-2###pacman
 python-keyrings-alt###1:5.0.2-3###pacman
 python-markdown###3.10.1-1###pacman
@@ -136,7 +136,7 @@ typst###1:0.14.2-1###pacman
 ufw###0.36.2-7###pacman
 ugrep###7.5.0-1###pacman
 unrar###1:7.2.4-1###pacman
-uv###0.9.30-1###pacman
+uv###0.10.0-1###pacman
 vulkan-headers###1:1.4.335.0-2###pacman
 vulkan-tools###1.4.335.0-1###pacman
 w3m###0.5.5-1###pacman
@@ -148,15 +148,15 @@ wl-clipboard-rs###0.9.2-1###pacman
 wtype###0.4-2###pacman
 xdg-desktop-portal-hyprland-git###1.3.11.r1.g4b88012-1.31###pacman
 yay###12.5.7-1###pacman
-yazi-git###26.1.22.r18.g6757fed-1###pacman
+yazi-git###26.1.22.r19.gdc66f79-1###pacman
 yq###3.4.3-3###pacman
 zathura###2026.02.03-2###pacman
 zathura-pdf-poppler###2026.02.03-1###pacman
 brother-dcpl2530dw###4.0.0_1-1###aur
 buku###5.1-1###aur
-claude-code###2.1.32-2###aur
+claude-code###2.1.34-1###aur
 fish-lsp###1.1.3-1###aur
-hyprwhspr###1.18.13-1###aur
+hyprwhspr###1.18.14-1###aur
 kanata-bin###1.10.1-1###aur
 mullvad-vpn-bin###2025.14-1###aur
 pyprland-git###r1765.ecb5fef-1###aur
@@ -177,9 +177,11 @@ git-delta###v0.18.2###cargo
 ripdrag###v0.4.11###cargo
 search###v1.1.0###cargo
 spotify_player###v0.21.3###cargo
+systemctl-tui###v0.5.1###cargo
 tealdeer###v1.8.1###cargo
 thoth-cli###v0.1.87###cargo
 topgrade###v16.9.0###cargo
+watchexec-cli###v2.3.3###cargo
 yazi-build###v26.1.22###cargo
 zellij###v0.43.1###cargo
 zoxide###v0.9.9###cargo
@@ -189,7 +191,7 @@ homeassistant-cli###v0.9.6###uv
 hypr-window-ops###v0.1.0###uv
 kanata-tools###v0.1.0###uv
 shell-gpt###v1.5.0###uv
-ttydal###v1.1.0###uv
+ttydal###v1.2.0###uv
 yt-dlp###v2026.2.4###uv
 TD-Sky/sudo###86205aa###ya
 @mermaid-js/mermaid-cli###11.12.0###npm
@@ -225,7 +227,7 @@ distlib###0.4.0###pip3
 dnspython###2.8.0###pip3
 dulwich###0.25.2###pip3
 editables###0.5###pip3
-evdev###1.9.2###pip3
+evdev###1.9.3###pip3
 eventlet###0.40.4###pip3
 fastjsonschema###2.21.2###pip3
 filelock###3.20.3###pip3

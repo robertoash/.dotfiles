@@ -200,6 +200,7 @@ espanso/match/secrets.yaml
 fish/functions/br.fish
 
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
+.ttydal
 broot
 btop/btop.conf
 btop/btop.log
