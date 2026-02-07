@@ -70,16 +70,35 @@
 
 
 ;; ===============================================
-;; ARROW LAYER (Space-activated)
+;; ARROW LAYER (held-A + held-S activated)
 ;; ===============================================
 
-;; Arrow layer activated by holding space - ijkl=arrows, h=backspace, n=home, m=end, ö=Return
+;; Arrow layer activated by holding A (SUPER) + S (CTRL) via mods-left-only
+;; Uses unmod to strip SUPER+CTRL modifiers for clean arrow output
+;; Transparent (_) for non-arrow keys so other modifier combos still work
 (deflayer arrows
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    (unmod up)   _    _    _    _ _
+  _    _    _    _    _    _    (unmod bspc) (unmod left) (unmod down) (unmod rght) (unmod ret) _    _
+  _    _    _    _    _    _    _    (unmod home) (unmod end) _    _    _    _
+  _    _    _                  _                       _         _
+)
+
+;; ===============================================
+;; NAVIGATION LAYER (Space-activated)
+;; ===============================================
+
+;; Workspace switching and absolute focus via cmd actions
+;; Home row mods mirror base layer: a=meta, s=ctrl, d=alt, f=shift, j=shift, k=alt, l=ctrl, ö=meta
+;; Shift sub-modifier (F/J hold) switches between workspace switch and absolute focus
+;; Same-hand restriction via shared mods-left-only/mods-right-only layers
+(deflayer navigation
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
-  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    XX   XX   XX   XX   XX   XX   XX   up   XX   XX   XX   ¨ ret
-  _    XX   XX   XX   XX   XX   bspc left down rght ret  XX   '
-  lsft <    XX   XX   XX   XX   XX   home end  ,    .    -    rsft
+  grv  1    2    3    4    5    6    7    @nav-8 @nav-9 0  +    ´    bspc
+  @nav-tab XX  XX   XX   XX   XX   XX   XX   XX   XX   XX   XX   ¨ ret
+  _    @nav-a @nav-s @nav-d @nav-f XX   XX   @nav-j @nav-k @nav-l @nav-ö ä    '
+  lsft <    XX   XX   XX   XX   XX   @nav-n XX   ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
 
@@ -108,7 +127,7 @@
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
   _    q    w    e    r    t    y    u    i    o    p    å    ¨ ret
-  _    lmet lctl lalt lsft g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
+  _    lmet (multi lctl (layer-while-held arrows)) lalt lsft g    h    @j-immediate @k-immediate @l-immediate @ö-immediate ä    '
   lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
@@ -156,12 +175,12 @@
   ))
 
 
-  ;; Space with arrow layer on hold - long hold time for responsiveness
+  ;; Space with navigation layer on hold - long hold time for responsiveness
   spc-mods (switch
     ;; If a key was pressed very recently, output space (prevents layer activation during fast typing)
     ((key-timing 1 less-than 120)) spc break
-    ;; Otherwise, use tap-hold for space/arrow layer with long hold threshold (350ms)
-    () (tap-hold-release 50 350 spc (layer-while-held arrows)) break
+    ;; Otherwise, use tap-hold for space/navigation layer with long hold threshold (350ms)
+    () (tap-hold-release 50 350 spc (layer-while-held navigation)) break
   )
 
   ;; ==============================================================================
@@ -213,6 +232,76 @@
   s-immediate s
   d-immediate d
   f-immediate f
+
+  ;; ==============================================================================
+  ;; NAVIGATION LAYER ALIASES (Space-activated)
+  ;; ==============================================================================
+  ;; Home row mods with same-hand restriction, fork for shift sub-modifier
+  ;; No typing streak detection needed (user deliberately held space to enter nav mode)
+
+  ;; Non-home-row navigation keys
+  nav-tab (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops cycle-windows")
+  nav-8 (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace m-1")
+  nav-9 (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace m+1")
+  nav-n (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops switch-ws next")
+
+  ;; Left home row: tap=fork(ws-switch/absolute-focus on rsft), hold=modifier+same-hand-restriction
+  nav-a (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 11")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location left master")
+      (rsft))
+    (multi lmet (layer-while-held mods-left-only)))
+
+  nav-s (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 12")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location left slave1")
+      (rsft))
+    (multi lctl (layer-while-held mods-left-only)))
+
+  nav-d (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 13")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location left slave2")
+      (rsft))
+    (multi lalt (layer-while-held mods-left-only)))
+
+  nav-f (tap-hold-release 150 250
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 14")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location left slave3")
+      (rsft))
+    lsft)
+
+  ;; Right home row: tap=fork(ws-switch/absolute-focus on lsft), hold=modifier+same-hand-restriction
+  nav-j (tap-hold-release 150 250
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 1")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location right master")
+      (lsft))
+    rsft)
+
+  nav-k (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 2")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location right slave1")
+      (lsft))
+    (multi lalt (layer-while-held mods-right-only)))
+
+  nav-l (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 3")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location right slave2")
+      (lsft))
+    (multi rctl (layer-while-held mods-right-only)))
+
+  nav-ö (tap-hold-release 150 350
+    (fork
+      (cmd /usr/bin/bash -c "/usr/bin/hyprctl dispatch workspace 4")
+      (cmd /usr/bin/bash -c "/home/rash/.local/bin/hypr-window-ops focus_location right slave3")
+      (lsft))
+    (multi rmet (layer-while-held mods-right-only)))
 
   ;; ==============================================================================
   ;; COLEMAK-SPECIFIC HOME ROW MODS
