@@ -162,6 +162,29 @@ Examples:
         metavar="N|next",
     )
 
+    # Workspace subcommand (direct workspace dispatch via hyprctl)
+    ws_parser = subparsers.add_parser(
+        "workspace",
+        help="Switch to a workspace by ID or relative specifier",
+        description="""
+Switch to a workspace using hyprctl dispatch. Accepts absolute workspace IDs
+(e.g., 1, 11) or monitor-relative specifiers (e.g., m-1, m+1).
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  hypr-window-ops workspace 1
+  hypr-window-ops workspace 11
+  hypr-window-ops workspace m-1
+  hypr-window-ops workspace m+1
+        """,
+    )
+    ws_parser.add_argument(
+        "target",
+        help="Workspace ID (e.g., 1, 11) or relative specifier (e.g., m-1, m+1)",
+        metavar="TARGET",
+    )
+
     # Window property commands
     # Pin window without dimming
     pin_parser = subparsers.add_parser(
@@ -544,6 +567,11 @@ Examples:
             print("Argument must be an integer or 'next'.")
             return 1
         return switch_ws_on_monitor.switch_to_nth_workspace_on_focused_monitor(n)
+    elif args.command == "workspace":
+        window_manager.run_hyprctl_command(
+            ["dispatch", "workspace", args.target]
+        )
+        return 0
     elif args.command == "pin-nodim":
         window_properties.pin_window_without_dimming(
             relative_floating=args.relative_floating,

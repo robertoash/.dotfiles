@@ -4,12 +4,32 @@ import json
 import os
 import subprocess
 import time
+from pathlib import Path
 
 from . import config
 
 
+def _ensure_hyprland_env():
+    """Auto-detect HYPRLAND_INSTANCE_SIGNATURE if not already set.
+
+    Needed when called from contexts without the user session environment
+    (e.g., kanata system service).
+    """
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE"):
+        return
+    runtime_dir = os.environ.get("XDG_RUNTIME_DIR", "/run/user/1000")
+    hypr_dir = Path(runtime_dir) / "hypr"
+    if hypr_dir.exists():
+        instances = sorted(
+            hypr_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True
+        )
+        if instances:
+            os.environ["HYPRLAND_INSTANCE_SIGNATURE"] = instances[0].name
+
+
 def run_hyprctl(command):
     """Run a hyprctl command and return the parsed JSON output."""
+    _ensure_hyprland_env()
     result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"Error running {' '.join(command)}: {result.stderr}")
@@ -19,6 +39,7 @@ def run_hyprctl(command):
 
 def run_hyprctl_command(command):
     """Run a hyprctl command that doesn't return JSON (like dispatch, setprop)."""
+    _ensure_hyprland_env()
     result = subprocess.run(["hyprctl"] + command, capture_output=True, text=True)
     return result.returncode == 0
 
