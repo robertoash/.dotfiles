@@ -40,10 +40,55 @@ def symlink_systemd_services(source_dir, target_dir, label):
     return count
 
 
+def install_system_services(source_dir, target_dir):
+    """Install system-level systemd service files (requires sudo)"""
+    if not source_dir.exists():
+        return 0
+
+    count = 0
+    for service_file in source_dir.glob("*.service"):
+        target_file = target_dir / service_file.name
+
+        # Check if file already exists and is identical
+        needs_update = True
+        if target_file.exists():
+            try:
+                source_content = service_file.read_text()
+                target_content = target_file.read_text()
+                if source_content == target_content:
+                    needs_update = False
+                    print(f"  ✅ {service_file.name} (system) is already up to date")
+            except PermissionError:
+                pass
+
+        if needs_update:
+            print(f"  🔧 Installing {service_file.name} to {target_dir} (requires sudo)...")
+            result = subprocess.run(
+                ["sudo", "cp", str(service_file), str(target_file)]
+            )
+            if result.returncode == 0:
+                print(f"  ✅ Installed {service_file.name} (system)")
+                count += 1
+            else:
+                print(f"  ⚠️  Failed to install {service_file.name}")
+
+    return count
+
+
 def reload_systemd_daemon(dotfiles_dir, hostname, machine_config):
     """Setup systemd services and reload daemon (Linux only)"""
     print("\n⚙️  Step 9: Setting up systemd services...")
 
+    # --- System-level services (requires sudo) ---
+    machine_system_systemd = dotfiles_dir / hostname / "systemd" / "system"
+    system_target = Path("/etc/systemd/system")
+    system_count = install_system_services(machine_system_systemd, system_target)
+
+    if system_count > 0:
+        subprocess.run(["sudo", "systemctl", "daemon-reload"], check=False)
+        print("  🔄 Systemd system daemon reloaded")
+
+    # --- User-level services ---
     systemd_config_dir = Path.home() / ".config" / "systemd" / "user"
     machine_systemd = dotfiles_dir / hostname / "systemd" / "user"
 

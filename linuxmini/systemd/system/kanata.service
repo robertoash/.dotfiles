@@ -1,0 +1,19 @@
+[Unit]
+  Description=Kanata keyboard remapper
+  Documentation=https://github.com/jtroo/kanata
+
+  [Service]
+  Type=simple
+  ExecStart=/usr/bin/kanata_cmd_allowed --cfg /home/rash/.config/kanata/config.kbd --port 5829
+  Restart=always
+  RestartSec=3
+
+  # Security settings
+  NoNewPrivileges=true
+  ProtectSystem=full
+
+  # Device access
+  SupplementaryGroups=input uinput
+
+  [Install]
+  WantedBy=multi-user.target
