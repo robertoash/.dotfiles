@@ -6,6 +6,7 @@ black
 broot
 btop
 cjar
+cyberdrop-dl
 espanso
 fastfetch
 fish/completions
@@ -35,8 +36,10 @@ fish/functions/bko.fish
 fish/functions/cdroot.fish
 fish/functions/cdtemp.fish
 fish/functions/cut_video.fish
+fish/functions/cyberdrop-dl-patched.fish
 fish/functions/delete_gone_branches.fish
 fish/functions/down_d.fish
+fish/functions/down_d.fish.old
 fish/functions/empty_file.fish
 fish/functions/faa.fish
 fish/functions/fdd.fish
@@ -58,6 +61,7 @@ fish/functions/integrity.fish
 fish/functions/last_mods.fish
 fish/functions/lkd.fish
 fish/functions/loadenv.fish
+fish/functions/meme.fish
 fish/functions/mkdircd.fish
 fish/functions/mullvad.fish
 fish/functions/mv.fish
