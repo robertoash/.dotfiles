@@ -73,13 +73,13 @@
 ;; ARROW LAYER (Space-activated)
 ;; ===============================================
 
-;; Arrow layer activated by holding space - ijkl=arrows, h=backspace, n=home, m=end, ö=Return
+;; Arrow layer activated by holding space - vim hjkl=arrows, g=backspace, m=home, ,=end
 (deflayer arrows
   esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
   grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
-  _    XX   XX   XX   XX   XX   XX   XX   up   XX   XX   XX   ¨ ret
-  _    XX   XX   XX   XX   XX   bspc left down rght ret  XX   '
-  lsft <    XX   XX   XX   XX   XX   home end  ,    .    -    rsft
+  _    XX   XX   XX   XX   XX   XX   bspc XX   XX   XX   XX   ¨ ret
+  _    XX   XX   XX   XX   XX   left down up   rght XX   XX   '
+  lsft <    XX   XX   XX   XX   XX   XX   home end  .    -    rsft
   lctl lmet lalt                 _                    ralt        rctl
 )
 
