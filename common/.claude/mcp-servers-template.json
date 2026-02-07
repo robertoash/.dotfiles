@@ -1,26 +1,4 @@
 {
-  "memory": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-memory"],
-    "env": {
-      "MEMORY_FILE_PATH": "/home/rash/.claude/memory.json"
-    }
-  },
-  "hass-mcp": {
-    "type": "stdio",
-    "command": "docker",
-    "args": ["run", "-i", "--rm", "-e", "HA_URL", "-e", "HA_TOKEN", "voska/hass-mcp"],
-    "env": {
-      "HA_URL": "http://10.20.10.100:8123",
-      "HA_TOKEN": "{{CLAUDE_HA_TOKEN_GLOBAL}}"
-    }
-  },
-  "zellij": {
-    "type": "stdio",
-    "command": "node",
-    "args": ["/home/rash/.local/share/zellij-mcp-server/dist/index.js"]
-  },
   "qmd": {
     "type": "stdio",
     "command": "qmd",

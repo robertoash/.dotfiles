@@ -1,0 +1,11 @@
+{
+  "hass-mcp": {
+    "type": "stdio",
+    "command": "docker",
+    "args": ["run", "-i", "--rm", "-e", "HA_URL", "-e", "HA_TOKEN", "voska/hass-mcp"],
+    "env": {
+      "HA_URL": "http://10.20.10.100:8123",
+      "HA_TOKEN": "{{CLAUDE_HA_TOKEN_GLOBAL}}"
+    }
+  }
+}

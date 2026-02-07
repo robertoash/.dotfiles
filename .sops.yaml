@@ -48,6 +48,13 @@ creation_rules:
           - *linuxmini  # Can access from linuxmini for editing
           - *workmbp
 
+  # Machine-specific Claude secrets: workmbp
+  - path_regex: workmbp/secrets/claude\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini  # Can access from linuxmini for editing
+          - *workmbp
+
   # Claude Code secrets for all machines
   - path_regex: common/secrets/claude\.yaml$
     key_groups:

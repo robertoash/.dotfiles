@@ -1,13 +1,4 @@
 {
-  "dbt": {
-    "type": "stdio",
-    "command": "uvx",
-    "args": ["dbt-mcp"],
-    "env": {
-      "DBT_PROJECT_DIR": "/Users/rash/dev/dbt/dbt_production",
-      "DBT_PATH": "/opt/homebrew/bin/dbt"
-    }
-  },
   "atlassian": {
     "type": "stdio",
     "command": "uvx",
@@ -19,15 +10,5 @@
       "JIRA_PROJECTS_FILTER": "AN2",
       "CONFLUENCE_SPACES_FILTER": "AN"
     }
-  },
-  "claude-flow": {
-    "type": "stdio",
-    "command": "npx",
-    "args": ["claude-flow@v3alpha", "mcp", "start"]
-  },
-  "zellij": {
-    "type": "stdio",
-    "command": "node",
-    "args": ["/Users/rash/.local/share/zellij-mcp-server/dist/index.js"]
   }
 }
