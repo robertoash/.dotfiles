@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import json
+import socket
 import subprocess
 import time
 
@@ -14,6 +16,44 @@ def run_command(cmd):
 def get_active_window():
     """Get information about the active window."""
     return window_manager.run_hyprctl(["activewindow", "-j"])
+
+
+def get_mpv_video_aspect_ratio():
+    """Get video aspect ratio from MPV via IPC socket.
+
+    Returns:
+        float: Aspect ratio (width/height), or None if unavailable
+    """
+    import glob
+
+    # Try to find MPV socket (try fixed path first, then any /tmp/mpv* socket)
+    socket_paths = ["/tmp/mpvsocket"] + glob.glob("/tmp/mpv*")
+
+    for socket_path in socket_paths:
+        try:
+            # Connect to MPV IPC socket
+            sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            sock.settimeout(0.5)
+            sock.connect(socket_path)
+
+            # Send command to get video aspect ratio
+            command = json.dumps({"command": ["get_property", "video-params/aspect"]}) + "\n"
+            sock.sendall(command.encode("utf-8"))
+
+            # Read response
+            response_data = sock.recv(4096).decode("utf-8").strip()
+            sock.close()
+
+            # Parse response
+            response = json.loads(response_data)
+            if response.get("error") == "success" and "data" in response:
+                aspect = response["data"]
+                if aspect and aspect > 0:
+                    return aspect
+        except (socket.error, json.JSONDecodeError, Exception):
+            continue
+
+    return None
 
 
 def pin_window_without_dimming(relative_floating=False, sneaky=False):
@@ -45,10 +85,25 @@ def pin_window_without_dimming(relative_floating=False, sneaky=False):
         current_corner = monitor_utils.detect_window_corner(window_info)
         target_corner = current_corner if current_corner else "lower-left"
 
-        # Resize to 1228x691 (16:9, doubles to 2456x1382 to match master window width)
+        # Calculate window size based on video aspect ratio
+        width = 1228  # Fixed width (half of 2456 for doubling)
+        height = 691  # Default height for 16:9
+
+        # Try to detect video aspect ratio for video players
+        window_class = window_info.get("class", "").lower()
+        if "mpv" in window_class or "vlc" in window_class:
+            aspect_ratio = get_mpv_video_aspect_ratio()
+            if aspect_ratio:
+                # Calculate height to maintain video's aspect ratio
+                height = int(width / aspect_ratio)
+                print(f"Detected video aspect ratio: {aspect_ratio:.3f}, using size {width}x{height}")
+            else:
+                print(f"Could not detect aspect ratio, using default 16:9 ({width}x{height})")
+
+        # Resize window with calculated dimensions
         window_manager.run_hyprctl_command([
             "dispatch", "resizewindowpixel",
-            f"exact 1228 691,address:{window_id}"
+            f"exact {width} {height},address:{window_id}"
         ])
         # Pin the window and set nodim property
         window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{window_id}"])
