@@ -1,0 +1,47 @@
+/* Claude Usage Page - Minimal View */
+/* Apply to: URLs starting with https://claude.ai/settings/usage */
+
+/* Hide the left sidebar navigation */
+nav[aria-label="Settings navigation"],
+aside,
+[role="navigation"] {
+    display: none !important;
+}
+
+/* Hide the top header/banner */
+header,
+[role="banner"] {
+    display: none !important;
+}
+
+/* Hide the settings sidebar specifically */
+[class*="SettingsSidebar"],
+[class*="sidebar"],
+div[class*="Sidebar"] {
+    display: none !important;
+}
+
+/* Make the main content area take full width */
+main {
+    margin-left: 0 !important;
+    padding-left: 20px !important;
+    max-width: 100% !important;
+}
+
+/* Expand content wrapper */
+[class*="content"],
+[class*="Content"] {
+    max-width: 100% !important;
+    margin: 0 auto !important;
+}
+
+/* Adjust the page container */
+body {
+    overflow-x: hidden !important;
+}
+
+/* Hide any back buttons or breadcrumbs */
+button[aria-label*="Back"],
+[class*="breadcrumb"] {
+    display: none !important;
+}

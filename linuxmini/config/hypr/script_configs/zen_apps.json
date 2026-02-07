@@ -36,6 +36,16 @@
       "profile_directory": "app",
       "app_url": "https://claude.ai"
     },
+    "claude-usage": {
+      "profile_directory": "app",
+      "app_url": "https://claude.ai/settings/usage",
+      "window_rules": {
+        "float": true,
+        "pin": true,
+        "size": "900 800",
+        "move": "(monitor_w-window_w-26) 26"
+      }
+    },
     "google_calendar": {
       "profile_directory": "app",
       "app_url": "https://calendar.google.com"
