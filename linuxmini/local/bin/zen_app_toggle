@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Toggle zen app windows (close if open, launch if closed)"""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+
+def get_zen_app_url(zen_app_name: str) -> str | None:
+    """Get the app URL from zen_apps.json"""
+    zen_apps_json = Path.home() / ".config/hypr/script_configs/zen_apps.json"
+
+    if not zen_apps_json.exists():
+        print("❌ zen_apps.json not found")
+        return None
+
+    with open(zen_apps_json) as f:
+        zen_apps = json.load(f)
+
+    # Check both url and extension sections
+    for section in ["url", "extension"]:
+        if zen_app_name in zen_apps.get(section, {}):
+            return zen_apps[section][zen_app_name].get("app_url")
+
+    return None
+
+
+def find_window_by_url(url: str) -> str | None:
+    """Find window address by matching URL in class field"""
+    # Extract domain from URL for matching
+    domain = url.replace("https://", "").replace("http://", "").split("/")[0]
+
+    # Get all clients from hyprctl
+    result = subprocess.run(
+        ["hyprctl", "clients", "-j"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+
+    clients = json.loads(result.stdout)
+
+    # Find window with matching class (e.g., "brave-claude.ai__settings_usage-app")
+    for client in clients:
+        if domain in client.get("class", ""):
+            return client["address"]
+
+    return None
+
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ["--help", "-h"]:
+        print("Usage: zen_app_toggle <zen-app-name>")
+        print("Toggle a zen app window (close if open, launch if closed)")
+        print()
+        print("Example: zen_app_toggle claude-usage")
+        sys.exit(0)
+
+    zen_app_name = sys.argv[1]
+
+    # Get the app URL
+    app_url = get_zen_app_url(zen_app_name)
+    if not app_url:
+        print(f"❌ Zen app '{zen_app_name}' not found in zen_apps.json")
+        sys.exit(1)
+
+    # Check if window exists
+    window_address = find_window_by_url(app_url)
+
+    if window_address:
+        # Window exists, close it by address
+        subprocess.run(
+            ["hyprctl", "dispatch", "closewindow", f"address:{window_address}"],
+            check=True
+        )
+    else:
+        # Window doesn't exist, launch it
+        subprocess.run(
+            ["chrome_launch", "--profile", zen_app_name],
+            check=True
+        )
+
+
+if __name__ == "__main__":
+    main()

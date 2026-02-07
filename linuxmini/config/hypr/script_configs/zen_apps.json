@@ -42,7 +42,7 @@
       "window_rules": {
         "float": true,
         "pin": true,
-        "size": "900 800",
+        "size": "1025 775",
         "move": "(monitor_w-window_w-26) 26"
       }
     },
