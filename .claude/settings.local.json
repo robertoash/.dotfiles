@@ -62,7 +62,9 @@
       "mcp__zellij__zellij_focus_pane",
       "Bash(mullvad status:*)",
       "Bash(pgrep:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(xargs cat:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": [],
