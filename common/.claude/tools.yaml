@@ -4,14 +4,3 @@
 # Tool fields:
 #   install: Command to run if tool is not found on PATH
 #   update: Command to run if tool is already installed (runs every setup.py execution)
-
-codegraph:
-  enabled: false
-  type: stdio
-  command: codegraph
-  args: ["serve", "--mcp"]
-  install: "unset NPM_CONFIG_PREFIX && npm install -g @colbymchenry/codegraph"
-  update: "unset NPM_CONFIG_PREFIX && npm update -g @colbymchenry/codegraph"
-  permissions:
-    allow:
-      - "mcp__codegraph__*"

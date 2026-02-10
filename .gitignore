@@ -85,5 +85,4 @@ common/config/qutebrowser/profiles/linuxmini/jobhunt/config/autoconfig.yml
 .bv/
 common/config/qalculate/qalc.history
 /.claude
-/.codegraph
 .tasks.md
