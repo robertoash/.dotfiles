@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "setup"))
 
 # Import setup modules
+from backup_setup import backup_configs, restore_configs
 from beads_setup import setup_beads_integration
 from claude_setup import setup_claude_config
 from symlink_setup import symlink_configs
@@ -114,6 +115,9 @@ if machine_config["is_linux"]:
 # Step 10: Setup backup crontab (Linux only)
 if machine_config["is_linux"]:
     setup_crontab(dotfiles_dir, hostname)
+
+# Step 11: Backup application configs that break symlinks
+backup_configs(dotfiles_dir, hostname)
 
 # Print warnings about existing valid symlinks if any
 if symlink_warnings:

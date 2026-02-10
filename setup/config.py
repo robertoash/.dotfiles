@@ -37,12 +37,6 @@ MERGE_DIRS = {
         "symlink": Path.home() / ".ttydal",
         "symlink_mode": "contents",
     },
-    ".sqlit": {
-        "source": "config/.sqlit",
-        "target": ".sqlit",
-        "symlink": Path.home() / ".sqlit",
-        "symlink_mode": "contents",
-    },
     "config/cyberdrop-dl": {
         "source": "config/cyberdrop-dl",
         "target": "config/cyberdrop-dl",
@@ -66,5 +60,23 @@ MERGE_DIRS = {
         "target": "systemd/user",
         "symlink": None,  # Handled specially: ~/.config/systemd -> machine/systemd
         "symlink_mode": None,
+    },
+}
+
+# Configs that get overwritten by applications (breaking symlinks)
+# These are backed up from home directory to machine/bkup with secrets masked
+# target is relative to machine directory (e.g., workmbp/bkup/.sqlit)
+BACKUP_CONFIGS = {
+    ".sqlit": {
+        "source": Path.home() / ".sqlit",
+        "target": "bkup/.sqlit",  # Relative to machine dir (workmbp/bkup/.sqlit)
+        "secrets_mask": {
+            "connections.json": [
+                {
+                    "json_path": "connections[*].options.private_key_file_pwd",
+                    "placeholder": "{{SNOWFLAKE_KEY_PWD}}"
+                }
+            ]
+        }
     },
 }
