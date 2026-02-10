@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SOPS-encrypted sqlit wrapper
+# Decrypts connections.json before running sqlit, re-encrypts on exit
+
+set -euo pipefail
+
+SQLIT_DIR="$HOME/.sqlit"
+CONNECTIONS_FILE="$SQLIT_DIR/connections.json"
+SQLIT_BIN="$HOME/.local/share/uv/tools/sqlit-tui/bin/sqlit"
+
+# Verify real sqlit exists
+if [[ ! -x "$SQLIT_BIN" ]]; then
+    echo "Error: Cannot find real sqlit at $SQLIT_BIN" >&2
+    exit 1
+fi
+
+# Check if connections file exists
+if [[ ! -f "$CONNECTIONS_FILE" ]]; then
+    echo "No connections.json found. Running sqlit normally..." >&2
+    exec "$SQLIT_BIN" "$@"
+fi
+
+# Check if file is SOPS-encrypted (JSON format has ENC[...] markers)
+if ! grep -q "ENC\[AES256_GCM," "$CONNECTIONS_FILE" 2>/dev/null; then
+    echo "⚠️  Warning: $CONNECTIONS_FILE is not SOPS-encrypted!" >&2
+    echo "Run: sops --config /dev/null -e --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 -i $CONNECTIONS_FILE" >&2
+    echo "Running sqlit anyway..." >&2
+    exec "$SQLIT_BIN" "$@"
+fi
+
+# Decrypt connections.json
+echo "🔓 Decrypting connections.json..." >&2
+sops -d "$CONNECTIONS_FILE" > "$CONNECTIONS_FILE.decrypted"
+
+# Set up trap to re-encrypt on exit (even if killed)
+cleanup() {
+    local exit_code=$?
+    echo "🔒 Re-encrypting connections.json..." >&2
+    # Re-encrypt the current file using the original SOPS metadata
+    sops --config /dev/null --encrypt --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 "$CONNECTIONS_FILE" > "$CONNECTIONS_FILE.tmp"
+    mv "$CONNECTIONS_FILE.tmp" "$CONNECTIONS_FILE"
+    rm -f "$CONNECTIONS_FILE.decrypted"
+    exit $exit_code
+}
+trap cleanup EXIT INT TERM
+
+# Replace encrypted file with decrypted version
+mv "$CONNECTIONS_FILE.decrypted" "$CONNECTIONS_FILE"
+
+# Run sqlit
+"$SQLIT_BIN" "$@"

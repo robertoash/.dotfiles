@@ -55,6 +55,13 @@ creation_rules:
           - *linuxmini  # Can access from linuxmini for editing
           - *workmbp
 
+  # Machine-specific backup configs: workmbp
+  - path_regex: workmbp/bkup/.*\.json$
+    key_groups:
+      - age:
+          - *linuxmini  # Can access from linuxmini for editing
+          - *workmbp
+
   # Claude Code secrets for all machines
   - path_regex: common/secrets/claude\.yaml$
     key_groups:

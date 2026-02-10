@@ -1,61 +1,72 @@
 {
-  "version": 2,
+  "version": "ENC[AES256_GCM,data:mg==,iv:1QJoR2OJVGDhPV+BuIvrQZgVRJJtNX41nToM72aMQ04=,tag:9CDmyttIcsnTVilniLU7Fw==,type:float]",
   "connections": [
     {
-      "name": "snow_dev",
-      "db_type": "snowflake",
+      "name": "ENC[AES256_GCM,data:kEM7ht23WO4=,iv:0joM/lQSTLrqwuUO5mmWjAbDfmTRg15u9x8Z3woxT90=,tag:OFwQIbgaq4ZtCUKyV/ijvQ==,type:str]",
+      "db_type": "ENC[AES256_GCM,data:fuEgX8pWUPTx,iv:Hndbv1LPciqpyoIWZdlJZltLaLhgXhXsk+KW/Kcb+aw=,tag:WMgpw0PJCasTt2oPxhD01Q==,type:str]",
       "source": null,
       "connection_url": null,
       "folder_path": "",
       "extra_options": {},
       "options": {
-        "authenticator": "snowflake_jwt",
-        "private_key_file": "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8",
-        "private_key_file_pwd": "{{SNOWFLAKE_KEY_PWD}}",
+        "authenticator": "ENC[AES256_GCM,data:/L6yak0p740U4Z9FXg==,iv:cw5yjSaouuufA2Y+5d6XiVLLvelmvMnsXbBwZFubsfQ=,tag:MhuBDz+pr4UHLqKOUjqOvQ==,type:str]",
+        "private_key_file": "ENC[AES256_GCM,data:xOMvsPBL2/uNM6225koFOWMzYzUS5238pN5MNbknWa0nyk9MHrlsoaRndv+gNyvX+FEer48=,iv:tbDcesEVbbmKpT/pCVJaHZj/3QBaT2Rkmh4/RiQi7eM=,tag:U6IuHGB88ONOukYjzoE2tw==,type:str]",
         "oauth_token": "",
-        "warehouse": "ANALYTICS_WH",
+        "warehouse": "ENC[AES256_GCM,data:tAWOrIsfsrZ4hMsU,iv:k2w7GtG5jn/HzgqJfY6Tx6JRouHAaNlSrZUxYKEj1YE=,tag:dJmib/SLJYJYhAm9ZPzVSw==,type:str]",
         "schema": "",
-        "role": "DEVELOPER_ANALYTICS"
+        "role": "ENC[AES256_GCM,data:ysBOe2RYz7u+ayRpYqErwBtYlQ==,iv:o9J7WJSlu0wwDa4GYL8mwhNtU4axZaZVA3KcWc0pVyA=,tag:azPYbgDXyvj/YV58YWhrEw==,type:str]"
       },
       "endpoint": {
-        "kind": "tcp",
-        "host": "oz91619.eu-west-1",
+        "kind": "ENC[AES256_GCM,data:85FD,iv:h1N7dqDMEYmfNsyZUV/XDanGTB/vN6DZ4GphHAbpAa4=,tag:92GAmO3FS3yEUE420b4nig==,type:str]",
+        "host": "ENC[AES256_GCM,data:e6cLsgCs1VPgGSAyVL/45B8=,iv:DCPJShcVtGEmITHxSv9E1Ej2HZRrN9vRFDHtP/Sba84=,tag:OsJuVoQw6l2wyMmofkbY/A==,type:str]",
         "port": "",
-        "database": "READLY_DEV",
-        "username": "ROBERTO.ASH@READLY.COM",
+        "database": "ENC[AES256_GCM,data:hXrNIiFZvQCcKg==,iv:4rHdsxRFsGf33Ig+fDwefMRQf75hvbeMUR3s/2HNG3s=,tag:ZvtFe6OYb/XqJgX7CIj3hQ==,type:str]",
+        "username": "ENC[AES256_GCM,data:mL8NBPlX8nfM70rJldb9FdqXqn694A==,iv:ELTSJGgKkYc1377M4BK272pKDz4xiRn7UoJlk4wM6DM=,tag:swuFZue1X+4lILtJeMkY1Q==,type:str]",
         "password": null
       },
       "tunnel": {
-        "enabled": false
+        "enabled": "ENC[AES256_GCM,data:ZYUPtnA=,iv:9JUu1bBFPaapgXz3EU+Di01ESOgpuHjmZeBJSRtYtE4=,tag:fKhPLLg4H9/VP01GFoR97A==,type:bool]"
       }
     },
     {
-      "name": "snow_prod",
-      "db_type": "snowflake",
+      "name": "ENC[AES256_GCM,data:OpmboXyIXv4m,iv:KKKeCiC3HAaMCRdWHj+glHDGHPTysgl+aY2lKadAxIc=,tag:0Zhn2ieZrKUJzXam4k6GsA==,type:str]",
+      "db_type": "ENC[AES256_GCM,data:qDDQNxU28zFk,iv:CZEy5lZvlBaTrnPnvz8nsLHTI69oYiPVdGY/xNxoL2Q=,tag:Q+i/psgWVk6g30CuG+aiLQ==,type:str]",
       "source": null,
       "connection_url": null,
       "folder_path": "",
       "extra_options": {},
       "options": {
-        "authenticator": "snowflake_jwt",
-        "private_key_file": "/Users/rash/.dotfiles/workmbp/secrets/keys/rsa_key_snowflake.p8",
+        "authenticator": "ENC[AES256_GCM,data:PSBg6eW0ZloTO/kEWw==,iv:imjL+/oSmJcUrQ1prsqIM4CvRrT2U/Dd2p1rC0WkwQM=,tag:nObTDQ1NFO07LJkHaiDNxw==,type:str]",
+        "private_key_file": "ENC[AES256_GCM,data:OuepS4WN4Pya1hLXbuXb9Cwsxa4ia5CTLEy/q6vz7weLhiWrcFJ6Viuurl2efmiFL9W+gWbkwWjysYNLENZK,iv:rNHEnHYvsSkPxdNyt/QudSlakoRPI41nDzy8b2gn8ns=,tag:6JYHSZ2cTfF3bRaT+GgbEw==,type:str]",
         "private_key_file_pwd": "{{SNOWFLAKE_KEY_PWD}}",
         "oauth_token": "",
-        "warehouse": "ANALYTICS_WH",
+        "warehouse": "ENC[AES256_GCM,data:PCxOwmISr3qQWRi1,iv:kOJcVlgnxao+MS0px7wlyA32lIjoY8xFk3zTCrmVU/Y=,tag:MwPOvpZBfpsNlRXofZAX1w==,type:str]",
         "schema": "",
-        "role": "DEVELOPER_ANALYTICS"
+        "role": "ENC[AES256_GCM,data:a+eKO1puyMslQvqGm2QewjvBZA==,iv:Hfbj4BQ32hrFICQpnJs6TXU1Y6u1209ohx3kayop3Os=,tag:M/1+MwywSoXZDpW1s0VOyg==,type:str]"
       },
       "endpoint": {
-        "kind": "tcp",
-        "host": "oz91619.eu-west-1",
+        "kind": "ENC[AES256_GCM,data:Kn1R,iv:LGxEXBMjuAokj+st/00zxx9DFG2eb6gwsF3Vbr5HZqI=,tag:CFC9fkCcvYVx82nmZz7pfg==,type:str]",
+        "host": "ENC[AES256_GCM,data:zo4OQpZm/7TOktGr1QNpxW0=,iv:+2jR14gXRe2fHIaQZJQnHjX4IMwD5CsxRSxd4/SPqu8=,tag:UKOG8jXkH0Vhc8tE3Oue3Q==,type:str]",
         "port": "",
-        "database": "READLY",
-        "username": "ROBERTO.ASH@READLY.COM",
+        "database": "ENC[AES256_GCM,data:tDJTLz11,iv:wwGALFQJ1p89vQjiDLwzo4bZXuYGgsLS6CS729lpr0U=,tag:2jsgrShpCa4xFMtzTi2S2w==,type:str]",
+        "username": "ENC[AES256_GCM,data:+jCjCFZZhIrKYpb//xWTdaO5Jet0tg==,iv:AIenweu3HOKizMD2SAcO+fkFFCyTCDEfR39wxaJX7f8=,tag:DRlFsAfPLZeR1hracXyX7A==,type:str]",
         "password": null
       },
       "tunnel": {
-        "enabled": false
+        "enabled": "ENC[AES256_GCM,data:apJC9hA=,iv:TDbF7MKtPNbzbJZU7ji65wAcusLV/qEEYnpJ/CDo404=,tag:AD7ic4z/3Ycs/drFXTDmLA==,type:bool]"
       }
     }
-  ]
+  ],
+  "sops": {
+    "age": [
+      {
+        "recipient": "age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7",
+        "enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBKUHB4RU1jb1kya0JDK25r\nQUxFMkdReWRXTThRZ0F4SlJLYlphdHUwTUVjCnlsZjNPd1FzVDFJWWcrbFR3MjNv\nYS9hQk91bllzcXhFNFp6L2pYbU40ZzQKLS0tIHFybjlmUEx2VjdUSENTRVp3anJn\nVHJlQi9XY252VnZxVXRKeFNjajFqeG8KTvY8nRvdh1jm+S5zqt9Nzv8O5E49OrFt\nn1tLnVC19t+DowU3z+0HhkZI8zXqhr9CuFpGf0QeNnYHVV2fUrR3Xw==\n-----END AGE ENCRYPTED FILE-----\n"
+      }
+    ],
+    "lastmodified": "2026-02-10T12:56:49Z",
+    "mac": "ENC[AES256_GCM,data:YUPbCbjsfLJ9HstdZKs0YVjORtHxalmlxtLN4FDSNkztEs0FqkjpGbqeQ6oKlhsIosRAgPKJ9DoO0mff/NF6FfaFHDW/bdu/9wl2yuVQ/Km49ZwGFTCjqyVpSV56IWAU9JfE1aB/H7x+mjm8T5BC3Q3irRfsfe1Le3OJEgVmwJA=,iv:pS5H/YTDHoVulaBzSR0n3tyJxu8FqREpAYgxzGCJMjc=,tag:SDYwQcz1jXAWFGAKLXxYIg==,type:str]",
+    "unencrypted_suffix": "_unencrypted",
+    "version": "3.11.0"
+  }
 }
