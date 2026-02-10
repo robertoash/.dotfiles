@@ -219,7 +219,6 @@ def play_video(url, debug_mode=False):
                             # Verify URL is accessible
                             check = subprocess.run(
                                 ['curl', '-sf', '--max-time', '10', hls_url],
-                                capture_output=True,
                                 stdout=subprocess.DEVNULL,
                                 stderr=subprocess.DEVNULL
                             )
