@@ -136,6 +136,49 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label):
             update_gitignore(machine_dir, all_symlink_paths, dotfiles_dir)
 
 
+def merge_machine_specific(dotfiles_dir, hostname):
+    """
+    Handle machine-specific configs where source and target paths differ
+    but no common/linuxcommon source exists. Merges machine/source → machine/target
+    so the symlink step can find the target directory.
+    """
+    machine_base = dotfiles_dir / hostname
+    other_bases = [dotfiles_dir / "common", dotfiles_dir / "linuxcommon"]
+
+    for dir_name, dir_config in MERGE_DIRS.items():
+        source_path = dir_config["source"]
+        target_path = dir_config["target"]
+
+        if source_path == target_path:
+            continue
+
+        # Skip if any shared source already handled this
+        if any((base / source_path).exists() for base in other_bases):
+            continue
+
+        machine_source = machine_base / source_path
+        machine_target = machine_base / target_path
+
+        if not machine_source.exists():
+            continue
+
+        total = count_files_to_process(machine_source, machine_target)
+        if total == 0:
+            continue
+
+        progress_info = {"current": 0, "total": total, "name": f"{hostname}/{source_path}"}
+        icon = _get_icon(source_path)
+        print(f"{icon} Merging {hostname}/{source_path}... (0/{total} processed)", end='', flush=True)
+
+        all_symlink_paths = merge_common_into_machine(
+            machine_source, machine_target, machine_target, dotfiles_dir, progress_info=progress_info
+        )
+        print()
+
+        if all_symlink_paths:
+            update_gitignore(machine_target, all_symlink_paths, dotfiles_dir)
+
+
 def merge_common_directories(dotfiles_dir, hostname):
     """Merge common directories into machine-specific directories"""
     print("\n🔀 Step 1: Merging common directories into machine-specific directories...")

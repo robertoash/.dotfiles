@@ -37,6 +37,12 @@ MERGE_DIRS = {
         "symlink": Path.home() / ".ttydal",
         "symlink_mode": "contents",
     },
+    ".sqlit": {
+        "source": "config/.sqlit",
+        "target": ".sqlit",
+        "symlink": Path.home() / ".sqlit",
+        "symlink_mode": "contents",
+    },
     "config/cyberdrop-dl": {
         "source": "config/cyberdrop-dl",
         "target": "config/cyberdrop-dl",

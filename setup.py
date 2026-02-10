@@ -20,7 +20,7 @@ from dictation_setup import setup_dictation
 from env_distribution import distribute_env_vars
 from hosts_setup import setup_hosts
 from machines import get_machine_config
-from merge_setup import merge_common_directories
+from merge_setup import merge_common_directories, merge_machine_specific
 from pacman_setup import setup_pacman
 from pam_setup import setup_pam
 from security_setup import setup_security
@@ -45,6 +45,9 @@ merge_common_directories(dotfiles_dir, hostname)
 if machine_config["is_linux"]:
     from merge_setup import merge_linuxcommon_directories
     merge_linuxcommon_directories(dotfiles_dir, hostname)
+
+# Step 1.6: Merge machine-specific configs with non-standard targets
+merge_machine_specific(dotfiles_dir, hostname)
 
 # Step 2-3: Symlink configs to ~/.config and handle special cases
 symlink_warnings = symlink_configs(dotfiles_dir, hostname, home, machine_config)
