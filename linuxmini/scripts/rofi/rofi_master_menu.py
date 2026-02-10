@@ -8,6 +8,7 @@ MENU_ITEMS = [
     ("😀 Emoji Selector", "rofimoji --skin-tone medium-light -a clipboard copy --selector rofi --clipboarder wl-copy --typer wtype"),
     ("📺 IPTV", "~/.config/scripts/iptv/rofi_xtream.py"),
     ("🎬 Jellyfin", "~/.config/scripts/rofi/rofi_jellyfin.py"),
+    ("📼 SVT Play", "~/.config/scripts/rofi/rofi_svtp.py"),
     ("▶ Youtube Watch Later", "~/.config/scripts/rofi/rofi_yt_watchlater.py"),
     ("⌨ Hyprland Keybinds", "~/.config/scripts/rofi/rofi_hypr_keybinds.py"),
 ]
