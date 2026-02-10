@@ -41,6 +41,12 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Plans and design documents
+docs/plans/
+
+# Git worktrees
+.worktrees/
+
 # System files
 # Systemd auto-generated .wants directories
 **/*.wants/
