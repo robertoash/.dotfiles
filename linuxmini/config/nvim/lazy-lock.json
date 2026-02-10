@@ -46,6 +46,6 @@
   "vim-pencil": { "branch": "master", "commit": "6d70438a8886eaf933c38a7a43a61adb0a7815ed" },
   "which-key.nvim": { "branch": "main", "commit": "3aab2147e74890957785941f0c1ad87d0a44c15a" },
   "wrapwidth": { "branch": "main", "commit": "a766191a1cd24ebb95d669ebd4a440c50d7f4422" },
-  "yanky.nvim": { "branch": "main", "commit": "29f31f75afe9adf40b85a48756b349807064be5d" },
-  "yazi.nvim": { "branch": "main", "commit": "fac5ebc2fdc7ce856849b47beca06e6f7d2b1800" }
+  "yanky.nvim": { "branch": "main", "commit": "9d3caea67cf183639d4e510d34f2d58b6109abdd" },
+  "yazi.nvim": { "branch": "main", "commit": "2c7951bf48e60e5b3434b7e0fe48f7ba965c3a25" }
 }
