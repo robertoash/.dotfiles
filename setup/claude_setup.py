@@ -65,19 +65,34 @@ def load_tools_yaml(path):
 
 
 def run_install_hook(tool_name, tool_config):
-    """Run a tool's install hook if its command isn't on PATH."""
+    """Run a tool's install or update hook based on whether command exists."""
     install_cmd = tool_config.get("install")
-    if not install_cmd:
-        return
+    update_cmd = tool_config.get("update")
     command = tool_config.get("command", "")
-    if shutil.which(command):
+
+    if not install_cmd and not update_cmd:
         return
-    print(f"  📦 Installing {tool_name}: {install_cmd}")
-    try:
-        subprocess.run(install_cmd, shell=True, check=True, capture_output=True, text=True)
-        print(f"  ✅ Installed {tool_name}")
-    except subprocess.CalledProcessError as e:
-        print(f"  ⚠️  Install hook failed for {tool_name}: {e.stderr}", file=sys.stderr)
+
+    command_exists = shutil.which(command)
+
+    # If command exists and we have an update hook, run update
+    if command_exists and update_cmd:
+        print(f"  🔄 Updating {tool_name}: {update_cmd}")
+        try:
+            subprocess.run(update_cmd, shell=True, check=True, capture_output=True, text=True)
+            print(f"  ✅ Updated {tool_name}")
+        except subprocess.CalledProcessError as e:
+            print(f"  ⚠️  Update hook failed for {tool_name}: {e.stderr}", file=sys.stderr)
+        return
+
+    # If command doesn't exist and we have an install hook, run install
+    if not command_exists and install_cmd:
+        print(f"  📦 Installing {tool_name}: {install_cmd}")
+        try:
+            subprocess.run(install_cmd, shell=True, check=True, capture_output=True, text=True)
+            print(f"  ✅ Installed {tool_name}")
+        except subprocess.CalledProcessError as e:
+            print(f"  ⚠️  Install hook failed for {tool_name}: {e.stderr}", file=sys.stderr)
 
 
 # Keys from tools.yaml that map directly to MCP server config
