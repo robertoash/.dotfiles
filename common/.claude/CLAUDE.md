@@ -8,20 +8,6 @@
 - When working with unfamiliar tools, APIs, configuration formats, or syntax, look up the official documentation FIRST using WebFetch/WebSearch before attempting to write code
 - If you find yourself saying "let me try..." more than once for the same issue, that's a signal to search online instead
 
-## QMD (Semantic Code Search) Usage
-**Search modes:**
-- Use `query` (hybrid) as default - combines full-text + semantic + LLM reranking
-- Use `vsearch` (semantic) for conceptual queries without exact keywords
-- Use `search` (BM25) only when you know exact phrases that appear in code
-
-**Critical: Don't trust snippets**
-- qmd returns snippets, not full context - snippet browsing creates false confidence
-- Always read complete files with `mcp__qmd__get` after finding candidates
-- Use manual Glob/Grep when qmd results seem incomplete
-- Verify understanding by reading full implementations
-
-The lesson: qmd is good for discovery, but you must manually verify by reading full files - especially when code has comments explaining what's happening.
-
 ## Code Guidelines
 - Never add "Generated with Claude Code" and "Co-Authored-By: Claude" lines to commit messages. It's unnecesary bloat.
 - Remembrance comments are comments designed to give context to code that no longer exists. It explains, for example, why something was removed. They dont make any sense to those not directly involved in the project at that point in time. We never use remembrance comments in our codebase. Comments should be concise and always give context to existing code (preferrably in the near vicinity of the comment).

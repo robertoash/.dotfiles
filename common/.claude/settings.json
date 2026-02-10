@@ -61,8 +61,7 @@
       "Bash(docker images*)",
       "Bash(docker logs*)",
       "Bash(bd *)",
-      "Bash(systemctl --user *)",
-      "Bash(zellij *)"
+      "Bash(systemctl --user *)"
     ],
     "deny": [
       "Read(**/.env)",

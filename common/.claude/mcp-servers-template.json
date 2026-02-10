@@ -1,7 +1,1 @@
-{
-  "qmd": {
-    "type": "stdio",
-    "command": "qmd",
-    "args": ["mcp"]
-  }
-}
+{}
