@@ -1,0 +1,65 @@
+{
+  "version": 2,
+  "connections": [
+    {
+      "name": "Snowflake Dev",
+      "db_type": "snowflake",
+      "source": null,
+      "connection_url": null,
+      "folder_path": "",
+      "extra_options": {},
+      "options": {
+        "auth_type": "sql",
+        "trusted_connection": false,
+        "authenticator": "snowflake_jwt",
+        "private_key_file": "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8",
+        "private_key_file_pwd": "",
+        "oauth_token": "",
+        "warehouse": "ANALYTICS_WH",
+        "schema": "",
+        "role": "DEVELOPER_ANALYTICS"
+      },
+      "endpoint": {
+        "kind": "tcp",
+        "host": "oz91619.eu-west-1",
+        "port": "",
+        "database": "READLY_DEV",
+        "username": "ROBERTO.ASH@READLY.COM",
+        "password": null
+      },
+      "tunnel": {
+        "enabled": false
+      }
+    },
+    {
+      "name": "Snowflake Prod",
+      "db_type": "snowflake",
+      "source": null,
+      "connection_url": null,
+      "folder_path": "",
+      "extra_options": {},
+      "options": {
+        "auth_type": "sql",
+        "trusted_connection": false,
+        "authenticator": "snowflake_jwt",
+        "private_key_file": "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8",
+        "private_key_file_pwd": "",
+        "oauth_token": "",
+        "warehouse": "ANALYTICS_WH",
+        "schema": "",
+        "role": "DEVELOPER_ANALYTICS"
+      },
+      "endpoint": {
+        "kind": "tcp",
+        "host": "oz91619.eu-west-1",
+        "port": "",
+        "database": "READLY",
+        "username": "ROBERTO.ASH@READLY.COM",
+        "password": null
+      },
+      "tunnel": {
+        "enabled": false
+      }
+    }
+  ]
+}
