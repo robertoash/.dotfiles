@@ -6,6 +6,7 @@
 #   update: Command to run if tool is already installed (runs every setup.py execution)
 
 codegraph:
+  enabled: false
   type: stdio
   command: codegraph
   args: ["serve", "--mcp"]
