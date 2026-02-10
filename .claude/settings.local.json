@@ -61,7 +61,8 @@
       "mcp__zellij__zellij_write_to_pane",
       "mcp__zellij__zellij_focus_pane",
       "Bash(mullvad status:*)",
-      "Bash(pgrep:*)"
+      "Bash(pgrep:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": [],
