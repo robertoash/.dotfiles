@@ -55,8 +55,8 @@ creation_rules:
           - *linuxmini  # Can access from linuxmini for editing
           - *workmbp
 
-  # Machine-specific backup configs: workmbp
-  - path_regex: workmbp/bkup/.*\.json$
+  # Machine-specific configs: workmbp (sqlit, etc.)
+  - path_regex: workmbp/config/\.sqlit/.*\.json$
     key_groups:
       - age:
           - *linuxmini  # Can access from linuxmini for editing

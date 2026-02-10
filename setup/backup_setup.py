@@ -44,8 +44,19 @@ def mask_secrets_in_json(data, masks):
     return data
 
 
+def is_sops_encrypted(file_path):
+    """Check if a file is SOPS-encrypted"""
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read(1000)
+            # JSON: ENC[AES256_GCM,...], YAML: sops: metadata
+            return 'ENC[AES256_GCM,' in content or 'sops:' in content
+    except:
+        return False
+
+
 def backup_configs(dotfiles_dir, hostname):
-    """Backup configs from home directory to dotfiles with secrets masked"""
+    """Backup configs from home directory to dotfiles with optional secrets masking"""
     print("\n💾 Backing up application configs...")
 
     machine_dir = dotfiles_dir / hostname
@@ -69,8 +80,13 @@ def backup_configs(dotfiles_dir, hostname):
                 source_file = item
                 target_file = target / item.name
 
+                # Check if file is already SOPS-encrypted
+                if is_sops_encrypted(source_file):
+                    # Already encrypted - just copy as-is
+                    shutil.copy2(source_file, target_file)
+                    print(f"    ✅ {item.name} (SOPS-encrypted)")
                 # Check if this file needs secrets masking
-                if item.name in secrets_mask:
+                elif item.name in secrets_mask:
                     # JSON file with secrets to mask
                     with open(source_file) as f:
                         data = json.load(f)

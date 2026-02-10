@@ -1,6 +1,7 @@
 {
   "theme": "rose-pine",
   "expanded_nodes": [
+    "conn:snow_dev",
     "conn:snow_prod"
   ]
 }

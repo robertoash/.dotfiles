@@ -28,24 +28,26 @@ if ! grep -q "ENC\[AES256_GCM," "$CONNECTIONS_FILE" 2>/dev/null; then
     exec "$SQLIT_BIN" "$@"
 fi
 
-# Decrypt connections.json
+# Decrypt connections.json in place (preserves symlinks)
 echo "🔓 Decrypting connections.json..." >&2
-sops -d "$CONNECTIONS_FILE" > "$CONNECTIONS_FILE.decrypted"
+TEMP_FILE="$CONNECTIONS_FILE.$$"
+sops -d "$CONNECTIONS_FILE" > "$TEMP_FILE"
 
 # Set up trap to re-encrypt on exit (even if killed)
 cleanup() {
     local exit_code=$?
     echo "🔒 Re-encrypting connections.json..." >&2
-    # Re-encrypt the current file using the original SOPS metadata
-    sops --config /dev/null --encrypt --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 "$CONNECTIONS_FILE" > "$CONNECTIONS_FILE.tmp"
-    mv "$CONNECTIONS_FILE.tmp" "$CONNECTIONS_FILE"
-    rm -f "$CONNECTIONS_FILE.decrypted"
+    # Re-encrypt in place (preserves symlinks)
+    sops --config /dev/null --encrypt --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 "$CONNECTIONS_FILE" > "$TEMP_FILE"
+    cat "$TEMP_FILE" > "$CONNECTIONS_FILE"
+    rm -f "$TEMP_FILE"
     exit $exit_code
 }
 trap cleanup EXIT INT TERM
 
-# Replace encrypted file with decrypted version
-mv "$CONNECTIONS_FILE.decrypted" "$CONNECTIONS_FILE"
+# Replace encrypted content with decrypted content (preserves symlink)
+cat "$TEMP_FILE" > "$CONNECTIONS_FILE"
+rm -f "$TEMP_FILE"
 
 # Run sqlit
 "$SQLIT_BIN" "$@"
