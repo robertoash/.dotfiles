@@ -27,7 +27,7 @@ global:
   # NOTE: TERM is set by terminal emulator itself, don't override
 
   # Paths
-  PATH: $PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/.cargo/bin:$HOME/.bun/bin
+  PATH: $PATH:$HOME/.local/bin:$HOME/go/bin:$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.npm-global/bin
 
   # Application configs
   GTK2_RC_FILES: $HOME/.config/gtk-2.0/gtkrc-2.0
