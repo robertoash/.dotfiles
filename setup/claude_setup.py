@@ -1,18 +1,24 @@
 """
 Claude Code configuration setup with sops-encrypted secrets.
+
+Reads declarative tools.yaml manifests to configure MCP servers,
+substituting sops-encrypted secrets and optionally running install hooks.
 """
 
 import json
 import os
+import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 
 def decrypt_secrets(secrets_file):
-    """Decrypt sops secrets file and return as dict"""
+    """Decrypt sops secrets file and return as dict."""
     try:
-        # Set age key file path to speed up decryption
         env = os.environ.copy()
         age_key_file = Path.home() / ".config" / "sops" / "age" / "keys.txt"
         if age_key_file.exists():
@@ -23,15 +29,9 @@ def decrypt_secrets(secrets_file):
             capture_output=True,
             text=True,
             check=True,
-            env=env
+            env=env,
         )
-        # Parse YAML output - simple parser to avoid PyYAML dependency
-        secrets = {}
-        for line in result.stdout.split('\n'):
-            if ':' in line and not line.strip().startswith('#'):
-                key, value = line.split(':', 1)
-                secrets[key.strip()] = value.strip()
-        return secrets
+        return yaml.safe_load(result.stdout) or {}
     except subprocess.CalledProcessError as e:
         print(f"⚠️  Error decrypting secrets: {e.stderr}", file=sys.stderr)
         return None
@@ -40,25 +40,52 @@ def decrypt_secrets(secrets_file):
         return None
 
 
-def substitute_secrets(template_str, secrets):
-    """Replace {{PLACEHOLDER}} with actual secret values"""
-    replacements = {
-        "{{CLAUDE_GITHUB_TOKEN}}": secrets.get("github-token", ""),
-        "{{CLAUDE_HA_TOKEN_GLOBAL}}": secrets.get("ha-token-global", ""),
-        "{{OBSIDIAN_API_KEY}}": secrets.get("obsidian-api-key", ""),
-        "{{JIRA_URL}}": secrets.get("jira-url", ""),
-        "{{JIRA_USERNAME}}": secrets.get("jira-username", ""),
-        "{{JIRA_API_TOKEN}}": secrets.get("jira-api-token", ""),
-    }
+def substitute_secrets(value, secrets):
+    """Replace {{key}} placeholders with secret values recursively."""
+    if isinstance(value, str):
+        return re.sub(
+            r"\{\{(.+?)\}\}",
+            lambda m: str(secrets.get(m.group(1), m.group(0))),
+            value,
+        )
+    if isinstance(value, list):
+        return [substitute_secrets(item, secrets) for item in value]
+    if isinstance(value, dict):
+        return {k: substitute_secrets(v, secrets) for k, v in value.items()}
+    return value
 
-    for placeholder, value in replacements.items():
-        template_str = template_str.replace(placeholder, value)
 
-    return template_str
+def load_tools_yaml(path):
+    """Load a tools.yaml manifest, returning {} if missing or empty."""
+    if not path.exists():
+        return {}
+    with open(path) as f:
+        data = yaml.safe_load(f)
+    return data if isinstance(data, dict) else {}
+
+
+def run_install_hook(tool_name, tool_config):
+    """Run a tool's install hook if its command isn't on PATH."""
+    install_cmd = tool_config.get("install")
+    if not install_cmd:
+        return
+    command = tool_config.get("command", "")
+    if shutil.which(command):
+        return
+    print(f"  📦 Installing {tool_name}: {install_cmd}")
+    try:
+        subprocess.run(install_cmd, shell=True, check=True, capture_output=True, text=True)
+        print(f"  ✅ Installed {tool_name}")
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  Install hook failed for {tool_name}: {e.stderr}", file=sys.stderr)
+
+
+# Keys from tools.yaml that map directly to MCP server config
+_MCP_KEYS = ("type", "command", "args", "env", "url")
 
 
 def setup_claude_config(dotfiles_dir, hostname=None):
-    """Setup Claude Code MCP servers with encrypted secrets"""
+    """Setup Claude Code MCP servers with encrypted secrets."""
     dotfiles_dir = Path(dotfiles_dir)
 
     if hostname is None:
@@ -68,30 +95,25 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     # Paths
     common_secrets_file = dotfiles_dir / "common" / "secrets" / "common.yaml"
     machine_secrets_file = dotfiles_dir / hostname / "secrets" / f"{hostname}.yaml"
-    common_template_file = dotfiles_dir / "common" / ".claude" / "mcp-servers-template.json"
-    machine_template_file = dotfiles_dir / hostname / ".claude" / "mcp-servers-template.json"
+    common_tools_file = dotfiles_dir / "common" / ".claude" / "tools.yaml"
+    machine_tools_file = dotfiles_dir / hostname / ".claude" / "tools.yaml"
     claude_json_path = Path.home() / ".claude.json"
 
     print("\n🔐 Setting up Claude Code configuration...")
 
-    # Try to set up MCP servers (but continue even if it fails)
+    tool_permissions = []
     mcp_setup_success = False
+
     try:
-        # Set up environment with age key path for faster sops operations
         env = os.environ.copy()
         age_key_file = Path.home() / ".config" / "sops" / "age" / "keys.txt"
         if age_key_file.exists():
             env["SOPS_AGE_KEY_FILE"] = str(age_key_file)
 
-        # Check if sops is installed
         subprocess.run(["sops", "--version"], capture_output=True, check=True, env=env)
 
-        # Check if at least common template exists
-        if common_secrets_file.exists() and common_template_file.exists():
-            # Decrypt common secrets
+        if common_secrets_file.exists():
             secrets = decrypt_secrets(common_secrets_file)
-
-            # Load and merge machine-specific secrets if they exist
             if machine_secrets_file.exists():
                 machine_secrets = decrypt_secrets(machine_secrets_file)
                 if machine_secrets:
@@ -99,63 +121,56 @@ def setup_claude_config(dotfiles_dir, hostname=None):
                     print(f"  🔑 Merged secrets from {hostname}/secrets/{hostname}.yaml")
 
             if secrets:
-                # Load common template
-                with open(common_template_file) as f:
-                    common_template_str = f.read()
+                # Load and merge tool manifests (machine overrides common)
+                tools = load_tools_yaml(common_tools_file)
+                machine_tools = load_tools_yaml(machine_tools_file)
+                tools.update(machine_tools)
 
-                # Substitute secrets in common template
-                common_mcp_str = substitute_secrets(common_template_str, secrets)
-                mcp_servers = json.loads(common_mcp_str)
+                # Filter out disabled tools
+                tools = {name: cfg for name, cfg in tools.items() if cfg.get("enabled", True)}
 
-                # Load and merge machine-specific template if it exists
-                if machine_template_file.exists():
-                    with open(machine_template_file) as f:
-                        machine_template_str = f.read()
+                # Run install hooks
+                for name, cfg in tools.items():
+                    run_install_hook(name, cfg)
 
-                    # Substitute secrets in machine-specific template
-                    machine_mcp_str = substitute_secrets(machine_template_str, secrets)
-                    machine_mcp_servers = json.loads(machine_mcp_str)
+                # Build MCP servers dict with secret substitution
+                mcp_servers = {}
+                for name, cfg in tools.items():
+                    perms = cfg.get("permissions")
+                    if perms:
+                        tool_permissions.append(perms)
 
-                    # Merge machine-specific servers (they override common ones)
-                    mcp_servers.update(machine_mcp_servers)
-                    print(f"  📦 Merged {len(machine_mcp_servers)} machine-specific MCP server(s) from {hostname}")
+                    server = {}
+                    for key in _MCP_KEYS:
+                        if key in cfg:
+                            server[key] = substitute_secrets(cfg[key], secrets)
+                    mcp_servers[name] = server
 
-                # Load existing .claude.json or create new one
+                # Sync to ~/.claude.json
                 if claude_json_path.exists():
                     with open(claude_json_path) as f:
                         claude_config = json.load(f)
                 else:
                     claude_config = {}
 
-                # Sync mcpServers section - remove servers not in template, add/update from template
                 if "mcpServers" not in claude_config:
                     claude_config["mcpServers"] = {}
 
-                # Remove servers that aren't in the template
-                servers_to_remove = [
-                    server for server in claude_config["mcpServers"]
-                    if server not in mcp_servers
-                ]
-                for server in servers_to_remove:
+                for server in [s for s in claude_config["mcpServers"] if s not in mcp_servers]:
                     del claude_config["mcpServers"][server]
                     print(f"  🗑️  Removed obsolete MCP server: {server}")
 
-                # Add/update servers from template
                 claude_config["mcpServers"].update(mcp_servers)
 
-                # Write back
                 with open(claude_json_path, "w") as f:
                     json.dump(claude_config, f, indent=2)
 
-                print(f"✅ Updated {claude_json_path} with MCP server configurations")
+                print(f"✅ Updated {claude_json_path} with {len(mcp_servers)} MCP server(s)")
                 mcp_setup_success = True
             else:
                 print("⚠️  Failed to decrypt secrets. Skipping MCP servers setup.")
         else:
-            if not common_secrets_file.exists():
-                print(f"⚠️  Secrets file not found: {common_secrets_file}")
-            if not common_template_file.exists():
-                print(f"⚠️  Common template not found: {common_template_file}")
+            print(f"⚠️  Secrets file not found: {common_secrets_file}")
             print("⚠️  Skipping MCP servers setup.")
     except (subprocess.CalledProcessError, FileNotFoundError):
         print("⚠️  sops not found. Skipping MCP servers setup.")
@@ -167,14 +182,9 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     claude_md_target = Path.home() / ".claude" / "CLAUDE.md"
 
     if claude_md_source.exists():
-        # Create ~/.claude directory if it doesn't exist
         claude_md_target.parent.mkdir(parents=True, exist_ok=True)
-
-        # Remove existing symlink or file
         if claude_md_target.exists() or claude_md_target.is_symlink():
             claude_md_target.unlink()
-
-        # Create symlink
         claude_md_target.symlink_to(claude_md_source.resolve())
         print(f"✅ Symlinked {claude_md_target} -> {claude_md_source}")
     else:
@@ -185,36 +195,40 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     settings_target = Path.home() / ".claude" / "settings.json"
 
     if settings_source.exists():
-        # Create ~/.claude directory if it doesn't exist
         settings_target.parent.mkdir(parents=True, exist_ok=True)
 
-        # Load source settings
         with open(settings_source) as f:
             source_settings = json.load(f)
 
-        # Load existing settings or create new
         if settings_target.exists():
             with open(settings_target) as f:
                 target_settings = json.load(f)
         else:
             target_settings = {}
 
-        # Merge settings (source overwrites target for matching keys)
-        # But preserve user-specific settings that aren't in the template
         for key, value in source_settings.items():
             if key == "permissions":
-                # Merge permissions specially - combine allow/deny/ask lists
                 if "permissions" not in target_settings:
                     target_settings["permissions"] = {}
-
                 for perm_type in ["allow", "deny", "ask"]:
                     if perm_type in value:
                         target_settings["permissions"][perm_type] = value[perm_type]
             else:
-                # For other keys, source takes precedence
                 target_settings[key] = value
 
-        # Write merged settings
+        # Append tool-specific permissions from tools.yaml
+        if mcp_setup_success and tool_permissions:
+            if "permissions" not in target_settings:
+                target_settings["permissions"] = {}
+            for perms in tool_permissions:
+                for perm_type in ["allow", "deny", "ask"]:
+                    if perm_type in perms:
+                        existing = target_settings["permissions"].get(perm_type, [])
+                        for entry in perms[perm_type]:
+                            if entry not in existing:
+                                existing.append(entry)
+                        target_settings["permissions"][perm_type] = existing
+
         with open(settings_target, "w") as f:
             json.dump(target_settings, f, indent=2)
 
@@ -227,20 +241,14 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     commands_target = Path.home() / ".claude" / "commands"
 
     if commands_source.exists():
-        # Create ~/.claude directory if it doesn't exist
         commands_target.parent.mkdir(parents=True, exist_ok=True)
-
-        # Remove existing symlink or directory
         if commands_target.exists() or commands_target.is_symlink():
             if commands_target.is_symlink():
                 commands_target.unlink()
             elif commands_target.is_dir():
-                import shutil
                 shutil.rmtree(commands_target)
             else:
                 commands_target.unlink()
-
-        # Create symlink
         commands_target.symlink_to(commands_source.resolve())
         print(f"✅ Symlinked {commands_target} -> {commands_source}")
     else:

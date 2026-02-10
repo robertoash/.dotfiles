@@ -1,0 +1,2 @@
+# Common Claude Code tools shared across all machines
+# Add tool blocks here; machine-specific tools go in {hostname}/.claude/tools.yaml

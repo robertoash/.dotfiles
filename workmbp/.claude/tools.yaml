@@ -1,0 +1,13 @@
+atlassian:
+  type: stdio
+  command: uvx
+  args: ["mcp-atlassian"]
+  env:
+    JIRA_URL: "{{jira-url}}"
+    JIRA_USERNAME: "{{jira-username}}"
+    JIRA_API_TOKEN: "{{jira-api-token}}"
+    JIRA_PROJECTS_FILTER: "AN2"
+    CONFLUENCE_SPACES_FILTER: "AN"
+  permissions:
+    allow:
+      - "mcp__atlassian__*"
