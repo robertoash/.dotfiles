@@ -10,6 +10,7 @@
       "Glob",
       "WebSearch",
       "WebFetch",
+      "Write(**/.planning/**)",
       "Bash(ls *)",
       "Bash(find *)",
       "Bash(fd *)",

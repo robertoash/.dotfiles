@@ -20,8 +20,8 @@ Output: {phase}-UAT.md tracking all test results. If issues found: diagnosed gap
 </objective>
 
 <execution_context>
-@/Users/rash/.claude/get-shit-done/workflows/verify-work.md
-@/Users/rash/.claude/get-shit-done/templates/UAT.md
+@/home/rash/.claude/get-shit-done/workflows/verify-work.md
+@/home/rash/.claude/get-shit-done/templates/UAT.md
 </execution_context>
 
 <context>
@@ -34,6 +34,6 @@ Phase: $ARGUMENTS (optional)
 </context>
 
 <process>
-Execute the verify-work workflow from @/Users/rash/.claude/get-shit-done/workflows/verify-work.md end-to-end.
+Execute the verify-work workflow from @/home/rash/.claude/get-shit-done/workflows/verify-work.md end-to-end.
 Preserve all workflow gates (session management, test presentation, diagnosis, fix planning, routing).
 </process>

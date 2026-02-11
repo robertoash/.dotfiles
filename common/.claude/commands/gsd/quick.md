@@ -25,7 +25,7 @@ Use when: You know exactly what to do and the task is small enough to not need r
 </objective>
 
 <execution_context>
-@/Users/rash/.claude/get-shit-done/workflows/quick.md
+@/home/rash/.claude/get-shit-done/workflows/quick.md
 </execution_context>
 
 <context>
@@ -33,6 +33,6 @@ Use when: You know exactly what to do and the task is small enough to not need r
 </context>
 
 <process>
-Execute the quick workflow from @/Users/rash/.claude/get-shit-done/workflows/quick.md end-to-end.
+Execute the quick workflow from @/home/rash/.claude/get-shit-done/workflows/quick.md end-to-end.
 Preserve all workflow gates (validation, task description, planning, execution, state updates, commits).
 </process>

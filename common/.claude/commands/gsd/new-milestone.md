@@ -25,11 +25,11 @@ Brownfield equivalent of new-project. Project exists, PROJECT.md has history. Ga
 </objective>
 
 <execution_context>
-@/Users/rash/.claude/get-shit-done/workflows/new-milestone.md
-@/Users/rash/.claude/get-shit-done/references/questioning.md
-@/Users/rash/.claude/get-shit-done/references/ui-brand.md
-@/Users/rash/.claude/get-shit-done/templates/project.md
-@/Users/rash/.claude/get-shit-done/templates/requirements.md
+@/home/rash/.claude/get-shit-done/workflows/new-milestone.md
+@/home/rash/.claude/get-shit-done/references/questioning.md
+@/home/rash/.claude/get-shit-done/references/ui-brand.md
+@/home/rash/.claude/get-shit-done/templates/project.md
+@/home/rash/.claude/get-shit-done/templates/requirements.md
 </execution_context>
 
 <context>
@@ -46,6 +46,6 @@ Milestone name: $ARGUMENTS (optional - will prompt if not provided)
 </context>
 
 <process>
-Execute the new-milestone workflow from @/Users/rash/.claude/get-shit-done/workflows/new-milestone.md end-to-end.
+Execute the new-milestone workflow from @/home/rash/.claude/get-shit-done/workflows/new-milestone.md end-to-end.
 Preserve all workflow gates (validation, questioning, research, requirements, roadmap approval, commits).
 </process>
