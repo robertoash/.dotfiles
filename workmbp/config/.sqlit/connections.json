@@ -1,73 +1,61 @@
 {
-	"version": "ENC[AES256_GCM,data:yQ==,iv:boOhoGzM2nFfHQn+W4XHvKPE8+CycpVUJL1uIjNzZLs=,tag:W8CjP7yQNP6dfoMxRIOMig==,type:float]",
+	"version": 2,
 	"connections": [
 		{
-			"name": "ENC[AES256_GCM,data:PFDtNcQt8N8=,iv:11XSytQTP9eXmsHYSH3JkwQWIaXn+npDRKMZx92ntsg=,tag:UWBPI/xso16eoBNi+uLD1w==,type:str]",
-			"db_type": "ENC[AES256_GCM,data:fEFJ7GbznJsR,iv:yW+MQ4Kn77LYxjoFsEaUNIvxz/b70G8o02SV0E1YVts=,tag:0V3EwY4X9ObuLUeWXRzl4Q==,type:str]",
+			"name": "snow_dev",
+			"db_type": "snowflake",
 			"source": null,
 			"connection_url": null,
 			"folder_path": "",
 			"extra_options": {},
 			"options": {
-				"authenticator": "ENC[AES256_GCM,data:EX90BUVwR0XbHTsx8w==,iv:SGD9rqOgVVkX3ympS9mTItx4enQjzKLsM8Tam5BXvgA=,tag:nnHm1i+6A2k/JlCUIPQrSQ==,type:str]",
-				"private_key_file": "ENC[AES256_GCM,data:aGYy9OwiPyrL2fnM0efTbeRNUzLVOpRX3VVjxrWthtq7uPBd+sRUckq7DRw74y1NRKCKnYc=,iv:uEd4AZ5uqIai2HbQZnBKeKlo+ojRlCC5yJUuhpKgJ0g=,tag:WxugLCgkH0hjFjWOemcMtQ==,type:str]",
-				"private_key_file_pwd": "ENC[AES256_GCM,data:vWaXWf9dHVi4PTkxpUMv1ctfO9/Kttbw7Q==,iv:G9WWNfQ06uEMTLDV21jpTr2caX/1WbiMPdQUe2paT78=,tag:MhkS5Jmgrm8gHHQwW+6ofA==,type:str]",
+				"authenticator": "snowflake_jwt",
+				"private_key_file": "/Users/rash/.config/secrets/keys/rsa_key_snowflake.p8",
+				"private_key_file_pwd": "q976z4nNK9yeBm9a9mMszRQJt",
 				"oauth_token": "",
-				"warehouse": "ENC[AES256_GCM,data:b9Di8bdf1HokzRpq,iv:7s86AY/uUYdB3C3kg3neQ8GApAtisJqGDhG+ama0k8I=,tag:4BLHqbihbrvXFVZY/PPYKw==,type:str]",
+				"warehouse": "ANALYTICS_WH",
 				"schema": "",
-				"role": "ENC[AES256_GCM,data:ZZtcdexwsJUDpV3wYeNwbdX+Mw==,iv:hY1G55Igaa+t7UsbcsdXAt12PlSAe1nCROzYGevKAXM=,tag:eY2aeMCmG2UymyPzGtY4lw==,type:str]"
+				"role": "DEVELOPER_ANALYTICS"
 			},
 			"endpoint": {
-				"kind": "ENC[AES256_GCM,data:YE+K,iv:ityqFiXbgEueUcfKls04pNuo7e6sJAnpmUi343ARc1Q=,tag:Vq75RwjCCzpiD3NLbuNFVQ==,type:str]",
-				"host": "ENC[AES256_GCM,data:4wW8ZpU59fQS0CYJ9NDutn4=,iv:LJdcE0cKwxELPDBT10iA0+EUILZECGjfMNUu9UCyghg=,tag:uaYCBZ2GbvD6MR6AiS8T/A==,type:str]",
+				"kind": "tcp",
+				"host": "oz91619.eu-west-1",
 				"port": "",
-				"database": "ENC[AES256_GCM,data:v0OhYIVHiWCZRA==,iv:JyxJ9EzHVS+5gGmHm5bd0a6bV3WfkSgWrEiBiRVwsjM=,tag:vgPr/fKGzElEiWxDzb6LNA==,type:str]",
-				"username": "ENC[AES256_GCM,data:cbRBm3OixcAt3eSWaOPTZMysY5JTvg==,iv:NxUlqoMa6BHpaFIUXiXws732qeg/8DzCzPQthqLnNyE=,tag:3OvzOE5VppXODd1l8yIWNg==,type:str]",
+				"database": "READLY_DEV",
+				"username": "ROBERTO.ASH@READLY.COM",
 				"password": null
 			},
 			"tunnel": {
-				"enabled": "ENC[AES256_GCM,data:fkpOH8s=,iv:sR4SNON3lG45iKbg3upvuFfaIaWeJ2La9iXkuFihJhA=,tag:fw0o5oyriVdfZIVl8neWOQ==,type:bool]"
+				"enabled": false
 			}
 		},
 		{
-			"name": "ENC[AES256_GCM,data:GhMU/YtxO+Ck,iv:JgVtcht6jlLHuY9dT57KUQZOzHq42fhMgRSD7uO6kts=,tag:LdpKc8R6m+1mt6AZ0oah1A==,type:str]",
-			"db_type": "ENC[AES256_GCM,data:HeAQrGlOgSi1,iv:DkR3xihmYOqCmnpfheA+6NqW5AeneGpXgvF1+JBYSUA=,tag:hsu8nlfgSg9FF5FE2eCZhw==,type:str]",
+			"name": "snow_prod",
+			"db_type": "snowflake",
 			"source": null,
 			"connection_url": null,
 			"folder_path": "",
 			"extra_options": {},
 			"options": {
-				"authenticator": "ENC[AES256_GCM,data:+8bigjfqdJTlnhBdQw==,iv:oSMemGOlA/vBos58mkCX7OOW2KFIlkDVXxlN7NJIpwA=,tag:dZqb4Qo620RfGs9tkNNrJQ==,type:str]",
-				"private_key_file": "ENC[AES256_GCM,data:2S9MSFP7/z3H9rLpM0/cS12ct8fQuyCOSlUO60OPoPNvrNTBBExcoOUdNprBugm7KJs2Y09OL+nF/pdoWwwU,iv:BwnR0f9nBgJcWH9qw4OinT4DMFaogW2cTPkuZIpedy8=,tag:TF2L3XFUPoSU67iQ5gKKPg==,type:str]",
-				"private_key_file_pwd": "ENC[AES256_GCM,data:qcm8tt2b2vnPMcOj5nES6sSXzL07Su7EWA==,iv:exSZtVwFzdaysTjv9yHQMvaVjsYXPTFKjQQtqHE89Xc=,tag:bDCbEo9H3G+LpZbgzH2XrQ==,type:str]",
+				"authenticator": "snowflake_jwt",
+				"private_key_file": "/Users/rash/.dotfiles/workmbp/secrets/keys/rsa_key_snowflake.p8",
+				"private_key_file_pwd": "q976z4nNK9yeBm9a9mMszRQJt",
 				"oauth_token": "",
-				"warehouse": "ENC[AES256_GCM,data:BfNzb9CHk4KzZaUF,iv:8bwdqhysBxQUN/JVe9Gs3HLDC5Lv8Gv08ABdl11mOEE=,tag:SYRGWq7KlsSJ+1FOJJnz7g==,type:str]",
+				"warehouse": "ANALYTICS_WH",
 				"schema": "",
-				"role": "ENC[AES256_GCM,data:zxEbwzxKovYZrF+nn9Rb4lf34g==,iv:2Cy7m9MbjzyyhfDLqst6XLPtXbJdWlpN0WJbsNQt2ME=,tag:5hjoJEez27r8rZRleZs30w==,type:str]"
+				"role": "DEVELOPER_ANALYTICS"
 			},
 			"endpoint": {
-				"kind": "ENC[AES256_GCM,data:C3AM,iv:+bl6V0dAx3a2dmkdO9uRtouhT+x7+9n5phesrohWcV0=,tag:PcQ30DsVIfAfqg1wSa/i3g==,type:str]",
-				"host": "ENC[AES256_GCM,data:dIzVKItSTY5Y9rts5uP/Xt8=,iv:rKB6WoPfOzYb0oxMzFNEVwnpmk6amQH/U5gjIvBusRY=,tag:64jSA7jr9HlvWdePOWq4sA==,type:str]",
+				"kind": "tcp",
+				"host": "oz91619.eu-west-1",
 				"port": "",
-				"database": "ENC[AES256_GCM,data:A08cQGs0,iv:htzF6eODouaFBDRSBhnF7UFVIALhTVpoBu6M76JXZ1c=,tag:k7UJODc5IQPvy11kta7Nqg==,type:str]",
-				"username": "ENC[AES256_GCM,data:T2gQdpu7FjIkOAkvoECbNaWV8dFcVw==,iv:Vq0aueP0CqgA0H54bEHV4DunhFzEvB0FKOHhs5fT7Rs=,tag:tIlCutcZQ0qVntEhI7x1cg==,type:str]",
+				"database": "READLY",
+				"username": "ROBERTO.ASH@READLY.COM",
 				"password": null
 			},
 			"tunnel": {
-				"enabled": "ENC[AES256_GCM,data:gyD/Xd0=,iv:PMIItVj5xxJeU1uKuxDgqvXnDvlA6/sU6KB/6+vW6Tc=,tag:zae1/OUmttPuKwr9zEhmfg==,type:bool]"
+				"enabled": false
 			}
 		}
-	],
-	"sops": {
-		"age": [
-			{
-				"recipient": "age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7",
-				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBWWFVYQVJtaG1SdVdmT09G\nUDZkL1dWWEs3T1NKYTZ6bEl0UDNpYStpRWxnCkJIUUUrZ1Jjenh0UGplcFZ0V1Nz\namNYSEJaUmZRa29vVi9JZHVDbWVmMW8KLS0tIEVwZnZGSzFYMjRLb3lCcHlJRFJL\nWGdXclVzbjlLbkk0cWRZZlB0YkptT1EKEo3O59z2zAVkFQN2Q7HjjbccpXJHYWzH\n1dMpDU5OLIqI6lP0mKJaAtgPMak4lzVSuQK42qQXCMTnHpohUJdV1A==\n-----END AGE ENCRYPTED FILE-----\n"
-			}
-		],
-		"lastmodified": "2026-02-11T13:46:34Z",
-		"mac": "ENC[AES256_GCM,data:no0dJ3223Gxix6epiWdj9+hxENXqkAs3WK/35ktB92l6x5BAqhUj+DUqp4Shsu6CIdlTZZ4Ca+SkvTMjCdGp5l+u4bMjU76fADnKOCSz2g5CNSKBR67x+UXp8DQgok03lICb1JKHBJIwg5Td3a7b+bguDNTkTL0BD6bSr/PvNkQ=,iv:4EVXvWA1hxw1MLPQ9qr8d2lahcYlhENLwI/9eN4xWRo=,tag:I8NzNR+vIJfJ0rpthfdHsw==,type:str]",
-		"unencrypted_suffix": "_unencrypted",
-		"version": "3.11.0"
-	}
+	]
 }
