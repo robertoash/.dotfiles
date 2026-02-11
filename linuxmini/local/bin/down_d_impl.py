@@ -88,11 +88,13 @@ def parse_progress_line(line: str) -> Tuple[Optional[float], str, str, str]:
 
 
 def download_with_progress(
-    task: DownloadTask, cmd: List[str], tmpdir: Path, task_id: str
+    task: DownloadTask, cmd: List[str], tmpdir: Path, task_id: str,
+    height_file: Optional[Path] = None,
 ) -> bool:
     """Run download command and update task progress."""
     log_file = tmpdir / f"{task_id}.log"
     task.status = "downloading"
+    height_resolved = False
 
     try:
         process = subprocess.Popen(
@@ -120,7 +122,26 @@ def download_with_progress(
                 if size:
                     task.size = size
 
+                # Read actual resolution from height file written by --print-to-file
+                if not height_resolved and height_file and height_file.exists():
+                    try:
+                        height_val = height_file.read_text().strip()
+                        if height_val.isdigit():
+                            task.quality = height_val
+                            height_resolved = True
+                    except OSError:
+                        pass
+
         process.wait()
+
+        # Final check for height file (may have been written after last output line)
+        if not height_resolved and height_file and height_file.exists():
+            try:
+                height_val = height_file.read_text().strip()
+                if height_val.isdigit():
+                    task.quality = height_val
+            except OSError:
+                pass
 
         if process.returncode == 0:
             task.status = "success"
@@ -137,10 +158,13 @@ def download_with_progress(
         return False
 
 
-def build_tier_command(url: str, tier: int, quality: str) -> List[str]:
+def build_tier_command(url: str, tier: int, quality: str, height_file: str = "") -> List[str]:
     """Build command for specific tier."""
     format_str = build_format_string(quality)
     base_cmd = [YT_DLP_PATH, "-f", format_str, "--no-abort-on-error", "--add-metadata"]
+
+    if height_file:
+        base_cmd.extend(["--print-to-file", "%(height)s", height_file])
 
     if tier == 1:
         # Fast: axel with 16 connections
@@ -243,8 +267,10 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
         url_short = task.url[:32] + "..." if len(task.url) > 35 else task.url
 
         # Format quality display
-        if task.quality in ("720", "1080", "1440", "2160"):
+        if task.quality.isdigit():
             quality_display = f"{task.quality}p"
+        elif task.status == "downloading":
+            quality_display = "..."
         else:
             quality_display = "best"
 
@@ -298,8 +324,9 @@ def download_tier(urls: List[str], tier: int, quality: str) -> Tuple[List[str], 
         # Start download threads
         def download_wrapper(task_id: str, url: str):
             task = tasks[task_id]
-            cmd = build_tier_command(url, tier, quality)
-            download_with_progress(task, cmd, tmpdir_path, task_id)
+            height_file = tmpdir_path / f"{task_id}_height.txt"
+            cmd = build_tier_command(url, tier, quality, str(height_file))
+            download_with_progress(task, cmd, tmpdir_path, task_id, height_file)
 
         for i, url in enumerate(urls):
             task_id = f"task_{tier}_{i}"
