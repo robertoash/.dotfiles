@@ -197,6 +197,31 @@ def build_tier_command(url: str, tier: int, quality: str) -> List[str]:
         return cmd
 
 
+def compute_downloaded_size(pct: float, total_size_str: str) -> str:
+    """Compute human-readable downloaded size from percentage and total size string.
+
+    Args:
+        pct: Download percentage (0-100)
+        total_size_str: Total size from yt-dlp (e.g., "430.74MiB", "1.23GiB")
+
+    Returns:
+        Downloaded amount in the same unit (e.g., "115.0MiB"), or percentage fallback.
+    """
+    import re
+
+    if not total_size_str:
+        return f"{pct:.1f}%"
+
+    match = re.match(r"([0-9.]+)\s*(\w+)", total_size_str)
+    if not match:
+        return f"{pct:.1f}%"
+
+    total_value = float(match.group(1))
+    unit = match.group(2)
+    downloaded_value = pct / 100.0 * total_value
+    return f"{downloaded_value:.1f}{unit}"
+
+
 def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
     """Create rich table showing download progress."""
     tier_names = {1: "Fast (Axel 16x)", 2: "Fast + Impersonation (Axel 8x)", 3: "Slow (yt-dlp)"}
@@ -218,7 +243,8 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
 
         if task.status == "success":
             status = "[green]✅ Complete[/green]"
-            progress = "[green]████████████████████[/green] 100%"
+            size_label = task.size if task.size else "Done"
+            progress = f"[green]████████████████████[/green] {size_label}"
         elif task.status == "failed":
             status = "[red]❌ Failed[/red]"
             progress = f"[red]{task.error}[/red]"
@@ -227,7 +253,11 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
             bar_width = 20
             filled = int(bar_width * task.progress_pct / 100)
             bar = "█" * filled + "░" * (bar_width - filled)
-            progress = f"[yellow]{bar}[/yellow] {task.progress_pct:.1f}%"
+            if task.size:
+                downloaded_str = compute_downloaded_size(task.progress_pct, task.size)
+                progress = f"[yellow]{bar}[/yellow] {downloaded_str}/{task.size}"
+            else:
+                progress = f"[yellow]{bar}[/yellow] {task.progress_pct:.1f}%"
         else:
             status = "[dim]⏳ Pending[/dim]"
             progress = "[dim]Waiting...[/dim]"
