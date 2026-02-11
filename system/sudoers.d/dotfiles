@@ -37,6 +37,9 @@ rash ALL = NOPASSWD: /usr/bin/tee -a /etc/hosts
 rash ALL = NOPASSWD: /usr/bin/visudo -cf *
 rash ALL = NOPASSWD: /usr/bin/install -m 0440 *
 rash ALL = NOPASSWD: /usr/bin/crontab *
+rash ALL = NOPASSWD: /usr/bin/mkdir -p /etc/systemd/resolved.conf.d
+rash ALL = NOPASSWD: /usr/bin/tee /etc/systemd/resolved.conf.d/*
+rash ALL = NOPASSWD: /usr/bin/systemctl restart systemd-resolved
 
 # ClamAV database updates (used by topgrade)
 rash ALL = NOPASSWD: /usr/bin/freshclam
