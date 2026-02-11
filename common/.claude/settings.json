@@ -76,7 +76,8 @@
       "Bash(npm uninstall*)",
       "Bash(pip install*)",
       "Bash(pip uninstall*)",
-      "Bash(git commit*)"
+      "Bash(git commit*)",
+      "Bash(git rm*)"
     ],
     "deny": [
       "Read(**/.env)",
