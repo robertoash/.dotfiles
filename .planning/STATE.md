@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 3 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-11 - Completed quick task 2: Add quality column to down_d progress table
+Last activity: 2026-02-11 - Completed quick task 3: Parse actual video quality from yt-dlp output
 
 Progress: [..........] 0%
 
@@ -45,6 +45,7 @@ Recent decisions affecting current work:
 -
 - [Phase quick-1]: Display downloaded amount in same unit as total size for consistency with yt-dlp output
 - [Phase quick-2]: Status column width 6 (not 4) to avoid truncating header text
+- [Phase quick-3]: Use --print-to-file %(height)s to extract actual resolution rather than parsing verbose output
 
 ### Pending Todos
 
@@ -60,9 +61,10 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 1 | Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d | 2026-02-11 | 8b02b94 | [1-display-memory-usage-in-human-readable-f](./quick/1-display-memory-usage-in-human-readable-f/) |
 | 2 | Add quality column (720p/1080p/1440p/2160p) to down_d progress table | 2026-02-11 | c8a7e16 | [2-add-quality-column-720p-1080p-1440p-2160](./quick/2-add-quality-column-720p-1080p-1440p-2160/) |
+| 3 | Parse actual video quality from yt-dlp output instead of showing requested quality | 2026-02-11 | c89ed15 | [3-parse-actual-video-quality-from-yt-dlp-o](./quick/3-parse-actual-video-quality-from-yt-dlp-o/) |
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Completed quick-2 (add quality column to down_d)
+Stopped at: Completed quick-3 (parse actual video quality from yt-dlp)
 Resume file: None
