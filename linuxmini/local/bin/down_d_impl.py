@@ -210,11 +210,11 @@ def compute_downloaded_size(pct: float, total_size_str: str) -> str:
     import re
 
     if not total_size_str:
-        return f"{pct:.1f}%"
+        return f"{int(pct)}%" if pct >= 100 else f"{pct:.1f}%"
 
     match = re.match(r"([0-9.]+)\s*(\w+)", total_size_str)
     if not match:
-        return f"{pct:.1f}%"
+        return f"{int(pct)}%" if pct >= 100 else f"{pct:.1f}%"
 
     total_value = float(match.group(1))
     unit = match.group(2)
@@ -232,38 +232,47 @@ def create_progress_table(tasks: Dict[str, DownloadTask], tier: int) -> Table:
         header_style="bold magenta",
         expand=True  # Auto-expand to terminal width
     )
-    table.add_column("URL", style="cyan", ratio=3, no_wrap=False)
-    table.add_column("Status", ratio=1, min_width=20)
+    table.add_column("URL", style="cyan", ratio=3, no_wrap=True)
+    table.add_column("Quality", style="bold white", min_width=5, justify="center")
+    table.add_column("Status", justify="center", min_width=2, width=6)
     table.add_column("Progress", ratio=2, min_width=25)
-    table.add_column("Speed", ratio=1, min_width=12)
-    table.add_column("ETA", ratio=1, min_width=8)
+    table.add_column("Speed", min_width=10)
+    table.add_column("ETA", min_width=7)
 
     for task_id, task in tasks.items():
-        url_short = task.url[:37] + "..." if len(task.url) > 40 else task.url
+        url_short = task.url[:32] + "..." if len(task.url) > 35 else task.url
+
+        # Format quality display
+        if task.quality in ("720", "1080", "1440", "2160"):
+            quality_display = f"{task.quality}p"
+        else:
+            quality_display = "best"
 
         if task.status == "success":
-            status = "[green]✅ Complete[/green]"
+            status = "[green]✅[/green]"
             size_label = task.size if task.size else "Done"
-            progress = f"[green]████████████████████[/green] {size_label}"
+            progress = f"[green]███████████████[/green] {size_label}"
         elif task.status == "failed":
-            status = "[red]❌ Failed[/red]"
+            status = "[red]❌[/red]"
             progress = f"[red]{task.error}[/red]"
         elif task.status == "downloading":
-            status = "[yellow]⏬ Downloading[/yellow]"
-            bar_width = 20
+            status = "[yellow]⏬[/yellow]"
+            bar_width = 15
             filled = int(bar_width * task.progress_pct / 100)
             bar = "█" * filled + "░" * (bar_width - filled)
             if task.size:
                 downloaded_str = compute_downloaded_size(task.progress_pct, task.size)
                 progress = f"[yellow]{bar}[/yellow] {downloaded_str}/{task.size}"
             else:
-                progress = f"[yellow]{bar}[/yellow] {task.progress_pct:.1f}%"
+                pct_str = f"{int(task.progress_pct)}%" if task.progress_pct >= 100 else f"{task.progress_pct:.1f}%"
+                progress = f"[yellow]{bar}[/yellow] {pct_str}"
         else:
-            status = "[dim]⏳ Pending[/dim]"
+            status = "[dim]⏳[/dim]"
             progress = "[dim]Waiting...[/dim]"
 
         table.add_row(
             url_short,
+            quality_display,
             status,
             progress,
             task.speed or "-",
