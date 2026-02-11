@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 3 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-11 -- Roadmap created
+Last activity: 2026-02-11 - Completed quick task 1: Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d
 
 Progress: [..........] 0%
 
@@ -52,6 +52,12 @@ None yet.
 ### Blockers/Concerns
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d | 2026-02-11 | 8b02b94 | [1-display-memory-usage-in-human-readable-f](./quick/1-display-memory-usage-in-human-readable-f/) |
 
 ## Session Continuity
 
