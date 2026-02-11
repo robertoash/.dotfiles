@@ -40,6 +40,13 @@ function __dot_expand_widget
     set -e __dot_expand_level
 end
 
+# Helper function to list directories (including hidden ones)
+function __dot_list_dirs
+    set -l dir $argv[1]
+    # Use find for reliable cross-platform directory listing
+    command find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | command sort
+end
+
 # Helper function to launch fzf with special '.' handling
 function __dot_expand_fzf
     set -l search_dir $argv[1]
@@ -50,11 +57,11 @@ function __dot_expand_fzf
     echo "$search_dir" > $state_file
 
     # Create a reload script that lists directories and updates state
-    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; command ls -1Adp \"\$parent\"/*/ \"\$parent\"/.*/ 2>/dev/null | grep -v \"/\\.\$\" | grep -v \"/\\.\\.\$\" | sed \"s|/\$||\"; else command ls -1Adp \"\$dir\"/*/ \"\$dir\"/.*/ 2>/dev/null | grep -v \"/\\.\$\" | grep -v \"/\\.\\.\$\" | sed \"s|/\$||\"; fi'"
+    # Use bash for the reload command since it's more reliable for this use case
+    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
 
-    # Initial directory listing using native globbing (includes hidden dirs)
-    set -l result (command ls -1Adp "$search_dir"/*/ "$search_dir"/.*/ 2>/dev/null | \
-        grep -v '/\.$' | grep -v '/\.\.$' | sed 's|/$||' | \
+    # Initial directory listing
+    set -l result (__dot_list_dirs "$search_dir" | \
         fzf --height 40% --reverse \
             --header "Press . to go up, Enter to select, Esc to keep current path" \
             --bind ".:reload($reload_cmd)+change-header(Going up...)" \
