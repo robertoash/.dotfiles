@@ -43,10 +43,11 @@ end
 # Helper function to list directories (including hidden ones)
 function __dot_list_dirs
     set -l dir $argv[1]
-    # Use /usr/bin/find directly to bypass any git-aware wrappers
-    # -mindepth 1 excludes the search dir itself
-    # -maxdepth 1 only shows immediate children
-    # -type d shows only directories (includes hidden dirs starting with .)
+    # Always show the parent directory first (what the third dot refers to)
+    # followed by its subdirectories (siblings)
+    # This provides context and ensures the list is never empty
+    echo "$dir"
+    # Then list all subdirectories
     /usr/bin/find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | command sort
 end
 
@@ -62,7 +63,8 @@ function __dot_expand_fzf
     # Create a reload script that lists directories and updates state
     # Use bash for the reload command since it's more reliable for this use case
     # Use /usr/bin/find directly to bypass any git-aware wrappers
-    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; /usr/bin/find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else /usr/bin/find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
+    # Always show the parent directory first, followed by its subdirectories
+    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; echo \"\$parent\"; /usr/bin/find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else echo \"\$dir\"; /usr/bin/find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
 
     # Initial directory listing
     set -l result (__dot_list_dirs "$search_dir" | \
