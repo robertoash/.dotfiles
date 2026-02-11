@@ -42,7 +42,8 @@ Progress: [..........] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- None yet.
+-
+- [Phase quick-1]: Display downloaded amount in same unit as total size for consistency with yt-dlp output
 
 ### Pending Todos
 
