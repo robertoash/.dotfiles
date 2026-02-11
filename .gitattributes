@@ -1,3 +1,7 @@
 
 # Use bd merge for beads JSONL files
 .beads/issues.jsonl merge=beads
+
+# Use SOPS diff for encrypted connections.json
+**/config/.sqlit/connections.json diff=sops
+**/.sqlit/connections.json diff=sops

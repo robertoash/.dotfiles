@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Git textconv filter for SOPS-encrypted files
+# Decrypts file for diff viewing only (doesn't modify the file)
+
+set -euo pipefail
+
+FILE="$1"
+
+# Check if file is SOPS-encrypted
+if grep -q "ENC\[AES256_GCM," "$FILE" 2>/dev/null; then
+    sops -d "$FILE" 2>/dev/null || {
+        echo "Error: Failed to decrypt $FILE" >&2
+        cat "$FILE"  # Fall back to showing encrypted content
+    }
+else
+    # Not encrypted, show as-is
+    cat "$FILE"
+fi
