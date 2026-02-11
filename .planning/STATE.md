@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 3 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-11 - Completed quick task 1: Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d
+Last activity: 2026-02-11 - Completed quick task 2: Add quality column to down_d progress table
 
 Progress: [..........] 0%
 
@@ -44,6 +44,7 @@ Recent decisions affecting current work:
 
 -
 - [Phase quick-1]: Display downloaded amount in same unit as total size for consistency with yt-dlp output
+- [Phase quick-2]: Status column width 6 (not 4) to avoid truncating header text
 
 ### Pending Todos
 
@@ -58,9 +59,10 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 1 | Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d | 2026-02-11 | 8b02b94 | [1-display-memory-usage-in-human-readable-f](./quick/1-display-memory-usage-in-human-readable-f/) |
+| 2 | Add quality column (720p/1080p/1440p/2160p) to down_d progress table | 2026-02-11 | c8a7e16 | [2-add-quality-column-720p-1080p-1440p-2160](./quick/2-add-quality-column-720p-1080p-1440p-2160/) |
 
 ## Session Continuity
 
 Last session: 2026-02-11
-Stopped at: Roadmap and state initialized
+Stopped at: Completed quick-2 (add quality column to down_d)
 Resume file: None
