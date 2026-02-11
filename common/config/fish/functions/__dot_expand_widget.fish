@@ -45,33 +45,36 @@ function __dot_expand_fzf
     set -l search_dir $argv[1]
     set -l level $argv[2]
 
-    # Create a marker file for detecting '.' press
-    set -l marker /tmp/dot-expand-marker-$fish_pid
-    command rm -f $marker
+    # Create a state file to track current directory level
+    set -l state_file /tmp/dot-expand-state-$fish_pid
+    echo "$search_dir" > $state_file
 
-    # Launch fzf with special binding for '.' to continue expansion
-    set -l result (fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir" 2>/dev/null | \
+    # Create a reload script that lists directories and updates state
+    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; command ls -1Adp \"\$parent\"/*/ \"\$parent\"/.*/ 2>/dev/null | grep -v \"/\\.\$\" | grep -v \"/\\.\\.\$\" | sed \"s|/\$||\"; else command ls -1Adp \"\$dir\"/*/ \"\$dir\"/.*/ 2>/dev/null | grep -v \"/\\.\$\" | grep -v \"/\\.\\.\$\" | sed \"s|/\$||\"; fi'"
+
+    # Initial directory listing using native globbing (includes hidden dirs)
+    set -l result (command ls -1Adp "$search_dir"/*/ "$search_dir"/.*/ 2>/dev/null | \
+        grep -v '/\.$' | grep -v '/\.\.$' | sed 's|/$||' | \
         fzf --height 40% --reverse \
-            --bind ".:execute-silent(touch $marker)+abort" \
+            --header "Press . to go up, Enter to select, Esc to keep current path" \
+            --bind ".:reload($reload_cmd)+change-header(Going up...)" \
             --query "")
 
-    if test -f "$marker"
-        # User pressed '.', go up one more level
-        command rm -f $marker
-        set -l target (dirname "$search_dir")
-        if test "$target" != "$search_dir"
-            set -g __dot_expand_level (math $level + 1)
-            commandline -t -- "$target/"
-            # Recursively launch fzf for the next level
-            __dot_expand_fzf "$target" $__dot_expand_level
-        end
-    else if test -n "$result"
+    # Read final directory level from state file
+    set -l final_dir (cat $state_file 2>/dev/null)
+    command rm -f $state_file
+
+    if test -n "$result"
         # User selected something
         commandline -t -- "$result/"
         set -e __dot_expand_level
         commandline -f repaint
+    else if test -n "$final_dir"; and test "$final_dir" != "$search_dir"
+        # User cancelled but navigated up - keep the ancestor path
+        commandline -t -- "$final_dir/"
+        commandline -f repaint
     else
-        # User cancelled (Esc or Ctrl+C) - keep current path
+        # User cancelled at same level - keep current path
         commandline -f repaint
     end
 end
