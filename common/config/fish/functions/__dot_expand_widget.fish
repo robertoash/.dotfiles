@@ -43,8 +43,11 @@ end
 # Helper function to list directories (including hidden ones)
 function __dot_list_dirs
     set -l dir $argv[1]
-    # Use find for reliable cross-platform directory listing
-    command find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | command sort
+    # Use /usr/bin/find directly to bypass any git-aware wrappers
+    # -mindepth 1 excludes the search dir itself
+    # -maxdepth 1 only shows immediate children
+    # -type d shows only directories (includes hidden dirs starting with .)
+    /usr/bin/find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | command sort
 end
 
 # Helper function to launch fzf with special '.' handling
@@ -58,7 +61,8 @@ function __dot_expand_fzf
 
     # Create a reload script that lists directories and updates state
     # Use bash for the reload command since it's more reliable for this use case
-    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
+    # Use /usr/bin/find directly to bypass any git-aware wrappers
+    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; /usr/bin/find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else /usr/bin/find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
 
     # Initial directory listing
     set -l result (__dot_list_dirs "$search_dir" | \
@@ -72,13 +76,16 @@ function __dot_expand_fzf
     command rm -f $state_file
 
     if test -n "$result"
-        # User selected something
-        commandline -t -- "$result/"
+        # User selected something - strip trailing slash and add exactly one
+        set -l clean_result (string replace -r '/$' '' -- "$result")
+        commandline -t -- "$clean_result/"
         set -e __dot_expand_level
         commandline -f repaint
     else if test -n "$final_dir"; and test "$final_dir" != "$search_dir"
         # User cancelled but navigated up - keep the ancestor path
-        commandline -t -- "$final_dir/"
+        # Strip trailing slash and add exactly one
+        set -l clean_dir (string replace -r '/$' '' -- "$final_dir")
+        commandline -t -- "$clean_dir/"
         commandline -f repaint
     else
         # User cancelled at same level - keep current path
