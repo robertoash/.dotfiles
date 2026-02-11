@@ -27,29 +27,29 @@ The dotfiles system works but lacks operational tooling that makes it reliable a
 ## In Scope
 
 ### Phase 1: Operational Foundation
-- **Dry-run mode** - Preview what would change without applying
-- **Health check command** - Validate current system state
-- **Shadow detection** - Show what machine configs override common
-- **Code quality tooling** - Add ruff + pre-commit
+- **DRY-01: Dry-run mode** - Preview what would change without applying
+- **HEALTH-01: Health check command** - Validate current system state
+- **SHADOW-01: Shadow detection** - Show what machine configs override common
+- **QUALITY-01: Code quality tooling** - Add ruff + pre-commit
 
 ### Phase 2: Developer Experience
-- **Diff before apply** - Show changes before deployment
-- **Drift detection** - Find configs modified outside dotfiles
-- **Broken symlink cleanup** - Remove stale symlinks in deployment targets
-- **Run-once scripts** - Execute setup steps only on first run
+- **DIFF-01: Diff before apply** - Show changes before deployment
+- **DRIFT-01: Drift detection** - Find configs modified outside dotfiles
+- **CLEANUP-01: Broken symlink cleanup** - Remove stale symlinks in deployment targets
+- **RUNONCE-01: Run-once scripts** - Execute setup steps only on first run
 
 ### Phase 3: Advanced (Optional)
-- **Per-file templating** - Jinja2 for machine-specific variations
-- **Rollback capability** - Undo deployment changes
-- **Bootstrap improvements** - Streamline new machine setup
+- **TMPL-01: Per-file templating** - Jinja2 for machine-specific variations
+- **ROLLBACK-01: Rollback capability** - Undo deployment changes
+- **BOOTSTRAP-01: Bootstrap improvements** - Streamline new machine setup
 
 ## Out of Scope
 
-- ❌ Framework migration (chezmoi, Nix, yadm, Ansible)
-- ❌ Real-time sync or auto-commit
-- ❌ GUI/TUI interfaces
-- ❌ Container-based testing
-- ❌ Rewriting in different language
+- Framework migration (chezmoi, Nix, yadm, Ansible)
+- Real-time sync or auto-commit
+- GUI/TUI interfaces
+- Container-based testing
+- Rewriting in different language
 
 ## Constraints
 
@@ -148,3 +148,19 @@ Work is done when:
 - No regressions in existing functionality
 - Documentation updated (CLAUDE.md, setup module docstrings)
 - Changes committed and tested on all active machines
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| DRY-01 | Phase 1 | Pending |
+| HEALTH-01 | Phase 1 | Pending |
+| SHADOW-01 | Phase 1 | Pending |
+| QUALITY-01 | Phase 1 | Pending |
+| DIFF-01 | Phase 2 | Pending |
+| DRIFT-01 | Phase 2 | Pending |
+| CLEANUP-01 | Phase 2 | Pending |
+| RUNONCE-01 | Phase 2 | Pending |
+| TMPL-01 | Phase 3 | Pending |
+| ROLLBACK-01 | Phase 3 | Pending |
+| BOOTSTRAP-01 | Phase 3 | Pending |
