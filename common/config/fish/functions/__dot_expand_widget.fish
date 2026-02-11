@@ -44,10 +44,10 @@ end
 function __dot_list_dirs
     set -l dir $argv[1]
     # Always show the parent directory first (what the third dot refers to)
-    # followed by its subdirectories (siblings)
-    # This provides context and ensures the list is never empty
-    echo "$dir"
-    # Then list all subdirectories
+    # Highlight it in yellow to make it visually distinct
+    # ANSI color codes: \033[33m = yellow, \033[0m = reset
+    printf "\033[33m%s\033[0m\n" "$dir"
+    # Then list all subdirectories (siblings)
     /usr/bin/find "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | command sort
 end
 
@@ -63,12 +63,12 @@ function __dot_expand_fzf
     # Create a reload script that lists directories and updates state
     # Use bash for the reload command since it's more reliable for this use case
     # Use /usr/bin/find directly to bypass any git-aware wrappers
-    # Always show the parent directory first, followed by its subdirectories
-    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; echo \"\$parent\"; /usr/bin/find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else echo \"\$dir\"; /usr/bin/find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
+    # Always show the parent directory first (in yellow), followed by its subdirectories
+    set -l reload_cmd "bash -c 'dir=\$(cat $state_file 2>/dev/null || echo \"$search_dir\"); parent=\$(dirname \"\$dir\"); if [ \"\$parent\" != \"\$dir\" ]; then echo \"\$parent\" > $state_file; printf \"\\033[33m%s\\033[0m\\n\" \"\$parent\"; /usr/bin/find \"\$parent\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; else printf \"\\033[33m%s\\033[0m\\n\" \"\$dir\"; /usr/bin/find \"\$dir\" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort; fi'"
 
     # Initial directory listing
     set -l result (__dot_list_dirs "$search_dir" | \
-        fzf --height 40% --reverse \
+        fzf --height 40% --reverse --ansi \
             --header "Press . to go up, Enter to select, Esc to keep current path" \
             --bind ".:reload($reload_cmd)+change-header(Going up...)" \
             --query "")
@@ -78,8 +78,8 @@ function __dot_expand_fzf
     command rm -f $state_file
 
     if test -n "$result"
-        # User selected something - strip trailing slash and add exactly one
-        set -l clean_result (string replace -r '/$' '' -- "$result")
+        # User selected something - strip ANSI color codes, then trailing slash, then add exactly one
+        set -l clean_result (echo "$result" | sed 's/\x1b\[[0-9;]*m//g' | string replace -r '/$' '')
         commandline -t -- "$clean_result/"
         set -e __dot_expand_level
         commandline -f repaint
