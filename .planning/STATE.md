@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 3 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-11 - Completed quick task 3: Parse actual video quality from yt-dlp output
+Last activity: 2026-02-11 - Completed quick task 4: Review and fix laggy dot expansion implementation
 
 Progress: [..........] 0%
 
@@ -62,6 +62,7 @@ None yet.
 | 1 | Display memory usage in human-readable format (e.g., 512MB/2.5G) instead of percentage in down_d | 2026-02-11 | 8b02b94 | [1-display-memory-usage-in-human-readable-f](./quick/1-display-memory-usage-in-human-readable-f/) |
 | 2 | Add quality column (720p/1080p/1440p/2160p) to down_d progress table | 2026-02-11 | c8a7e16 | [2-add-quality-column-720p-1080p-1440p-2160](./quick/2-add-quality-column-720p-1080p-1440p-2160/) |
 | 3 | Parse actual video quality from yt-dlp output instead of showing requested quality | 2026-02-11 | c89ed15 | [3-parse-actual-video-quality-from-yt-dlp-o](./quick/3-parse-actual-video-quality-from-yt-dlp-o/) |
+| 4 | Review and fix laggy dot expansion implementation | 2026-02-11 | c547881 | [4-dotfiles-yks](./quick/4-dotfiles-yks/) |
 
 ## Session Continuity
 
