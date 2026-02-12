@@ -1,60 +1,60 @@
 {
-	"version": "ENC[AES256_GCM,data:tQ==,iv:O20Ag1QzblqtRRLiXVByuZCNKPY4t7o24/OlAwPuKUc=,tag:xXR/CkYQ9bYfr1MRaTCofw==,type:float]",
+	"version": "ENC[AES256_GCM,data:vw==,iv:NHGkixuT239wwkLBqxKd56AuE3yE4PmEqVANznMHBEU=,tag:VgOSJ5utv2+jtqeUQvjomQ==,type:float]",
 	"connections": [
 		{
-			"name": "ENC[AES256_GCM,data:OfhGiCeHjHw=,iv:10jOHNWi7URWvKhviRXCjvKdEJQw4djDNZuRRZYZJj8=,tag:eUG6Jkw4xGlxOpZmfcLGAA==,type:str]",
-			"db_type": "ENC[AES256_GCM,data:fXcpCgm12gAa,iv:RVUqcW4Ka/O5H+UrSK8ZmHPXfIaorMjD6rEJXLsgtXM=,tag:5odq+USVOYTcYBYzHIUkPA==,type:str]",
+			"name": "ENC[AES256_GCM,data:vN7G2s/4jME=,iv:F4TRyWWMJ0Q8RfbLPh10KuGmaCJiE/Cjd4bp6leZ24g=,tag:ZPQqBG0fmdI5Ci/Jwau33w==,type:str]",
+			"db_type": "ENC[AES256_GCM,data:B3eaXMAvyDRs,iv:cwRR2yVYlaE41Kjw965zAQmyt2dz0UZvmOi8UxNAJ0g=,tag:BoE6GkYhSYF+uhnn2HWeFw==,type:str]",
 			"source": null,
 			"connection_url": null,
 			"folder_path": "",
 			"extra_options": {},
 			"options": {
-				"authenticator": "ENC[AES256_GCM,data:X9RD/LaV7gUwICLBAw==,iv:dD1n61x6gx6uLBg09F6VeOP8ulE5N0N4/KQT+zkd9GY=,tag:lMrKEn+g7/aH6D5R0KrT/Q==,type:str]",
-				"private_key_file": "ENC[AES256_GCM,data:99N58VRL+rRFMD8u7y8sDRDmouIB6rVZoJ2zJWcPjU0cBxwdQ5ySU0I3NWM+OphpHPT/9SY=,iv:xQXnwkuhr0XcI1JfMoUUHlUn2ITN8ogJc27pO0HyzNM=,tag:+ae6K0eEbDFMw01LsLf9hQ==,type:str]",
-				"private_key_file_pwd": "ENC[AES256_GCM,data:PSRqoNFZkSn2AzB8SoIcFVngtJSoF3wi9A==,iv:RoAeg0rrhRHm0NxUbcuqTklW/O53szg27jc5OxHggZY=,tag:nD83nfnnb//rhGpcLkY81w==,type:str]",
+				"authenticator": "ENC[AES256_GCM,data:r69gdcm2/mP6at0rag==,iv:ttvEJW6UGlLRlur1Kh6CdcusvFndD9NkXPZZGEsDDG4=,tag:RxxT5pS2mC6Z8ok3Wxt2cw==,type:str]",
+				"private_key_file": "ENC[AES256_GCM,data:ZeG5F5/XieCfNYxkQKw9OeUyAiDTTJZJfkp2i9iRH8S5JLCskIFdowBIGjgQxKgAdtC7arY=,iv:Pkr/HpSVkILnCu4JPIYqZ2gSqJy86TTtDc7/0GY20T0=,tag:Rsx/h0gqVUde1m/2CGB68w==,type:str]",
+				"private_key_file_pwd": "ENC[AES256_GCM,data:S1HY2VKe6Xf1swcc7EMDyrvOWxtQfB3z9A==,iv:4+cLfmtp0Ctz6LbxT886x64Cfiwh3Q5JV6YuyBgyuDs=,tag:CfvqkyBUR/6XavY3oenKAQ==,type:str]",
 				"oauth_token": "",
-				"warehouse": "ENC[AES256_GCM,data:kBXYbVIoTS6Fj7iZ,iv:tZJlhDmwgtOEvBS7HKvL9GlPjCuDwrLw77EXZVGxLy8=,tag:nRZNPa48uG/RKViy1qmyvA==,type:str]",
+				"warehouse": "ENC[AES256_GCM,data:mGT3wf+TzInNbWTM,iv:3xUe7FoqP1+16NlPouIXT4VSZxQd/tHe5WF0CNBT9Sk=,tag:JSgiopSAN9VqB6dk8d3w/Q==,type:str]",
 				"schema": "",
-				"role": "ENC[AES256_GCM,data:VcI7vjyk25uPd+l04bdhU8qupA==,iv:j3hcGKBmKtQax+ydPsnFmUf0AhculppoWVC4zRkCuto=,tag:dQqt+rAEhZOjGdlpteiYzg==,type:str]"
+				"role": "ENC[AES256_GCM,data:DtA1ssNOC81pAFHWRwbwiRo7Dg==,iv:MTb8aXsOErABpUSRtB0P7C/qQuWk9H1dmnKOo6tnKbY=,tag:4PisvZypBzevR5lAd9xt7g==,type:str]"
 			},
 			"endpoint": {
-				"kind": "ENC[AES256_GCM,data:o5Za,iv:26iK0k4OQw7cnXY8RNkr8ma8ceWtEHoMW13Dk/KkP+4=,tag:1e4kZ0wHxIPL92LFcx/crQ==,type:str]",
-				"host": "ENC[AES256_GCM,data:JcNulJRpw8izgieQv31AGiE=,iv:5HMgxjepvpmRh5SEvE38AgcY4VQRNp88V0h3CL5a+t4=,tag:OVa01F1j08zOqmhehkyd8A==,type:str]",
+				"kind": "ENC[AES256_GCM,data:SzRn,iv:4Tx2FXn3a6lzKuYVcFBv6tYdyGHKBC+cD1dABQOxnhk=,tag:C+jV3IpTwsYrnB3Viq/oZA==,type:str]",
+				"host": "ENC[AES256_GCM,data:joN0Kx7oJDoD3VTHwZn1IkY=,iv:xj/Zbq8DgKhrFIazn30E1svBNa7XOQL6a1PYcNUq3yM=,tag:do+V5X2gt4/sQKRxCiftvA==,type:str]",
 				"port": "",
-				"database": "ENC[AES256_GCM,data:6Ssv3q4dKfVnig==,iv:MS8OMM2fsdCqfAKxy7S2IZ7c1+JJQvfjr2Z+U7BYhoU=,tag:vivK7GpxdtqtQM8dEqhbqQ==,type:str]",
-				"username": "ENC[AES256_GCM,data:6MMegnL3OMyYHpe7yLWS+Xbpmm9OoQ==,iv:qysge13mjUZ4qGuBFN5twBSoVWlnBWnz7j8CtL212ZE=,tag:Sf0WHX9lxltNOIrz71Ap7A==,type:str]",
+				"database": "ENC[AES256_GCM,data:Y5GlRGLKBeVVZg==,iv:b4CnGcwqJP0kueogecwGHRSJlzuguA4pdLSrbmGSMzc=,tag:ZhTG/EW+GEGaRujs32wnLw==,type:str]",
+				"username": "ENC[AES256_GCM,data:zTJY7RyyUHRorPxZat9TWX4Xk6yDiQ==,iv:iG7WQlmqiJVW7bvo/S6VxZBotbZV80YcjdnlbyfjV4s=,tag:qVIQoa7nFDRz3fBVGFLpfA==,type:str]",
 				"password": null
 			},
 			"tunnel": {
-				"enabled": "ENC[AES256_GCM,data:hbhKnpI=,iv:tglHKOAf7YgUTXOoTd+JVwD6EYT5q2Wc634HrXw0+po=,tag:hFIZ7AIutdXs9ZbmUnfNDA==,type:bool]"
+				"enabled": "ENC[AES256_GCM,data:DwFixzo=,iv:oNBiiHChHqF2OrAslBXv0dYCsfuI/wmA4ulIAoBGEMc=,tag:sTmUSHq71DdjzWCPTQQOoQ==,type:bool]"
 			}
 		},
 		{
-			"name": "ENC[AES256_GCM,data:ixgY30bG8dGI,iv:6uGb0ZYFwXkI1muo2zP0RbN4dGC34lnNxjAlzJ+1KXk=,tag:x4hkgGNVpNd7Jyj55kTITA==,type:str]",
-			"db_type": "ENC[AES256_GCM,data:xYDqkXZ1Eoyg,iv:M/PEVGUv2LxAQW42dOg8UsWkHsKob+GIMajqvMCyaPI=,tag:BC5tY9UQzoaxe2b/ObkFFA==,type:str]",
+			"name": "ENC[AES256_GCM,data:xHhvs0ygnlSz,iv:xswOd53tsRVrISdRiUAweKKC2SPekCNtR2bR73kPjYE=,tag:MsF9D9wC5qkJlR6LmJAA+w==,type:str]",
+			"db_type": "ENC[AES256_GCM,data:JBOUyqV+76bC,iv:9xxTs+1iqC9pMLHgqAKbP7iuYwDdbBnp/Cz9ScX5MTI=,tag:ClsbHNWWyeyiV8ybXjqPuQ==,type:str]",
 			"source": null,
 			"connection_url": null,
 			"folder_path": "",
 			"extra_options": {},
 			"options": {
-				"authenticator": "ENC[AES256_GCM,data:pzqDtB7EgxFQgj15ZQ==,iv:ut1XV+hRvtqWfZaoHTZHyNMECZ5p9yFWuTQHyADpKAw=,tag:3Y9SAy9ra8vK6RPcUipFMw==,type:str]",
-				"private_key_file": "ENC[AES256_GCM,data:Kdk99xATLuoBOL6FgHCanQ/jY1cO7GglV5evM3FM9VWKczroUTi0TDD11gaWY41kSxFUCYdVCFQsGi29AKRg,iv:KpiOuSWvwQe0Wv89KXboKuSXYE8JCBrMunSUjo15jAo=,tag:+M7Peu53DpBv8/xm7+kixg==,type:str]",
-				"private_key_file_pwd": "ENC[AES256_GCM,data:6A8hw7Vh0ZT0HAPZLGIsIp6euGTWpDRBHw==,iv:mokmsZFlSskykWf3+C8QjyviPK7rT7TjyBEkDX/wkYg=,tag:R2xV4jO5fbZ3ML24u9eukw==,type:str]",
+				"authenticator": "ENC[AES256_GCM,data:K2mF7nCS0hw1xElIvQ==,iv:7BYR4nRKkAtpUB/a0tnDR/fg5EhoItJtoNCrIHss0y0=,tag:kfDYKs2qzbEWimR1Hb4RYQ==,type:str]",
+				"private_key_file": "ENC[AES256_GCM,data:8gMG+z9MtFCPY4XSP2DtBFgZsZGeaDmbsdPYdB3UkiypfWWAY1VHVnQ37bmMHa6f/4FCcAVeCTUuKr65C6Uw,iv:+G7mJNLpxO9Gd7y/gGQzOcfsJDYIrFJvc7FEvcO7EHU=,tag:m1xHzN1qXuZsGCtV2IOqFw==,type:str]",
+				"private_key_file_pwd": "ENC[AES256_GCM,data:Wcq4pi2TrYGoA00pf0L0wM+F/T7ZlGPY2Q==,iv:ULaIb8KFhHyAeF/IEqwAjg4I7rZ0ThU/J3627/vhLFE=,tag:FYGB3ucWaEFAZ50VWdx9OA==,type:str]",
 				"oauth_token": "",
-				"warehouse": "ENC[AES256_GCM,data:QpxXEi3t2IKQTmiz,iv:tsR50tXLa5hstHFiUCmXfcDSZSJEXinbeyh6OXjN9r4=,tag:8mWLiXeMz4n0Sxbzvm042w==,type:str]",
+				"warehouse": "ENC[AES256_GCM,data:NryNmMBqskZdGm9d,iv:h3MtZNxLZw8vlJKtjfiVif7SRFqjhx8WHyA04Mp/W/I=,tag:r82njnrjwTTrxd2i0SwCSQ==,type:str]",
 				"schema": "",
-				"role": "ENC[AES256_GCM,data:l9oONrkmpgHhQhC8VpUCDYgeEg==,iv:y6HsGhlhP8nbQq3Fo6Ag+9y+ieb8GvBv0umSPIFhs/c=,tag:xeFMN99fgbHpxsE5mWBArw==,type:str]"
+				"role": "ENC[AES256_GCM,data:5ckv5n10RNk8mc2dC1M5RRQ4zA==,iv:7ozeETRKkIUL2N9t0h4R94uP2zyGcwxFP0RsrdJ7uEI=,tag:tqkJO7bdfVuOA3Xfgdd8gA==,type:str]"
 			},
 			"endpoint": {
-				"kind": "ENC[AES256_GCM,data:C9Yx,iv:5J18ptcO+jo9hefj1dWe4d0qtq2C9TjTuml0ht3MBjQ=,tag:cyXvw3G3rFYsidQq3yNq7w==,type:str]",
-				"host": "ENC[AES256_GCM,data:W17NT3Z/BdHgkNZSLZrT+w4=,iv:VtpvPxJm/OG4Ay6lCPX+He8Ix7a/6zKX7UGTzUx95UU=,tag:O4wYOBwhtoziYJyM72rboQ==,type:str]",
+				"kind": "ENC[AES256_GCM,data:50AU,iv:ZxH83CyjjPqd31aFoumbEV2P6+gQj1FFnnAjLTfBGDo=,tag:5NDidmMN4/RaMxtlYvapLw==,type:str]",
+				"host": "ENC[AES256_GCM,data:RzQWXShI5sLaCVvCHQG7KD0=,iv:4pTuy98jLMxqcqPsu1Ikvhw36HOi3WmejL9eT3rxdG8=,tag:mpj6eznQWTctpvJSmqeYtA==,type:str]",
 				"port": "",
-				"database": "ENC[AES256_GCM,data:l5brM93a,iv:lM9pspHwyUcziztEwInj4UHqXY94Io4ejMlaDOS5iIk=,tag:STXVmlUGz2zzrndoF28n3A==,type:str]",
-				"username": "ENC[AES256_GCM,data:ya1e9/rsn7n05ShiNHOMQpmjHqlkAw==,iv:gdZa/9PQIKcJN/k8xNrWYIPbwbGNWeY9zTyKPtvsmvE=,tag:Zg+yndlbfcY/2mhwa5H5Dw==,type:str]",
+				"database": "ENC[AES256_GCM,data:38vStG6/,iv:jxo7aCku3a0WDeN0pKbrCAppseXYVAYWLggtxnzpnmk=,tag:JBWQctaANMn+FVEeoAdbIg==,type:str]",
+				"username": "ENC[AES256_GCM,data:+BVCxbSy+5vOmKVxMLK39EyVaGfXPA==,iv:0QY7ANf6XniBD9ltV0/Nl/rJK94kCXAuCJEFfdh2tdg=,tag:Ft3EuL6ozCPqMlfbusQ/9w==,type:str]",
 				"password": null
 			},
 			"tunnel": {
-				"enabled": "ENC[AES256_GCM,data:Mv0d3+g=,iv:PxpAzvTGoCeU9MU7dZKa6TPLZycOoVu0LRwln0SW6xo=,tag:GGmDcewjzyS2apiisECPAw==,type:bool]"
+				"enabled": "ENC[AES256_GCM,data:fzMHQeA=,iv:Y/le0i+TM+Wev3CZqUmw3Zw3OwQPw6I8YizWquI8pnk=,tag:ZunB/o4DjRaGXcfPssyefw==,type:bool]"
 			}
 		}
 	],
@@ -62,11 +62,11 @@
 		"age": [
 			{
 				"recipient": "age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7",
-				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlS3BOUjgxTTRCam9abC9s\nNkNCL1oxMzRQdS96ZTA1WjRMZm5pdzlVZ1RFClVCOEN1dzE0ODNwYVRPM2hFLzZT\nbi9HTFFTREY3OEdENkdSNmJ4Uzl4YlUKLS0tIDhHbDNkZHhoRFpPYVdBanB0ME04\nNUdhZTE1dE1VQnpMQXJvd280S052bHcK3MUi6ro2nBH/LGEWYvOp8l+g5vIdZ1Pt\n34DmY0cNO9qv9C41vOGywR+pbjjh0w5oIQABLV+JomQ+iqc4kWYzhQ==\n-----END AGE ENCRYPTED FILE-----\n"
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSByaDNTa25jYnY5MUZtVUF1\nN015UDJsSnc1QlRES09qbDEvWjRzYzNWeG5RCk5VSi9ESmRRN2dzWlRyc1cybEpo\nZTlWWGFsYkdiMkZ1QU4xeCtXck9CQjgKLS0tIEZWUXJlUVR1cHVxdlpGUk1yT2Qz\nVmRJQjFZcTl2S0crNkdrKy93c3lUYlEKxuOWvTJPPB+bSYdU5VIwu5DezZUn5s9W\na3jM2AIFV/xfXy5lJB3iZQFxV08/ZqdklgykaOWIg7E1JaeMXiIsZA==\n-----END AGE ENCRYPTED FILE-----\n"
 			}
 		],
 		"lastmodified": "2026-02-13T14:20:53Z",
-		"mac": "ENC[AES256_GCM,data:NmUZ/r3XkvmAVHsnvRlb48Wv4P4StuAv2WUfd8bhQxaKdb2XUt7vQMCgF8JZEde1Jq3BkpEWw/9HuxnPyNT/i3m/nU1wyZF1iDNHVLdeFXuSMy2kHbwSMaFR59g2eydAFphho1GS7QV2hRuX12+TCbJzAlPaPYTZQ7XjlRmT7OE=,iv:NiaikQiWHUiROjBj0heWT9no40MuINTHLr3oylF/50w=,tag:qFoX5SCasG984TWOnTPkTA==,type:str]",
+		"mac": "ENC[AES256_GCM,data:gCte99kbvyUnTt+5QhnkslCZzNE8ZroTeomz5gr7dXJvsIwIJkmuMkvGgX1e0fbt4OotE7aE14ggzCmXwOvTbt+94HFKROEwn9DBP79v7UD96w8CdOHdmX/+vCjxbnj4UhOPi14ffjMYHwlooAGscI2C4bIpzMmD2oRYDeFCgO8=,iv:cGAPr/589wbQcKnmbguv4Ks4SeqkF1dp+74B8Ulcd4E=,tag:QCP7SNdRMEIdD/YGrhAJ2A==,type:str]",
 		"unencrypted_suffix": "_unencrypted",
 		"version": "3.11.0"
 	}
