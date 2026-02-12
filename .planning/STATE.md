@@ -9,7 +9,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 
 ## Current Position
 
-Phase: 1 of 3 (Operational Foundation)
+Phase: 1 of 2 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
 Last activity: 2026-02-12 - Completed quick task 5: Fix border colors for pinned and sneaky windows

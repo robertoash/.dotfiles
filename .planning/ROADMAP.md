@@ -14,7 +14,6 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Operational Foundation** - Safe deployment preview, system health validation, and code quality tooling
 - [ ] **Phase 2: Developer Experience** - Change visibility, drift detection, and automated cleanup
-- [ ] **Phase 3: Advanced Tooling** - Templating, rollback, and bootstrap streamlining (optional)
 
 ## Phase Details
 
@@ -50,28 +49,3 @@ Plans:
 - [ ] 02-01: Diff-before-apply and state tracking infrastructure
 - [ ] 02-02: Drift detection and broken symlink cleanup
 - [ ] 02-03: Run-once script execution
-
-### Phase 3: Advanced Tooling
-**Goal**: Users can reduce config duplication with templating and recover from bad deployments
-**Depends on**: Phase 2 (state tracking infrastructure)
-**Requirements**: TMPL-01, ROLLBACK-01, BOOTSTRAP-01
-**Success Criteria** (what must be TRUE):
-  1. Config files with per-machine variations can use Jinja2 templates (with non-SOPS-conflicting delimiters) that resolve at deploy time
-  2. Running `setup.py --rollback` reverts the last deployment by restoring previous file state from `.state/` backups
-  3. A single bootstrap command on a fresh machine installs prerequisites, clones the repo, and runs setup.py to completion
-**Plans**: TBD
-
-Plans:
-- [ ] 03-01: Per-file Jinja2 templating
-- [ ] 03-02: Rollback and bootstrap improvements
-
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3
-
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Operational Foundation | 0/2 | Not started | - |
-| 2. Developer Experience | 0/3 | Not started | - |
-| 3. Advanced Tooling | 0/2 | Not started | - |
