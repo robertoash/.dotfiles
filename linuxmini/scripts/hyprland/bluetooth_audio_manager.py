@@ -100,6 +100,107 @@ def disconnect(mac):
     bluetoothctl("disconnect", mac)
 
 
+def get_wpctl_status():
+    """Get wpctl status output"""
+    try:
+        result = subprocess.run(
+            ["wpctl", "status"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        return result.stdout
+    except Exception as e:
+        log(f"wpctl status error: {e}")
+        return ""
+
+
+def find_audio_sink(device_name, mac):
+    """Find PipeWire audio sink node ID for a Bluetooth device"""
+    status = get_wpctl_status()
+    if not status:
+        return None
+
+    # Find the Sinks section
+    lines = status.splitlines()
+    in_sinks = False
+
+    for line in lines:
+        # Detect Sinks section
+        if "Sinks:" in line:
+            in_sinks = True
+            continue
+
+        # Exit Sinks section when we hit another top-level section
+        if in_sinks and line.startswith(" ├─") and ":" in line:
+            break
+
+        # Parse sink lines: "  │      47. device_name [vol: 0.50]"
+        # or with asterisk: "  │   *  52. other_device [vol: 0.75]"
+        if in_sinks and ("│" in line):
+            # Remove tree characters and asterisk
+            cleaned = line.replace("│", "").replace("*", "").strip()
+
+            # Extract node ID and name (format: "47. device_name [...]")
+            if ". " in cleaned:
+                parts = cleaned.split(". ", 1)
+                if len(parts) == 2:
+                    try:
+                        node_id = int(parts[0].strip())
+                        sink_name = parts[1].strip()
+
+                        # Match by device name (case-insensitive)
+                        if device_name.lower() in sink_name.lower():
+                            log(f"  Found sink by name: ID {node_id}, name '{sink_name}'")
+                            return node_id
+
+                        # Match by MAC with underscores (e.g., "38_18_4C_AE_2B_E3")
+                        mac_underscore = mac.replace(":", "_")
+                        if mac_underscore in sink_name:
+                            log(f"  Found sink by MAC: ID {node_id}, name '{sink_name}'")
+                            return node_id
+                    except (ValueError, IndexError):
+                        continue
+
+    return None
+
+
+def set_default_sink(device_name, mac, retries=5, delay=2):
+    """Set the default PipeWire audio sink for a Bluetooth device"""
+    log(f"  Setting default audio sink for {device_name}...")
+
+    for attempt in range(1, retries + 1):
+        node_id = find_audio_sink(device_name, mac)
+
+        if node_id is not None:
+            try:
+                result = subprocess.run(
+                    ["wpctl", "set-default", str(node_id)],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    check=False,
+                )
+
+                if result.returncode == 0:
+                    log(f"  Set default sink to {device_name} (node {node_id})")
+                    notify(f"Audio output: {device_name}")
+                    return True
+                else:
+                    log(f"  wpctl set-default failed: {result.stderr}")
+            except Exception as e:
+                log(f"  Error setting default sink: {e}")
+        else:
+            log(f"  Sink not found for {device_name} (attempt {attempt}/{retries})")
+
+        if attempt < retries:
+            time.sleep(delay)
+
+    log(f"  Warning: Could not set default sink for {device_name} after {retries} attempts")
+    return False
+
+
 def reconcile():
     log("Running reconciliation...")
 
@@ -124,6 +225,8 @@ def reconcile():
 
     if is_connected(best_mac):
         log(f"  {best_name} is already connected (nothing to do)")
+        # Still set default sink to ensure it's correct (handles manual changes)
+        set_default_sink(best_name, best_mac)
         return
 
     for name, mac in connected:
@@ -137,8 +240,18 @@ def reconcile():
     if success:
         log(f"  Successfully connected to {best_name}")
         notify(f"Connected to {best_name}")
+        # Set default sink after successful connection
+        set_default_sink(best_name, best_mac)
     else:
         log(f"  Failed to connect to {best_name}")
+
+    # If we disconnected devices but connection failed, fall back to any remaining connected device
+    if not success and connected:
+        for name, mac in MANAGED_DEVICES:
+            if is_connected(mac):
+                log(f"  Falling back to {name}")
+                set_default_sink(name, mac)
+                break
 
 
 def schedule_reconcile():
