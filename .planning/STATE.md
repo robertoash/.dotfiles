@@ -75,10 +75,10 @@ None yet.
 | 4 | Review and fix laggy dot expansion implementation | 2026-02-11 | c547881 | [4-dotfiles-yks](./quick/4-dotfiles-yks/) |
 | 5 | Fix border colors for pinned and sneaky windows to show correct solid colors on focus/unfocus state changes | 2026-02-12 | 8b483e3 | [5-fix-border-colors-for-pinned-and-sneaky-](./quick/5-fix-border-colors-for-pinned-and-sneaky-/) |
 | 6 | Fix jellyfin-mpv-shim websocket errors and harden service against connection issues | 2026-02-12 | a3c552c | [6-fix-jellyfin-mpv-shim-websocket-errors-a](./quick/6-fix-jellyfin-mpv-shim-websocket-errors-a/) |
-| 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | 6c11c20 | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
+| 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | ca480ab | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
 
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed Phase 01 Plan 02 (Systemd Hardening)
+Stopped at: Completed quick task 7: Implement priority-based Bluetooth audio device manager (WH-1000MX3 > Google Home Speaker)
 Resume file: None
