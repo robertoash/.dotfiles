@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 1 of 1 (idle_detection_reliability)
-Plan: 0 of 0 in current phase
-Status: Ready to plan
-Last activity: 2026-02-12 - Completed quick task 6: Fix jellyfin-mpv-shim websocket errors and set guardrails
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-02-12 - Completed Phase 01 Plan 01: Fix MQTT Service Crashes
 
-Progress: [..........] 0%
+Progress: [#####.....] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: 2 minutes
+- Total execution time: 0.03 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-idle-detection-reliability | 1 | 118s | 118s |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 118s
+- Trend: Starting phase
 
 *Updated after each plan completion*
 
@@ -42,7 +42,9 @@ Progress: [..........] 0%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
--
+- [Phase 01-01]: Use paho-mqtt's built-in reconnection instead of custom safe_reconnect() logic
+- [Phase 01-01]: Rely on will message for offline status instead of publishing in on_disconnect
+- [Phase 01-01]: Treat disconnect rc as integer for paho-mqtt 1.6.x compatibility
 - [Phase quick-1]: Display downloaded amount in same unit as total size for consistency with yt-dlp output
 - [Phase quick-2]: Status column width 6 (not 4) to avoid truncating header text
 - [Phase quick-3]: Use --print-to-file %(height)s to extract actual resolution rather than parsing verbose output
@@ -74,5 +76,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed quick-6 (fix jellyfin-mpv-shim websocket errors)
+Stopped at: Completed Phase 01 Plan 01 (Fix MQTT Service Crashes)
 Resume file: None
