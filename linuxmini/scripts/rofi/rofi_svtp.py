@@ -381,7 +381,7 @@ def handle_search_with_fzf(search_term, debug_mode=False):
             url = selected.split('\t')[-1]
             play_video(url, debug_mode)
 
-def show_rofi_menu(items, prompt="Select", show_back=False):
+def show_rofi_menu(items, prompt="Select", show_back=False, add_category_icons=True):
     """Show rofi menu and return (action, selected_item)"""
     menu_text = []
     item_map = {}
@@ -389,7 +389,10 @@ def show_rofi_menu(items, prompt="Select", show_back=False):
     for item in items:
         if len(item) == 2:
             # Simple tuple (id, name) - for categories
-            display = f"📂 {item[1]}"
+            if add_category_icons:
+                display = f"📂 {item[1]}"
+            else:
+                display = item[1]
             item_map[display] = item
         else:
             # Full tuple (name, desc, url) - for content
@@ -455,7 +458,7 @@ def browse_with_rofi(debug_mode=False):
 
     # Format for rofi (just display names)
     display_items = [(item[0], item[1]) for item in menu_items]
-    action, selected = show_rofi_menu(display_items, "SVT Play", show_back=False)
+    action, selected = show_rofi_menu(display_items, "SVT Play", show_back=False, add_category_icons=False)
 
     if action != 'select' or not selected:
         return
