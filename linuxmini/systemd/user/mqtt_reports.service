@@ -1,6 +1,7 @@
 [Unit]
 Description=MQTT Reports Service
-After=network.target
+After=network.target network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -11,6 +12,8 @@ ExecStartPre=/usr/bin/bash -c "source /home/rash/.config/scripts/mqtt/.env && ec
 ExecStart=/home/rash/.config/scripts/mqtt/launch_mqtt_services.sh mqtt_reports
 Restart=on-failure
 RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
 WorkingDirectory=/home/rash/.config/scripts/mqtt
 StandardOutput=journal
 StandardError=journal
