@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 1 (idle_detection_reliability)
 Plan: 2 of 2 in current phase
 Status: Complete
-Last activity: 2026-02-12 - Completed Phase 01 Plan 02: Systemd Hardening
+Last activity: 2026-02-12 - Completed quick task 8: Fix Pypr daemon connectivity in Hyprland and ensure it starts on boot with resiliency
 
 Progress: [##########] 100%
 
