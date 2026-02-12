@@ -9,6 +9,8 @@ ExecStart=/home/rash/.config/scripts/hyprland/idle_management/in_office_monitor.
 PassEnvironment=HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY HASS_SERVER HASS_TOKEN XDG_RUNTIME_DIR XDG_SESSION_TYPE XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP
 Restart=on-failure
 RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Install]
 WantedBy=default.target

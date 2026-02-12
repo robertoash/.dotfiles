@@ -3,7 +3,10 @@ Description=Monitor webcam activity and notify Home Assistant
 
 [Service]
 ExecStart=/home/rash/.config/scripts/hyprland/idle_management/linux_webcam_status.py
-Restart=always
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Install]
 WantedBy=default.target
