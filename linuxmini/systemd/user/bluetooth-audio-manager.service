@@ -1,0 +1,14 @@
+[Unit]
+Description=Priority-based Bluetooth Audio Device Manager
+After=bluetooth.target
+Wants=bluetooth.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -u /home/rash/.dotfiles/linuxmini/scripts/hyprland/bluetooth_audio_manager.py
+Restart=on-failure
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=default.target
