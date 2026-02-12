@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 1 (idle_detection_reliability)
 Plan: 0 of 0 in current phase
 Status: Ready to plan
-Last activity: 2026-02-12 - Added Phase 1: idle_detection_reliability
+Last activity: 2026-02-12 - Completed quick task 6: Fix jellyfin-mpv-shim websocket errors and set guardrails
 
 Progress: [..........] 0%
 
