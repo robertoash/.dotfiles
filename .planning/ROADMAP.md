@@ -12,18 +12,20 @@ The dotfiles system is architecturally sound but lacks operational tooling for s
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-No phases defined yet.
+| # | Name | Status | Completed |
+|---|------|--------|-----------|
+| 1 | idle_detection_reliability | ✓ Complete | 2026-02-12 |
 
 ## Phase Details
 
-No phases defined yet.
-
-### Phase 1: idle_detection_reliability
+### Phase 1: idle_detection_reliability ✓
 
 **Goal:** Fix crashed MQTT services, eliminate paho-mqtt API incompatibility, harden systemd restart policies so the idle detection system reliably communicates with Home Assistant
 **Depends on:** Phase 0
 **Plans:** 2 plans
+**Status:** Complete
+**Completed:** 2026-02-12
 
 Plans:
-- [ ] 01-01-PLAN.md — Fix paho-mqtt 1.6.x compatibility and reconnection logic in both MQTT scripts
-- [ ] 01-02-PLAN.md — Harden all idle detection systemd service units with restart policies
+- [x] 01-01-PLAN.md — Fix paho-mqtt 1.6.x compatibility and reconnection logic in both MQTT scripts
+- [x] 01-02-PLAN.md — Harden all idle detection systemd service units with restart policies
