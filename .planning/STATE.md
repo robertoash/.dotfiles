@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 1 (idle_detection_reliability)
 Plan: 2 of 2 in current phase
 Status: Complete
-Last activity: 2026-02-12 - Completed quick task 8: Fix Pypr daemon connectivity in Hyprland and ensure it starts on boot with resiliency
+Last activity: 2026-02-12 - Completed quick task 10: Remove WatchdogSec from jellyfin-mpv-shim service
 
 Progress: [##########] 100%
 
@@ -34,6 +34,7 @@ Progress: [##########] 100%
 - Trend: Phase complete
 
 *Updated after each plan completion*
+| Phase quick-10 P01 | 49 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -55,6 +56,7 @@ Recent decisions affecting current work:
 - [Phase quick-8]: Use ConditionEnvironment to prevent pypr startup before Hyprland
 - [Phase quick-8]: Use Restart=always instead of on-failure for pypr (exits with code 0 on error)
 - [Phase quick-8]: Use systemctl restart instead of start for idempotent pypr activation in launch.conf
+- [Phase quick-10]: Removed WatchdogSec=600 because jellyfin-mpv-shim doesn't implement sd_notify watchdog protocol
 
 ### Pending Todos
 
@@ -80,9 +82,10 @@ None yet.
 | 6 | Fix jellyfin-mpv-shim websocket errors and harden service against connection issues | 2026-02-12 | a3c552c | [6-fix-jellyfin-mpv-shim-websocket-errors-a](./quick/6-fix-jellyfin-mpv-shim-websocket-errors-a/) |
 | 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | ca480ab | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
 | 8 | Fix pypr daemon connectivity issue in Hyprland with ConditionEnvironment and Restart=always | 2026-02-12 | 54d4a2b | [8-fix-pypr-daemon-connectivity-in-hyprland](./quick/8-fix-pypr-daemon-connectivity-in-hyprland/) |
+| 10 | Remove WatchdogSec from jellyfin-mpv-shim service | 2026-02-12 | 8345688 | [10-remove-watchdogsec-from-jellyfin-mpv-shi](./quick/10-remove-watchdogsec-from-jellyfin-mpv-shi/) |
 
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed quick task 8: Fix pypr daemon connectivity in Hyprland
+Stopped at: Completed quick task 10: Remove WatchdogSec from jellyfin-mpv-shim service
 Resume file: None
