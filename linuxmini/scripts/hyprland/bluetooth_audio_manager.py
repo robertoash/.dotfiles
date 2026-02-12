@@ -9,8 +9,8 @@ from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
 
 MANAGED_DEVICES = [
-    ("WH-1000XM3", "38:18:4C:AE:2B:E3"),
-    ("Google Home Speaker", "48:D6:D5:90:F1:E0"),
+    ("WH-1000XM3", "38:18:4C:AE:2B:E3", True),   # (name, mac, has_microphone)
+    ("Google Home Speaker", "48:D6:D5:90:F1:E0", False),
 ]
 
 RECONCILE_DEBOUNCE_MS = 2000
@@ -213,19 +213,113 @@ def set_default_sink(device_name, mac, retries=5, delay=2):
     return False
 
 
+def find_audio_source(device_name, mac):
+    """Find PipeWire audio source (input) node for a Bluetooth device using pactl"""
+    try:
+        result = subprocess.run(
+            ["pactl", "list", "sources", "short"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+
+        if result.returncode != 0:
+            return None
+
+        # pactl output format: "124	bluez_input.38:18:4C:AE:2B:E3	PipeWire	s16le..."
+        # Try both formats: MAC with colons and MAC with underscores
+        mac_colon = mac.lower()
+        mac_underscore = mac.replace(":", "_").lower()
+
+        for line in result.stdout.splitlines():
+            line_lower = line.lower()
+            if f"bluez_input.{mac_colon}" in line_lower or f"bluez_input.{mac_underscore}" in line_lower:
+                parts = line.split("\t")
+                if len(parts) >= 2:
+                    try:
+                        source_name = parts[1].strip()
+                        log(f"  Found Bluetooth source: '{source_name}'")
+                        return source_name
+                    except (ValueError, IndexError):
+                        continue
+
+        return None
+    except Exception as e:
+        log(f"  Error finding audio source: {e}")
+        return None
+
+
+def get_default_source():
+    """Get the current default source name"""
+    try:
+        result = subprocess.run(
+            ["pactl", "get-default-source"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+        return None
+    except Exception:
+        return None
+
+
+def set_default_source(device_name, mac, retries=5, delay=2):
+    """Set the default PipeWire audio source (input) for a Bluetooth device"""
+    log(f"  Setting default audio source for {device_name}...")
+
+    for attempt in range(1, retries + 1):
+        source_name = find_audio_source(device_name, mac)
+
+        if source_name is not None:
+            # Check if this source is already the default
+            current_default = get_default_source()
+            if current_default == source_name:
+                log(f"  {device_name} is already the default source (no change needed)")
+                return True
+
+            try:
+                result = subprocess.run(
+                    ["pactl", "set-default-source", source_name],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    check=False,
+                )
+
+                if result.returncode == 0:
+                    log(f"  Set default source to {device_name} ({source_name})")
+                    return True
+                else:
+                    log(f"  pactl set-default-source failed: {result.stderr.strip()}")
+            except Exception as e:
+                log(f"  Error setting default source: {e}")
+        else:
+            log(f"  Source not found for {device_name} (attempt {attempt}/{retries})")
+
+        if attempt < retries:
+            time.sleep(delay)
+
+    log(f"  Warning: Could not set default source for {device_name} after {retries} attempts")
+    return False
+
+
 def reconcile():
     log("Running reconciliation...")
 
     connected = []
-    for name, mac in MANAGED_DEVICES:
+    for name, mac, has_mic in MANAGED_DEVICES:
         if is_connected(mac):
-            connected.append((name, mac))
+            connected.append((name, mac, has_mic))
             log(f"  {name} is connected")
 
     best_available = None
-    for name, mac in MANAGED_DEVICES:
+    for name, mac, has_mic in MANAGED_DEVICES:
         if is_available(mac):
-            best_available = (name, mac)
+            best_available = (name, mac, has_mic)
             log(f"  {name} is available (highest priority)")
             break
 
@@ -233,15 +327,17 @@ def reconcile():
         log("  No managed devices available")
         return
 
-    best_name, best_mac = best_available
+    best_name, best_mac, best_has_mic = best_available
 
     if is_connected(best_mac):
         log(f"  {best_name} is already connected (nothing to do)")
-        # Still set default sink to ensure it's correct (handles manual changes)
+        # Still set default sink/source to ensure it's correct (handles manual changes)
         set_default_sink(best_name, best_mac)
+        if best_has_mic:
+            set_default_source(best_name, best_mac)
         return
 
-    for name, mac in connected:
+    for name, mac, has_mic in connected:
         if mac != best_mac:
             log(f"  Lower priority device {name} is connected, disconnecting...")
             disconnect(mac)
@@ -252,17 +348,21 @@ def reconcile():
     if success:
         log(f"  Successfully connected to {best_name}")
         notify(f"Connected to {best_name}")
-        # Set default sink after successful connection
+        # Set default sink and source (if device has mic) after successful connection
         set_default_sink(best_name, best_mac)
+        if best_has_mic:
+            set_default_source(best_name, best_mac)
     else:
         log(f"  Failed to connect to {best_name}")
 
     # If we disconnected devices but connection failed, fall back to any remaining connected device
     if not success and connected:
-        for name, mac in MANAGED_DEVICES:
+        for name, mac, has_mic in MANAGED_DEVICES:
             if is_connected(mac):
                 log(f"  Falling back to {name}")
                 set_default_sink(name, mac)
+                if has_mic:
+                    set_default_source(name, mac)
                 break
 
 
