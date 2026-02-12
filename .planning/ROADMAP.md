@@ -17,3 +17,13 @@ No phases defined yet.
 ## Phase Details
 
 No phases defined yet.
+
+### Phase 1: idle_detection_reliability
+
+**Goal:** Fix crashed MQTT services, eliminate paho-mqtt API incompatibility, harden systemd restart policies so the idle detection system reliably communicates with Home Assistant
+**Depends on:** Phase 0
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Fix paho-mqtt 1.6.x compatibility and reconnection logic in both MQTT scripts
+- [ ] 01-02-PLAN.md — Harden all idle detection systemd service units with restart policies
