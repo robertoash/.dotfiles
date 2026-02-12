@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Any machine can be configured identically with one command. All configuration is declarative and versioned.
-**Current focus:** Phase 1 - Operational Foundation
+**Current focus:** No active phase - roadmap cleared
 
 ## Current Position
 
-Phase: 1 of 1 (Operational Foundation)
-Plan: 0 of 2 in current phase
-Status: Ready to plan
-Last activity: 2026-02-12 - Completed quick task 5: Fix border colors for pinned and sneaky windows
+Phase: 0 of 0 (No phases defined)
+Plan: -
+Status: Ready to define work
+Last activity: 2026-02-12 - Removed all phases from roadmap
 
-Progress: [..........] 0%
+Progress: -
 
 ## Performance Metrics
 
