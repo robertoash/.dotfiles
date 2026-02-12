@@ -117,53 +117,42 @@ def get_wpctl_status():
 
 
 def find_audio_sink(device_name, mac):
-    """Find PipeWire audio sink node ID for a Bluetooth device"""
-    status = get_wpctl_status()
-    if not status:
-        return None
+    """Find PipeWire audio sink node ID for a Bluetooth device using pactl"""
+    try:
+        # Use pactl to list sinks - it's more reliable than parsing wpctl output
+        result = subprocess.run(
+            ["pactl", "list", "sinks", "short"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
 
-    # Find the Sinks section
-    lines = status.splitlines()
-    in_sinks = False
+        if result.returncode != 0:
+            return None
 
-    for line in lines:
-        # Detect Sinks section
-        if "Sinks:" in line:
-            in_sinks = True
-            continue
+        # pactl output format: "6590240	bluez_output.38:18:4C:AE:2B:E3	PipeWire	s16le..."
+        # Try both formats: MAC with colons and MAC with underscores
+        mac_colon = mac.lower()
+        mac_underscore = mac.replace(":", "_").lower()
 
-        # Exit Sinks section when we hit another top-level section
-        if in_sinks and line.startswith(" ├─") and ":" in line:
-            break
-
-        # Parse sink lines: "  │      47. device_name [vol: 0.50]"
-        # or with asterisk: "  │   *  52. other_device [vol: 0.75]"
-        if in_sinks and ("│" in line):
-            # Remove tree characters and asterisk
-            cleaned = line.replace("│", "").replace("*", "").strip()
-
-            # Extract node ID and name (format: "47. device_name [...]")
-            if ". " in cleaned:
-                parts = cleaned.split(". ", 1)
-                if len(parts) == 2:
+        for line in result.stdout.splitlines():
+            line_lower = line.lower()
+            if f"bluez_output.{mac_colon}" in line_lower or f"bluez_output.{mac_underscore}" in line_lower:
+                parts = line.split("\t")
+                if len(parts) >= 2:
                     try:
-                        node_id = int(parts[0].strip())
+                        # Get the sink name (second column)
                         sink_name = parts[1].strip()
-
-                        # Match by device name (case-insensitive)
-                        if device_name.lower() in sink_name.lower():
-                            log(f"  Found sink by name: ID {node_id}, name '{sink_name}'")
-                            return node_id
-
-                        # Match by MAC with underscores (e.g., "38_18_4C_AE_2B_E3")
-                        mac_underscore = mac.replace(":", "_")
-                        if mac_underscore in sink_name:
-                            log(f"  Found sink by MAC: ID {node_id}, name '{sink_name}'")
-                            return node_id
+                        log(f"  Found Bluetooth sink: '{sink_name}'")
+                        return sink_name
                     except (ValueError, IndexError):
                         continue
 
-    return None
+        return None
+    except Exception as e:
+        log(f"  Error finding audio sink: {e}")
+        return None
 
 
 def set_default_sink(device_name, mac, retries=5, delay=2):
@@ -171,12 +160,12 @@ def set_default_sink(device_name, mac, retries=5, delay=2):
     log(f"  Setting default audio sink for {device_name}...")
 
     for attempt in range(1, retries + 1):
-        node_id = find_audio_sink(device_name, mac)
+        sink_name = find_audio_sink(device_name, mac)
 
-        if node_id is not None:
+        if sink_name is not None:
             try:
                 result = subprocess.run(
-                    ["wpctl", "set-default", str(node_id)],
+                    ["pactl", "set-default-sink", sink_name],
                     capture_output=True,
                     text=True,
                     timeout=5,
@@ -184,11 +173,11 @@ def set_default_sink(device_name, mac, retries=5, delay=2):
                 )
 
                 if result.returncode == 0:
-                    log(f"  Set default sink to {device_name} (node {node_id})")
+                    log(f"  Set default sink to {device_name} ({sink_name})")
                     notify(f"Audio output: {device_name}")
                     return True
                 else:
-                    log(f"  wpctl set-default failed: {result.stderr}")
+                    log(f"  pactl set-default-sink failed: {result.stderr.strip()}")
             except Exception as e:
                 log(f"  Error setting default sink: {e}")
         else:
