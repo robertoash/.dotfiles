@@ -2,13 +2,16 @@
 Description=Jellyfin MPV Shim
 PartOf=graphical-session.target
 After=graphical-session.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
 
 [Service]
 Type=simple
-ExecStartPre=/bin/sleep 5
+ExecStartPre=/usr/bin/sleep 3
 ExecStart=/usr/bin/jellyfin-mpv-shim
-Restart=on-failure
-RestartSec=10
+Restart=always
+RestartSec=15
+WatchdogSec=600
 
 [Install]
 WantedBy=default.target
