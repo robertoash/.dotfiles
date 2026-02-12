@@ -11,7 +11,6 @@ ExecStartPre=/usr/bin/sleep 3
 ExecStart=/usr/bin/jellyfin-mpv-shim
 Restart=always
 RestartSec=15
-WatchdogSec=600
 
 [Install]
 WantedBy=default.target
