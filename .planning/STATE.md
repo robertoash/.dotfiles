@@ -34,6 +34,7 @@ Progress: [#####.....] 50%
 - Trend: Starting phase
 
 *Updated after each plan completion*
+| Phase 01 P02 | 900 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -49,6 +50,9 @@ Recent decisions affecting current work:
 - [Phase quick-2]: Status column width 6 (not 4) to avoid truncating header text
 - [Phase quick-3]: Use --print-to-file %(height)s to extract actual resolution rather than parsing verbose output
 - [Phase quick-6]: Multi-layered resilience: app-level retry (connect_retry_mins=5) + faster health checks (120s) + systemd Restart=always + WatchdogSec=600 for comprehensive recovery from websocket drops and server restarts
+- [Phase 01-02]: StartLimitIntervalSec=300 / StartLimitBurst=10 allows 10 restarts in 5 minutes (vs systemd default 5 in 10s)
+- [Phase 01-02]: MQTT services now wait for network-online.target to prevent startup before network is ready
+- [Phase 01-02]: Changed webcam service from Restart=always to Restart=on-failure to respect clean exits
 
 ### Pending Todos
 
@@ -72,9 +76,10 @@ None yet.
 | 4 | Review and fix laggy dot expansion implementation | 2026-02-11 | c547881 | [4-dotfiles-yks](./quick/4-dotfiles-yks/) |
 | 5 | Fix border colors for pinned and sneaky windows to show correct solid colors on focus/unfocus state changes | 2026-02-12 | 8b483e3 | [5-fix-border-colors-for-pinned-and-sneaky-](./quick/5-fix-border-colors-for-pinned-and-sneaky-/) |
 | 6 | Fix jellyfin-mpv-shim websocket errors and harden service against connection issues | 2026-02-12 | a3c552c | [6-fix-jellyfin-mpv-shim-websocket-errors-a](./quick/6-fix-jellyfin-mpv-shim-websocket-errors-a/) |
+| 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | 6c11c20 | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
 
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed Phase 01 Plan 01 (Fix MQTT Service Crashes)
+Stopped at: Completed Quick Task 7 (Priority-based Bluetooth Audio Manager)
 Resume file: None
