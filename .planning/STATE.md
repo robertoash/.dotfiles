@@ -52,6 +52,9 @@ Recent decisions affecting current work:
 - [Phase 01-02]: StartLimitIntervalSec=300 / StartLimitBurst=10 allows 10 restarts in 5 minutes (vs systemd default 5 in 10s)
 - [Phase 01-02]: MQTT services now wait for network-online.target to prevent startup before network is ready
 - [Phase 01-02]: Changed webcam service from Restart=always to Restart=on-failure to respect clean exits
+- [Phase quick-8]: Use ConditionEnvironment to prevent pypr startup before Hyprland
+- [Phase quick-8]: Use Restart=always instead of on-failure for pypr (exits with code 0 on error)
+- [Phase quick-8]: Use systemctl restart instead of start for idempotent pypr activation in launch.conf
 
 ### Pending Todos
 
@@ -76,9 +79,10 @@ None yet.
 | 5 | Fix border colors for pinned and sneaky windows to show correct solid colors on focus/unfocus state changes | 2026-02-12 | 8b483e3 | [5-fix-border-colors-for-pinned-and-sneaky-](./quick/5-fix-border-colors-for-pinned-and-sneaky-/) |
 | 6 | Fix jellyfin-mpv-shim websocket errors and harden service against connection issues | 2026-02-12 | a3c552c | [6-fix-jellyfin-mpv-shim-websocket-errors-a](./quick/6-fix-jellyfin-mpv-shim-websocket-errors-a/) |
 | 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | ca480ab | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
+| 8 | Fix pypr daemon connectivity issue in Hyprland with ConditionEnvironment and Restart=always | 2026-02-12 | 54d4a2b | [8-fix-pypr-daemon-connectivity-in-hyprland](./quick/8-fix-pypr-daemon-connectivity-in-hyprland/) |
 
 ## Session Continuity
 
 Last session: 2026-02-12
-Stopped at: Completed quick task 7: Implement priority-based Bluetooth audio device manager (WH-1000MX3 > Google Home Speaker)
+Stopped at: Completed quick task 8: Fix pypr daemon connectivity in Hyprland
 Resume file: None
