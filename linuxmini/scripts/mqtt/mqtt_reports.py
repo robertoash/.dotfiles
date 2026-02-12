@@ -45,11 +45,6 @@ keepalive = 60
 BROKER_STATUS_TOPIC = "homeassistant/status"  # Home Assistant's broker status topic
 broker_online = False
 
-# Reconnection control
-reconnecting = False
-reconnect_lock = threading.Lock()
-RECONNECT_DELAY = 5  # seconds between reconnection attempts
-
 
 def ensure_files_exist():
     """Ensure all required files exist with proper permissions."""
@@ -119,37 +114,12 @@ def set_mqtt_client():
     return client
 
 
-def safe_reconnect(client):
-    global reconnecting
-    with reconnect_lock:
-        if reconnecting:
-            logging.debug("Reconnection already in progress, skipping...")
-            return
-        reconnecting = True
-        try:
-            logging.info("Attempting to reconnect...")
-            client.reconnect()
-            logging.debug(
-                f"Waiting {RECONNECT_DELAY} seconds for connection to establish..."
-            )
-            time.sleep(RECONNECT_DELAY)
-            logging.info("Reconnection attempt completed")
-        except Exception as e:
-            logging.error(f"Failed to reconnect: {e}", exc_info=True)
-            # Don't exit on reconnection failure, let systemd handle restart
-            time.sleep(RECONNECT_DELAY)
-        finally:
-            reconnecting = False
-            logging.debug("Reconnection state reset")
-
-
 def on_connect(client, userdata, flags, rc):
-    global broker_online, reconnecting
+    global broker_online
     logging.debug(f"on_connect called with rc={rc}, flags={flags}")
     if rc == 0:
         logging.info("Connected OK to MQTT broker")
         broker_online = True
-        reconnecting = False
 
         logging.debug(f"Subscribing to {BROKER_STATUS_TOPIC}...")
         sub_result = client.subscribe(BROKER_STATUS_TOPIC, qos=1)
@@ -182,24 +152,11 @@ def on_connect_fail(client, userdata):
 
 def on_disconnect(client, userdata, rc):
     global broker_online
-    logging.debug(f"on_disconnect called with rc={rc}")
-
-    if isinstance(rc, mqtt.DisconnectFlags):
-        if rc.is_disconnect_packet_from_server:
-            logging.warning("Disconnected: Server might be down.")
-            broker_online = False
-        else:
-            logging.warning("Disconnected: Client initiated or other reason.")
+    broker_online = False
+    if rc == 0:
+        logging.info("Disconnected cleanly")
     else:
-        logging.warning(f"Disconnected for reason {rc}")
-
-    logging.debug("Publishing offline status...")
-    client.publish(
-        "devices/" + clientname + "/status", payload="offline", qos=1, retain=True
-    )
-
-    logging.info("Initiating safe reconnect...")
-    safe_reconnect(client)
+        logging.warning(f"Unexpected disconnect (rc={rc}), paho-mqtt will auto-reconnect")
 
 
 def on_message(client, userdata, message):
@@ -209,16 +166,9 @@ def on_message(client, userdata, message):
     logging.debug(f"Received message on topic {topic}: {payload}")
 
     if topic == BROKER_STATUS_TOPIC:
-        if payload == "offline" and client.is_connected() and broker_online:
-            logging.warning(
-                "Broker status changed to offline, updating status and attempting to reconnect"
-            )
+        if payload == "offline" and broker_online:
+            logging.warning("Broker status changed to offline")
             broker_online = False
-            if not reconnecting:
-                logging.info(
-                    "Home Assistant broker is offline, attempting to reconnect..."
-                )
-                safe_reconnect(client)
         elif payload == "online" and not broker_online:
             logging.info("Broker status changed to online")
             broker_online = True
