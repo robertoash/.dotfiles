@@ -155,6 +155,23 @@ def find_audio_sink(device_name, mac):
         return None
 
 
+def get_default_sink():
+    """Get the current default sink name"""
+    try:
+        result = subprocess.run(
+            ["pactl", "get-default-sink"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=False,
+        )
+        if result.returncode == 0:
+            return result.stdout.strip()
+        return None
+    except Exception:
+        return None
+
+
 def set_default_sink(device_name, mac, retries=5, delay=2):
     """Set the default PipeWire audio sink for a Bluetooth device"""
     log(f"  Setting default audio sink for {device_name}...")
@@ -163,6 +180,12 @@ def set_default_sink(device_name, mac, retries=5, delay=2):
         sink_name = find_audio_sink(device_name, mac)
 
         if sink_name is not None:
+            # Check if this sink is already the default
+            current_default = get_default_sink()
+            if current_default == sink_name:
+                log(f"  {device_name} is already the default sink (no change needed)")
+                return True
+
             try:
                 result = subprocess.run(
                     ["pactl", "set-default-sink", sink_name],
