@@ -2,12 +2,16 @@
 Description=Pyprland - Scratchpads & window rules manager
 PartOf=graphical-session.target
 After=graphical-session.target
+ConditionEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+StartLimitIntervalSec=300
+StartLimitBurst=10
 
 [Service]
 Type=simple
 ExecStart=/usr/bin/pypr
-Restart=on-failure
+PassEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+Restart=always
 RestartSec=3
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target
