@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 3 (Operational Foundation)
 Plan: 0 of 2 in current phase
 Status: Ready to plan
-Last activity: 2026-02-11 - Completed quick task 4: Review and fix laggy dot expansion implementation
+Last activity: 2026-02-12 - Completed quick task 5: Fix border colors for pinned and sneaky windows
 
 Progress: [..........] 0%
 
@@ -63,9 +63,10 @@ None yet.
 | 2 | Add quality column (720p/1080p/1440p/2160p) to down_d progress table | 2026-02-11 | c8a7e16 | [2-add-quality-column-720p-1080p-1440p-2160](./quick/2-add-quality-column-720p-1080p-1440p-2160/) |
 | 3 | Parse actual video quality from yt-dlp output instead of showing requested quality | 2026-02-11 | c89ed15 | [3-parse-actual-video-quality-from-yt-dlp-o](./quick/3-parse-actual-video-quality-from-yt-dlp-o/) |
 | 4 | Review and fix laggy dot expansion implementation | 2026-02-11 | c547881 | [4-dotfiles-yks](./quick/4-dotfiles-yks/) |
+| 5 | Fix border colors for pinned and sneaky windows to show correct solid colors on focus/unfocus state changes | 2026-02-12 | 8b483e3 | [5-fix-border-colors-for-pinned-and-sneaky-](./quick/5-fix-border-colors-for-pinned-and-sneaky-/) |
 
 ## Session Continuity
 
-Last session: 2026-02-11
-Stopped at: Completed quick-3 (parse actual video quality from yt-dlp)
+Last session: 2026-02-12
+Stopped at: Completed quick-5 (fix border colors for pinned and sneaky windows)
 Resume file: None
