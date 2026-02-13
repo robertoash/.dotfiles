@@ -68,45 +68,62 @@ end
 # Smart z function
 function z --description 'Smart directory jumping with recent fallback'
     if test (count $argv) -eq 0
-        # No arguments - go to last working directory
+        # No arguments - open fzf directory picker
+        set -l fzf_input
+
+        # Build fzf input: Last dir (yellow) at top, then zoxide dirs
         if test -n "$__last_working_dir" -a -d "$__last_working_dir" -a "$__last_working_dir" != "$PWD"
-            set prev_dir "$PWD"
-            echo "→ $__last_working_dir"
-            builtin cd "$__last_working_dir"
-            # Update last working dir to where we came from (for ping-pong effect)
-            set -g __last_working_dir "$prev_dir"
-            
-            # Add current directory to history as "z triggered" if not already there
-            set -l existing_index (contains -i "$prev_dir" $__dir_history)
-            if test -n "$existing_index"
-                # Remove existing entry and its reason
-                set -e __dir_history[$existing_index]
-                set -e __dir_history_reasons[$existing_index]
-            end
-            # Add to front with reason
-            set __dir_history "$prev_dir" $__dir_history[1..9]
-            set __dir_history_reasons "z triggered" $__dir_history_reasons[1..9]
-        else if test (count $__dir_history) -gt 0 -a -n "$__dir_history[1]" -a -d "$__dir_history[1]"
-            set prev_dir "$PWD"
-            echo "→ $__dir_history[1]"
-            builtin cd "$__dir_history[1]"
-            # Update last working dir to where we came from
-            set -g __last_working_dir "$prev_dir"
-            
-            # Add current directory to history as "z triggered"
-            set -l existing_index (contains -i "$prev_dir" $__dir_history)
-            if test -n "$existing_index"
-                # Remove existing entry and its reason
-                set -e __dir_history[$existing_index]
-                set -e __dir_history_reasons[$existing_index]
-            end
-            # Add to front with reason
-            set __dir_history "$prev_dir" $__dir_history[1..9]
-            set __dir_history_reasons "z triggered" $__dir_history_reasons[1..9]
-        else
-            echo "No recent working directory found"
+            # Prepend yellow-highlighted Last dir
+            set fzf_input (printf '\e[33m%s\e[0m\n' "$__last_working_dir")
+        end
+
+        # Append zoxide dirs (exclude PWD and __last_working_dir to avoid duplicates)
+        set -l zoxide_dirs (zoxide query -l | string match -v "$PWD" | string match -v "$__last_working_dir")
+        if test -n "$zoxide_dirs"
+            set fzf_input $fzf_input $zoxide_dirs
+        end
+
+        # If no dirs available, show message and return
+        if test (count $fzf_input) -eq 0
+            echo "No recent directories found"
             return 1
         end
+
+        # Pipe into fzf with proper options
+        set -l selected (printf '%s\n' $fzf_input | command fzf \
+            --ansi \
+            --height 40% \
+            --reverse \
+            --no-sort \
+            --header 'cd to...' \
+            --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff')
+
+        # Handle selection
+        if test -n "$selected"
+            # Strip ANSI codes from selected result
+            set selected (string replace -ra '\e\[[0-9;]*m' '' -- "$selected")
+
+            # Verify it's a valid directory and navigate
+            if test -d "$selected"
+                set prev_dir "$PWD"
+                builtin cd "$selected"
+                # Update last working dir to where we came from
+                set -g __last_working_dir "$prev_dir"
+
+                # Add previous directory to history as "z triggered"
+                set -l existing_index (contains -i "$prev_dir" $__dir_history)
+                if test -n "$existing_index"
+                    # Remove existing entry and its reason
+                    set -e __dir_history[$existing_index]
+                    set -e __dir_history_reasons[$existing_index]
+                end
+                # Add to front with reason
+                set __dir_history "$prev_dir" $__dir_history[1..9]
+                set __dir_history_reasons "z triggered" $__dir_history_reasons[1..9]
+            end
+        end
+        # If selection is empty (user cancelled), do nothing and return 0
+        return 0
     else
         # With arguments - use zoxide for frecency-based jumping
         set prev_dir "$PWD"
@@ -114,7 +131,7 @@ function z --description 'Smart directory jumping with recent fallback'
         # If successful, update last working dir and add to history
         if test $status -eq 0
             set -g __last_working_dir "$prev_dir"
-            
+
             # Add previous directory to history as "z triggered"
             set -l existing_index (contains -i "$prev_dir" $__dir_history)
             if test -n "$existing_index"
