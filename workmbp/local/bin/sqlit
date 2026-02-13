@@ -22,10 +22,12 @@ fi
 
 # Check if file is SOPS-encrypted (JSON format has ENC[...] markers)
 if ! grep -q "ENC\[AES256_GCM," "$CONNECTIONS_FILE" 2>/dev/null; then
-    echo "⚠️  Warning: $CONNECTIONS_FILE is not SOPS-encrypted!" >&2
-    echo "Run: sops --config /dev/null -e --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 -i $CONNECTIONS_FILE" >&2
-    echo "Running sqlit anyway..." >&2
-    exec "$SQLIT_BIN" "$@"
+    echo "🔒 Encrypting connections.json with SOPS..." >&2
+    TEMP_FILE="$CONNECTIONS_FILE.encrypt.$$"
+    sops --config /dev/null --encrypt --age age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7 "$CONNECTIONS_FILE" > "$TEMP_FILE"
+    cat "$TEMP_FILE" > "$CONNECTIONS_FILE"
+    rm -f "$TEMP_FILE"
+    echo "✓ Encrypted successfully" >&2
 fi
 
 # Decrypt connections.json in place (preserves symlinks)
