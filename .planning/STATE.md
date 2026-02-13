@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 1 (idle_detection_reliability)
 Plan: 2 of 2 in current phase
 Status: Complete
-Last activity: 2026-02-13 - Completed quick task 11: Integrate fuzzy search into bare cd function with fzf picker
+Last activity: 2026-02-13 - Completed quick task 12: Fix sqlit SOPS encryption warning
 
 Progress: [##########] 100%
 
@@ -87,9 +87,10 @@ None yet.
 | 8 | Fix pypr daemon connectivity issue in Hyprland with ConditionEnvironment and Restart=always | 2026-02-12 | 54d4a2b | [8-fix-pypr-daemon-connectivity-in-hyprland](./quick/8-fix-pypr-daemon-connectivity-in-hyprland/) |
 | 10 | Remove WatchdogSec from jellyfin-mpv-shim service | 2026-02-12 | 8345688 | [10-remove-watchdogsec-from-jellyfin-mpv-shi](./quick/10-remove-watchdogsec-from-jellyfin-mpv-shi/) |
 | 11 | Integrate fuzzy search into bare cd function with fzf picker | 2026-02-13 | 7d92bb0 | [11-integrating-fuzzy-search-into-my-cd-func](./quick/11-integrating-fuzzy-search-into-my-cd-func/) |
+| 12 | Fix sqlit SOPS encryption warning by auto-encrypting unencrypted files and re-encrypting in repo | 2026-02-13 | b0d6c0e | [12-fix-sqlit-sops-encryption-warning](./quick/12-fix-sqlit-sops-encryption-warning/) |
 
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed quick task 11: Integrate fuzzy search into cd function
+Stopped at: Completed quick task 12: Fix sqlit SOPS encryption warning
 Resume file: None
