@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 | # | Name | Status | Completed |
 |---|------|--------|-----------|
 | 1 | idle_detection_reliability | ✓ Complete | 2026-02-12 |
+| 2 | fish +Tab autocomplete robustness | ○ Pending | - |
 
 ## Phase Details
 
@@ -29,3 +30,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Fix paho-mqtt 1.6.x compatibility and reconnection logic in both MQTT scripts
 - [x] 01-02-PLAN.md — Harden all idle detection systemd service units with restart policies
+
+### Phase 2: fish +Tab autocomplete robustness
+
+**Goal:** Refactor Tab completion into a unified, context-aware system that: (1) merges all sources (zoxide, fish completions, fre, history, fd) with smart prioritization based on command intent, (2) achieves extreme speed, (3) supports remote path completion via SSH, (4) uses only Tab/Shift+Tab keybinds with intelligent context switching, (5) is well-tested across all scenarios, and (6) is implemented in the fastest technology (fish/Python/Rust)
+**Depends on:** Phase 1
+**Plans:** 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Command categorization config and multi-source completion candidate engine
+- [ ] 02-02-PLAN.md — Remote path completion via SSH for scp/rsync/sftp
+- [ ] 02-03-PLAN.md — Smart Tab handler rewrite + Shift+Tab frecency picker + keybindings
+- [ ] 02-04-PLAN.md — Legacy code cleanup and comprehensive interactive verification
