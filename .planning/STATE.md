@@ -57,6 +57,9 @@ Recent decisions affecting current work:
 - [Phase quick-8]: Use Restart=always instead of on-failure for pypr (exits with code 0 on error)
 - [Phase quick-8]: Use systemctl restart instead of start for idempotent pypr activation in launch.conf
 - [Phase quick-10]: Removed WatchdogSec=600 because jellyfin-mpv-shim doesn't implement sd_notify watchdog protocol
+- [Phase quick-11]: Use --no-sort to preserve zoxide priority ordering in fzf
+- [Phase quick-11]: Use ANSI yellow for Last dir highlighting, strip codes after selection
+- [Phase quick-11]: Filter out PWD and __last_working_dir from zoxide list to avoid duplicates
 
 ### Pending Todos
 
@@ -83,9 +86,10 @@ None yet.
 | 7 | Implement priority-based bluetooth audio switching with automated daemon | 2026-02-12 | ca480ab | [7-implement-priority-based-bluetooth-audio](./quick/7-implement-priority-based-bluetooth-audio/) |
 | 8 | Fix pypr daemon connectivity issue in Hyprland with ConditionEnvironment and Restart=always | 2026-02-12 | 54d4a2b | [8-fix-pypr-daemon-connectivity-in-hyprland](./quick/8-fix-pypr-daemon-connectivity-in-hyprland/) |
 | 10 | Remove WatchdogSec from jellyfin-mpv-shim service | 2026-02-12 | 8345688 | [10-remove-watchdogsec-from-jellyfin-mpv-shi](./quick/10-remove-watchdogsec-from-jellyfin-mpv-shi/) |
+| 11 | Integrate fuzzy search into bare cd function with fzf picker | 2026-02-13 | 7d92bb0 | [11-integrating-fuzzy-search-into-my-cd-func](./quick/11-integrating-fuzzy-search-into-my-cd-func/) |
 
 ## Session Continuity
 
-Last session: 2026-02-12
-Stopped at: Completed quick task 10: Remove WatchdogSec from jellyfin-mpv-shim service
+Last session: 2026-02-13
+Stopped at: Completed quick task 11: Integrate fuzzy search into cd function
 Resume file: None
