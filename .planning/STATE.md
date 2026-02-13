@@ -5,36 +5,38 @@
 See: .planning/PROJECT.md (updated 2026-02-10)
 
 **Core value:** Any machine can be configured identically with one command. All configuration is declarative and versioned.
-**Current focus:** Phase 1 - idle_detection_reliability
+**Current focus:** Phase 2 - fish-tab-autocomplete-robustness
 
 ## Current Position
 
-Phase: 1 of 1 (idle_detection_reliability)
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-02-13 - Completed quick task 11: Integrate fuzzy search into bare cd function with fzf picker
+Phase: 2 of 2 (fish-tab-autocomplete-robustness)
+Plan: 1 of 4 in current phase
+Status: In Progress
+Last activity: 2026-02-13 - Completed 02-02-PLAN.md: Remote path completion for SSH-based commands
 
-Progress: [##########] 100%
+Progress: [##--------] 25%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
-- Average duration: 8.5 minutes
-- Total execution time: 0.28 hours
+- Total plans completed: 3
+- Average duration: 6.0 minutes
+- Total execution time: 0.30 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-idle-detection-reliability | 2 | 1018s | 509s |
+| 02-fish-tab-autocomplete-robustness | 1 | 50s | 50s |
 
 **Recent Trend:**
-- Last 5 plans: 509s average
-- Trend: Phase complete
+- Last 5 plans: 356s average
+- Trend: Phase 02 in progress (1/4 plans complete)
 
 *Updated after each plan completion*
 | Phase quick-10 P01 | 49 | 1 tasks | 1 files |
+| Phase 02-fish-tab-autocomplete-robustness P02 | 50 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -60,6 +62,10 @@ Recent decisions affecting current work:
 - [Phase quick-11]: Use --no-sort to preserve zoxide priority ordering in fzf
 - [Phase quick-11]: Use ANSI yellow for Last dir highlighting, strip codes after selection
 - [Phase quick-11]: Filter out PWD and __last_working_dir from zoxide list to avoid duplicates
+- [Phase 02-02]: Silent failure on auth issues - completion returns nothing instead of showing errors
+- [Phase 02-02]: 2-second timeout for aggressive responsiveness (Tab must feel instant)
+- [Phase 02-02]: No caching in v1 - timeout keeps it fast enough, caching adds complexity
+- [Phase 02-02]: StrictHostKeyChecking=accept-new for new hosts (prevents prompts, still rejects changed keys)
 
 ### Pending Todos
 
@@ -72,6 +78,7 @@ None yet.
 ### Roadmap Evolution
 
 - Phase 1 added: idle_detection_reliability
+- Phase 2 added: fish +Tab autocomplete robustness
 
 ### Quick Tasks Completed
 
@@ -91,5 +98,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed quick task 11: Integrate fuzzy search into cd function
+Stopped at: Completed 02-02-PLAN.md: Remote path completion for SSH-based commands
 Resume file: None
