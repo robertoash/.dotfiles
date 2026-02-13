@@ -123,8 +123,10 @@ function __completion_get_type
         end
     end
 
-    # If we're still on the command itself (no space after it), use native
-    if test (count $tokens) -lt 2; and test -z "$token"
+    # If we're still typing the command name (no space after it), use native
+    # This handles: "cd" (without space) or "doc" (partial command name)
+    # But NOT: "cd " (with space, ready for args) - that should be categorized
+    if test (count $tokens) -eq 1; and test -n "$token"
         echo "native"
         return
     end

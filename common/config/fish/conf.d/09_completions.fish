@@ -20,11 +20,8 @@ if test -f /etc/hostname; and test (cat /etc/hostname 2>/dev/null) = "linuxmini"
     _HASS_CLI_COMPLETE=fish_source hass-cli 2>/dev/null | source 2>/dev/null
 end
 
-# Enhanced completions for existing commands removed to preserve normal Tab behavior
-# Normal Tab behavior (including history suggestion acceptance) is now preserved
-# Use triggers (ff<Tab>, dd<Tab>, aa<Tab>) for frecent functionality with any command
-
-# Trigger sequence completions are handled by key bindings
-# Triggers: ff<Tab>, dd<Tab>, aa<Tab>
+# Tab completion: __smart_tab_complete handles context-aware completion with smart ordering and reasoning labels
+# Trigger words: ff/dd/aa (frecent), fff/fdd/faa (fd) handled within __smart_tab_complete
+# Preview: Ctrl+P toggles preview in fzf (hidden by default)
 
 
