@@ -10,33 +10,34 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 ## Current Position
 
 Phase: 2 of 2 (fish-tab-autocomplete-robustness)
-Plan: 1 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In Progress
-Last activity: 2026-02-13 - Completed 02-02-PLAN.md: Remote path completion for SSH-based commands
+Last activity: 2026-02-13 - Completed 02-03-PLAN.md: Smart Tab handler with ordering and preview
 
-Progress: [##--------] 25%
+Progress: [#######---] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 6.0 minutes
-- Total execution time: 0.30 hours
+- Total plans completed: 4
+- Average duration: 5.5 minutes
+- Total execution time: 0.37 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-idle-detection-reliability | 2 | 1018s | 509s |
-| 02-fish-tab-autocomplete-robustness | 1 | 50s | 50s |
+| 02-fish-tab-autocomplete-robustness | 2 | 184s | 92s |
 
 **Recent Trend:**
-- Last 5 plans: 356s average
-- Trend: Phase 02 in progress (1/4 plans complete)
+- Last 5 plans: 295s average
+- Trend: Phase 02 in progress (3/4 plans complete)
 
 *Updated after each plan completion*
 | Phase quick-10 P01 | 49 | 1 tasks | 1 files |
 | Phase 02-fish-tab-autocomplete-robustness P02 | 50 | 1 tasks | 1 files |
+| Phase 02 P03 | 134 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,10 @@ Recent decisions affecting current work:
 - [Phase 02-02]: 2-second timeout for aggressive responsiveness (Tab must feel instant)
 - [Phase 02-02]: No caching in v1 - timeout keeps it fast enough, caching adds complexity
 - [Phase 02-02]: StrictHostKeyChecking=accept-new for new hosts (prevents prompts, still rejects changed keys)
+- [Phase 02-03]: Reasoning labels visible in fzf (--with-nth 1,2) so users see why items appear
+- [Phase 02-03]: Preview hidden by default to avoid performance impact (toggle with Ctrl+P)
+- [Phase 02-03]: Unknown commands get files only (more useful than both files+dirs)
+- [Phase 02-03]: fzf search only in path (--nth 1) so query doesn't match labels
 
 ### Pending Todos
 
@@ -98,5 +103,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13
-Stopped at: Completed 02-02-PLAN.md: Remote path completion for SSH-based commands
+Stopped at: Completed 02-03-PLAN.md: Smart Tab handler with ordering and preview
 Resume file: None
