@@ -119,7 +119,13 @@ for mode in insert default visual
 end
 
 # Smart context-aware Tab completion with fzf
-# Also handles triggers: ff, dd, aa, fff, fdd, faa
+# Handles context detection, smart ordering with reasoning labels, and trigger words
+# Features:
+#   - Context-aware ordering (immediate children first for dirs, recent files first for nvim)
+#   - Reasoning labels showing why each suggestion appears ([child], [z:5], [fre:2], etc.)
+#   - Ctrl+P toggles preview (bat for files, eza for dirs)
+#   - Trigger words: ff, dd, aa, fff, fdd, faa
+#   - Remote completion for SSH-based commands (scp, rsync, sftp)
 for mode in insert default visual
     bind -M $mode \t __smart_tab_complete
 end
