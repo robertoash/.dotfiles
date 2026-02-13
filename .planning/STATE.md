@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-02-10)
 Phase: 1 of 1 (idle_detection_reliability)
 Plan: 2 of 2 in current phase
 Status: Complete
-Last activity: 2026-02-12 - Completed quick task 10: Remove WatchdogSec from jellyfin-mpv-shim service
+Last activity: 2026-02-13 - Completed quick task 11: Integrate fuzzy search into bare cd function with fzf picker
 
 Progress: [##########] 100%
 
