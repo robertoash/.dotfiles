@@ -1,5 +1,5 @@
 # Smart context-aware Tab completion with fzf
-# Detects command context and launches appropriate fzf picker
+# Delegates to modular completion engine with smart ordering and reasoning labels
 
 function __smart_tab_complete
     set -l cmd (commandline -b)
@@ -24,7 +24,7 @@ function __smart_tab_complete
         end
     end
 
-    # === TRIGGER WORDS (existing functionality) ===
+    # === TRIGGER WORDS (existing functionality - unchanged) ===
     # fd triggers: fff, fdd, faa
     if string match -q -r '^f(ff|dd|aa)$' -- "$token"
         __fd_unified_widget
@@ -56,163 +56,151 @@ function __smart_tab_complete
             return
     end
 
-    # === SMART CONTEXT DETECTION ===
-    # Get the command (first token) and check if we're in argument position
-    set -l tokens (string split ' ' -- $cmd)
-    set -l base_cmd $tokens[1]
+    # === CONTEXT DETECTION ===
+    set -l comp_type (__completion_get_type)
 
-    # Handle empty command line
-    if test -z "$base_cmd"
-        commandline -f complete
-        return
-    end
+    # === ROUTE BASED ON TYPE ===
+    switch $comp_type
 
-    # Strip any path prefix to get just the command name
-    set base_cmd (basename $base_cmd)
+        case 'trigger:ff' 'trigger:dd' 'trigger:aa' 'trigger:fff' 'trigger:fdd' 'trigger:faa'
+            # Already handled above, but catch in case context detection returns this
+            commandline -f repaint
+            return
 
-    # Handle sudo/doas/env - get the actual command
-    if contains $base_cmd sudo doas env nohup nice time watch strace ltrace
-        if test (count $tokens) -ge 2
-            set base_cmd (basename $tokens[2])
-        else
+        case native
+            # Fish native completion for commands with no path context
+            # This includes: empty line, git (without subcommand), docker, etc.
             commandline -f complete
             return
-        end
-    end
 
-    # Only trigger smart completion if we're after the command (have typed space)
-    # and the token is empty or a partial path
-    if test (count $tokens) -lt 2; and test -z "$token"
-        commandline -f complete
-        return
-    end
+        case remote
+            # Remote path completion via SSH
+            __complete_remote_path
+            return
 
-    # === COMMAND CATEGORIES ===
+        case dirs files both
+            # === FZF-based completions with smart ordering ===
 
-    # Commands that ONLY want directories
-    set -l dir_commands \
-        cd z pushd popd \
-        mkdir rmdir \
-        ls ll lll lls llr llrl eza exa tree \
-        yazi yz ranger nnn lf mc vifm broot br \
-        j jump autojump fasd
+            # Generate ordered candidates with reasoning labels
+            set -l candidates (__completion_order $comp_type "$search_dir" "$query_part")
 
-    # Commands that ONLY want files
-    set -l file_commands \
-        vim nvim vi nano emacs micro helix hx kak \
-        cat bat batcat less more head tail view \
-        rm shred \
-        touch \
-        python python3 python2 py node ruby perl php lua luajit \
-        bash sh zsh fish source \
-        chmod chown chgrp \
-        gzip gunzip bzip2 bunzip2 xz unxz zstd unzstd lz4 unlz4 \
-        file stat wc md5sum sha256sum sha1sum sha512sum b2sum \
-        diff vimdiff colordiff delta \
-        mpv vlc mplayer ffplay ffmpeg ffprobe \
-        feh imv sxiv nsxiv swayimg viu chafa \
-        zathura evince okular mupdf xdg-open \
-        patch \
-        strip objdump nm readelf \
-        pandoc \
-        prettier eslint tsc tsx ts-node \
-        rustfmt cargo-fmt \
-        black isort flake8 mypy pylint ruff \
-        shfmt shellcheck \
-        jq yq fx gron \
-        sqlite3 \
-        gpg gpg2 \
-        scp \
-        split csplit \
-        sort uniq cut paste join \
-        awk sed \
-        hexdump xxd od \
-        strings \
-        pdftotext pdfimages pdfinfo \
-        identify convert mogrify magick \
-        exiftool mediainfo \
-        transmission-remote-cli aria2c wget curl \
-        xclip xsel wl-copy pbcopy
-
-    # Commands that want both files AND directories
-    set -l both_commands \
-        cp mv rsync rclone \
-        ln \
-        code code-insiders subl sublime atom \
-        tar zip unzip 7z 7za rar unrar \
-        fd find rg grep ug ugrep ag ack \
-        du ncdu dust gdu dua \
-        open xdg-open dolphin nautilus thunar pcmanfm \
-        trash trash-put del gio \
-        chattr lsattr \
-        zip unzip \
-        scp rsync \
-        realpath readlink \
-        basename dirname
-
-    # Git subcommands that want files
-    set -l git_file_subcommands add checkout restore diff rm mv log show blame annotate
-
-    # Determine completion type
-    set -l completion_type "default"
-
-    # Special handling for git
-    if test "$base_cmd" = "git"; and test (count $tokens) -ge 2
-        set -l git_subcmd $tokens[2]
-        if contains $git_subcmd $git_file_subcommands
-            set completion_type "both"
-        end
-    else if contains $base_cmd $dir_commands
-        set completion_type "dirs"
-    else if contains $base_cmd $file_commands
-        set completion_type "files"
-    else if contains $base_cmd $both_commands
-        set completion_type "both"
-    end
-
-    # === LAUNCH APPROPRIATE FZF ===
-    switch $completion_type
-        case dirs
-            set -l result (begin; fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t d --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
-            if test -n "$result"
-                # If we expanded tilde, replace the expanded home path with tilde in result
-                if string match -q '~*' -- "$path_prefix"
-                    set result (string replace -r "^$HOME" '~' -- "$result")
-                end
-                # Use backslash escaping for spaces and special chars (allows continuation)
-                set result (string replace -a ' ' '\\ ' -- "$result")
-                commandline -t -- "$result"
+            if test -z "$candidates"
+                # No candidates - fall back to fish native
+                commandline -f complete
+                return
             end
-            commandline -f repaint
 
-        case files
-            set -l result (begin; fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs -t f --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
-            if test -n "$result"
-                # If we expanded tilde, replace the expanded home path with tilde in result
-                if string match -q '~*' -- "$path_prefix"
-                    set result (string replace -r "^$HOME" '~' -- "$result")
-                end
-                # Use backslash escaping for spaces and special chars (allows continuation)
-                set result (string replace -a ' ' '\\ ' -- "$result")
-                commandline -t -- "$result"
+            # fzf with preview toggle
+            # Preview: Ctrl+P to toggle
+            # For files: bat (if available) or cat
+            # For dirs: eza (if available) or ls
+            set -l preview_cmd
+            switch $comp_type
+                case files
+                    if command -q bat
+                        set preview_cmd 'bat --color=always --style=numbers {1}'
+                    else
+                        set preview_cmd 'cat {1}'
+                    end
+                case dirs
+                    if command -q eza
+                        set preview_cmd 'eza -la --color=always {1}'
+                    else
+                        set preview_cmd 'ls -lah {1}'
+                    end
+                case both
+                    # Handle both files and dirs
+                    if command -q bat; and command -q eza
+                        set preview_cmd 'test -d {1} && eza -la --color=always {1} || bat --color=always --style=numbers {1}'
+                    else
+                        set preview_cmd 'test -d {1} && ls -lah {1} || cat {1}'
+                    end
             end
-            commandline -f repaint
 
-        case both
-            set -l result (begin; fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir"; fd -Hi --no-ignore-vcs --min-depth 2 . "$search_dir"; end | fzf --height 40% --reverse --query "$query_part")
+            # fzf invocation with preview toggle
+            # --delimiter=\t to split path from label
+            # --with-nth=1,2 to show both path and label in main view
+            # --nth=1 to search only in path (not label)
+            # Ctrl+P to toggle preview
+            set -l result (printf '%s\n' $candidates | \
+                command fzf \
+                    --height 40% \
+                    --reverse \
+                    --query "$query_part" \
+                    --delimiter '\t' \
+                    --with-nth 1,2 \
+                    --nth 1 \
+                    --preview "$preview_cmd" \
+                    --preview-window 'right:50%:hidden' \
+                    --bind 'ctrl-p:toggle-preview' \
+                    --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff')
+
             if test -n "$result"
-                # If we expanded tilde, replace the expanded home path with tilde in result
+                # Extract just the path (before tab)
+                set result (string split \t $result)[1]
+
+                # Restore tilde prefix if user typed ~/...
                 if string match -q '~*' -- "$path_prefix"
                     set result (string replace -r "^$HOME" '~' -- "$result")
                 end
-                # Use backslash escaping for spaces and special chars (allows continuation)
+
+                # Escape spaces and special chars for shell
                 set result (string replace -a ' ' '\\ ' -- "$result")
                 commandline -t -- "$result"
             end
             commandline -f repaint
 
         case '*'
-            # Fall back to fish's default completion
-            commandline -f complete
+            # Unknown command: Try fish native first, then show files
+            # Check if fish has completions for this command
+            set -l tokens (commandline -xpc)
+            set -l base_cmd $tokens[1]
+
+            # Try native completion first
+            set -l has_native_completion (complete -C "$cmd" | head -n 1)
+
+            if test -n "$has_native_completion"
+                # Fish knows about this command - use native
+                commandline -f complete
+                return
+            else
+                # Unknown command - show files only (not dirs)
+                set -l candidates (__completion_order files "$search_dir" "$query_part")
+
+                if test -z "$candidates"
+                    commandline -f complete
+                    return
+                end
+
+                set -l preview_cmd
+                if command -q bat
+                    set preview_cmd 'bat --color=always --style=numbers {1}'
+                else
+                    set preview_cmd 'cat {1}'
+                end
+
+                set -l result (printf '%s\n' $candidates | \
+                    command fzf \
+                        --height 40% \
+                        --reverse \
+                        --query "$query_part" \
+                        --delimiter '\t' \
+                        --with-nth 1,2 \
+                        --nth 1 \
+                        --preview "$preview_cmd" \
+                        --preview-window 'right:50%:hidden' \
+                        --bind 'ctrl-p:toggle-preview' \
+                        --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff')
+
+                if test -n "$result"
+                    set result (string split \t $result)[1]
+                    if string match -q '~*' -- "$path_prefix"
+                        set result (string replace -r "^$HOME" '~' -- "$result")
+                    end
+                    set result (string replace -a ' ' '\\ ' -- "$result")
+                    commandline -t -- "$result"
+                end
+                commandline -f repaint
+            end
     end
 end
