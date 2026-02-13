@@ -228,6 +228,10 @@ fish/conf.d/startup_functions
 fish/config.fish
 fish/fish_variables
 fish/fish_welcome_img.jpg
+fish/functions/__complete_remote_path.fish
+fish/functions/__completion_config.fish
+fish/functions/__completion_order.fish
+fish/functions/__completion_sources.fish
 fish/functions/__dot_expand_widget.fish
 fish/functions/__fd_unified_widget.fish
 fish/functions/__frecent_unified_widget.fish
@@ -287,6 +291,7 @@ fish/functions/tt.fish
 fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
 fish/functions/yazi.fish
+fish/tests
 fish/themes
 fzf/fzf_preview.sh
 git
