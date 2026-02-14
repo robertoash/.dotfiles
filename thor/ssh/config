@@ -1,0 +1,69 @@
+# Common SSH Config
+
+Host oden
+  HostName 10.20.10.80
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host oldhp
+  HostName 10.20.10.95
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host dockerlab
+  HostName 10.20.10.90
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host offlinelab
+  HostName 10.20.10.92
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host cloudflare-tunnel
+  HostName 10.20.10.91
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host thor
+  HostName 10.20.10.70
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host haos
+  HostName 10.20.10.100
+  User hassio
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host linuxmini
+  HostName 10.20.10.11
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host workmbp
+  HostName 10.20.10.18
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
+
+Host github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_thor
+  IdentitiesOnly yes
