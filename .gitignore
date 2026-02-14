@@ -10,6 +10,7 @@ linuxmini/sunshine/credentials/cakey.pem
 **/*.p8
 **/*.pem
 **/token*
+**/sops/age/keys.txt
 **/common/config/cjar/plates/
 **/common/config/cjar/plates/**/*
 
