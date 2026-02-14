@@ -8,9 +8,9 @@ base-devel###1-2###pacman
 bash-language-server###5.6.0-1###pacman
 bibata-cursor-theme###2.0.7-1.1###pacman
 blueman###2.4.6-2###pacman
-bluez###5.85-1###pacman
+bluez###5.86-2###pacman
 bluez-tools###0.2.0-6###pacman
-bluez-utils###5.85-1###pacman
+bluez-utils###5.86-2###pacman
 brave-bin###1:1.87.186-1###pacman
 btop###1.4.6-1###pacman
 btrfs-progs###6.17.1-2###pacman
@@ -32,7 +32,7 @@ docker-compose###5.0.2-1###pacman
 dunst###1.13.0-1###pacman
 efibootmgr###18-3###pacman
 espanso-wayland-git###2.3.0.r37.gbf4767e0-1###pacman
-fastfetch###2.58.0-1###pacman
+fastfetch###2.59.0-1###pacman
 fd###10.3.0-1###pacman
 feh###3.11.2-2###pacman
 ffmpegthumbnailer###2.3.0-1###pacman
@@ -83,7 +83,7 @@ mpv-mpris###1.2-1###pacman
 mpv-shim-default-shaders###2.1.0-2###pacman
 mullvad-browser-bin###15.0.4-1###pacman
 nano###8.7.1-1###pacman
-neovim-git###0.12.0.r2284.g9c5ade9212-1###pacman
+neovim-git###0.12.0.r2285.g6bc0b8ae87-1###pacman
 networkmanager###1.54.3-1###pacman
 noto-fonts###1:2026.02.01-1###pacman
 noto-fonts-emoji###1:2.051-1###pacman
@@ -92,7 +92,7 @@ nss-mdns###0.15.1-2###pacman
 nushell###0.110.0-1###pacman
 nzbget###26.0-1###pacman
 openssh###10.2p1-2###pacman
-otf-font-awesome###7.1.0-1###pacman
+otf-font-awesome###7.2.0-1###pacman
 otf-geist-mono-nerd###3.4.0-2###pacman
 pacman-contrib###1.13.1-1###pacman
 pavucontrol###1:6.2-1###pacman
@@ -153,8 +153,8 @@ xdg-desktop-portal-hyprland-git###1.3.11.r1.g4b88012-1.31###pacman
 yay###12.5.7-1###pacman
 yazi-git###26.1.22.r26.g13bdb16-1###pacman
 yq###3.4.3-3###pacman
-zathura###2026.02.03-2###pacman
-zathura-pdf-poppler###2026.02.03-1###pacman
+zathura###2026.02.09-1###pacman
+zathura-pdf-poppler###2026.02.03-2###pacman
 brother-dcpl2530dw###4.0.0_1-1###aur
 buku###5.1-1###aur
 claude-code###2.1.41-1###aur
@@ -275,7 +275,7 @@ paho-mqtt###1.6.1###pip3
 pathspec###1.0.4###pip3
 pbs-installer###2026.1.27###pip3
 pexpect###4.9.0###pip3
-pillow###12.1.0###pip3
+pillow###12.1.1###pip3
 pip###26.0.1###pip3
 pkg_resources###81.0.0###pip3
 pkginfo###1.12.1.2###pip3
