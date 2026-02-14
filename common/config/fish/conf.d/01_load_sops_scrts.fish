@@ -33,6 +33,7 @@ if status is-interactive
                 test -f "$secrets_dir/github-token" && set -gx GITHUB_PERSONAL_ACCESS_TOKEN (cat "$secrets_dir/github-token")
                 test -f "$secrets_dir/gitlab-token" && set -gx GITLAB_TOKEN (cat "$secrets_dir/gitlab-token")
                 test -f "$secrets_dir/obsidian-api-key" && set -gx OBSIDIAN_API_KEY (cat "$secrets_dir/obsidian-api-key")
+                test -f "$secrets_dir/brave-api-key" && set -gx BRAVE_API_KEY (cat "$secrets_dir/brave-api-key")
 
                 # Email
                 test -f "$secrets_dir/rash-gmail-pass" && set -gx RASH_GMAIL_PASS (cat "$secrets_dir/rash-gmail-pass")
