@@ -52,6 +52,13 @@ creation_rules:
           - *linuxmini  # Can access from linuxmini for editing
           - *workmbp
 
+  # Machine-specific: thor
+  - path_regex: secrets/thor\.yaml$
+    key_groups:
+      - age:
+          - *linuxmini  # Can access from linuxmini for editing
+          - *thor
+
   # Machine-specific Claude secrets: workmbp
   - path_regex: workmbp/secrets/claude\.yaml$
     key_groups:

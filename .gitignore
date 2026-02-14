@@ -34,6 +34,9 @@ linuxmini/sunshine/credentials/cakey.pem
 !oldmbp/secrets/
 !oldmbp/secrets/oldmbp.yaml
 !oldmbp/secrets/oldmbp.yml
+!thor/secrets/
+!thor/secrets/thor.yaml
+!thor/secrets/thor.yml
 
 # Dev artifacts
 __pycache__/
