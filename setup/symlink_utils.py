@@ -34,7 +34,7 @@ def create_symlink(source, target, description=""):
     print(f"✅ {target} -> {source}{desc}")
 
 
-def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir, level=0, symlink_paths=None, progress_info=None, items_in_higher_sources=None):
+def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir, level=0, symlink_paths=None, progress_info=None, higher_source_dirs=None):
     """
     Populate machine_dir with symlinks to files from common_dir.
     Only creates symlinks for items that don't already exist in machine_dir.
@@ -42,11 +42,12 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir
     Collects all symlink paths relative to config_root for .gitignore.
 
     Args:
-        items_in_higher_sources: Set of item names that exist in higher-priority sources.
-                                 These will be created as real directories for merging.
+        higher_source_dirs: List of directory paths from higher-priority sources
+                           at the same level in the hierarchy. Used to determine
+                           whether to create real directories (for merging) or symlinks.
     """
-    if items_in_higher_sources is None:
-        items_in_higher_sources = set()
+    if higher_source_dirs is None:
+        higher_source_dirs = []
     common_dir = Path(common_dir)
     machine_dir = Path(machine_dir)
     config_root = Path(config_root)
@@ -96,16 +97,26 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir
             if progress_info["name"]:
                 print(f"\r🔀 Merging {progress_info['name']}... ({progress_info['current']}/{progress_info['total']} processed)", end='', flush=True)
 
+        # Check if this item exists in any higher-priority source
+        item_in_higher = any(
+            (hdir / common_app_item.name).exists()
+            for hdir in higher_source_dirs
+        )
+
         # If item doesn't exist in machine_dir
         if not machine_app_item.exists() and not machine_app_item.is_symlink():
-            # Check if this item will be provided by a higher-priority source
-            if common_app_item.name in items_in_higher_sources and common_app_item.is_dir():
+            if item_in_higher and common_app_item.is_dir():
                 # Create real directory for merging (will be merged with higher-priority content)
                 machine_app_item.mkdir(parents=True, exist_ok=True)
                 if level == 0:
                     print(f"\n{indent}📁 {common_app_item.name} (will merge with higher sources)")
-                # Recursively copy contents from common
-                merge_common_into_machine(common_app_item, machine_app_item, config_root, dotfiles_dir, level + 1, symlink_paths, progress_info, set())
+                # Recurse with higher source dirs narrowed to this subdirectory
+                sub_higher_dirs = [
+                    hdir / common_app_item.name
+                    for hdir in higher_source_dirs
+                    if (hdir / common_app_item.name).exists()
+                ]
+                merge_common_into_machine(common_app_item, machine_app_item, config_root, dotfiles_dir, level + 1, symlink_paths, progress_info, sub_higher_dirs)
             else:
                 # Normal case: create symlink
                 machine_app_item.symlink_to(common_app_item.resolve())
@@ -122,6 +133,11 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir
             # Don't recurse into symlinked directories
         elif common_app_item.is_dir() and machine_app_item.is_dir() and not machine_app_item.is_symlink():
             # Both are directories and machine_app_item is not a symlink, merge recursively
-            merge_common_into_machine(common_app_item, machine_app_item, config_root, dotfiles_dir, level + 1, symlink_paths, progress_info)
+            sub_higher_dirs = [
+                hdir / common_app_item.name
+                for hdir in higher_source_dirs
+                if (hdir / common_app_item.name).exists()
+            ]
+            merge_common_into_machine(common_app_item, machine_app_item, config_root, dotfiles_dir, level + 1, symlink_paths, progress_info, sub_higher_dirs)
 
     return symlink_paths

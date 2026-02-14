@@ -131,18 +131,17 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label, higher_pri
         icon = _get_icon(display_name)
         print(f"{icon} Merging {label}/{display_name}... (0/{total} processed)", end='', flush=True)
 
-        # Check which items exist in higher-priority sources
-        items_in_higher_sources = set()
-        for higher_source in higher_priority_sources:
-            higher_dir = higher_source / source_path
-            if higher_dir.exists():
-                for item in higher_dir.iterdir():
-                    items_in_higher_sources.add(item.name)
+        # Build list of higher-priority source directories at this level
+        higher_source_dirs = [
+            higher_source / source_path
+            for higher_source in higher_priority_sources
+            if (higher_source / source_path).exists()
+        ]
 
         all_symlink_paths = merge_common_into_machine(
             source_dir, machine_dir, machine_dir, dotfiles_dir,
             progress_info=progress_info,
-            items_in_higher_sources=items_in_higher_sources
+            higher_source_dirs=higher_source_dirs
         )
         print()
 
