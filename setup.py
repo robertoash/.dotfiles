@@ -22,6 +22,7 @@ from env_distribution import distribute_env_vars
 from hosts_setup import setup_hosts
 from machines import get_machine_config
 from merge_setup import merge_common_directories, merge_machine_specific
+from nftables_setup import setup_nftables
 from pacman_setup import setup_pacman
 from pam_setup import setup_pam
 from security_setup import setup_security
@@ -75,6 +76,10 @@ if machine_config["is_linux"]:
 # Step 6.4: Setup pacman configuration (Arch Linux only)
 if machine_config["is_linux"]:
     setup_pacman(dotfiles_dir)
+
+# Step 6.4.1: Setup nftables firewall configuration (Linux only)
+if machine_config["is_linux"]:
+    setup_nftables(dotfiles_dir, hostname)
 
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)
