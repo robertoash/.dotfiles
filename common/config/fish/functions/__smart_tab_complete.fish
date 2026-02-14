@@ -75,6 +75,31 @@ function __smart_tab_complete
     # === CONTEXT DETECTION ===
     set -l comp_type (__completion_get_type)
 
+    # Override: if token ends with / and points to existing dir, force fzf (not native)
+    if string match -q -r '/$' -- "$token"
+        set -l expanded_token (string replace -r '^~' $HOME -- "$token")
+        if test -d "$expanded_token"
+            # Token is a directory path with trailing slash - should list its children
+            # Determine type based on command context (dirs/files/both)
+            if test "$comp_type" = "native"
+                # Was going to fish native, but we want fzf for directory completion
+                # Check the actual command to determine if it wants dirs, files, or both
+                set -l cmd_tokens (commandline -opc)
+                if test (count $cmd_tokens) -ge 1
+                    set -l base_cmd (basename -- $cmd_tokens[1])
+                    # Use the same logic as __completion_get_type for command categorization
+                    if contains $base_cmd cd z pushd popd rmdir mkdir
+                        set comp_type "dirs"
+                    else if contains $base_cmd nvim vim vi nano cat bat less more head tail
+                        set comp_type "files"
+                    else
+                        set comp_type "both"
+                    end
+                end
+            end
+        end
+    end
+
     # === ROUTE BASED ON TYPE ===
     switch $comp_type
 
