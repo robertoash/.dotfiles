@@ -19,12 +19,17 @@ fish/conf.d/05_applications.fish
 fish/conf.d/06_keybindings.fish
 fish/conf.d/08_gcloud.fish
 fish/conf.d/09_completions.fish
+fish/conf.d/10_completion_init.fish
 fish/conf.d/10_load_startup_functions.fish
 fish/conf.d/99-secure-shell.fish
 fish/conf.d/99_final.fish
 fish/conf.d/autovenv.fish
 fish/conf.d/startup_functions
 fish/fish_welcome_img.jpg
+fish/functions/__complete_remote_path.fish
+fish/functions/__completion_config.fish
+fish/functions/__completion_order.fish
+fish/functions/__completion_sources.fish
 fish/functions/__dot_expand_widget.fish
 fish/functions/__fd_unified_widget.fish
 fish/functions/__frecent_unified_widget.fish
@@ -82,6 +87,7 @@ fish/functions/tt.fish
 fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
 fish/functions/yazi.fish
+fish/tests
 fzf
 gcalcli
 git
