@@ -139,11 +139,15 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label):
 def merge_machine_specific(dotfiles_dir, hostname):
     """
     Handle machine-specific configs where source and target paths differ
-    but no common/linuxcommon source exists. Merges machine/source → machine/target
+    but no common/linuxcommon/servercommon source exists. Merges machine/source → machine/target
     so the symlink step can find the target directory.
     """
     machine_base = dotfiles_dir / hostname
-    other_bases = [dotfiles_dir / "common", dotfiles_dir / "linuxcommon"]
+    other_bases = [
+        dotfiles_dir / "common",
+        dotfiles_dir / "linuxcommon",
+        dotfiles_dir / "servercommon",
+    ]
 
     for dir_name, dir_config in MERGE_DIRS.items():
         source_path = dir_config["source"]
@@ -200,3 +204,104 @@ def merge_linuxcommon_directories(dotfiles_dir, hostname):
         return
 
     merge_from_source(linuxcommon_base, machine_base, dotfiles_dir, "linuxcommon")
+
+
+def merge_servercommon_directories(dotfiles_dir, hostname):
+    """Merge servercommon directories into server machine-specific directories"""
+    print("\n🖥️  Merging servercommon directories into server machine...")
+
+    servercommon_base = dotfiles_dir / "servercommon"
+    machine_base = dotfiles_dir / hostname
+
+    if not servercommon_base.exists():
+        return
+
+    merge_from_source(servercommon_base, machine_base, dotfiles_dir, "servercommon")
+
+
+def prepare_hierarchical_merge(dotfiles_dir, hostname, machine_config):
+    """
+    Prepare for hierarchical merge by removing symlinks that would block higher-priority sources.
+
+    Hierarchy: common < linuxcommon < servercommon < machine-specific
+
+    If an item exists in a higher-priority source, we need to remove any symlink
+    created by a lower-priority source so the higher-priority content can be merged.
+    """
+    machine_base = dotfiles_dir / hostname
+
+    # Build list of sources in priority order (lowest to highest)
+    sources = [("common", dotfiles_dir / "common")]
+
+    if machine_config.get("is_linux"):
+        sources.append(("linuxcommon", dotfiles_dir / "linuxcommon"))
+
+    if machine_config.get("is_server"):
+        sources.append(("servercommon", dotfiles_dir / "servercommon"))
+
+    # For each MERGE_DIR, check if it exists in multiple sources
+    for dir_name, dir_config in MERGE_DIRS.items():
+        source_path = dir_config["source"]
+        target_path = dir_config["target"]
+        machine_dir = machine_base / target_path
+
+        # Find which sources have this directory
+        existing_sources = []
+        for source_name, source_base in sources:
+            source_dir = source_base / source_path
+            if source_dir.exists():
+                existing_sources.append((source_name, source_base, source_dir))
+
+        # If multiple sources have it, we need real directories for merging
+        if len(existing_sources) > 1:
+            _remove_blocking_symlinks(machine_dir, existing_sources, dotfiles_dir)
+
+
+def _remove_blocking_symlinks(machine_dir, sources, dotfiles_dir):
+    """
+    Remove symlinks in machine_dir that would prevent higher-priority sources from merging.
+
+    Args:
+        machine_dir: Machine-specific target directory
+        sources: List of (name, base_path, source_dir) tuples that have content
+        dotfiles_dir: Root dotfiles directory
+    """
+    if not machine_dir.exists():
+        return
+
+    # Collect all items from all sources
+    all_items = set()
+    for source_name, source_base, source_dir in sources:
+        if source_dir.exists():
+            for item in source_dir.iterdir():
+                all_items.add(item.name)
+
+    # For each item that exists in multiple sources, remove symlinks
+    for item_name in all_items:
+        machine_item = machine_dir / item_name
+
+        # Count how many sources have this item
+        item_count = sum(1 for _, _, src_dir in sources if (src_dir / item_name).exists())
+
+        # If multiple sources have it and machine has a symlink, remove the symlink
+        if item_count > 1 and machine_item.is_symlink():
+            # Verify it points within dotfiles (safety check)
+            try:
+                target = machine_item.resolve(strict=False)
+                if str(target).startswith(str(dotfiles_dir)):
+                    machine_item.unlink()
+                    print(f"  🗑️  Removed symlink {item_name} (will be merged from multiple sources)")
+            except (OSError, RuntimeError):
+                pass
+
+        # Recurse into subdirectories
+        if machine_item.is_dir() and not machine_item.is_symlink():
+            # Collect subdirectory sources
+            sub_sources = []
+            for source_name, source_base, source_dir in sources:
+                sub_item = source_dir / item_name
+                if sub_item.exists() and sub_item.is_dir():
+                    sub_sources.append((source_name, source_base, sub_item))
+
+            if len(sub_sources) > 1:
+                _remove_blocking_symlinks(machine_item, sub_sources, dotfiles_dir)

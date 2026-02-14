@@ -21,7 +21,11 @@ from dictation_setup import setup_dictation
 from env_distribution import distribute_env_vars
 from hosts_setup import setup_hosts
 from machines import get_machine_config
-from merge_setup import merge_common_directories, merge_machine_specific
+from merge_setup import (
+    merge_common_directories,
+    merge_machine_specific,
+    prepare_hierarchical_merge,
+)
 from nftables_setup import setup_nftables
 from pacman_setup import setup_pacman
 from pam_setup import setup_pam
@@ -40,15 +44,23 @@ machine_config = get_machine_config(hostname)
 
 print(f"🚀 Setting up dotfiles for {hostname}...")
 
+# Step 0: Prepare for hierarchical merge (remove blocking symlinks)
+prepare_hierarchical_merge(dotfiles_dir, hostname, machine_config)
+
 # Step 1: Merge common directories into machine-specific directories
 merge_common_directories(dotfiles_dir, hostname)
 
-# Step 1.5: Merge linuxcommon into Linux machines (linuxmini, oldmbp)
+# Step 1.5: Merge linuxcommon into Linux machines
 if machine_config["is_linux"]:
     from merge_setup import merge_linuxcommon_directories
     merge_linuxcommon_directories(dotfiles_dir, hostname)
 
-# Step 1.6: Merge machine-specific configs with non-standard targets
+# Step 1.6: Merge servercommon into server machines
+if machine_config.get("is_server"):
+    from merge_setup import merge_servercommon_directories
+    merge_servercommon_directories(dotfiles_dir, hostname)
+
+# Step 1.7: Merge machine-specific configs with non-standard targets
 merge_machine_specific(dotfiles_dir, hostname)
 
 # Step 2-3: Symlink configs to ~/.config and handle special cases
