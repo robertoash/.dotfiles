@@ -35,8 +35,8 @@ Host cloudflare-tunnel
   IdentityFile ~/.ssh/id_ed25519_linuxmini
   IdentitiesOnly yes
 
-Host openclaw
-  HostName 10.20.10.207
+Host thor
+  HostName 10.20.10.70
   User rash
   Port 22
   IdentityFile ~/.ssh/id_ed25519_linuxmini
