@@ -86,3 +86,4 @@ common/config/qutebrowser/profiles/linuxmini/jobhunt/config/autoconfig.yml
 common/config/qalculate/qalc.history
 /.claude
 .tasks.md
+/common/config/nvim/lazy-lock.json
