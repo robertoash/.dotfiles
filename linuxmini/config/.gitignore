@@ -220,6 +220,7 @@ fish/conf.d/05_applications.fish
 fish/conf.d/06_keybindings.fish
 fish/conf.d/08_gcloud.fish
 fish/conf.d/09_completions.fish
+fish/conf.d/10_completion_init.fish
 fish/conf.d/10_load_startup_functions.fish
 fish/conf.d/99-secure-shell.fish
 fish/conf.d/99_final.fish
