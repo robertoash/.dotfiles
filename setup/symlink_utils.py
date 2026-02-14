@@ -34,13 +34,19 @@ def create_symlink(source, target, description=""):
     print(f"✅ {target} -> {source}{desc}")
 
 
-def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir, level=0, symlink_paths=None, progress_info=None):
+def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir, level=0, symlink_paths=None, progress_info=None, items_in_higher_sources=None):
     """
     Populate machine_dir with symlinks to files from common_dir.
     Only creates symlinks for items that don't already exist in machine_dir.
     Recursively merges subdirectories.
     Collects all symlink paths relative to config_root for .gitignore.
+
+    Args:
+        items_in_higher_sources: Set of item names that exist in higher-priority sources.
+                                 These will be created as real directories for merging.
     """
+    if items_in_higher_sources is None:
+        items_in_higher_sources = set()
     common_dir = Path(common_dir)
     machine_dir = Path(machine_dir)
     config_root = Path(config_root)
@@ -90,14 +96,24 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir
             if progress_info["name"]:
                 print(f"\r🔀 Merging {progress_info['name']}... ({progress_info['current']}/{progress_info['total']} processed)", end='', flush=True)
 
-        # If item doesn't exist in machine_dir, create symlink
+        # If item doesn't exist in machine_dir
         if not machine_app_item.exists() and not machine_app_item.is_symlink():
-            machine_app_item.symlink_to(common_app_item.resolve())
-            if level == 0:
-                print(f"\n{indent}📎 {common_app_item.name} -> common")
-            # Add relative path from config root
-            # Symlinks are always tracked as files (even if they point to directories)
-            symlink_paths.append(str(machine_app_item.relative_to(config_root)))
+            # Check if this item will be provided by a higher-priority source
+            if common_app_item.name in items_in_higher_sources and common_app_item.is_dir():
+                # Create real directory for merging (will be merged with higher-priority content)
+                machine_app_item.mkdir(parents=True, exist_ok=True)
+                if level == 0:
+                    print(f"\n{indent}📁 {common_app_item.name} (will merge with higher sources)")
+                # Recursively copy contents from common
+                merge_common_into_machine(common_app_item, machine_app_item, config_root, dotfiles_dir, level + 1, symlink_paths, progress_info, set())
+            else:
+                # Normal case: create symlink
+                machine_app_item.symlink_to(common_app_item.resolve())
+                if level == 0:
+                    print(f"\n{indent}📎 {common_app_item.name} -> common")
+                # Add relative path from config root
+                # Symlinks are always tracked as files (even if they point to directories)
+                symlink_paths.append(str(machine_app_item.relative_to(config_root)))
         elif machine_app_item.is_symlink():
             # Symlink already exists - add to gitignore
             if machine_app_item.resolve() == common_app_item.resolve():

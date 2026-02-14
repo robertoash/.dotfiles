@@ -48,7 +48,7 @@ print(f"🚀 Setting up dotfiles for {hostname}...")
 prepare_hierarchical_merge(dotfiles_dir, hostname, machine_config)
 
 # Step 1: Merge common directories into machine-specific directories
-merge_common_directories(dotfiles_dir, hostname)
+merge_common_directories(dotfiles_dir, hostname, machine_config)
 
 # Step 1.5: Merge linuxcommon into Linux machines
 if machine_config["is_linux"]:

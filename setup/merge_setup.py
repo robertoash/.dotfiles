@@ -98,7 +98,7 @@ def _get_icon(dir_name):
     return "📦"
 
 
-def merge_from_source(source_base, machine_base, dotfiles_dir, label):
+def merge_from_source(source_base, machine_base, dotfiles_dir, label, higher_priority_sources=None):
     """
     Merge directories from a source (common or linuxcommon) into machine-specific dirs.
 
@@ -107,7 +107,11 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label):
         machine_base: Base path of machine (e.g., dotfiles/linuxmini)
         dotfiles_dir: Root dotfiles directory
         label: Label for display (e.g., "common" or "linuxcommon")
+        higher_priority_sources: List of higher-priority source bases to check
     """
+    if higher_priority_sources is None:
+        higher_priority_sources = []
+
     for dir_name, dir_config in MERGE_DIRS.items():
         source_path = dir_config["source"]
         target_path = dir_config["target"]
@@ -127,8 +131,18 @@ def merge_from_source(source_base, machine_base, dotfiles_dir, label):
         icon = _get_icon(display_name)
         print(f"{icon} Merging {label}/{display_name}... (0/{total} processed)", end='', flush=True)
 
+        # Check which items exist in higher-priority sources
+        items_in_higher_sources = set()
+        for higher_source in higher_priority_sources:
+            higher_dir = higher_source / source_path
+            if higher_dir.exists():
+                for item in higher_dir.iterdir():
+                    items_in_higher_sources.add(item.name)
+
         all_symlink_paths = merge_common_into_machine(
-            source_dir, machine_dir, machine_dir, dotfiles_dir, progress_info=progress_info
+            source_dir, machine_dir, machine_dir, dotfiles_dir,
+            progress_info=progress_info,
+            items_in_higher_sources=items_in_higher_sources
         )
         print()
 
@@ -183,14 +197,21 @@ def merge_machine_specific(dotfiles_dir, hostname):
             update_gitignore(machine_target, all_symlink_paths, dotfiles_dir)
 
 
-def merge_common_directories(dotfiles_dir, hostname):
+def merge_common_directories(dotfiles_dir, hostname, machine_config):
     """Merge common directories into machine-specific directories"""
     print("\n🔀 Step 1: Merging common directories into machine-specific directories...")
 
     common_base = dotfiles_dir / "common"
     machine_base = dotfiles_dir / hostname
 
-    merge_from_source(common_base, machine_base, dotfiles_dir, "common")
+    # Build list of higher-priority sources that will merge after common
+    higher_priority = []
+    if machine_config.get("is_linux"):
+        higher_priority.append(dotfiles_dir / "linuxcommon")
+    if machine_config.get("is_server"):
+        higher_priority.append(dotfiles_dir / "servercommon")
+
+    merge_from_source(common_base, machine_base, dotfiles_dir, "common", higher_priority)
 
 
 def merge_linuxcommon_directories(dotfiles_dir, hostname):
