@@ -8,6 +8,24 @@ function __completion_order
     set -l search_dir $argv[2]
     set -l query_part $argv[3]
 
+    # Get terminal width for right-justified labels (reserve 15 chars for label + margin)
+    set -l term_width (tput cols 2>/dev/null || echo 80)
+    set -l label_space 15
+    set -l path_width (math $term_width - $label_space)
+
+    # Helper function to format path with right-justified label
+    function __format_with_label -a path label
+        set -l path_len (string length -- "$path")
+        if test $path_len -lt $path_width
+            set -l padding (math $path_width - $path_len)
+            set -l spaces (string repeat -n $padding ' ')
+            echo "$path$spaces	$label"
+        else
+            # Path too long, just add tab separator
+            echo "$path	$label"
+        end
+    end
+
     set -l results
 
     switch $context_type
@@ -17,7 +35,7 @@ function __completion_order
             # Step 1: Immediate children (depth 1) - these are most likely
             if test -d "$search_dir"
                 for dir in (fd -Hi --no-ignore -t d --max-depth 1 . "$search_dir" 2>/dev/null)
-                    echo "$dir	[child]"
+                    __format_with_label "$dir" "[child]"
                 end
             end
 
@@ -26,7 +44,7 @@ function __completion_order
                 set -l zoxide_results (zoxide query -l 2>/dev/null | head -n 30)
                 set -l rank 1
                 for dir in $zoxide_results
-                    echo "$dir	[z:$rank]"
+                    __format_with_label "$dir" "[z:$rank]"
                     set rank (math $rank + 1)
                 end
             end
@@ -36,7 +54,7 @@ function __completion_order
                 set -l fre_results (fre --sorted 2>/dev/null | string match -r '.*/$' | head -n 20)
                 set -l rank 1
                 for dir in $fre_results
-                    echo "$dir	[fre:$rank]"
+                    __format_with_label "$dir" "[fre:$rank]"
                     set rank (math $rank + 1)
                 end
             end
@@ -44,7 +62,7 @@ function __completion_order
             # Step 4: Deeper directories from filesystem
             if test -d "$search_dir"
                 for dir in (fd -Hi --no-ignore -t d --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    echo "$dir	[fs]"
+                    __format_with_label "$dir" "[fs]"
                 end
             end
 
@@ -56,7 +74,7 @@ function __completion_order
                 set -l fre_results (fre --sorted 2>/dev/null | string match -v -r '.*/$' | head -n 20)
                 set -l rank 1
                 for file in $fre_results
-                    echo "$file	[fre:$rank]"
+                    __format_with_label "$file" "[fre:$rank]"
                     set rank (math $rank + 1)
                 end
             end
@@ -64,14 +82,14 @@ function __completion_order
             # Step 2: Files in current directory (immediate context)
             if test -d "$search_dir"
                 for file in (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
-                    echo "$file	[local]"
+                    __format_with_label "$file" "[local]"
                 end
             end
 
             # Step 3: Files in subdirectories
             if test -d "$search_dir"
                 for file in (fd -Hi --no-ignore -t f --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    echo "$file	[fs]"
+                    __format_with_label "$file" "[fs]"
                 end
             end
 
@@ -82,28 +100,28 @@ function __completion_order
             if command -q zoxide
                 set -l zoxide_results (zoxide query -l 2>/dev/null | head -n 15)
                 for item in $zoxide_results
-                    echo "$item	[z:freq]"
+                    __format_with_label "$item" "[z:freq]"
                 end
             end
 
             if command -q fre
                 set -l fre_results (fre --sorted 2>/dev/null | head -n 15)
                 for item in $fre_results
-                    echo "$item	[fre:freq]"
+                    __format_with_label "$item" "[fre:freq]"
                 end
             end
 
             # Step 2: Local files and directories
             if test -d "$search_dir"
                 for item in (fd -Hi --no-ignore --max-depth 1 . "$search_dir" 2>/dev/null)
-                    echo "$item	[local]"
+                    __format_with_label "$item" "[local]"
                 end
             end
 
             # Step 3: Deeper items
             if test -d "$search_dir"
                 for item in (fd -Hi --no-ignore --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    echo "$item	[fs]"
+                    __format_with_label "$item" "[fs]"
                 end
             end
     end | awk '!seen[$1]++'  # Deduplicate by path, keeping first (highest priority)
