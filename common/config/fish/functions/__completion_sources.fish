@@ -32,8 +32,8 @@ function __completion_sources --argument-names type search_dir query_part
             end
 
             # Source 3: fd filesystem (shallow then deep)
-            set -a candidates (fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore-vcs -t d --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore -t d --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore -t d --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
 
         case files
             # Source 1: fre frecency (files only)
@@ -47,8 +47,8 @@ function __completion_sources --argument-names type search_dir query_part
             end
 
             # Source 3: fd filesystem (shallow then deep)
-            set -a candidates (fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore-vcs -t f --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore -t f --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
 
         case both
             # Source 1: frecency (both zoxide and fre)
@@ -65,8 +65,8 @@ function __completion_sources --argument-names type search_dir query_part
             end
 
             # Source 3: fd filesystem (shallow then deep, both types)
-            set -a candidates (fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore-vcs --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --no-ignore --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
     end
 
     # Deduplicate while preserving priority order (first occurrence wins)

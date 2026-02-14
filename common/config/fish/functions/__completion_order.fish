@@ -16,7 +16,7 @@ function __completion_order
 
             # Step 1: Immediate children (depth 1) - these are most likely
             if test -d "$search_dir"
-                for dir in (fd -Hi --no-ignore-vcs -t d --max-depth 1 . "$search_dir" 2>/dev/null)
+                for dir in (fd -Hi --no-ignore -t d --max-depth 1 . "$search_dir" 2>/dev/null)
                     echo "$dir	[child]"
                 end
             end
@@ -43,7 +43,7 @@ function __completion_order
 
             # Step 4: Deeper directories from filesystem
             if test -d "$search_dir"
-                for dir in (fd -Hi --no-ignore-vcs -t d --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
+                for dir in (fd -Hi --no-ignore -t d --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
                     echo "$dir	[fs]"
                 end
             end
@@ -63,14 +63,14 @@ function __completion_order
 
             # Step 2: Files in current directory (immediate context)
             if test -d "$search_dir"
-                for file in (fd -Hi --no-ignore-vcs -t f --max-depth 1 . "$search_dir" 2>/dev/null)
+                for file in (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
                     echo "$file	[local]"
                 end
             end
 
             # Step 3: Files in subdirectories
             if test -d "$search_dir"
-                for file in (fd -Hi --no-ignore-vcs -t f --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
+                for file in (fd -Hi --no-ignore -t f --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
                     echo "$file	[fs]"
                 end
             end
@@ -95,14 +95,14 @@ function __completion_order
 
             # Step 2: Local files and directories
             if test -d "$search_dir"
-                for item in (fd -Hi --no-ignore-vcs --max-depth 1 . "$search_dir" 2>/dev/null)
+                for item in (fd -Hi --no-ignore --max-depth 1 . "$search_dir" 2>/dev/null)
                     echo "$item	[local]"
                 end
             end
 
             # Step 3: Deeper items
             if test -d "$search_dir"
-                for item in (fd -Hi --no-ignore-vcs --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
+                for item in (fd -Hi --no-ignore --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
                     echo "$item	[fs]"
                 end
             end
