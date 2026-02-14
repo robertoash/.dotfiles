@@ -46,7 +46,7 @@ function hdel --description 'Delete history entries matching a pattern'
 
     if test "$confirm" = "y" -o "$confirm" = "Y"
         for entry in $matches
-            history delete --exact "$entry"
+            history delete --exact --case-sensitive "$entry"
         end
         echo "Deleted "(count $matches)" entries."
     else
