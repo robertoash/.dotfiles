@@ -213,7 +213,7 @@ def merge_common_directories(dotfiles_dir, hostname, machine_config):
     merge_from_source(common_base, machine_base, dotfiles_dir, "common", higher_priority)
 
 
-def merge_linuxcommon_directories(dotfiles_dir, hostname):
+def merge_linuxcommon_directories(dotfiles_dir, hostname, machine_config):
     """Merge linuxcommon directories into Linux machine-specific directories"""
     print("\n🐧 Merging linuxcommon directories into Linux machine...")
 
@@ -223,7 +223,12 @@ def merge_linuxcommon_directories(dotfiles_dir, hostname):
     if not linuxcommon_base.exists():
         return
 
-    merge_from_source(linuxcommon_base, machine_base, dotfiles_dir, "linuxcommon")
+    # servercommon is higher priority than linuxcommon
+    higher_priority = []
+    if machine_config.get("is_server"):
+        higher_priority.append(dotfiles_dir / "servercommon")
+
+    merge_from_source(linuxcommon_base, machine_base, dotfiles_dir, "linuxcommon", higher_priority)
 
 
 def merge_servercommon_directories(dotfiles_dir, hostname):

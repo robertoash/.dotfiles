@@ -225,9 +225,10 @@ def distribute_env_vars(dotfiles_dir: Path, machine: str, verbose: bool = True) 
         if verbose:
             print(f"  ✅ Generated {theme_file}")
 
-    # 3. Generate Hyprland config (Linux only)
-    if machine == "linuxmini":
-        hypr_file = dotfiles_dir / machine / "config" / "hypr" / "env.conf"
+    # 3. Generate Hyprland config (only if hypr config dir exists)
+    hypr_dir = dotfiles_dir / machine / "config" / "hypr"
+    if hypr_dir.exists():
+        hypr_file = hypr_dir / "env.conf"
         hypr_content = generate_hyprland_env_file(config)
         hypr_file.write_text(hypr_content)
         if verbose:

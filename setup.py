@@ -53,7 +53,7 @@ merge_common_directories(dotfiles_dir, hostname, machine_config)
 # Step 1.5: Merge linuxcommon into Linux machines
 if machine_config["is_linux"]:
     from merge_setup import merge_linuxcommon_directories
-    merge_linuxcommon_directories(dotfiles_dir, hostname)
+    merge_linuxcommon_directories(dotfiles_dir, hostname, machine_config)
 
 # Step 1.6: Merge servercommon into server machines
 if machine_config.get("is_server"):
