@@ -39,15 +39,49 @@ function accept_next_path_segment
         # Get the character we just accepted
         set -l just_accepted (string sub --start $cursor_after --length 1 "$line_after")
 
-        # If we just accepted a slash, stop here (include the slash)
+        # Check delimiters - stop after accepting the delimiter character
+
+        # Slash delimiter (paths)
         if test "$just_accepted" = "/"
             break
         end
 
-        # If we just accepted a space, stop here (include the space)
+        # Space delimiter (arguments)
         if test "$just_accepted" = " "
             set found_word true
             break
+        end
+
+        # Colon delimiter (host:path, key:value)
+        if test "$just_accepted" = ":"
+            break
+        end
+
+        # Equals delimiter (--key=value)
+        if test "$just_accepted" = "="
+            break
+        end
+
+        # Opening quote delimiter
+        if test "$just_accepted" = '"' -o "$just_accepted" = "'"
+            break
+        end
+
+        # Double-dash delimiter: if we just accepted a second '-' and the char before was also '-'
+        # This handles: `claude --` stopping at `claude --|`
+        # Check if the last two characters before cursor are "--"
+        if test "$just_accepted" = "-" -a $cursor_after -ge 2
+            set -l prev_char (string sub -s (math $cursor_after - 1) -l 1 -- "$line_after")
+            if test "$prev_char" = "-"
+                # Check char before the first dash - should be space or start of token
+                if test $cursor_after -le 2
+                    break
+                end
+                set -l before_dashes (string sub -s (math $cursor_after - 2) -l 1 -- "$line_after")
+                if test "$before_dashes" = " "
+                    break
+                end
+            end
         end
 
         # Continue the loop to accept more characters
