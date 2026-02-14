@@ -24,6 +24,22 @@ function __smart_tab_complete
         end
     end
 
+    # If token is empty but previous token ends with /, we're completing inside that dir
+    if test -z "$token"
+        set -l all_tokens (commandline -opc)
+        if test (count $all_tokens) -ge 2
+            set -l prev_token $all_tokens[-1]
+            if string match -q -r '/$' -- "$prev_token"
+                set -l expanded_prev (string replace -r '^~' $HOME -- "$prev_token")
+                if test -d "$expanded_prev"
+                    set search_dir "$expanded_prev"
+                    set path_prefix "$prev_token"
+                    set query_part ""
+                end
+            end
+        end
+    end
+
     # === TRIGGER WORDS (existing functionality - unchanged) ===
     # fd triggers: fff, fdd, faa
     if string match -q -r '^f(ff|dd|aa)$' -- "$token"
