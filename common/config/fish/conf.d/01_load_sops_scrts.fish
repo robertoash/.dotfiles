@@ -38,7 +38,9 @@ if status is-interactive
                 test -f "$secrets_dir/rash-gmail-pass" && set -gx RASH_GMAIL_PASS (cat "$secrets_dir/rash-gmail-pass")
 
                 # Claude Code OAuth Token (only for SSH connections to workmbp)
-                if test -n "$SSH_CONNECTION"; and test (hostname) = "workmbp"
+                # Use /etc/hostname on Linux, hostname command on macOS
+                set -l current_hostname (cat /etc/hostname 2>/dev/null || hostname 2>/dev/null || echo "unknown")
+                if test -n "$SSH_CONNECTION"; and test "$current_hostname" = "workmbp"
                     test -f "$secrets_dir/workmbp-claude-token" && set -gx CLAUDE_CODE_OAUTH_TOKEN (cat "$secrets_dir/workmbp-claude-token")
                 end
 
