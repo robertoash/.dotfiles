@@ -4,6 +4,7 @@ keys:
   - &linuxmini age1q366mx62s06sdkf2l3mkz6y62wfga0ncvsl4ymlvxqjk69vcqgvsmjpmxz
   - &workmbp age14x963l7j53w6psuuvsefsj5js5xwd6wue5csgg6mjzd568vwtgasjynzq7
   - &oldmbp age12kmuh5f5v9zf9wcfplh8klwtpedrplr4xzu7ztpfznqyd3f7qqfqu54pzu
+  - &thor age1jcreaq0xkudylh9klng85e56y30l23dyfxntkq6vcvwfxh06hfysq4lpcx
 
 creation_rules:
   # Common secrets for all machines
@@ -13,13 +14,15 @@ creation_rules:
           - *linuxmini
           - *workmbp
           - *oldmbp
+          - *thor
 
-  # Linux-specific secrets (linuxmini + oldmbp)
+  # Linux-specific secrets (linuxmini + oldmbp + thor)
   - path_regex: secrets/linux\.yaml$
     key_groups:
       - age:
           - *linuxmini
           - *oldmbp
+          - *thor
 
   # Linuxcommon secrets (shared between Linux machines)
   - path_regex: linuxcommon/secrets/linuxcommon\.yaml$
@@ -27,6 +30,7 @@ creation_rules:
       - age:
           - *linuxmini
           - *oldmbp
+          - *thor
 
   # Darwin/macOS-specific secrets
   - path_regex: secrets/darwin\.yaml$
@@ -69,3 +73,4 @@ creation_rules:
           - *linuxmini
           - *workmbp
           - *oldmbp
+          - *thor
