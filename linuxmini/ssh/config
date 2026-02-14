@@ -35,6 +35,13 @@ Host cloudflare-tunnel
   IdentityFile ~/.ssh/id_ed25519_linuxmini
   IdentitiesOnly yes
 
+Host openclaw
+  HostName 10.20.10.207
+  User rash
+  Port 22
+  IdentityFile ~/.ssh/id_ed25519_linuxmini
+  IdentitiesOnly yes
+
 Host haos
   HostName 10.20.10.100
   User hassio
