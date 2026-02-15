@@ -1,7 +1,7 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		commit = "9f2dad22ef8bb14fd1e0a3aa8859cdc88170668b", -- Pin to working version (Jan 17, 2025)
+		branch = "main",
 		build = function()
 			-- Set parser directory and compiler before installing
 			local install = require("nvim-treesitter.install")
