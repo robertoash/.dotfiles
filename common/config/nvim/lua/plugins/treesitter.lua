@@ -65,6 +65,18 @@ return {
 						"vimdoc",
 						"yaml",
 					})
+
+					-- Fallback: manually compile parsers if nvim-treesitter.install() didn't create them
+					vim.defer_fn(function()
+						local count = #vim.fn.glob(parser_dir .. "/*.so", false, true)
+						if count == 0 then
+							vim.notify(
+								"nvim-treesitter.install() didn't compile parsers, using fallback...",
+								vim.log.levels.WARN
+							)
+							require("plugins.treesitter-build").compile_missing_parsers()
+						end
+					end, 5000) -- Wait 5s for nvim-treesitter to finish
 				end)
 			end
 
