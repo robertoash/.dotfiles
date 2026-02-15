@@ -1,5 +1,6 @@
 return {
 	"3rd/image.nvim",
+	build = false,
 	opts = {
 		backend = "sixel", -- WezTerm has better sixel support than kitty protocol
 		processor = "magick_cli", -- "magick_rock" | "magick_cli"
