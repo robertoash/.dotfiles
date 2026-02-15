@@ -14,7 +14,9 @@ M.check = function()
 
 	-- Check for required build tools
 	local required_tools = {
-		{ name = "gcc", desc = "Required for tree-sitter parser compilation" },
+		{ name = "tree-sitter", desc = "Required by nvim-treesitter to compile parsers (tree-sitter-cli)" },
+		{ name = "clang", desc = "Required by tree-sitter CLI (provides libclang)" },
+		{ name = "gcc", desc = "Required for compiling tree-sitter parsers" },
 		{ name = "git", desc = "Required for plugin management" },
 		{ name = "unzip", desc = "Required for Mason LSP installations" },
 		{ name = "tar", desc = "Required for Mason package extraction" },
@@ -52,7 +54,7 @@ M.check = function()
 	-- Tree-sitter parsers check
 	start("Tree-sitter Parsers")
 
-	local parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+	local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
 	if vim.fn.isdirectory(parser_dir) == 1 then
 		local parser_count = #vim.fn.glob(parser_dir .. "/*.so", false, true)
 		if parser_count > 0 then
