@@ -1,0 +1,1 @@
+/home/rash/.openclaw/completions/openclaw.fish
