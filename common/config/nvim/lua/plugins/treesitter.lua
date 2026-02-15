@@ -3,9 +3,10 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		branch = "main",
 		build = function()
-			-- Set parser directory before installing
+			-- Set parser directory and compiler before installing
 			local install = require("nvim-treesitter.install")
 			install.parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+			install.compilers = { "gcc" } -- Explicitly set gcc as the compiler
 
 			-- Install parsers after plugin is built/updated
 			local ts = require("nvim-treesitter")
@@ -29,9 +30,10 @@ return {
 			})
 		end,
 		config = function()
-			-- Set parser directory for runtime
+			-- Set parser directory and compiler for runtime
 			local install = require("nvim-treesitter.install")
 			install.parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+			install.compilers = { "gcc" } -- Explicitly set gcc as the compiler
 
 			-- Prepend parser directory to runtimepath so nvim-treesitter parsers override system ones
 			vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/lazy/nvim-treesitter")
