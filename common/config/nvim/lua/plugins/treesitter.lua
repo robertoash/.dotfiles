@@ -38,9 +38,8 @@ return {
 			install.compilers = { "gcc" }
 
 			-- Auto-install missing parsers on first run
-			local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
-			vim.fn.mkdir(parser_dir, "p")
-			local parsers_exist = #vim.fn.glob(parser_dir .. "/*.so", false, true) > 0
+			vim.fn.mkdir(vim.fn.stdpath("data") .. "/site/parser", "p")
+			local parsers_exist = pcall(vim.treesitter.language.add, "lua")
 
 			if not parsers_exist then
 				vim.schedule(function()
