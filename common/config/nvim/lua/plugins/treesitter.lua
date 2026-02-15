@@ -1,3 +1,22 @@
+local parsers = {
+	"bash",
+	"c",
+	"diff",
+	"html",
+	"jinja",
+	"lua",
+	"luadoc",
+	"markdown",
+	"markdown_inline",
+	"python",
+	"query",
+	"regex",
+	"sql",
+	"vim",
+	"vimdoc",
+	"yaml",
+}
+
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -7,35 +26,16 @@ return {
 			local install = require("nvim-treesitter.install")
 			-- Use site/parser so tree-sitter CLI can find/update parsers
 			install.parser_dir = vim.fn.stdpath("data") .. "/site/parser"
-			install.compilers = { "gcc" } -- Explicitly set gcc as the compiler
+			install.compilers = { "gcc" }
 
-			-- Install parsers after plugin is built/updated
-			local ts = require("nvim-treesitter")
-			ts.install({
-				"bash",
-				"c",
-				"diff",
-				"html",
-				"jinja",
-				"lua",
-				"luadoc",
-				"markdown",
-				"markdown_inline",
-				"python",
-				"query",
-				"regex",
-				"sql",
-				"vim",
-				"vimdoc",
-				"yaml",
-			})
+			require("nvim-treesitter").install(parsers)
 		end,
 		config = function()
 			-- Set parser directory and compiler for runtime
 			local install = require("nvim-treesitter.install")
 			-- Use site/parser so tree-sitter CLI can find/update parsers
 			install.parser_dir = vim.fn.stdpath("data") .. "/site/parser"
-			install.compilers = { "gcc" } -- Explicitly set gcc as the compiler
+			install.compilers = { "gcc" }
 
 			-- Auto-install missing parsers on first run
 			local parser_dir = vim.fn.stdpath("data") .. "/site/parser"
@@ -43,27 +43,9 @@ return {
 			local parsers_exist = #vim.fn.glob(parser_dir .. "/*.so", false, true) > 0
 
 			if not parsers_exist then
-				-- Schedule async to avoid blocking startup
 				vim.schedule(function()
 					vim.notify("Installing tree-sitter parsers...", vim.log.levels.INFO)
-					require("nvim-treesitter").install({
-						"bash",
-						"c",
-						"diff",
-						"html",
-						"jinja",
-						"lua",
-						"luadoc",
-						"markdown",
-						"markdown_inline",
-						"python",
-						"query",
-						"regex",
-						"sql",
-						"vim",
-						"vimdoc",
-						"yaml",
-					})
+					require("nvim-treesitter").install(parsers)
 				end)
 			end
 

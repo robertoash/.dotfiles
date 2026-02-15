@@ -88,7 +88,13 @@ M.check = function()
 	if #missing_required > 0 or #missing_optional > 0 then
 		start("Installation Suggestions")
 		if #missing_required > 0 then
-			info("Install required tools: sudo pacman -S " .. table.concat(missing_required, " "))
+			-- Map tool names to their pacman package names where they differ
+			local pkg_map = { ["tree-sitter"] = "tree-sitter-cli" }
+			local pkgs = {}
+			for _, tool in ipairs(missing_required) do
+				table.insert(pkgs, pkg_map[tool] or tool)
+			end
+			info("Install required tools: sudo pacman -S " .. table.concat(pkgs, " "))
 		end
 		if #missing_optional > 0 then
 			info("Install optional tools: sudo pacman -S " .. table.concat(missing_optional, " "))
