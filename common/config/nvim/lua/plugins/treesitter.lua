@@ -3,6 +3,10 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		branch = "main",
 		build = function()
+			-- Set parser directory before installing
+			local install = require("nvim-treesitter.install")
+			install.parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+
 			-- Install parsers after plugin is built/updated
 			local ts = require("nvim-treesitter")
 			ts.install({
@@ -25,6 +29,14 @@ return {
 			})
 		end,
 		config = function()
+			-- Set parser directory for runtime
+			local install = require("nvim-treesitter.install")
+			install.parser_dir = vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/parser"
+
+			-- Prepend parser directory to runtimepath so nvim-treesitter parsers override system ones
+			vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/lazy/nvim-treesitter")
+
+
 			-- Enable highlighting via autocommand
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = "*",
