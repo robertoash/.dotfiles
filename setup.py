@@ -35,6 +35,7 @@ from sudoers_setup import setup_sudoers
 from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
 from zen_windowrule_setup import generate_zen_app_windowrules
+from nvim_setup import check_nvim_dependencies
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -141,5 +142,8 @@ if symlink_warnings:
     print("\n⚠️  Warnings:")
     for warning in symlink_warnings:
         print(warning)
+
+# Check Neovim dependencies
+check_nvim_dependencies()
 
 print(f"\n🎉 Dotfiles setup complete for {hostname}!")
