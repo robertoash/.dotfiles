@@ -242,6 +242,16 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                             "x": orig_x, "y": orig_y
                         }
 
+        # Prune stale entries (windows that no longer exist)
+        live_addresses = {c["address"] for c in (window_manager.get_clients() or [])}
+        stale = [addr for addr in doubled_states if addr not in live_addresses]
+        if stale:
+            for addr in stale:
+                del doubled_states[addr]
+            with open(state_file, "w") as f:
+                for addr, state in doubled_states.items():
+                    f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
+
         if window_id in doubled_states:
             # Window is doubled, restore original size
             orig_state = doubled_states[window_id]
