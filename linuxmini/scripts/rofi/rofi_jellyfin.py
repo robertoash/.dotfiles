@@ -7,29 +7,15 @@ import os
 from pathlib import Path
 import time
 import pickle
-import yaml
 from jellyfin_apiclient_python import JellyfinClient as OfficialJellyfinClient
 
 CACHE_DIR = Path.home() / ".config/scripts/_cache/rofi_jellyfin"
 CACHE_EXPIRY = 300  # 5 minutes
 
-# Load Jellyfin credentials from SOPS secrets
+# Load Jellyfin credentials from environment
+# These are auto-set from flat sops keys: jellyfin-url, jellyfin-api-key
 JELLYFIN_URL = os.getenv("JELLYFIN_URL", "")
 API_KEY = os.getenv("JELLYFIN_API_KEY", "")
-
-# Fallback to reading from sops secrets files if env vars not set
-if not all([JELLYFIN_URL, API_KEY]):
-    secrets_dir = Path(os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "secrets"
-    jellyfin_secrets_file = secrets_dir / "jellyfin"
-
-    if jellyfin_secrets_file.exists():
-        try:
-            with jellyfin_secrets_file.open() as f:
-                jellyfin_data = yaml.safe_load(f)
-            JELLYFIN_URL = jellyfin_data.get("server", "")
-            API_KEY = jellyfin_data.get("api_key", "")
-        except Exception as e:
-            raise RuntimeError(f"❌ Failed to load secrets from {jellyfin_secrets_file}: {e}")
 
 if not all([JELLYFIN_URL, API_KEY]):
     raise RuntimeError("❌ Missing Jellyfin credentials (check sops-secrets service)")

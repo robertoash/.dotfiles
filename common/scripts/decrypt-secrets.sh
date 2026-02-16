@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
 # Decrypt sops secrets and place them in XDG_RUNTIME_DIR/secrets/
+# Also injects them into systemd user environment (Linux) or launchctl (macOS)
 # Works on both Linux and macOS, for both common and host-specific secrets
+#
+# Secret filenames use kebab-case and are auto-transformed to UPPER_SNAKE_CASE
+# env vars. Add a new key to sops and it becomes available everywhere automatically.
 
 set -euo pipefail
 
 # Detect OS and set runtime directory
 if [[ "$OSTYPE" == "darwin"* ]]; then
     RUNTIME_DIR="${XDG_RUNTIME_DIR:-$HOME/.local/state/runtime}"
+    IS_MACOS=1
 else
     RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$UID}"
+    IS_MACOS=0
 fi
 
 SECRETS_DIR="$RUNTIME_DIR/secrets"
 DOTFILES="$HOME/.dotfiles"
 
 # Get hostname - use /etc/hostname on Linux, hostname command on macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$IS_MACOS" -eq 1 ]]; then
     HOSTNAME=$(hostname -s)
 else
     HOSTNAME=$(cat /etc/hostname)
@@ -38,6 +44,11 @@ if [ -z "${SOPS_AGE_KEY_FILE:-}" ]; then
         exit 1
     fi
 fi
+
+# Transform kebab-case filename to UPPER_SNAKE_CASE env var name
+to_env_name() {
+    echo "$1" | tr '[:lower:]' '[:upper:]' | tr '-' '_'
+}
 
 # Function to decrypt and extract all secrets from a YAML file
 decrypt_file() {
@@ -64,7 +75,7 @@ decrypt_file() {
             continue
         fi
 
-        # Write secret to file
+        # Write secret to file (using original kebab-case name)
         local output_file="$SECRETS_DIR/$key"
         echo "$value" > "$output_file"
         chmod 600 "$output_file"
@@ -75,7 +86,7 @@ decrypt_file() {
 decrypt_file "$DOTFILES/common/secrets/common.yaml" "common"
 
 # Decrypt OS-specific secrets (Linux or macOS)
-if [[ "$OSTYPE" != "darwin"* ]]; then
+if [[ "$IS_MACOS" -eq 0 ]]; then
     # Linux-specific secrets
     decrypt_file "$DOTFILES/linuxcommon/secrets/linuxcommon.yaml" "linuxcommon"
 fi
@@ -89,4 +100,26 @@ decrypt_file "$DOTFILES/$HOSTNAME/secrets/$HOSTNAME.yml" "machine-specific"
 echo "1" > "$SECRETS_DIR/.secrets-loaded"
 chmod 600 "$SECRETS_DIR/.secrets-loaded"
 
-echo "Secrets decrypted to $SECRETS_DIR"
+# Inject all secrets into system environment
+# This makes them available to systemd services and GUI apps
+echo "Injecting secrets into system environment..."
+for secret_file in "$SECRETS_DIR"/*; do
+    [ -f "$secret_file" ] || continue
+    basename=$(basename "$secret_file")
+
+    # Skip marker/hidden files
+    case "$basename" in
+        .*) continue ;;
+    esac
+
+    env_name=$(to_env_name "$basename")
+    value=$(cat "$secret_file")
+
+    if [[ "$IS_MACOS" -eq 1 ]]; then
+        launchctl setenv "$env_name" "$value"
+    else
+        systemctl --user set-environment "$env_name=$value" 2>/dev/null || true
+    fi
+done
+
+echo "Secrets decrypted to $SECRETS_DIR and injected into environment"

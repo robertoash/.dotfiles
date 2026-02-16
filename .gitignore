@@ -15,9 +15,10 @@ linuxmini/sunshine/credentials/cakey.pem
 **/common/config/cjar/plates/**/*
 
 # Exceptions for sops (scripts and service, not secrets)
-!linuxmini/systemd/user/sops-secrets.service
+!linuxcommon/systemd/user/sops-secrets.service
 !common/scripts/decrypt-secrets.sh
 !common/config/fish/conf.d/*_secrets.fish
+!workmbp/launchagents/com.rash.sops-secrets.plist
 
 # Exceptions for encrypted SOPS secrets (specific files only)
 !**/secrets/.gitignore

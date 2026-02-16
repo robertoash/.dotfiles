@@ -125,46 +125,21 @@ machines:
     # are set dynamically by 00_homebrew.fish based on architecture
 
 # ==============================================================================
-# SECRETS - Names only (values from SOPS, loaded by shell)
+# SECRETS - Automatically distributed from SOPS
 # ==============================================================================
-# These are documented here but loaded from $XDG_RUNTIME_DIR/secrets/ by shell config
-# Do NOT put actual values here - they live in encrypted SOPS files
-
-secrets:
-  # Global secrets (loaded on all machines via common fish config)
-  global:
-    - HASS_SERVER              # Home Assistant server URL
-    - HASS_TOKEN               # Home Assistant API token
-    - TIBBER_TOKEN             # Tibber energy API token
-    - SP_USER                  # Spotify username
-    - SP_PASS                  # Spotify password
-    - CJAR_OVEN                # Encrypted filesystem vars
-    - CJAR_LAXATIVE            # Encrypted filesystem vars
-    - DOUGH_STORAGE            # Encrypted filesystem vars
-    - DINNER_TABLE             # Encrypted filesystem vars
-    - OPENAI_API_KEY           # OpenAI API key
-    - ANTHROPIC_API_KEY        # Anthropic/Claude API key
-    - LINKDING_TOKEN           # Linkding bookmark manager token
-    - GITHUB_PERSONAL_ACCESS_TOKEN  # GitHub PAT
-    - OBSIDIAN_API_KEY         # Obsidian API key
-    - RASH_GMAIL_PASS          # Gmail app password
-    - CLAUDE_CODE_OAUTH_TOKEN  # Claude Code OAuth (SSH to workmbp only)
-
-  # linuxmini-specific secrets
-  linuxmini_only:
-    - XTREAM_PROXY_SERVER      # IPTV proxy server (from xtream YAML)
-    - XTREAM_PROXY_USERNAME    # IPTV proxy username
-    - XTREAM_PROXY_PASSWORD    # IPTV proxy password
-
-  # workmbp-specific secrets
-  workmbp_only:
-    - PRIVATE_KEY_PASSPHRASE   # SSH key passphrase
-    - WORKMBP_SOPS_SECRETS_SET # Flag indicating secrets loaded
-    - GITHUB_TOKEN             # Duplicate of GITHUB_PERSONAL_ACCESS_TOKEN
-    - PGHOST                   # PostgreSQL/Redshift host
-    - PGPORT                   # PostgreSQL/Redshift port
-    - PGUSER                   # PostgreSQL/Redshift user
-    - PGPASSWORD               # PostgreSQL/Redshift password
+# Secrets are managed entirely through SOPS encrypted YAML files.
+# decrypt-secrets.sh decrypts them to $XDG_RUNTIME_DIR/secrets/ and injects
+# them into systemd user environment (Linux) / launchctl (macOS).
+# Fish shell also auto-loads them from the secrets directory.
+#
+# To add a new secret: just add a key to the appropriate sops YAML file.
+# The kebab-case key name is auto-transformed to UPPER_SNAKE_CASE.
+# Example: "my-api-key: secret123" becomes MY_API_KEY=secret123
+#
+# SOPS files:
+#   common/secrets/common.yaml          - All machines
+#   linuxcommon/secrets/linuxcommon.yaml - Linux machines only
+#   {machine}/secrets/{machine}.yaml    - Machine-specific
 
 # ==============================================================================
 # DISTRIBUTION TARGETS

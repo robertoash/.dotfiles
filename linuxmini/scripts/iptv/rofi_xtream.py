@@ -11,8 +11,6 @@ from pathlib import Path
 
 import psutil
 import requests
-import yaml
-
 # Add the custom script path to PYTHONPATH
 sys.path.append("/home/rash/.config/scripts")
 from _utils import logging_utils  # noqa: E402
@@ -23,25 +21,11 @@ FAVORITES_FILE = CACHE_DIR / "favorites.json"
 CACHE_EXPIRY = 12 * 3600  # 12 hours in seconds
 NOTIFICATION_ID = "1719"
 
-# Load Xtream proxy credentials from environment or sops secrets files
+# Load Xtream proxy credentials from environment
+# These are auto-set from flat sops keys: xtream-proxy-server, xtream-proxy-username, xtream-proxy-password
 XTREAM_PROXY_SERVER = os.getenv("XTREAM_PROXY_SERVER", "")
 XTREAM_PROXY_USERNAME = os.getenv("XTREAM_PROXY_USERNAME", "")
 XTREAM_PROXY_PASSWORD = os.getenv("XTREAM_PROXY_PASSWORD", "")
-
-# Fallback to reading from sops secrets files if env vars not set
-if not all([XTREAM_PROXY_SERVER, XTREAM_PROXY_USERNAME, XTREAM_PROXY_PASSWORD]):
-    secrets_dir = Path(os.getenv("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "secrets"
-    xtream_secrets_file = secrets_dir / "xtream"
-
-    if xtream_secrets_file.exists():
-        try:
-            with xtream_secrets_file.open() as f:
-                xtream_data = yaml.safe_load(f)
-            XTREAM_PROXY_SERVER = xtream_data.get("upstream", {}).get("server", "")
-            XTREAM_PROXY_USERNAME = xtream_data.get("upstream", {}).get("username", "")
-            XTREAM_PROXY_PASSWORD = xtream_data.get("upstream", {}).get("password", "")
-        except Exception as e:
-            raise RuntimeError(f"❌ Failed to load secrets from {xtream_secrets_file}: {e}")
 
 if not all([XTREAM_PROXY_SERVER, XTREAM_PROXY_USERNAME, XTREAM_PROXY_PASSWORD]):
     raise RuntimeError("❌ Missing proxy credentials (check sops-secrets service)")
