@@ -67,22 +67,22 @@ function __completion_order
             end
 
         case files
-            # For nvim/cat/bat: Recently edited files first
+            # For nvim/cat/bat: Local files first, then frecency, then deeper
 
-            # Step 1: Fre files (recently/frequently edited)
+            # Step 1: Files in current directory (immediate context)
+            if test -d "$search_dir"
+                for file in (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
+                    __format_with_label "$file" "[local]" $path_width
+                end
+            end
+
+            # Step 2: Fre files (recently/frequently edited)
             if command -q fre
                 set -l fre_results (fre --sorted 2>/dev/null | string match -v -r '.*/$' | head -n 20)
                 set -l rank 1
                 for file in $fre_results
                     __format_with_label "$file" "[fre:$rank]" $path_width
                     set rank (math $rank + 1)
-                end
-            end
-
-            # Step 2: Files in current directory (immediate context)
-            if test -d "$search_dir"
-                for file in (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$file" "[local]" $path_width
                 end
             end
 

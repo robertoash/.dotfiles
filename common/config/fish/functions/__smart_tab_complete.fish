@@ -177,8 +177,9 @@ function __smart_tab_complete
                     --color 'fg:#ffffff,fg+:#ffffff,bg:#010111,preview-bg:#010111,border:#7dcfff')
 
             if test -n "$result"
-                # Extract just the path (before tab)
+                # Extract just the path (before tab) and trim padding spaces
                 set result (string split \t $result)[1]
+                set result (string trim -r -- $result)
 
                 # Restore tilde prefix if user typed ~/...
                 if string match -q '~*' -- "$path_prefix"
@@ -235,6 +236,7 @@ function __smart_tab_complete
 
                 if test -n "$result"
                     set result (string split \t $result)[1]
+                    set result (string trim -r -- $result)
                     if string match -q '~*' -- "$path_prefix"
                         set result (string replace -r "^$HOME" '~' -- "$result")
                     end
