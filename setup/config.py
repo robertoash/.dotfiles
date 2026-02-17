@@ -88,3 +88,9 @@ BACKUP_CONFIGS = {
     #     }
     # },
 }
+
+# Files that get spuriously modified by apps (e.g. SOPS re-encryption with new IVs)
+# Paths are relative to the dotfiles root
+GIT_ASSUME_UNCHANGED = [
+    "workmbp/config/.sqlit/connections.json",
+]

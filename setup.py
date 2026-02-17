@@ -36,6 +36,7 @@ from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
 from zen_windowrule_setup import generate_zen_app_windowrules
 from nvim_setup import check_nvim_dependencies
+from git_setup import apply_git_index_flags
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -136,6 +137,9 @@ if machine_config["is_linux"]:
 
 # Step 11: Backup application configs that break symlinks
 backup_configs(dotfiles_dir, hostname)
+
+# Step 12: Apply git index flags for files with spurious changes
+apply_git_index_flags(dotfiles_dir)
 
 # Print warnings about existing valid symlinks if any
 if symlink_warnings:
