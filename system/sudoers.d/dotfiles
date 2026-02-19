@@ -40,6 +40,7 @@ rash ALL = NOPASSWD: /usr/bin/install -m 0644 *
 rash ALL = NOPASSWD: /usr/bin/crontab *
 rash ALL = NOPASSWD: /usr/bin/mkdir -p /etc/systemd/resolved.conf.d
 rash ALL = NOPASSWD: /usr/bin/tee /etc/systemd/resolved.conf.d/*
+rash ALL = NOPASSWD: /usr/bin/tee /etc/vconsole.conf
 rash ALL = NOPASSWD: /usr/bin/systemctl restart systemd-resolved
 rash ALL = NOPASSWD: /usr/bin/cp /etc/nftables.conf *
 rash ALL = NOPASSWD: /usr/bin/nft -c -f *

@@ -34,6 +34,7 @@ from ssh_setup import setup_ssh
 from sudoers_setup import setup_sudoers
 from resolved_setup import setup_resolved
 from systemd_setup import reload_systemd_daemon
+from vconsole_setup import setup_vconsole
 from zen_windowrule_setup import generate_zen_app_windowrules
 from nvim_setup import check_nvim_dependencies
 from git_setup import apply_git_index_flags
@@ -130,6 +131,10 @@ if machine_config["is_linux"]:
 # Step 9.5: Setup systemd-resolved configuration (Linux only)
 if machine_config["is_linux"]:
     setup_resolved(dotfiles_dir, hostname, machine_config)
+
+# Step 9.6: Setup console keyboard layout (Linux only)
+if machine_config["is_linux"]:
+    setup_vconsole(dotfiles_dir, hostname, machine_config)
 
 # Step 10: Setup backup crontab (Linux only)
 if machine_config["is_linux"]:
