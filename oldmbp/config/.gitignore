@@ -1,4 +1,5 @@
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
+.ttydal
 aerc
 atuin
 bat
@@ -6,9 +7,11 @@ black
 broot
 btop
 cjar
+cyberdrop-dl
 espanso
 fastfetch
 fish/completions
+fish/conf.d/00_environment.fish
 fish/conf.d/00_setup_secrets.fish
 fish/conf.d/01_load_sops_scrts.fish
 fish/conf.d/02_abbreviations.fish
@@ -18,6 +21,7 @@ fish/conf.d/05_applications.fish
 fish/conf.d/06_keybindings.fish
 fish/conf.d/08_gcloud.fish
 fish/conf.d/09_completions.fish
+fish/conf.d/10_completion_init.fish
 fish/conf.d/10_load_startup_functions.fish
 fish/conf.d/99-secure-shell.fish
 fish/conf.d/99_final.fish
@@ -27,6 +31,7 @@ fish/config.fish
 fish/fish_variables
 fish/fish_welcome_img.jpg
 fish/functions
+fish/tests
 fzf
 gcalcli
 git
