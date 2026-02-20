@@ -201,6 +201,7 @@ fish/functions/br.fish
 
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
 .ttydal
+brave-flags.conf
 broot
 btop/btop.conf
 btop/btop.log
@@ -214,6 +215,7 @@ fish/conf.d/00_environment.fish
 fish/conf.d/00_setup_secrets.fish
 fish/conf.d/01_load_sops_scrts.fish
 fish/conf.d/02_abbreviations.fish
+fish/conf.d/02_claude_ssh_only.fish
 fish/conf.d/03_aliases.fish
 fish/conf.d/04_fzf.fish
 fish/conf.d/05_applications.fish
