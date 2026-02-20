@@ -28,6 +28,7 @@ def setup_kanata(dotfiles_dir):
 
     _setup_groups()
     _setup_udev_rule()
+    _setup_tmpfiles(dotfiles_dir)
     _setup_system_service(dotfiles_dir)
     _install_kanata_tools(dotfiles_dir)
 
@@ -44,7 +45,7 @@ def _setup_groups():
     try:
         grp.getgrnam("uinput")
     except KeyError:
-        result = _run_sudo(["groupadd", "uinput"])
+        result = _run_sudo(["groupadd", "--system", "uinput"])
         if result.returncode == 0:
             print("  ✅ Created uinput group")
         else:
@@ -88,6 +89,31 @@ def _setup_udev_rule():
         print("  ✅ udev rule created and reloaded")
     else:
         print(f"  ⚠️  Failed to write udev rule: {result.stderr.strip()}")
+
+
+def _setup_tmpfiles(dotfiles_dir):
+    """Deploy tmpfiles.d rule to set /dev/uinput permissions on boot"""
+    source = dotfiles_dir / "linuxcommon" / "tmpfiles.d" / "uinput.conf"
+    if not source.exists():
+        print(f"  ⚠️  uinput.conf not found at {source}")
+        return
+
+    dest = Path("/etc/tmpfiles.d/uinput.conf")
+    content = source.read_text()
+
+    try:
+        if dest.exists() and dest.read_text() == content:
+            print("  ✅ tmpfiles.d uinput rule already in place")
+            return
+    except PermissionError:
+        pass
+
+    result = _run_sudo(["tee", str(dest)], input_text=content)
+    if result.returncode == 0:
+        _run_sudo(["systemd-tmpfiles", "--create", str(dest)])
+        print("  ✅ tmpfiles.d uinput rule deployed and applied")
+    else:
+        print(f"  ⚠️  Failed to write tmpfiles.d rule: {result.stderr.strip()}")
 
 
 def _setup_system_service(dotfiles_dir):
