@@ -24,12 +24,15 @@ def setup_sudoers(dotfiles_dir):
 
                 # Check if file already exists and is identical
                 needs_update = True
-                if target_file.exists():
-                    source_content = sudoers_file.read_text()
-                    target_content = target_file.read_text()
-                    if source_content == target_content:
-                        needs_update = False
-                        print(f"  ✅ {sudoers_file.name} is already up to date")
+                try:
+                    if target_file.exists():
+                        source_content = sudoers_file.read_text()
+                        target_content = target_file.read_text()
+                        if source_content == target_content:
+                            needs_update = False
+                            print(f"  ✅ {sudoers_file.name} is already up to date")
+                except PermissionError:
+                    pass  # Can't read /etc/sudoers.d without root; proceed with install
 
                 if needs_update:
                     print(f"  🔒 Installing {sudoers_file.name} (requires sudo)...")
