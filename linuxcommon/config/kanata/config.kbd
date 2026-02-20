@@ -1,0 +1,113 @@
+;; Kanata configuration - default for all Linux machines
+;; Layers: QWERTY (default) / Colemak
+;; Features: Caps=Esc/Hyper/layout-switch, Space=arrows, Tab=Hyper+QWERTY-override
+;; Machine-specific configs (e.g. device filters, home row mods) override this via dotfiles merge
+
+(defcfg
+  linux-output-device-bus-type I8042
+  process-unmapped-keys no
+)
+
+(deflocalkeys-linux
+  ö 39
+  ä 40
+  å 26
+  ¨ 27
+  ' 43
+  + 12
+  ´ 13
+  < 86
+  - 53
+)
+
+(defsrc
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  caps a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 spc                   ralt         rctl
+)
+
+;; ===============================================
+;; QWERTY (default)
+;; ===============================================
+
+(deflayer qwerty
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  @tab-mods  q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  @caps-multi-qwerty  a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt              @spc-mods               ralt         rctl
+)
+
+;; ===============================================
+;; COLEMAK
+;; ===============================================
+
+(deflayer colemak
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  @tab-mods  q    w    f    p    g    j    l    u    y    ö    å    ¨    ret
+  @caps-multi-colemak  a    r    s    t    d    h    n    e    i    o    ä    '
+  lsft <    z    x    c    v    b    k    m    ,    .    -    rsft
+  lctl lmet lalt              @spc-mods               ralt         rctl
+)
+
+;; ===============================================
+;; ARROW LAYER (Space-activated)
+;; ===============================================
+
+(deflayer arrows
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    XX   XX   XX   XX   XX   XX   bspc XX   XX   XX   XX   ¨    ret
+  _    XX   XX   XX   XX   XX   left down up   rght XX   XX   '
+  lsft <    XX   XX   XX   XX   XX   XX   home end  .    -    rsft
+  lctl lmet lalt                 _                    ralt         rctl
+)
+
+;; ===============================================
+;; QWERTY OVERRIDE (Tab/Hyper-activated)
+;; Ensures QWERTY positions for niri/compositor keybinds when on Colemak
+;; ===============================================
+
+(deflayer qwerty-override
+  esc  f1   f2   f3   f4   f5   f6   f7   f8   f9   f10  f11  f12  del
+  grv  1    2    3    4    5    6    7    8    9    0    +    ´    bspc
+  _    q    w    e    r    t    y    u    i    o    p    å    ¨    ret
+  _    a    s    d    f    g    h    j    k    l    ö    ä    '
+  lsft <    z    x    c    v    b    n    m    ,    .    -    rsft
+  lctl lmet lalt                 spc                   ralt         rctl
+)
+
+;; ===============================================
+;; ALIASES
+;; ===============================================
+
+(defalias
+  ;; Tab: tap=tab, hold=Hyper(Super+Ctrl+Alt) + QWERTY override
+  tab-mods (tap-hold-release 150 200 tab (multi lmet lctl lalt (layer-while-held qwerty-override)))
+
+  switch-to-colemak (layer-switch colemak)
+  switch-to-qwerty  (layer-switch qwerty)
+
+  ;; Caps Lock: tap=esc, double-tap=switch layout, triple-tap=caps, hold=hyper
+  caps-multi-colemak (tap-dance 250 (
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet (layer-while-held qwerty-override)))
+    @switch-to-qwerty
+    caps
+  ))
+  caps-multi-qwerty (tap-dance 250 (
+    (tap-hold-release 50 175 esc (multi lctl lsft lalt lmet (layer-while-held qwerty-override)))
+    @switch-to-colemak
+    caps
+  ))
+
+  ;; Space: tap=space, hold=arrow layer (with fast-typing bypass)
+  spc-mods (switch
+    ((key-timing 1 less-than 120)) spc break
+    () (tap-hold-release 50 350 spc (layer-while-held arrows)) break
+  )
+)

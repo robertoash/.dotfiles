@@ -1,0 +1,17 @@
+[Unit]
+Description=Kanata keyboard remapper
+After=local-fs.target
+
+[Service]
+Type=simple
+User=rash
+Group=rash
+SupplementaryGroups=input uinput
+ExecStart=/usr/bin/kanata --port 5829 --cfg /home/rash/.config/kanata/config.kbd
+ExecStartPost=/usr/bin/sleep 2
+ExecStartPost=/home/rash/.local/bin/kanata-tools init
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

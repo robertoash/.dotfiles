@@ -117,8 +117,11 @@ binds {
     XF86AudioMute hotkey-overlay-title="Mute/Unmute" { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
 
     // Session management
+    Super+L hotkey-overlay-title="Lock screen" { spawn "swaylock" "-f"; }
     Super+Ctrl+Alt+Q hotkey-overlay-title="Power menu" { spawn "sh" "-c" "~/.config/scripts/rofi/rofi_power.sh"; }
 }
 
 // Use classic window decorations for consistent rounded corners
 prefer-no-csd
+
+spawn-at-startup "sh" "-c" "sleep 3 && kanata-tools init"

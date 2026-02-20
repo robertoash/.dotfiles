@@ -4,6 +4,7 @@ aerc
 atuin
 bat
 black
+brave-flags.conf
 broot
 btop
 cjar
@@ -41,6 +42,10 @@ gtk-4.0
 ignore
 jellyfin-mpv-shim
 kanata
+kanata/
+kanata/.claude
+kanata/config.kbd
+kanata/last_state.json
 kdeconnect
 lazydocker
 lazygit

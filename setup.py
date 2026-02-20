@@ -38,6 +38,7 @@ from vconsole_setup import setup_vconsole
 from zen_windowrule_setup import generate_zen_app_windowrules
 from nvim_setup import check_nvim_dependencies
 from git_setup import apply_git_index_flags
+from kanata_setup import setup_kanata
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -91,6 +92,10 @@ if machine_config["is_linux"]:
 # Step 6.4: Setup pacman configuration (Arch Linux only)
 if machine_config["is_linux"]:
     setup_pacman(dotfiles_dir)
+
+# Step 6.4.2: Setup kanata keyboard remapper (Linux only)
+if machine_config["is_linux"]:
+    setup_kanata(dotfiles_dir)
 
 # Step 6.4.1: Setup nftables firewall configuration (Linux only)
 if machine_config["is_linux"]:

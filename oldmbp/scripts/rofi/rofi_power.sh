@@ -5,6 +5,9 @@ declare -A COMMANDS
 
 ## Define commands
 
+COMMANDS["lock"]="swaylock -f"
+LABELS["lock"]=""
+
 COMMANDS["logout"]="niri msg action quit"
 LABELS["logout"]=""
 
@@ -14,8 +17,7 @@ LABELS["reboot"]=""
 COMMANDS["power_off"]="systemctl poweroff"
 LABELS["power_off"]=""
 
-# Define display order (removed lock since niri doesn't have hyprlock)
-ORDER=("logout" "reboot" "power_off")
+ORDER=("lock" "logout" "reboot" "power_off")
 
 ################################################################################
 # main script (don't touch below)
