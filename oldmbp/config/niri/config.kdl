@@ -13,6 +13,8 @@ input {
         dwt
         click-method "clickfinger"
     }
+
+    focus-follows-mouse max-scroll-amount="0%"
 }
 
 output "eDP-1" {
