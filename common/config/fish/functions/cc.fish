@@ -8,13 +8,12 @@ function cc --description "Launch Claude Code with optional account profile"
     #
     # Profiles are defined in dotfiles tools.yaml / settings.{profile}.json.
     # setup.py pre-generates ~/.config/claude-profiles/{profile}.json with
-    # the MCP servers for each profile. On launch, those MCPs are swapped
-    # into ~/.claude.json (which Claude Code always reads from $HOME).
+    # the MCP servers for each profile.
     #
-    # Account switching: ~/.claude.json also stores oauthAccount/userID which
-    # Claude Code uses to identify the active account. CLAUDE_CONFIG_DIR only
-    # controls the credentials directory, not ~/.claude.json. So we save/restore
-    # account fields around personal launches to keep profiles fully isolated.
+    # Account switching: ~/.claude.json is always read from $HOME regardless of
+    # CLAUDE_CONFIG_DIR. We manage it as a symlink into per-profile account files
+    # in dotfiles so each profile gets its own oauthAccount/userID and full state.
+    # The account files are gitignored (contain account UUIDs + session state).
 
     set -l known_profiles work personal
     set -l profile work
@@ -25,7 +24,19 @@ function cc --description "Launch Claude Code with optional account profile"
         set claude_args $argv[2..]
     end
 
-    # Swap MCPs in ~/.claude.json to match the selected profile
+    # Point ~/.claude.json at the profile's account file (symlink).
+    # On first run for work, migrate the existing real file rather than losing state.
+    set -l account_file $HOME/.dotfiles/common/.claude/$profile-account.json
+    if not test -f $account_file
+        if test "$profile" = work; and test -f $HOME/.claude.json; and not test -L $HOME/.claude.json
+            cp $HOME/.claude.json $account_file
+        else
+            echo '{}' > $account_file
+        end
+    end
+    ln -sf $account_file $HOME/.claude.json
+
+    # Swap MCPs in ~/.claude.json (writes through the symlink into the account file)
     set -l profile_cache $HOME/.config/claude-profiles/$profile.json
     if test -f $profile_cache
         python3 -c "
@@ -36,7 +47,7 @@ path = '$HOME/.claude.json'
 try:
     with open(path) as f:
         cfg = json.load(f)
-except FileNotFoundError:
+except (FileNotFoundError, json.JSONDecodeError):
     cfg = {}
 cfg['mcpServers'] = profile.get('mcpServers', {})
 with open(path, 'w') as f:
@@ -45,69 +56,11 @@ with open(path, 'w') as f:
     end
 
     if test "$profile" = personal
-        # Before switching: save current (work) account fields and load personal ones.
-        # This is self-bootstrapping: first run saves work data and prompts Claude
-        # login for personal; subsequent runs swap the saved personal data in.
-        python3 -c "
-import json, os
-home = '$HOME'
-claude_json = home + '/.claude.json'
-work_acct_file = home + '/.config/claude-profiles/work-account.json'
-personal_acct_file = home + '/.config/claude-profiles/personal-account.json'
-acct_keys = ['oauthAccount', 'userID']
-
-try:
-    with open(claude_json) as f:
-        cfg = json.load(f)
-except FileNotFoundError:
-    cfg = {}
-
-# Save current work account data
-work_acct = {k: cfg[k] for k in acct_keys if k in cfg}
-with open(work_acct_file, 'w') as f:
-    json.dump(work_acct, f, indent=2)
-
-# Load personal account data if it exists from a previous session
-if os.path.exists(personal_acct_file):
-    with open(personal_acct_file) as f:
-        personal_acct = json.load(f)
-    cfg.update(personal_acct)
-    with open(claude_json, 'w') as f:
-        json.dump(cfg, f, indent=2)
-" 2>/dev/null
-
         set -x CLAUDE_CONFIG_DIR $HOME/.claude-personal
         command claude --allow-dangerously-skip-permissions $claude_args
         set -e CLAUDE_CONFIG_DIR
-
-        # After exit: save personal account data and restore work account.
-        python3 -c "
-import json, os
-home = '$HOME'
-claude_json = home + '/.claude.json'
-work_acct_file = home + '/.config/claude-profiles/work-account.json'
-personal_acct_file = home + '/.config/claude-profiles/personal-account.json'
-acct_keys = ['oauthAccount', 'userID']
-
-try:
-    with open(claude_json) as f:
-        cfg = json.load(f)
-except FileNotFoundError:
-    cfg = {}
-
-# Save personal account data (may have been refreshed during the session)
-personal_acct = {k: cfg[k] for k in acct_keys if k in cfg}
-with open(personal_acct_file, 'w') as f:
-    json.dump(personal_acct, f, indent=2)
-
-# Restore work account data
-if os.path.exists(work_acct_file):
-    with open(work_acct_file) as f:
-        work_acct = json.load(f)
-    cfg.update(work_acct)
-    with open(claude_json, 'w') as f:
-        json.dump(cfg, f, indent=2)
-" 2>/dev/null
+        # Restore work as default so bare 'claude' invocations use the work account
+        ln -sf $HOME/.dotfiles/common/.claude/work-account.json $HOME/.claude.json
     else
         command claude --allow-dangerously-skip-permissions $claude_args
     end
