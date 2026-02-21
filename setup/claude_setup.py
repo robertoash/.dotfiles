@@ -130,15 +130,15 @@ def _symlink_claude_item(source, target):
     print(f"✅ Symlinked {target} -> {source}")
 
 
+PROFILES = ["work", "personal"]
+
+
 def _discover_profiles(tools, common_claude_dir):
-    """Collect profile names from tool declarations and settings overlay files."""
-    profiles = {"work"}
+    """Collect profile names. Base set from PROFILES, extended by tool declarations."""
+    profiles = set(PROFILES)
     for cfg in tools.values():
         for p in cfg.get("profiles", []):
             profiles.add(p)
-    for f in common_claude_dir.glob("settings.*.json"):
-        # settings.personal.json -> "personal"
-        profiles.add(f.stem.split(".", 1)[1])
     return profiles
 
 
