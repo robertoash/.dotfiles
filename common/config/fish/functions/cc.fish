@@ -40,8 +40,9 @@ with open(path, 'w') as f:
     end
 
     if test "$profile" = personal
-        env CLAUDE_CONFIG_DIR=$HOME/.claude-personal \
-            command claude --allow-dangerously-skip-permissions $claude_args
+        set -x CLAUDE_CONFIG_DIR $HOME/.claude-personal
+        command claude --allow-dangerously-skip-permissions $claude_args
+        set -e CLAUDE_CONFIG_DIR
     else
         command claude --allow-dangerously-skip-permissions $claude_args
     end
