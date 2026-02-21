@@ -70,7 +70,8 @@
     "ask": [],
     "additionalDirectories": [
       "/home/rash/ext_repos/ha-config/",
-      "/tmp"
+      "/tmp",
+      "/home/rash/.openclaw"
     ]
   }
 }
