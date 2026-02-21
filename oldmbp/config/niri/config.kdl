@@ -91,6 +91,9 @@ binds {
     Super+Shift+Up hotkey-overlay-title="Move window up" { move-window-up; }
     Super+Shift+Down hotkey-overlay-title="Move window down" { move-window-down; }
 
+    Alt+Shift+Left hotkey-overlay-title="Move window to column left" { consume-or-expel-window-left; }
+    Alt+Shift+Right hotkey-overlay-title="Move window to column right" { consume-or-expel-window-right; }
+
     // Workspace switching (using the same numbers as Hyprland)
     Super+1 hotkey-overlay-title="Workspace 1" { focus-workspace 1; }
     Super+2 hotkey-overlay-title="Workspace 2" { focus-workspace 2; }
