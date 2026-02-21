@@ -4,6 +4,7 @@ aerc
 atuin
 bat
 black
+brave-flags.conf
 broot
 btop
 cjar
@@ -18,6 +19,7 @@ fish/conf.d/00_environment.fish
 fish/conf.d/00_setup_secrets.fish
 fish/conf.d/01_load_sops_scrts.fish
 fish/conf.d/02_abbreviations.fish
+fish/conf.d/02_claude_ssh_only.fish
 fish/conf.d/03_aliases.fish
 fish/conf.d/04_fzf.fish
 fish/conf.d/05_applications.fish
@@ -44,6 +46,10 @@ gtk-4.0
 ignore
 jellyfin-mpv-shim
 kanata
+kanata/
+kanata/.claude
+kanata/config.kbd
+kanata/last_state.json
 kdeconnect
 lazydocker
 lazygit
