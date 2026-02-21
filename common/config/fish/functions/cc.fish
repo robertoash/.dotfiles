@@ -6,9 +6,11 @@ function cc --description "Launch Claude Code with optional account profile"
     #   cc --continue              # work profile, pass --continue to claude
     #   cc personal --resume ...   # personal profile, pass args to claude
     #
-    # The 'claude' fish function wraps the binary and always sets up the work
-    # profile. cc delegates to it for work, and handles personal directly via
-    # 'command claude' to bypass the wrapper.
+    # Profiles are defined in dotfiles tools.yaml / settings.{profile}.json.
+    # setup.py pre-generates ~/.config/claude-profiles/{profile}.json with MCP
+    # servers for each profile. CLAUDE_CONFIG_DIR moves the entire config root,
+    # so .claude.json lives at $CLAUDE_CONFIG_DIR/.claude.json (or ~/.claude.json
+    # for the default work profile where config root is $HOME).
 
     set -l known_profiles work personal
     set -l profile work
@@ -19,20 +21,20 @@ function cc --description "Launch Claude Code with optional account profile"
         set claude_args $argv[2..]
     end
 
+    # Swap MCPs into the .claude.json that Claude will actually read.
+    # Default config root is $HOME; CLAUDE_CONFIG_DIR overrides it.
     if test "$profile" = personal
-        set -l account_file $HOME/.dotfiles/common/.claude/personal-account.json
-        if not test -f $account_file
-            echo '{}' > $account_file
-        end
-        ln -sf $account_file $HOME/.claude.json
-
-        set -l profile_cache $HOME/.config/claude-profiles/personal.json
-        if test -f $profile_cache
-            python3 -c "
+        set -l claude_json $HOME/.claude-personal/.claude.json
+    else
+        set -l claude_json $HOME/.claude.json
+    end
+    set -l profile_cache $HOME/.config/claude-profiles/$profile.json
+    if test -f $profile_cache
+        python3 -c "
 import json
 with open('$profile_cache') as f:
     profile = json.load(f)
-path = '$HOME/.claude.json'
+path = '$claude_json'
 try:
     with open(path) as f:
         cfg = json.load(f)
@@ -42,12 +44,13 @@ cfg['mcpServers'] = profile.get('mcpServers', {})
 with open(path, 'w') as f:
     json.dump(cfg, f, indent=2)
 " 2>/dev/null
-        end
+    end
 
+    if test "$profile" = personal
         set -x CLAUDE_CONFIG_DIR $HOME/.claude-personal
         command claude --allow-dangerously-skip-permissions $claude_args
         set -e CLAUDE_CONFIG_DIR
     else
-        claude --allow-dangerously-skip-permissions $claude_args
+        command claude --allow-dangerously-skip-permissions $claude_args
     end
 end

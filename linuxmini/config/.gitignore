@@ -244,8 +244,10 @@ fish/functions/__smart_tab_complete.fish
 fish/functions/accept_next_path_segment.fish
 fish/functions/bk_swap.fish
 fish/functions/bko.fish
+fish/functions/cc.fish
 fish/functions/cdroot.fish
 fish/functions/cdtemp.fish
+fish/functions/claude.fish
 fish/functions/cnn.fish
 fish/functions/custom_delete_backward_word.fish
 fish/functions/custom_delete_backward_word_space.fish

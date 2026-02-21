@@ -96,7 +96,3 @@ common/.claude/commands/gsd/
 
 .tasks.md
 /common/config/nvim/lazy-lock.json
-
-# Per-profile Claude account state (account UUIDs + session state, not for git)
-common/.claude/work-account.json
-common/.claude/personal-account.json

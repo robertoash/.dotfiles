@@ -23,7 +23,10 @@ FG_LIGHT=$'\e[38;2;208;214;227m'
 MODEL=$(echo "$DATA" | jq -r '.model.display_name // "?"' | tr '[:upper:] ' '[:lower:]-' | tr -s '-')
 CTX_PCT=$(echo "$DATA" | jq -r '(.context_window.used_percentage // 0) | floor')
 RAW_CWD=$(echo "$DATA" | jq -r '.cwd // "."')
-EMAIL=$(jq -r '.oauthAccount.emailAddress // ""' ~/.claude.json 2>/dev/null)
+# CLAUDE_CONFIG_DIR moves the config root; .claude.json lives inside it
+CLAUDE_JSON="${CLAUDE_CONFIG_DIR:+$CLAUDE_CONFIG_DIR/.claude.json}"
+CLAUDE_JSON="${CLAUDE_JSON:-$HOME/.claude.json}"
+EMAIL=$(jq -r '.oauthAccount.emailAddress // ""' "$CLAUDE_JSON" 2>/dev/null)
 BRANCH=$(git -C "$RAW_CWD" branch --show-current 2>/dev/null)
 
 # @domain only; @? when account info not yet available
