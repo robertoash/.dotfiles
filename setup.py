@@ -39,6 +39,7 @@ from zen_windowrule_setup import generate_zen_app_windowrules
 from nvim_setup import check_nvim_dependencies
 from git_setup import apply_git_index_flags
 from kanata_setup import setup_kanata
+from xdg_setup import setup_xdg_user_dirs
 
 # Get hostname and paths
 hostname = socket.gethostname()
@@ -96,6 +97,10 @@ if machine_config["is_linux"]:
 # Step 6.4.2: Setup kanata keyboard remapper (Linux only)
 if machine_config["is_linux"]:
     setup_kanata(dotfiles_dir)
+
+# Step 6.4.3: Apply XDG user directory config (Linux only)
+if machine_config["is_linux"]:
+    setup_xdg_user_dirs()
 
 # Step 6.4.1: Setup nftables firewall configuration (Linux only)
 if machine_config["is_linux"]:
