@@ -37,9 +37,6 @@ abbr gsi "sgpt -s --interaction"
 abbr gd "sgpt -d"
 abbr gtc "sgpt -c"
 
-# Claude
-abbr claude "claude --allow-dangerously-skip-permissions"
-
 # Fd
 abbr fd "fd -Hi --no-ignore-vcs"
 abbr fdf "fd -Hi --no-ignore-vcs -t f"
