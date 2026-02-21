@@ -26,8 +26,8 @@ RAW_CWD=$(echo "$DATA" | jq -r '.cwd // "."')
 EMAIL=$(jq -r '.oauthAccount.emailAddress // ""' ~/.claude.json 2>/dev/null)
 BRANCH=$(git -C "$RAW_CWD" branch --show-current 2>/dev/null)
 
-# @domain only
-EMAIL_DISPLAY="@${EMAIL#*@}"
+# @domain only (guard against empty email)
+[[ -n "$EMAIL" ]] && EMAIL_DISPLAY="@${EMAIL#*@}" || EMAIL_DISPLAY=""
 
 # Email color by domain
 if [[ "$EMAIL" == *"@readly.com" ]]; then   EMAIL_COLOR="$PURPLE"
