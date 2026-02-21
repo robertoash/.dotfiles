@@ -26,13 +26,13 @@ RAW_CWD=$(echo "$DATA" | jq -r '.cwd // "."')
 EMAIL=$(jq -r '.oauthAccount.emailAddress // ""' ~/.claude.json 2>/dev/null)
 BRANCH=$(git -C "$RAW_CWD" branch --show-current 2>/dev/null)
 
-# @domain only (guard against empty email)
-[[ -n "$EMAIL" ]] && EMAIL_DISPLAY="@${EMAIL#*@}" || EMAIL_DISPLAY=""
+# @domain only; @? when account info not yet available
+[[ -n "$EMAIL" ]] && EMAIL_DISPLAY="@${EMAIL#*@}" || EMAIL_DISPLAY="@?"
 
-# Email color by domain
+# Email color by domain (dim for unknown)
 if [[ "$EMAIL" == *"@readly.com" ]]; then   EMAIL_COLOR="$PURPLE"
 elif [[ "$EMAIL" == *"@gmail.com" ]]; then  EMAIL_COLOR="$TEAL"
-else                                         EMAIL_COLOR="$RESET"
+else                                         EMAIL_COLOR="$DIM"
 fi
 
 # Collapse home, then cap at 3 levels: ~/a/b/c/d -> ~/.../d

@@ -47,12 +47,6 @@ with open(path, 'w') as f:
         set -x CLAUDE_CONFIG_DIR $HOME/.claude-personal
         command claude --allow-dangerously-skip-permissions $claude_args
         set -e CLAUDE_CONFIG_DIR
-        # Restore work as default; next bare 'claude' call will also do this,
-        # but restore eagerly so other terminal sessions aren't affected
-        if not test -f $HOME/.dotfiles/common/.claude/work-account.json
-            echo '{}' > $HOME/.dotfiles/common/.claude/work-account.json
-        end
-        ln -sf $HOME/.dotfiles/common/.claude/work-account.json $HOME/.claude.json
     else
         claude --allow-dangerously-skip-permissions $claude_args
     end
