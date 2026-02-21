@@ -99,6 +99,17 @@ def run_install_hook(tool_name, tool_config):
 _MCP_KEYS = ("type", "command", "args", "env", "url")
 
 
+def _symlink_claude_item(source, target):
+    if not source.exists():
+        print(f"⚠️  Not found: {source}")
+        return
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists() or target.is_symlink():
+        target.unlink() if (target.is_symlink() or target.is_file()) else shutil.rmtree(target)
+    target.symlink_to(source.resolve())
+    print(f"✅ Symlinked {target} -> {source}")
+
+
 def setup_claude_config(dotfiles_dir, hostname=None):
     """Setup Claude Code MCP servers with encrypted secrets."""
     dotfiles_dir = Path(dotfiles_dir)
@@ -192,19 +203,6 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     except Exception as e:
         print(f"⚠️  Error setting up MCP servers: {e}")
 
-    # Symlink CLAUDE.md from common to ~/.claude/
-    claude_md_source = dotfiles_dir / "common" / ".claude" / "CLAUDE.md"
-    claude_md_target = Path.home() / ".claude" / "CLAUDE.md"
-
-    if claude_md_source.exists():
-        claude_md_target.parent.mkdir(parents=True, exist_ok=True)
-        if claude_md_target.exists() or claude_md_target.is_symlink():
-            claude_md_target.unlink()
-        claude_md_target.symlink_to(claude_md_source.resolve())
-        print(f"✅ Symlinked {claude_md_target} -> {claude_md_source}")
-    else:
-        print(f"⚠️  CLAUDE.md not found at {claude_md_source}")
-
     # Merge settings.json from dotfiles into ~/.claude/settings.json
     settings_source = dotfiles_dir / "common" / ".claude" / "settings.json"
     settings_target = Path.home() / ".claude" / "settings.json"
@@ -251,22 +249,9 @@ def setup_claude_config(dotfiles_dir, hostname=None):
     else:
         print(f"⚠️  settings.json not found at {settings_source}")
 
-    # Symlink commands directory from common to ~/.claude/commands
-    commands_source = dotfiles_dir / "common" / ".claude" / "commands"
-    commands_target = Path.home() / ".claude" / "commands"
-
-    if commands_source.exists():
-        commands_target.parent.mkdir(parents=True, exist_ok=True)
-        if commands_target.exists() or commands_target.is_symlink():
-            if commands_target.is_symlink():
-                commands_target.unlink()
-            elif commands_target.is_dir():
-                shutil.rmtree(commands_target)
-            else:
-                commands_target.unlink()
-        commands_target.symlink_to(commands_source.resolve())
-        print(f"✅ Symlinked {commands_target} -> {commands_source}")
-    else:
-        print(f"⚠️  commands directory not found at {commands_source}")
+    common = dotfiles_dir / "common" / ".claude"
+    claude = Path.home() / ".claude"
+    for name in ("CLAUDE.md", "scripts", "commands"):
+        _symlink_claude_item(common / name, claude / name)
 
     return True

@@ -1,6 +1,10 @@
 {
   "alwaysThinkingEnabled": true,
   "model": "sonnet",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/scripts/statusline.sh"
+  },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
