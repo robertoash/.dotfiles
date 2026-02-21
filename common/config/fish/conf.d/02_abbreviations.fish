@@ -48,6 +48,9 @@ abbr ug "ugrep -I --ignore-files"
 abbr ugi "ugrep -I --ignore-files -i"
 abbr ugr "ugrep -I --ignore-files -r"
 
+# Openclaw
+abbr openclaw_remote "ssh -N -f -L 18789:127.0.0.1:18789 rash@thor"
+
 # Realpath
 abbr rp "realpath"
 
