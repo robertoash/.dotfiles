@@ -2,5 +2,18 @@
 # Add tool blocks here; machine-specific tools go in {hostname}/.claude/tools.yaml
 #
 # Tool fields:
-#   install: Command to run if tool is not found on PATH
-#   update: Command to run if tool is already installed (runs every setup.py execution)
+#   profiles:    List of profiles this tool applies to. Omit to include in all profiles.
+#                Profiles: work (default), personal. Add more via settings.{profile}.json.
+#                Example: profiles: [work]  or  profiles: [work, personal]
+#   install:     Command to run if tool is not found on PATH
+#   update:      Command to run if tool is already installed (runs every setup.py execution)
+#   permissions: Claude Code permission rules specific to this tool
+#
+# Example:
+#   my-work-tool:
+#     profiles: [work]
+#     type: stdio
+#     command: npx
+#     args: [-y, @company/mcp-server]
+#     env:
+#       API_KEY: "{{my_work_api_key}}"
