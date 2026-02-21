@@ -34,6 +34,8 @@
 		"custom/separator#dot-line",
 		"tray",
 		"custom/separator#dot-line",
+		"battery",
+		"custom/separator#dot-line",
 		"clock"
 	]
 }

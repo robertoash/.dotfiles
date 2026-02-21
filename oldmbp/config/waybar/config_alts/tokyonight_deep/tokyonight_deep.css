@@ -245,6 +245,10 @@ window#waybar.hidden {
     transition: all 0.3s ease;
 }
 
+#battery.low:not(.charging) {
+    color: @battery_medium;
+}
+
 #battery.critical:not(.charging) {
     background-color: @color9;
     color: @foreground;

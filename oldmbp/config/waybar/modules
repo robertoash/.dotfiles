@@ -51,6 +51,21 @@
         ]
     },
 
+    "battery": {
+        "interval": 30,
+        "states": {
+            "critical": 15,
+            "low": 30,
+            "medium": 60,
+            "high": 90
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": "󰂄 {capacity}%",
+        "format-full": "󰁹 {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "tooltip-format": "{timeTo}, {power:.1f}W"
+    },
+
     "backlight": {
         "interval": 2,
         "align": 0,
