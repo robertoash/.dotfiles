@@ -47,10 +47,15 @@ with open(path, 'w') as f:
     end
 
     if test "$profile" = personal
-        set -x CLAUDE_CONFIG_DIR $HOME/.claude-personal
+        # -lx: explicitly local scope so it never bleeds into or modifies a
+        # wider-scoped CLAUDE_CONFIG_DIR; cleaned up automatically on return.
+        set -lx CLAUDE_CONFIG_DIR $HOME/.claude-personal
         command claude --allow-dangerously-skip-permissions $claude_args
-        set -e CLAUDE_CONFIG_DIR
     else
+        # Explicitly clear CLAUDE_CONFIG_DIR so a stale value from any outer
+        # scope (e.g. a global set by a previous crashed personal session)
+        # doesn't silently redirect the work profile to the personal config.
+        set -e CLAUDE_CONFIG_DIR
         command claude --allow-dangerously-skip-permissions $claude_args
     end
 end
