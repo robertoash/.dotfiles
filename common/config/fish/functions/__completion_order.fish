@@ -1,5 +1,6 @@
 # Smart ordering module with reasoning labels
-# Orders completion candidates by context and tags them with reasons for ranking
+# Default ordering: local (depth 1) → deeper (depth 2-3) → frecency (only when no path typed)
+# Exceptions to this default are documented in the switch block below.
 
 function __completion_order
     # Arguments: context_type search_dir query_part
@@ -26,103 +27,61 @@ function __completion_order
         end
     end
 
-    set -l results
+    # Defaults - overridden per context below
+    set -l fd_type_flag          # no type filter = both files and dirs
+    set -l use_zoxide true
+    set -l use_fre true
 
+    # Exceptions to default ordering/sources:
+    # - dirs: restrict to directories only; zoxide replaces fre (dir frecency, not file frecency)
+    # - files: restrict to files only; fre replaces zoxide (file frecency, not dir frecency)
     switch $context_type
         case dirs
-            # For cd/z/pushd: Immediate children first, then frecency-sorted
-
-            # Step 1: Immediate children (depth 1) - these are most likely
-            if test -d "$search_dir"
-                for dir in (fd -Hi --no-ignore -t d --max-depth 1 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$dir" "[child]" $path_width
-                end
-            end
-
-            # Step 2: Zoxide directories (sorted by frecency rank)
-            if command -q zoxide
-                set -l zoxide_results (zoxide query -l 2>/dev/null | head -n 30)
-                set -l rank 1
-                for dir in $zoxide_results
-                    __format_with_label "$dir" "[z:$rank]" $path_width
-                    set rank (math $rank + 1)
-                end
-            end
-
-            # Step 3: Fre directories (if available)
-            if command -q fre
-                set -l fre_results (fre --sorted 2>/dev/null | string match -r '.*/$' | head -n 20)
-                set -l rank 1
-                for dir in $fre_results
-                    __format_with_label "$dir" "[fre:$rank]" $path_width
-                    set rank (math $rank + 1)
-                end
-            end
-
-            # Step 4: Deeper directories from filesystem
-            if test -d "$search_dir"
-                for dir in (fd -Hi --no-ignore -t d --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$dir" "[fd]" $path_width
-                end
-            end
-
+            set fd_type_flag -t d
+            set use_fre false
         case files
-            # For nvim/cat/bat: Local files first, then frecency, then deeper
+            set fd_type_flag -t f
+            set use_zoxide false
+    end
 
-            # Step 1: Files in current directory (immediate context)
-            if test -d "$search_dir"
-                for file in (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$file" "[local]" $path_width
-                end
+    # Step 1: Immediate children (depth 1)
+    if test -d "$search_dir"
+        for item in (fd -Hi --no-ignore $fd_type_flag --max-depth 1 . "$search_dir" 2>/dev/null)
+            __format_with_label "$item" "[local]" $path_width
+        end
+    end
+
+    # Step 2: Deeper items (depth 2-3)
+    if test -d "$search_dir"
+        for item in (fd -Hi --no-ignore $fd_type_flag --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
+            __format_with_label "$item" "[fd]" $path_width
+        end
+    end
+
+    # Step 3: Frecency - only when no specific path was typed
+    if test "$search_dir" = "."
+        if test "$use_zoxide" = true; and command -q zoxide
+            set -l rank 1
+            for item in (zoxide query -l 2>/dev/null | head -n 15)
+                __format_with_label "$item" "[z:$rank]" $path_width
+                set rank (math $rank + 1)
             end
+        end
 
-            # Step 2: Fre files (recently/frequently edited)
-            if command -q fre
-                set -l fre_results (fre --sorted 2>/dev/null | string match -v -r '.*/$' | head -n 20)
-                set -l rank 1
-                for file in $fre_results
-                    __format_with_label "$file" "[fre:$rank]" $path_width
-                    set rank (math $rank + 1)
-                end
+        if test "$use_fre" = true; and command -q fre
+            set -l rank 1
+            set -l fre_entries
+            # files: exclude dirs (no trailing slash); both: include everything
+            if test "$context_type" = files
+                set fre_entries (fre --sorted 2>/dev/null | string match -v -r '.*/$' | head -n 20)
+            else
+                set fre_entries (fre --sorted 2>/dev/null | head -n 15)
             end
-
-            # Step 3: Files in subdirectories
-            if test -d "$search_dir"
-                for file in (fd -Hi --no-ignore -t f --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$file" "[fd]" $path_width
-                end
+            for item in $fre_entries
+                __format_with_label "$item" "[fre:$rank]" $path_width
+                set rank (math $rank + 1)
             end
+        end
+    end
 
-        case both
-            # For cp/mv/rsync: Mix of files and dirs, frecency-aware
-
-            # Step 1: Frecency items (both files and dirs)
-            if command -q zoxide
-                set -l zoxide_results (zoxide query -l 2>/dev/null | head -n 15)
-                for item in $zoxide_results
-                    __format_with_label "$item" "[z:freq]" $path_width
-                end
-            end
-
-            if command -q fre
-                set -l fre_results (fre --sorted 2>/dev/null | head -n 15)
-                for item in $fre_results
-                    __format_with_label "$item" "[fre:freq]" $path_width
-                end
-            end
-
-            # Step 2: Local files and directories
-            if test -d "$search_dir"
-                for item in (fd -Hi --no-ignore --max-depth 1 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$item" "[local]" $path_width
-                end
-            end
-
-            # Step 3: Deeper items
-            if test -d "$search_dir"
-                for item in (fd -Hi --no-ignore --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
-                    __format_with_label "$item" "[fd]" $path_width
-                end
-            end
-    end | awk '!seen[$1]++'  # Deduplicate by path, keeping first (highest priority)
-end
+end | awk '!seen[$1]++'  # Deduplicate by path, keeping first (highest priority)
