@@ -14,13 +14,7 @@ logging_utils.configure_logging()
 LOCAL_SNAPSHOT_DIR = "/.snapshots"
 EXTERNAL_SNAPSHOT_DIRS = ["/media/sda1/.snapshots", "/mnt/.snapshots"]
 
-# Retention policy
-daily_keep = 3
-weekly_keep = 1
-monthly_keep = 1
-
-
-def process_snapshot_dir(snapshot_dir):
+def process_snapshot_dir(snapshot_dir, daily_keep=3, weekly_keep=1, monthly_keep=1):
     if not os.path.exists(snapshot_dir):
         logging.warning(f"Snapshot directory does not exist: {snapshot_dir}")
         return
@@ -260,14 +254,14 @@ def main():
         # Process only local snapshots
         process_snapshot_dir(LOCAL_SNAPSHOT_DIR)
     elif args.external_only:
-        # Process only external snapshots
+        # Process only external snapshots (2 daily, no weekly/monthly)
         for ext_dir in EXTERNAL_SNAPSHOT_DIRS:
-            process_snapshot_dir(ext_dir)
+            process_snapshot_dir(ext_dir, daily_keep=2, weekly_keep=0, monthly_keep=0)
     else:
-        # Process all known snapshot directories
+        # Process all: local uses full policy, external uses tighter policy
         process_snapshot_dir(LOCAL_SNAPSHOT_DIR)
         for ext_dir in EXTERNAL_SNAPSHOT_DIRS:
-            process_snapshot_dir(ext_dir)
+            process_snapshot_dir(ext_dir, daily_keep=2, weekly_keep=0, monthly_keep=0)
 
 
 if __name__ == "__main__":
