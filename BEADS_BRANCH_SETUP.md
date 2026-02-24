@@ -49,12 +49,14 @@ Run these commands from `~/.dotfiles`:
 mkdir -p .git/beads-worktrees
 git worktree add .git/beads-worktrees/beads-sync beads-sync
 
-# Enable sparse checkout IN THE WORKTREE (not the main repo)
-# The config.worktree file lives at .git/worktrees/beads-sync/config.worktree
-git -C .git/beads-worktrees/beads-sync config core.sparseCheckout true
-git -C .git/beads-worktrees/beads-sync config core.sparseCheckoutCone false
+# Write sparse checkout config directly to the worktree-local config file.
+# Do NOT use `git -C <worktree> config` — that writes to the main .git/config
+# instead of .git/worktrees/beads-sync/config.worktree, polluting the main repo.
+printf '[core]\n\tsparseCheckout = true\n\tsparseCheckoutCone = false\n' \
+    > .git/worktrees/beads-sync/config.worktree
 
 # Write the sparse checkout pattern
+mkdir -p .git/worktrees/beads-sync/info
 echo "/.beads/" > .git/worktrees/beads-sync/info/sparse-checkout
 
 # Apply sparse checkout (removes all files except .beads/ from the worktree)
@@ -136,7 +138,7 @@ as part of the standard dotfiles setup, ensuring everything stays consistent.
 ```bash
 bd --version               # bd binary works
 bd list                    # issues load from database
-bd sync --status           # shows: sync mode: git-portable, import branch: beads-sync
+bd sync                    # no errors
 git worktree list          # shows both main and beads-sync worktrees
 git -C ~/.dotfiles config merge.beads.driver  # outputs: bd merge %A %O %A %B
 ```
