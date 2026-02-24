@@ -60,5 +60,5 @@ with open(path, 'w') as f:
     # CLAUDE_CODE_OAUTH_TOKEN is set globally for SSH sessions but must not
     # override the credentials files that cc uses for per-profile auth.
     # env -u strips it from the child process without touching the shell global.
-    env -u CLAUDE_CODE_OAUTH_TOKEN command claude --allow-dangerously-skip-permissions $claude_args
+    env -u CLAUDE_CODE_OAUTH_TOKEN claude --allow-dangerously-skip-permissions $claude_args
 end
