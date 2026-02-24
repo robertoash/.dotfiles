@@ -50,12 +50,15 @@ with open(path, 'w') as f:
         # -lx: explicitly local scope so it never bleeds into or modifies a
         # wider-scoped CLAUDE_CONFIG_DIR; cleaned up automatically on return.
         set -lx CLAUDE_CONFIG_DIR $HOME/.claude-personal
-        command claude --allow-dangerously-skip-permissions $claude_args
     else
         # Explicitly clear CLAUDE_CONFIG_DIR so a stale value from any outer
         # scope (e.g. a global set by a previous crashed personal session)
         # doesn't silently redirect the work profile to the personal config.
         set -e CLAUDE_CONFIG_DIR
-        command claude --allow-dangerously-skip-permissions $claude_args
     end
+
+    # CLAUDE_CODE_OAUTH_TOKEN is set globally for SSH sessions but must not
+    # override the credentials files that cc uses for per-profile auth.
+    # env -u strips it from the child process without touching the shell global.
+    env -u CLAUDE_CODE_OAUTH_TOKEN command claude --allow-dangerously-skip-permissions $claude_args
 end
