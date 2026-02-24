@@ -73,6 +73,8 @@ task
 tealdeer
 thoth
 transmission
+user-dirs.dirs
+user-dirs.locale
 visidata
 w3m
 wallpapers
