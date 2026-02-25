@@ -1,7 +1,6 @@
 """Neovim dependency checker for dotfiles setup."""
 
 import shutil
-from pathlib import Path
 
 
 def check_nvim_dependencies():
@@ -14,19 +13,13 @@ def check_nvim_dependencies():
 
     # Core tools needed by nvim-treesitter and Mason
     core_tools = {
-        "tree-sitter": "Required by nvim-treesitter to compile parsers (tree-sitter-cli package)",
-        "gcc": "Required for compiling tree-sitter parsers",
+        "gcc": "Required by nvim-treesitter to compile parsers",
         "git": "Required for plugin management",
         "unzip": "Required for Mason to install LSPs/formatters",
         "tar": "Required for Mason to extract packages",
         "gzip": "Required for Mason to extract packages",
         "curl": "Required for downloading plugins and tools",
     }
-
-    # Check for clang (provides libclang needed by tree-sitter CLI)
-    clang_check = shutil.which("clang")
-    if not clang_check:
-        core_tools["clang"] = "Required by tree-sitter CLI (provides libclang)"
 
     # Tools for specific Mason packages
     mason_tools = {
@@ -63,11 +56,7 @@ def check_nvim_dependencies():
         for line in missing:
             if "nvim" not in line:
                 tool = line.split()[1]
-                # tree-sitter command comes from tree-sitter-cli package
-                if tool == "tree-sitter":
-                    packages.append("tree-sitter-cli")
-                else:
-                    packages.append(tool)
+                packages.append(tool)
 
         if packages:
             print("\n💡 Install with: sudo pacman -S " + " ".join(packages))
