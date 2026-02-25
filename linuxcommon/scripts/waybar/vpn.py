@@ -6,6 +6,7 @@ import os
 import subprocess
 import sys
 import threading
+import time
 
 import requests
 
@@ -157,23 +158,28 @@ def monitor_logs():
 
 def main():
     try:
-        # Get initial state
-        result = subprocess.run(
-            ["mullvad", "status"], capture_output=True, text=True, timeout=5
-        )
-        if result.returncode == 0:
-            state = "Connected" if "Connected" in result.stdout else "Disconnected"
-            logging.info(f"Initial VPN state: {state}")
-            build_output(state)
-        else:
-            logging.error(f"Failed to get initial state: {result.stderr}")
-            write_to_file(
-                {
-                    "text": "!",
-                    "tooltip": "Failed to get VPN state",
-                    "class": "vpn-error",
-                }
+        # Write loading state immediately so the status file always exists
+        # before mullvad status is queried (important at boot where the
+        # mullvad-daemon may not be ready yet).
+        write_to_file({"text": "󰇘", "tooltip": "Loading...", "class": "vpn-disconnected"})
+
+        # Retry mullvad status — daemon may take a moment to start after boot
+        state = None
+        for attempt in range(6):
+            result = subprocess.run(
+                ["mullvad", "status"], capture_output=True, text=True, timeout=5
             )
+            if result.returncode == 0:
+                state = "Connected" if "Connected" in result.stdout else "Disconnected"
+                logging.info(f"Initial VPN state: {state}")
+                build_output(state)
+                break
+            logging.warning(f"mullvad status attempt {attempt + 1} failed: {result.stderr.strip()}")
+            time.sleep(3)
+
+        if state is None:
+            logging.error("Could not get initial VPN state after retries")
+            write_to_file({"text": "!", "tooltip": "Failed to get VPN state", "class": "vpn-error"})
 
         monitor_logs()
     except Exception as e:
