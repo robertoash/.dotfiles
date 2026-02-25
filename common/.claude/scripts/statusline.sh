@@ -38,7 +38,7 @@ elif [[ "$EMAIL" == *"@gmail.com" ]]; then  EMAIL_COLOR="$TEAL"
 else                                         EMAIL_COLOR="$DIM"
 fi
 
-# Collapse home, then cap at 3 levels: ~/a/b/c/d -> ~/.../d
+# Collapse home, then compress deep paths: ~/a/b/c/d/e/f -> ~/a/.../e/f
 if [[ "$RAW_CWD" == "$HOME"* ]]; then
     CWD="~${RAW_CWD#$HOME}"
 else
@@ -46,7 +46,7 @@ else
 fi
 IFS='/' read -ra _PARTS <<< "$CWD"
 if (( ${#_PARTS[@]} > 4 )); then
-    CWD="${_PARTS[0]}/.../${_PARTS[-1]}"
+    CWD="${_PARTS[0]}/${_PARTS[1]}/.../${_PARTS[${#_PARTS[@]}-2]}/${_PARTS[${#_PARTS[@]}-1]}"
 fi
 
 # Progress bar (fixed width)
