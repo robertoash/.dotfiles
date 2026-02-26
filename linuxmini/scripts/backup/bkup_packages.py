@@ -141,7 +141,7 @@ def save_packages(filename):
 
             try:
                 packages = (
-                    subprocess.check_output(commands["retrieve"]).decode().splitlines()
+                    subprocess.check_output(commands["retrieve"], timeout=30).decode().splitlines()
                 )
                 for package in packages:
                     parsed = commands["parse"](package)
@@ -149,6 +149,8 @@ def save_packages(filename):
                         name, version = parsed
                         version = version or ""
                         f.write(f"{name}{SEPARATOR}{version}{SEPARATOR}{manager}\n")
+            except subprocess.TimeoutExpired:
+                print(f"Warning: Timed out retrieving packages for {manager}")
             except subprocess.CalledProcessError:
                 print(f"Warning: Failed to retrieve packages for {manager}")
 

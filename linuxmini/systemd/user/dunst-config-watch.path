@@ -2,7 +2,7 @@
 Description=Watch Dunst config for changes
 
 [Path]
-PathModified=/home/rash/.config/dunst/dunst.config
+PathModified=/home/rash/.config/dunst/dunstrc
 
 [Install]
 WantedBy=graphical-session.target
