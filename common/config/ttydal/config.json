@@ -57,5 +57,6 @@
       "toggle_switch": "space"
     }
   },
-  "vibrant_color": true
+  "vibrant_color": true,
+  "list_striping": false
 }
