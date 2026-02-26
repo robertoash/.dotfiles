@@ -1,5 +1,10 @@
 -- ~/.config/yazi/init.lua
 
+require("smart-filter"):setup({
+	auto_enter = false,
+	confirm_keys = { " " },
+})
+
 -- smart-enter plugin (unused now, burn plugin handles Enter)
 require("smart-enter"):setup({
 	open_multi = false,
