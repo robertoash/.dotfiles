@@ -27,10 +27,11 @@ else
     HOSTNAME=$(cat /etc/hostname)
 fi
 
-# Create secrets directory with secure permissions
+# Create secrets directory with secure permissions, clearing stale files first
 mkdir -p "$SECRETS_DIR"
 chmod 700 "$RUNTIME_DIR"
 chmod 700 "$SECRETS_DIR"
+find "$SECRETS_DIR" -maxdepth 1 -type f ! -name '.*' -delete
 
 # Set SOPS_AGE_KEY_FILE if not set
 if [ -z "${SOPS_AGE_KEY_FILE:-}" ]; then
