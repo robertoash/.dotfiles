@@ -1,3 +1,4 @@
+mod ansi;
 mod app;
 mod audit;
 mod collect;
@@ -7,7 +8,7 @@ use std::io;
 
 use app::{Action, App};
 use crossterm::{
-    event::{self, Event},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
@@ -33,33 +34,30 @@ fn main() -> anyhow::Result<()> {
              KEYS:\n\
              \x20 j/k ↑↓         Navigate\n\
              \x20 g/G            First / last\n\
-             \x20 <type>         Filter (any other key)\n\
-             \x20 Esc            Clear filter / quit\n\
+             \x20 /              Filter\n\
+             \x20 Esc            Exit filter / clear filter / quit\n\
+             \x20 i / Enter      Toggle preview\n\
              \x20 PgDn/PgUp      Scroll preview\n\
              \x20 Ctrl+D/U       Scroll preview\n\
+             \x20 Alt+h/l        Resize panes\n\
              \x20 r              Refresh\n\
              \x20 q              Quit\n"
         );
         return Ok(());
     }
 
-    let packages = load_packages(refresh);
-    if packages.is_empty() {
-        eprintln!("No CLI tools found.");
-        std::process::exit(1);
-    }
-
     let counts = audit::get_counts();
     let auditd_ok = audit::is_running();
 
-    if !auditd_ok && !stdout_mode {
-        // Warning will appear in the TUI preview pane
-    }
-    if !auditd_ok && stdout_mode {
-        eprintln!("warning: {}", audit::install_hint());
-    }
-
     if stdout_mode {
+        let packages = load_packages(refresh);
+        if packages.is_empty() {
+            eprintln!("No CLI tools found.");
+            std::process::exit(1);
+        }
+        if !auditd_ok {
+            eprintln!("warning: {}", audit::install_hint());
+        }
         for p in &packages {
             let uses = counts.get(&p.name).copied().unwrap_or(0);
             println!(
@@ -74,10 +72,16 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    // TUI
+    // TUI — start with cached packages, then refresh on entry inside the TUI
+    let packages = load_packages(refresh);
+    if packages.is_empty() {
+        eprintln!("No CLI tools found.");
+        std::process::exit(1);
+    }
+
     enable_raw_mode()?;
     let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen)?;
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
@@ -85,7 +89,7 @@ fn main() -> anyhow::Result<()> {
     let result = run_app(&mut terminal, &mut app);
 
     disable_raw_mode()?;
-    execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
+    execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
     terminal.show_cursor()?;
 
     result
@@ -95,53 +99,68 @@ fn run_app(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut App,
 ) -> anyhow::Result<()> {
+    // Always refresh on entry to show current state
+    do_refresh(terminal, app)?;
+
     loop {
         terminal.draw(|frame| ui::render(frame, app))?;
 
         match event::read()? {
             Event::Key(key) => match app.handle_key(key) {
                 Action::Quit => break,
-                Action::Refresh => {
-                    app.show_scanning = true;
-                    terminal.draw(|frame| ui::render(frame, app))?;
-                    app.show_scanning = false;
-
-                    let old_filter = app.filter.clone();
-                    let old_filter_active = app.filter_active;
-                    let pkgs = collect::build_packages();
-                    collect::save_cache(&pkgs);
-                    let counts = audit::get_counts();
-                    let auditd_ok = audit::is_running();
-                    *app = App::new(pkgs, counts, !auditd_ok);
-
-                    if !old_filter.is_empty() || old_filter_active {
-                        app.filter = old_filter;
-                        app.filter_active = old_filter_active;
-                        app.apply_filter();
-                    }
-                }
+                Action::Refresh => do_refresh(terminal, app)?,
                 Action::None => {}
             },
-            Event::Resize(_, _) => {} // redrawn on next iteration
+            Event::Mouse(mouse) => {
+                app.handle_mouse(mouse.kind);
+            }
+            Event::Resize(_, _) => {}
             _ => {}
         }
     }
     Ok(())
 }
 
+fn do_refresh(
+    terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
+    app: &mut App,
+) -> anyhow::Result<()> {
+    app.show_scanning = true;
+    terminal.draw(|frame| ui::render(frame, app))?;
+    app.show_scanning = false;
+
+    let old_filter = app.filter.clone();
+    let old_filter_active = app.filter_active;
+    let old_show_preview = app.show_preview;
+    let old_split_pct = app.split_pct;
+
+    let pkgs = collect::build_packages();
+    collect::save_cache(&pkgs);
+    let counts = audit::get_counts();
+    let auditd_ok = audit::is_running();
+    *app = App::new(pkgs, counts, !auditd_ok);
+
+    app.show_preview = old_show_preview;
+    app.split_pct = old_split_pct;
+
+    if !old_filter.is_empty() || old_filter_active {
+        app.filter = old_filter;
+        app.filter_active = old_filter_active;
+        app.apply_filter();
+    }
+
+    Ok(())
+}
+
 fn load_packages(force_refresh: bool) -> Vec<collect::Package> {
     if force_refresh {
-        eprintln!("Scanning installed packages...");
         let pkgs = collect::build_packages();
         collect::save_cache(&pkgs);
-        eprintln!("Found {} CLI tools.", pkgs.len());
         pkgs
     } else {
         collect::load_cache().unwrap_or_else(|| {
-            eprintln!("Scanning installed packages...");
             let pkgs = collect::build_packages();
             collect::save_cache(&pkgs);
-            eprintln!("Found {} CLI tools.", pkgs.len());
             pkgs
         })
     }

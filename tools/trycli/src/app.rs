@@ -1,4 +1,4 @@
-use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
+use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers, MouseEventKind};
 use ratatui::widgets::TableState;
 use std::collections::HashMap;
 use std::process::Command;
@@ -21,6 +21,7 @@ pub struct App {
     pub preview_scroll: u16,
     pub help_cache: HashMap<String, String>,
     pub show_scanning: bool,
+    pub show_preview: bool,
     pub auditd_warning: bool,
     pub split_pct: u16,
 }
@@ -42,6 +43,7 @@ impl App {
             preview_scroll: 0,
             help_cache: HashMap::new(),
             show_scanning: false,
+            show_preview: false,
             auditd_warning,
             split_pct: 65,
         }
@@ -75,30 +77,44 @@ impl App {
     }
 
     pub fn get_preview(&mut self) -> String {
-        let name = match self.selected_package() {
-            Some(p) => p.name.clone(),
+        let (name, source) = match self.selected_package() {
+            Some(p) => (p.name.clone(), p.source.clone()),
             None => return String::new(),
         };
         if let Some(cached) = self.help_cache.get(&name) {
             return cached.clone();
         }
+
         let output = Command::new(&name)
             .arg("--help")
             .env("PAGER", "cat")
             .env("MANPAGER", "cat")
             .env("GIT_PAGER", "cat")
+            .env("CLICOLOR_FORCE", "1")
+            .env("FORCE_COLOR", "1")
+            .env("TERM", "xterm-256color")
             .output();
-        let text = match output {
+
+        let help_text = match output {
             Ok(o) => {
                 let stdout = String::from_utf8_lossy(&o.stdout).into_owned();
                 let stderr = String::from_utf8_lossy(&o.stderr).into_owned();
-                let raw = if stdout.trim().is_empty() { stderr } else { stdout };
-                strip_ansi(&raw)
+                if stdout.trim().is_empty() { stderr } else { stdout }
             }
             Err(e) => format!("Could not run --help: {}", e),
         };
-        self.help_cache.insert(name, text.clone());
-        text
+
+        let info_text = get_package_info(&name, &source);
+
+        let full = if info_text.trim().is_empty() {
+            help_text
+        } else {
+            // Reset ANSI style before the separator so help colors don't bleed through
+            format!("{}\x1b[0m\n\n── Package Info ──────────────────────\n{}", help_text, info_text)
+        };
+
+        self.help_cache.insert(name, full.clone());
+        full
     }
 
     pub fn handle_key(&mut self, key: KeyEvent) -> Action {
@@ -109,47 +125,70 @@ impl App {
         let alt = key.modifiers.contains(KeyModifiers::ALT);
 
         match key.code {
-            // Always quit
             KeyCode::Char('c') if ctrl => return Action::Quit,
-            // Panel resize
             KeyCode::Char('h') if alt => {
                 self.split_pct = self.split_pct.saturating_sub(5).max(15);
             }
             KeyCode::Char('l') if alt => {
                 self.split_pct = (self.split_pct + 5).min(85);
             }
-            // Esc: exit filter mode (and clear filter), or quit in normal mode
+
+            // Esc:
+            //   filter mode → exit filter mode, keep filter (allow navigation of filtered list)
+            //   normal mode + filter → clear filter
+            //   normal mode, no filter → quit
             KeyCode::Esc => {
                 if self.filter_active {
-                    self.filter.clear();
                     self.filter_active = false;
+                } else if !self.filter.is_empty() {
+                    self.filter.clear();
                     self.apply_filter();
                 } else {
                     return Action::Quit;
                 }
             }
-            // Navigation always works in normal mode; also works in filter mode
+
+            // Enter: confirm filter (exit filter mode) or toggle preview
+            KeyCode::Enter => {
+                if self.filter_active {
+                    self.filter_active = false;
+                } else {
+                    self.toggle_preview();
+                }
+            }
+
+            // Navigation always works
             KeyCode::Char('j') | KeyCode::Down => self.next(),
             KeyCode::Char('k') | KeyCode::Up => self.prev(),
             KeyCode::Char('g') | KeyCode::Home if !self.filter_active => self.first(),
             KeyCode::Char('G') | KeyCode::End if !self.filter_active => self.last(),
+
             // Preview scroll
             KeyCode::Char('d') if ctrl => self.scroll_preview_down(),
             KeyCode::Char('u') if ctrl => self.scroll_preview_up(),
             KeyCode::PageDown => self.scroll_preview_down(),
             KeyCode::PageUp => self.scroll_preview_up(),
-            // Enter filter mode
+
+            // /: always enter filter mode fresh (clears existing filter)
             KeyCode::Char('/') if !self.filter_active => {
+                if !self.filter.is_empty() {
+                    self.filter.clear();
+                    self.apply_filter();
+                }
                 self.filter_active = true;
             }
+
             // Filter editing (only in filter mode)
             KeyCode::Backspace if self.filter_active => {
                 self.filter.pop();
                 self.apply_filter();
             }
-            // Single-key actions (only in normal mode)
+
+            // Normal-mode single-key actions
+            KeyCode::Char('i') if !self.filter_active => self.toggle_preview(),
             KeyCode::Char('q') if !self.filter_active => return Action::Quit,
             KeyCode::Char('r') if !self.filter_active => return Action::Refresh,
+
             // Characters go to filter only in filter mode
             KeyCode::Char(c) if self.filter_active => {
                 self.filter.push(c);
@@ -158,6 +197,31 @@ impl App {
             _ => {}
         }
         Action::None
+    }
+
+    pub fn handle_mouse(&mut self, kind: MouseEventKind) {
+        if !self.show_preview {
+            return;
+        }
+        match kind {
+            MouseEventKind::ScrollDown => {
+                self.preview_scroll = self.preview_scroll.saturating_add(3);
+            }
+            MouseEventKind::ScrollUp => {
+                self.preview_scroll = self.preview_scroll.saturating_sub(3);
+            }
+            _ => {}
+        }
+    }
+
+    fn toggle_preview(&mut self) {
+        if self.show_preview {
+            self.show_preview = false;
+        } else {
+            self.show_preview = true;
+            self.split_pct = 65;
+            self.preview_scroll = 0;
+        }
     }
 
     fn next(&mut self) {
@@ -178,11 +242,7 @@ impl App {
         }
         let i = match self.list_state.selected() {
             Some(i) => {
-                if i == 0 {
-                    self.filtered.len() - 1
-                } else {
-                    i - 1
-                }
+                if i == 0 { self.filtered.len() - 1 } else { i - 1 }
             }
             None => 0,
         };
@@ -205,35 +265,39 @@ impl App {
     }
 
     fn scroll_preview_down(&mut self) {
-        self.preview_scroll = self.preview_scroll.saturating_add(8);
+        if self.show_preview {
+            self.preview_scroll = self.preview_scroll.saturating_add(8);
+        }
     }
 
     fn scroll_preview_up(&mut self) {
-        self.preview_scroll = self.preview_scroll.saturating_sub(8);
+        if self.show_preview {
+            self.preview_scroll = self.preview_scroll.saturating_sub(8);
+        }
     }
 }
 
-fn strip_ansi(s: &str) -> String {
-    let mut out = String::with_capacity(s.len());
-    let mut in_esc = false;
-    let mut in_csi = false;
-    for ch in s.chars() {
-        if in_esc {
-            if ch == '[' {
-                in_csi = true;
-                in_esc = false;
-            } else {
-                in_esc = false;
-            }
-        } else if in_csi {
-            if ch.is_ascii_alphabetic() {
-                in_csi = false;
-            }
-        } else if ch == '\x1b' {
-            in_esc = true;
-        } else {
-            out.push(ch);
-        }
+fn get_package_info(name: &str, source: &str) -> String {
+    match source {
+        "pacman" => Command::new("pacman")
+            .args(["-Qi", name])
+            .output()
+            .ok()
+            .map(|o| {
+                let s = String::from_utf8_lossy(&o.stdout).into_owned();
+                if s.trim().is_empty() {
+                    String::from_utf8_lossy(&o.stderr).into_owned()
+                } else {
+                    s
+                }
+            })
+            .unwrap_or_default(),
+        "brew" => Command::new("brew")
+            .args(["info", name])
+            .output()
+            .ok()
+            .map(|o| String::from_utf8_lossy(&o.stdout).into_owned())
+            .unwrap_or_default(),
+        _ => String::new(),
     }
-    out
 }

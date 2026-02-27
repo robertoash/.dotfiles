@@ -6,6 +6,7 @@ use ratatui::{
     Frame,
 };
 
+use crate::ansi::ansi_to_text;
 use crate::app::App;
 
 const COL_DATE: u16 = 10;
@@ -13,13 +14,10 @@ const COL_NAME: u16 = 22;
 const COL_SOURCE: u16 = 8;
 const COL_USES: u16 = 5;
 
-// Alternating column backgrounds (applied per-cell so they survive row highlight)
 const COL_BG_DARK: Color = Color::Rgb(18, 18, 18);
 const COL_BG_LIGHT: Color = Color::Rgb(30, 30, 30);
 const COL_BG_SEL: Color = Color::Rgb(60, 60, 60);
 
-// Column indices: 0=DATE, 1=NAME, 2=SOURCE, 3=USES, 4=DESCRIPTION
-// Even index → dark, odd index → light
 fn col_bg(col: usize, is_selected: bool) -> Color {
     if is_selected {
         COL_BG_SEL
@@ -36,13 +34,17 @@ pub fn render(frame: &mut Frame, app: &mut App) {
     let [main_area, status_area] =
         Layout::vertical([Constraint::Min(0), Constraint::Length(1)]).areas(area);
 
-    let pct = app.split_pct;
-    let [list_area, preview_area] =
-        Layout::horizontal([Constraint::Percentage(pct), Constraint::Percentage(100 - pct)])
-            .areas(main_area);
+    if app.show_preview {
+        let pct = app.split_pct;
+        let [list_area, preview_area] =
+            Layout::horizontal([Constraint::Percentage(pct), Constraint::Percentage(100 - pct)])
+                .areas(main_area);
+        render_list(frame, app, list_area);
+        render_preview(frame, app, preview_area);
+    } else {
+        render_list(frame, app, main_area);
+    }
 
-    render_list(frame, app, list_area);
-    render_preview(frame, app, preview_area);
     render_status(frame, app, status_area);
 }
 
@@ -51,6 +53,8 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         " Scanning... ".to_string()
     } else if app.filter_active {
         format!(" /{}▌  ({}) ", app.filter, app.filtered.len())
+    } else if !app.filter.is_empty() {
+        format!(" /{}  ({}) ", app.filter, app.filtered.len())
     } else {
         format!(" Tools ({}) ", app.filtered.len())
     };
@@ -93,7 +97,6 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
                 .border_style(Style::default().fg(Color::DarkGray))
                 .title(Span::styled(title, Style::default().fg(Color::White))),
         )
-        // Only apply BOLD on selection; bg is handled per-cell to preserve column stripes
         .row_highlight_style(Style::default().add_modifier(Modifier::BOLD))
         .column_spacing(1);
 
@@ -127,15 +130,12 @@ fn make_row(p: &crate::collect::Package, uses: usize, is_selected: bool) -> Row<
 }
 
 fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
-    let (title, content) = if app.show_scanning {
-        (" Scanning packages... ".to_string(), String::new())
+    let title = if app.show_scanning {
+        " Scanning packages... ".to_string()
     } else {
-        let name = app
-            .selected_package()
+        app.selected_package()
             .map(|p| format!(" {} ", p.name))
-            .unwrap_or_else(|| " preview ".to_string());
-        let text = app.get_preview();
-        (name, text)
+            .unwrap_or_else(|| " preview ".to_string())
     };
 
     let warning = if app.auditd_warning {
@@ -144,18 +144,28 @@ fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect)
         String::new()
     };
 
-    let full_text = if content.is_empty() && !warning.is_empty() {
-        warning.trim_start_matches('\n').to_string()
+    let raw = if app.show_scanning {
+        String::new()
     } else {
-        format!("{}{}", content, warning)
+        let content = app.get_preview();
+        if content.is_empty() && !warning.is_empty() {
+            warning.trim_start_matches('\n').to_string()
+        } else {
+            format!("{}{}", content, warning)
+        }
     };
 
-    let paragraph = Paragraph::new(Text::raw(full_text))
+    let text: Text = ansi_to_text(&raw);
+
+    let paragraph = Paragraph::new(text)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .border_style(Style::default().fg(Color::DarkGray))
-                .title(Span::styled(title, Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))),
+                .title(Span::styled(
+                    title,
+                    Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+                )),
         )
         .wrap(Wrap { trim: false })
         .scroll((app.preview_scroll, 0));
@@ -168,39 +178,49 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         vec![
             ("j / k", " nav "),
             ("type", " filter "),
+            ("Enter", " confirm "),
+            ("Esc", " exit "),
+        ]
+    } else if !app.filter.is_empty() {
+        vec![
+            ("j / k", " nav "),
+            ("/", " re-filter "),
             ("Esc", " clear "),
+            ("i", if app.show_preview { " close " } else { " preview " }),
+            ("r", " refresh "),
+            ("q", " quit"),
+        ]
+    } else if app.show_preview {
+        vec![
+            ("j / k", " nav "),
+            ("/", " filter "),
+            ("i", " close "),
             ("PgDn/Up", " scroll "),
             ("Alt+hl", " resize "),
+            ("r", " refresh "),
+            ("q", " quit"),
         ]
     } else {
         vec![
             ("j / k", " nav "),
             ("/", " filter "),
-            ("Esc", " quit "),
-            ("PgDn/Up", " scroll "),
-            ("Alt+hl", " resize "),
+            ("i", " preview "),
             ("r", " refresh "),
             ("q", " quit"),
         ]
     };
 
     let key_bg = Color::Rgb(45, 45, 45);
-
     let mut spans = Vec::new();
     for (key, desc) in parts {
         spans.push(Span::styled(
             format!(" {} ", key),
-            Style::default()
-                .fg(Color::Yellow)
-                .bg(key_bg)
-                .add_modifier(Modifier::BOLD),
+            Style::default().fg(Color::Yellow).bg(key_bg).add_modifier(Modifier::BOLD),
         ));
         spans.push(Span::styled(desc, Style::default().fg(Color::White)));
     }
 
-    let line = Line::from(spans);
-    let paragraph = Paragraph::new(line);
-    frame.render_widget(paragraph, area);
+    frame.render_widget(Paragraph::new(Line::from(spans)), area);
 }
 
 fn center_str(s: &str, width: usize) -> String {
@@ -209,7 +229,7 @@ fn center_str(s: &str, width: usize) -> String {
         return s.to_string();
     }
     let pad_total = width - len;
-    let pad_left = (pad_total + 1) / 2; // round up so extra space goes on the right
+    let pad_left = (pad_total + 1) / 2;
     let pad_right = pad_total - pad_left;
     format!("{}{}{}", " ".repeat(pad_left), s, " ".repeat(pad_right))
 }
