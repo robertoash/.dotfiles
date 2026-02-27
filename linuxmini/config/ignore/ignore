@@ -1,5 +1,7 @@
 .TVLite
 .asdf
+.beads
+.bun
 .cache
 .cargo
 .cursor-tutor
@@ -8,6 +10,8 @@
 .docker
 .dotnet
 .eclipse
+.gk
+.gemini
 .git
 .gnupg
 .insightface
@@ -21,6 +25,7 @@
 .megaCmd
 .mozilla
 .mullvad
+.n8n
 .npm
 .nuget
 .pki
@@ -44,7 +49,6 @@ Google\ Drive/Temp
 Google\ Drive/Work
 Google\ Drive/cv_old
 Google\ Drive/job_search
-Insync
 MQTT-Explorer
 Mullvad\ VPN
 Slack
@@ -52,7 +56,6 @@ __pycache__
 build
 builds
 BraveSoftware/Brave-Browser
-dev/forks
 discord
 docker_data
 dough
@@ -61,11 +64,9 @@ go
 google-chrome
 libreoffice
 node_modules
-obsidian
 obsidian/vault/.obsidian
 pantry
 pulse
-recipes
 scripts/_cache
 scripts/_logs
 spotify

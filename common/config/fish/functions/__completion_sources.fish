@@ -31,9 +31,9 @@ function __completion_sources --argument-names type search_dir query_part
                 set -a candidates (builtin history search --max 500 --prefix cd 2>/dev/null | string replace -r '^cd\s+' '' | string match -r '^[~/.].*' | head -n 20)
             end
 
-            # Source 3: fd filesystem (shallow then deep)
-            set -a candidates (fd -Hi --no-ignore -t d --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore -t d --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            # Source 3: fd filesystem (shallow then deep, respects ~/.config/fd/ignore)
+            set -a candidates (fd -Hi -t d --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi -t d --min-depth 2 . "$search_dir" 2>/dev/null)
 
         case files
             # Source 1: fre frecency (files only)
@@ -46,9 +46,9 @@ function __completion_sources --argument-names type search_dir query_part
                 set -a candidates (builtin history search --max 500 2>/dev/null | string replace -r '^\S+\s+' '' | string match -r '^[~/.].*\.\w+$' | head -n 20)
             end
 
-            # Source 3: fd filesystem (shallow then deep)
-            set -a candidates (fd -Hi --no-ignore -t f --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore -t f --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            # Source 3: fd filesystem (shallow then deep, respects ~/.config/fd/ignore)
+            set -a candidates (fd -Hi -t f --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi -t f --min-depth 2 . "$search_dir" 2>/dev/null)
 
         case both
             # Source 1: frecency (both zoxide and fre)
@@ -64,9 +64,9 @@ function __completion_sources --argument-names type search_dir query_part
                 set -a candidates (builtin history search --max 500 2>/dev/null | string replace -r '^\S+\s+' '' | string match -r '^[~/.].*' | head -n 20)
             end
 
-            # Source 3: fd filesystem (shallow then deep, both types)
-            set -a candidates (fd -Hi --no-ignore --max-depth 1 . "$search_dir" 2>/dev/null)
-            set -a candidates (fd -Hi --no-ignore --min-depth 2 --max-depth 5 . "$search_dir" 2>/dev/null)
+            # Source 3: fd filesystem (shallow then deep, both types, respects ~/.config/fd/ignore)
+            set -a candidates (fd -Hi --max-depth 1 . "$search_dir" 2>/dev/null)
+            set -a candidates (fd -Hi --min-depth 2 . "$search_dir" 2>/dev/null)
     end
 
     # Deduplicate while preserving priority order (first occurrence wins)
