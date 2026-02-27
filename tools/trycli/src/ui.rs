@@ -7,7 +7,7 @@ use ratatui::{
 };
 
 use crate::ansi::ansi_to_text;
-use crate::app::App;
+use crate::app::{App, SortBy};
 
 const COL_DATE: u16 = 10;
 const COL_NAME: u16 = 22;
@@ -60,12 +60,17 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     };
 
     let header_style = Style::default().fg(Color::DarkGray).add_modifier(Modifier::BOLD);
+    let sort_style = Style::default().fg(Color::White).add_modifier(Modifier::BOLD);
+    let s = app.sort_by;
     let header = Row::new(vec![
-        Cell::from("DATE").style(header_style.bg(col_bg(0, false))),
-        Cell::from("NAME").style(header_style.bg(col_bg(1, false))),
-        Cell::from("SOURCE").style(header_style.bg(col_bg(2, false))),
-        Cell::from(Text::raw(center_str("USES", COL_USES as usize)))
-            .style(header_style.bg(col_bg(3, false))),
+        Cell::from(if s == SortBy::Date { "DATE ▼" } else { "DATE" })
+            .style(if s == SortBy::Date { sort_style } else { header_style }.bg(col_bg(0, false))),
+        Cell::from(if s == SortBy::Name { "NAME ▼" } else { "NAME" })
+            .style(if s == SortBy::Name { sort_style } else { header_style }.bg(col_bg(1, false))),
+        Cell::from(if s == SortBy::Source { "SRC ▼" } else { "SOURCE" })
+            .style(if s == SortBy::Source { sort_style } else { header_style }.bg(col_bg(2, false))),
+        Cell::from(Text::raw(center_str(if s == SortBy::Uses { "USE▼" } else { "USES" }, COL_USES as usize)))
+            .style(if s == SortBy::Uses { sort_style } else { header_style }.bg(col_bg(3, false))),
         Cell::from("DESCRIPTION").style(header_style.bg(col_bg(4, false))),
     ]);
 
@@ -129,9 +134,13 @@ fn make_row(p: &crate::collect::Package, uses: usize, is_selected: bool) -> Row<
     ])
 }
 
-fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
+fn render_preview(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     let title = if app.show_scanning {
         " Scanning packages... ".to_string()
+    } else if app.preview_loading {
+        app.selected_package()
+            .map(|p| format!(" {} — loading… ", p.name))
+            .unwrap_or_else(|| " loading… ".to_string())
     } else {
         app.selected_package()
             .map(|p| format!(" {} ", p.name))
@@ -192,7 +201,7 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         ]
     } else if app.show_preview {
         vec![
-            ("j / k", " nav "),
+            ("j/k/J/K", " nav "),
             ("/", " filter "),
             ("i", " close "),
             ("PgDn/Up", " scroll "),
@@ -202,9 +211,10 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         ]
     } else {
         vec![
-            ("j / k", " nav "),
+            ("j/k/J/K", " nav "),
             ("/", " filter "),
             ("i", " preview "),
+            (",d/n/s/u", " sort "),
             ("r", " refresh "),
             ("q", " quit"),
         ]

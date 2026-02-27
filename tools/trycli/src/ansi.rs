@@ -41,8 +41,15 @@ pub fn ansi_to_text(s: &str) -> Text<'static> {
         } else if bytes[i] == b'\r' {
             i += 1;
         } else {
-            buf.push(bytes[i] as char);
+            // Collect all bytes of the UTF-8 character before pushing.
+            let start = i;
             i += 1;
+            while i < bytes.len() && (bytes[i] & 0xC0) == 0x80 {
+                i += 1;
+            }
+            if let Ok(ch) = std::str::from_utf8(&bytes[start..i]) {
+                buf.push_str(ch);
+            }
         }
     }
 

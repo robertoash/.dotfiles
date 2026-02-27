@@ -18,17 +18,16 @@ pub fn get_counts() -> HashMap<String, usize> {
         return counts;
     }
 
-    let since = epoch_to_ausearch_date(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs()
-            .saturating_sub(30 * 86400),
-    );
+    let since = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        .saturating_sub(30 * 86400);
 
     let output = match Command::new("sudo")
-        .args(["ausearch", "-k", "trycli", "--raw", "-ts", &since])
-        .output() {
+        .args(["ausearch", "-k", "trycli", "--raw", "-ts", "this-month"])
+        .output()
+    {
         Ok(o) => o,
         Err(_) => return counts,
     };
@@ -36,28 +35,40 @@ pub fn get_counts() -> HashMap<String, usize> {
     // ausearch --raw outputs one record per line with no "----" separators.
     // Records belonging to the same event share the same serial number in
     // msg=audit(TIMESTAMP:SERIAL). We group by serial to detect event boundaries.
+    // We only count interactive (tty=pts) executions to exclude background noise.
     let raw = String::from_utf8_lossy(&output.stdout);
     let mut current_exe: Option<String> = None;
     let mut current_id: u64 = 0;
     let mut is_help = false;
+    let mut current_ts: u64 = 0;
+    let mut current_interactive = false;
 
     for line in raw.lines() {
         // "----" may appear in non-raw ausearch output; handle it defensively.
         if line == "----" {
-            commit(&mut current_exe, &mut is_help, &mut counts);
+            maybe_commit(&mut current_exe, &mut is_help, &mut counts, current_ts, since, current_interactive);
             current_id = 0;
+            current_ts = 0;
+            current_interactive = false;
             continue;
         }
 
         // New event when serial number changes.
         if let Some(id) = event_serial(line) {
             if id != current_id {
-                commit(&mut current_exe, &mut is_help, &mut counts);
+                maybe_commit(&mut current_exe, &mut is_help, &mut counts, current_ts, since, current_interactive);
                 current_id = id;
+                current_ts = 0;
+                current_interactive = false;
             }
         }
 
         if line.starts_with("type=SYSCALL") {
+            current_ts = event_timestamp(line);
+            // Only count interactive terminal sessions (tty=pts/N), not daemons.
+            // Only count successful execs — failed ones mean the process was probing
+            // for a binary's existence, not actually launching it.
+            current_interactive = line.contains(" tty=pts") && line.contains(" success=yes ");
             for token in line.split_whitespace() {
                 if let Some(raw_exe) = token.strip_prefix("exe=") {
                     let name = Path::new(raw_exe.trim_matches('"'))
@@ -89,17 +100,42 @@ pub fn get_counts() -> HashMap<String, usize> {
         }
     }
 
-    commit(&mut current_exe, &mut is_help, &mut counts);
+    maybe_commit(&mut current_exe, &mut is_help, &mut counts, current_ts, since, current_interactive);
     counts
 }
 
-fn commit(exe: &mut Option<String>, is_help: &mut bool, counts: &mut HashMap<String, usize>) {
-    if let Some(name) = exe.take() {
-        if !*is_help {
-            *counts.entry(name).or_insert(0) += 1;
+fn maybe_commit(
+    exe: &mut Option<String>,
+    is_help: &mut bool,
+    counts: &mut HashMap<String, usize>,
+    ts: u64,
+    since: u64,
+    interactive: bool,
+) {
+    if interactive && ts >= since {
+        if let Some(name) = exe.take() {
+            if !*is_help {
+                *counts.entry(name).or_insert(0) += 1;
+            }
         }
+    } else {
+        exe.take();
     }
     *is_help = false;
+}
+
+/// Extract the Unix timestamp from `msg=audit(TIMESTAMP.ms:SERIAL):`.
+fn event_timestamp(line: &str) -> u64 {
+    let start = match line.find("msg=audit(") {
+        Some(p) => p + 10,
+        None => return 0,
+    };
+    let rest = &line[start..];
+    let dot = match rest.find('.') {
+        Some(p) => p,
+        None => return 0,
+    };
+    rest[..dot].parse().unwrap_or(0)
 }
 
 /// Extract the audit event serial number from `msg=audit(TIMESTAMP:SERIAL):`.
@@ -112,25 +148,6 @@ fn event_serial(line: &str) -> Option<u64> {
         return None;
     }
     rest[colon + 1..end].parse().ok()
-}
-
-/// Format a Unix epoch as MM/DD/YYYY HH:MM:SS for ausearch -ts.
-fn epoch_to_ausearch_date(epoch: u64) -> String {
-    let days = (epoch / 86400) as i64;
-    let jd = days + 2440588;
-    let a = jd + 32044;
-    let b = (4 * a + 3) / 146097;
-    let c = a - (146097 * b) / 4;
-    let d = (4 * c + 3) / 1461;
-    let e = c - (1461 * d) / 4;
-    let m = (5 * e + 2) / 153;
-    let day = e - (153 * m + 2) / 5 + 1;
-    let month = m + 3 - 12 * (m / 10);
-    let year = 100 * b + d - 4800 + m / 10;
-    let h = (epoch % 86400) / 3600;
-    let min = (epoch % 3600) / 60;
-    let sec = epoch % 60;
-    format!("{:02}/{:02}/{:04} {:02}:{:02}:{:02}", month, day, year, h, min, sec)
 }
 
 fn has_ausearch() -> bool {

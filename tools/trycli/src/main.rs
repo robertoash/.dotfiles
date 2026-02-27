@@ -105,18 +105,24 @@ fn run_app(
     loop {
         terminal.draw(|frame| ui::render(frame, app))?;
 
-        match event::read()? {
-            Event::Key(key) => match app.handle_key(key) {
-                Action::Quit => break,
-                Action::Refresh => do_refresh(terminal, app)?,
-                Action::None => {}
-            },
-            Event::Mouse(mouse) => {
-                app.handle_mouse(mouse.kind);
+        // Poll with a short timeout so background preview threads can deliver results.
+        if event::poll(std::time::Duration::from_millis(50))? {
+            match event::read()? {
+                Event::Key(key) => match app.handle_key(key) {
+                    Action::Quit => break,
+                    Action::Refresh => do_refresh(terminal, app)?,
+                    Action::None => {}
+                },
+                Event::Mouse(mouse) => {
+                    app.handle_mouse(mouse.kind);
+                }
+                Event::Resize(_, _) => {}
+                _ => {}
             }
-            Event::Resize(_, _) => {}
-            _ => {}
         }
+
+        // Check if the background preview fetch finished and redraw if so.
+        app.poll_preview();
     }
     Ok(())
 }
@@ -133,6 +139,7 @@ fn do_refresh(
     let old_filter_active = app.filter_active;
     let old_show_preview = app.show_preview;
     let old_split_pct = app.split_pct;
+    let old_sort_by = app.sort_by;
 
     let pkgs = collect::build_packages();
     collect::save_cache(&pkgs);
@@ -142,12 +149,17 @@ fn do_refresh(
 
     app.show_preview = old_show_preview;
     app.split_pct = old_split_pct;
+    app.sort_by = old_sort_by;
+    app.apply_sort();
 
     if !old_filter.is_empty() || old_filter_active {
         app.filter = old_filter;
         app.filter_active = old_filter_active;
         app.apply_filter();
     }
+
+    // Start prefetching previews for the first 20 visible items
+    app.prefetch_previews(20);
 
     Ok(())
 }
