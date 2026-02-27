@@ -186,21 +186,30 @@ def build_packages():
     return all_packages
 
 
-# --- Atuin usage counts ---
+# --- Usage counts via auditd execve tracking ---
 
-def get_atuin_counts():
-    if not shutil.which("atuin"):
+def get_audit_counts():
+    """Count binary invocations from auditd execve log (key=trycli).
+    Falls back to empty counts if auditd is not available."""
+    if not shutil.which("ausearch"):
         return Counter()
     try:
         result = subprocess.run(
-            ["atuin", "history", "list", "--cmd-only"],
-            capture_output=True, text=True, timeout=10
+            ["ausearch", "-k", "trycli", "--raw"],
+            capture_output=True, text=True, timeout=15
         )
         counts = Counter()
         for line in result.stdout.splitlines():
-            cmd = line.strip().split()[0] if line.strip() else ""
-            if cmd:
-                counts[cmd] += 1
+            # EXECVE records contain a0="<binary>" or a0=<hex>
+            # SYSCALL records contain exe="/path/to/binary"
+            if line.startswith("type=SYSCALL") and "exe=" in line:
+                for part in line.split():
+                    if part.startswith("exe="):
+                        exe = part[4:].strip('"')
+                        name = Path(exe).name
+                        if name:
+                            counts[name] += 1
+                        break
         return counts
     except (subprocess.TimeoutExpired, Exception):
         return Counter()
@@ -296,12 +305,12 @@ def main():
         print(f"Found {len(packages)} CLI tools.", file=sys.stderr)
 
     if args.stdout:
-        counts = get_atuin_counts()
+        counts = get_audit_counts()
         for p in packages:
             print(format_line(p, counts))
         return
 
-    counts = get_atuin_counts()
+    counts = get_audit_counts()
     run_fzf(packages, counts)
 
 

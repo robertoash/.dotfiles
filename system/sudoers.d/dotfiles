@@ -48,3 +48,9 @@ rash ALL = NOPASSWD: /usr/bin/nft -f /etc/nftables.conf
 
 # ClamAV database updates (used by topgrade)
 rash ALL = NOPASSWD: /usr/bin/freshclam
+
+# auditd setup for trycli usage tracking
+rash ALL = NOPASSWD: /usr/bin/install -m 0640 *
+rash ALL = NOPASSWD: /usr/bin/systemctl enable auditd
+rash ALL = NOPASSWD: /usr/bin/systemctl start auditd
+rash ALL = NOPASSWD: /usr/bin/augenrules --load

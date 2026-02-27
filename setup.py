@@ -26,6 +26,7 @@ from merge_setup import (
     merge_machine_specific,
     prepare_hierarchical_merge,
 )
+from auditd_setup import setup_auditd
 from nftables_setup import setup_nftables
 from pacman_setup import setup_pacman
 from pam_setup import setup_pam
@@ -105,6 +106,10 @@ if machine_config["is_linux"]:
 # Step 6.4.1: Setup nftables firewall configuration (Linux only)
 if machine_config["is_linux"]:
     setup_nftables(dotfiles_dir, hostname)
+
+# Step 6.4.2b: Setup auditd for trycli usage tracking (Linux only)
+if machine_config["is_linux"]:
+    setup_auditd(dotfiles_dir)
 
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)

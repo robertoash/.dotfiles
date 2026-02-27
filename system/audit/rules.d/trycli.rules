@@ -1,0 +1,5 @@
+# Track all command executions for trycli usage counting.
+# Filters to login sessions of regular users (auid >= 1000),
+# excluding kernel/unset auid (4294967295 = AUDIT_UID_UNSET).
+-a always,exit -F arch=b64 -S execve -F auid>=1000 -F auid!=4294967295 -k trycli
+-a always,exit -F arch=b32 -S execve -F auid>=1000 -F auid!=4294967295 -k trycli
