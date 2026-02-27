@@ -119,7 +119,7 @@ fn make_row(p: &crate::collect::Package, uses: usize, is_selected: bool) -> Row<
         Cell::from(truncate(&p.name, COL_NAME as usize).to_string())
             .style(Style::default().fg(Color::White).bg(col_bg(1, is_selected))),
         Cell::from(truncate(&p.source, COL_SOURCE as usize).to_string())
-            .style(Style::default().fg(Color::Cyan).bg(col_bg(2, is_selected))),
+            .style(Style::default().fg(Color::DarkGray).bg(col_bg(2, is_selected))),
         Cell::from(uses_str).style(uses_style),
         Cell::from(p.description.clone())
             .style(Style::default().fg(Color::DarkGray).bg(col_bg(4, is_selected))),
