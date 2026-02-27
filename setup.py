@@ -28,6 +28,7 @@ from merge_setup import (
 )
 from auditd_setup import setup_auditd
 from nftables_setup import setup_nftables
+from tools_setup import setup_tools
 from pacman_setup import setup_pacman
 from pam_setup import setup_pam
 from security_setup import setup_security
@@ -160,6 +161,9 @@ backup_configs(dotfiles_dir, hostname)
 
 # Step 12: Apply git index flags for files with spurious changes
 apply_git_index_flags(dotfiles_dir)
+
+# Step 13: Build and install Rust tools
+setup_tools(dotfiles_dir)
 
 # Print warnings about existing valid symlinks if any
 if symlink_warnings:
