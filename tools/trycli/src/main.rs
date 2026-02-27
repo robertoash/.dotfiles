@@ -31,12 +31,13 @@ fn main() -> anyhow::Result<()> {
              \x20 -h, --help      Show this help\n\
              \n\
              KEYS:\n\
-             \x20 ↑↓ / jk        Navigate list\n\
-             \x20 /              Start filtering\n\
+             \x20 j/k ↑↓         Navigate\n\
+             \x20 g/G            First / last\n\
+             \x20 <type>         Filter (any other key)\n\
              \x20 Esc            Clear filter / quit\n\
              \x20 PgDn/PgUp      Scroll preview\n\
-             \x20 Ctrl+D/U       Scroll preview (vim-style)\n\
-             \x20 r              Refresh package list\n\
+             \x20 Ctrl+D/U       Scroll preview\n\
+             \x20 r              Refresh\n\
              \x20 q              Quit\n"
         );
         return Ok(());
@@ -114,7 +115,6 @@ fn run_app(
 
                     if !old_filter.is_empty() {
                         app.filter = old_filter;
-                        app.filter_active = true;
                         app.apply_filter();
                     }
                 }

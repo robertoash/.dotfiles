@@ -17,7 +17,6 @@ pub struct App {
     pub filtered: Vec<usize>,
     pub list_state: ListState,
     pub filter: String,
-    pub filter_active: bool,
     pub preview_scroll: u16,
     pub help_cache: HashMap<String, String>,
     pub show_scanning: bool,
@@ -37,7 +36,6 @@ impl App {
             filtered,
             list_state,
             filter: String::new(),
-            filter_active: false,
             preview_scroll: 0,
             help_cache: HashMap::new(),
             show_scanning: false,
@@ -103,50 +101,44 @@ impl App {
         if key.kind != KeyEventKind::Press {
             return Action::None;
         }
-        if key.code == KeyCode::Char('c') && key.modifiers.contains(KeyModifiers::CONTROL) {
-            return Action::Quit;
-        }
+        let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
 
-        if self.filter_active {
-            match key.code {
-                KeyCode::Esc => {
+        match key.code {
+            // Always quit
+            KeyCode::Char('c') if ctrl => return Action::Quit,
+            // Esc: clear filter if non-empty, otherwise quit
+            KeyCode::Esc => {
+                if !self.filter.is_empty() {
                     self.filter.clear();
-                    self.filter_active = false;
                     self.apply_filter();
+                } else {
+                    return Action::Quit;
                 }
-                KeyCode::Backspace => {
-                    self.filter.pop();
-                    self.apply_filter();
-                }
-                KeyCode::Down => self.next(),
-                KeyCode::Up => self.prev(),
-                KeyCode::PageDown => self.scroll_preview_down(),
-                KeyCode::PageUp => self.scroll_preview_up(),
-                KeyCode::Char(c) => {
-                    self.filter.push(c);
-                    self.apply_filter();
-                }
-                _ => {}
             }
-        } else {
-            match key.code {
-                KeyCode::Char('q') | KeyCode::Esc => return Action::Quit,
-                KeyCode::Char('/') => self.filter_active = true,
-                KeyCode::Char('r') => return Action::Refresh,
-                KeyCode::Down | KeyCode::Char('j') => self.next(),
-                KeyCode::Up | KeyCode::Char('k') => self.prev(),
-                KeyCode::Char('g') | KeyCode::Home => self.first(),
-                KeyCode::Char('G') | KeyCode::End => self.last(),
-                KeyCode::PageDown => self.scroll_preview_down(),
-                KeyCode::PageUp => self.scroll_preview_up(),
-                KeyCode::Char('d') if key.modifiers.contains(KeyModifiers::CONTROL) => {
-                    self.scroll_preview_down();
-                }
-                KeyCode::Char('u') if key.modifiers.contains(KeyModifiers::CONTROL) => {
-                    self.scroll_preview_up();
-                }
-                _ => {}
+            // vim navigation — always active
+            KeyCode::Char('j') | KeyCode::Down => self.next(),
+            KeyCode::Char('k') | KeyCode::Up => self.prev(),
+            KeyCode::Char('g') | KeyCode::Home => self.first(),
+            KeyCode::Char('G') | KeyCode::End => self.last(),
+            // preview scroll
+            KeyCode::Char('d') if ctrl => self.scroll_preview_down(),
+            KeyCode::Char('u') if ctrl => self.scroll_preview_up(),
+            KeyCode::PageDown => self.scroll_preview_down(),
+            KeyCode::PageUp => self.scroll_preview_up(),
+            // filter editing
+            KeyCode::Backspace => {
+                self.filter.pop();
+                self.apply_filter();
             }
+            // reserved single-key actions (only when filter is empty)
+            KeyCode::Char('q') if self.filter.is_empty() => return Action::Quit,
+            KeyCode::Char('r') if self.filter.is_empty() => return Action::Refresh,
+            // everything else goes to the filter
+            KeyCode::Char(c) => {
+                self.filter.push(c);
+                self.apply_filter();
+            }
+            _ => {}
         }
         Action::None
     }

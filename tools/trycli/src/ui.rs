@@ -33,8 +33,8 @@ pub fn render(frame: &mut Frame, app: &mut App) {
 fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let title = if app.show_scanning {
         " Scanning... ".to_string()
-    } else if app.filter_active || !app.filter.is_empty() {
-        format!(" / {}▌ ({}) ", app.filter, app.filtered.len())
+    } else if !app.filter.is_empty() {
+        format!(" {}▌  ({}) ", app.filter, app.filtered.len())
     } else {
         format!(" Tools ({}) ", app.filtered.len())
     };
@@ -131,23 +131,15 @@ fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect)
     frame.render_widget(paragraph, area);
 }
 
-fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
-    let parts: Vec<(&str, &str)> = if app.filter_active {
-        vec![
-            ("Type", " to filter  "),
-            ("↑↓", " navigate  "),
-            ("Esc", " clear  "),
-            ("PgDn/PgUp", " scroll preview"),
-        ]
-    } else {
-        vec![
-            ("↑↓/jk", " navigate  "),
-            ("/", " filter  "),
-            ("PgDn/PgUp", " scroll  "),
-            ("r", " refresh  "),
-            ("q", " quit"),
-        ]
-    };
+fn render_status(frame: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
+    let parts: Vec<(&str, &str)> = vec![
+        ("jk", " navigate  "),
+        ("type", " filter  "),
+        ("Esc", " clear  "),
+        ("PgDn/PgUp", " scroll  "),
+        ("r", " refresh  "),
+        ("q", " quit"),
+    ];
 
     let mut spans = Vec::new();
     for (key, desc) in parts {
