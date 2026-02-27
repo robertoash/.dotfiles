@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 use std::process::Command;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 pub fn is_running() -> bool {
     Command::new("systemctl")
@@ -17,7 +18,17 @@ pub fn get_counts() -> HashMap<String, usize> {
         return counts;
     }
 
-    let output = match Command::new("sudo").args(["ausearch", "-k", "trycli", "--raw"]).output() {
+    let since = epoch_to_ausearch_date(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs()
+            .saturating_sub(30 * 86400),
+    );
+
+    let output = match Command::new("sudo")
+        .args(["ausearch", "-k", "trycli", "--raw", "-ts", &since])
+        .output() {
         Ok(o) => o,
         Err(_) => return counts,
     };
@@ -101,6 +112,25 @@ fn event_serial(line: &str) -> Option<u64> {
         return None;
     }
     rest[colon + 1..end].parse().ok()
+}
+
+/// Format a Unix epoch as MM/DD/YYYY HH:MM:SS for ausearch -ts.
+fn epoch_to_ausearch_date(epoch: u64) -> String {
+    let days = (epoch / 86400) as i64;
+    let jd = days + 2440588;
+    let a = jd + 32044;
+    let b = (4 * a + 3) / 146097;
+    let c = a - (146097 * b) / 4;
+    let d = (4 * c + 3) / 1461;
+    let e = c - (1461 * d) / 4;
+    let m = (5 * e + 2) / 153;
+    let day = e - (153 * m + 2) / 5 + 1;
+    let month = m + 3 - 12 * (m / 10);
+    let year = 100 * b + d - 4800 + m / 10;
+    let h = (epoch % 86400) / 3600;
+    let min = (epoch % 3600) / 60;
+    let sec = epoch % 60;
+    format!("{:02}/{:02}/{:04} {:02}:{:02}:{:02}", month, day, year, h, min, sec)
 }
 
 fn has_ausearch() -> bool {
