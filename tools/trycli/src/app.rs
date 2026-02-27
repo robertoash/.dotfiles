@@ -21,6 +21,7 @@ pub struct App {
     pub help_cache: HashMap<String, String>,
     pub show_scanning: bool,
     pub auditd_warning: bool,
+    pub split_pct: u16,
 }
 
 impl App {
@@ -40,6 +41,7 @@ impl App {
             help_cache: HashMap::new(),
             show_scanning: false,
             auditd_warning,
+            split_pct: 38,
         }
     }
 
@@ -102,10 +104,18 @@ impl App {
             return Action::None;
         }
         let ctrl = key.modifiers.contains(KeyModifiers::CONTROL);
+        let alt = key.modifiers.contains(KeyModifiers::ALT);
 
         match key.code {
             // Always quit
             KeyCode::Char('c') if ctrl => return Action::Quit,
+            // Panel resize
+            KeyCode::Char('h') if alt => {
+                self.split_pct = self.split_pct.saturating_sub(5).max(15);
+            }
+            KeyCode::Char('l') if alt => {
+                self.split_pct = (self.split_pct + 5).min(85);
+            }
             // Esc: clear filter if non-empty, otherwise quit
             KeyCode::Esc => {
                 if !self.filter.is_empty() {

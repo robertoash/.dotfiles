@@ -21,8 +21,9 @@ pub fn render(frame: &mut Frame, app: &mut App) {
         Layout::vertical([Constraint::Min(0), Constraint::Length(1)]).areas(area);
 
     // Body: list pane (left) + preview pane (right)
+    let pct = app.split_pct;
     let [list_area, preview_area] =
-        Layout::horizontal([Constraint::Percentage(38), Constraint::Percentage(62)])
+        Layout::horizontal([Constraint::Percentage(pct), Constraint::Percentage(100 - pct)])
             .areas(main_area);
 
     render_list(frame, app, list_area);
@@ -133,11 +134,12 @@ fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect)
 
 fn render_status(frame: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
     let parts: Vec<(&str, &str)> = vec![
-        ("jk", " navigate  "),
-        ("type", " filter  "),
-        ("Esc", " clear  "),
-        ("PgDn/PgUp", " scroll  "),
-        ("r", " refresh  "),
+        ("jk", " nav "),
+        ("type", " filter "),
+        ("Esc", " clear "),
+        ("PgDn/Up", " scroll "),
+        ("Alt+hl", " resize "),
+        ("r", " refresh "),
         ("q", " quit"),
     ];
 
@@ -147,7 +149,7 @@ fn render_status(frame: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
             format!(" {} ", key),
             Style::default().fg(Color::Black).bg(Color::DarkGray).add_modifier(Modifier::BOLD),
         ));
-        spans.push(Span::styled(desc, Style::default().fg(Color::DarkGray)));
+        spans.push(Span::styled(desc, Style::default().fg(Color::Gray)));
     }
 
     let line = Line::from(spans);
