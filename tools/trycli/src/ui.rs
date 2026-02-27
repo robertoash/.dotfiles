@@ -2,7 +2,7 @@ use ratatui::{
     layout::{Constraint, Layout},
     style::{Color, Modifier, Style},
     text::{Line, Span, Text},
-    widgets::{Block, Borders, List, ListItem, Paragraph, Wrap},
+    widgets::{Block, Borders, Cell, Paragraph, Row, Table, Wrap},
     Frame,
 };
 
@@ -11,7 +11,7 @@ use crate::app::App;
 const COL_DATE: u16 = 10;
 const COL_NAME: u16 = 22;
 const COL_SOURCE: u16 = 8;
-const COL_USES: u16 = 6;
+const COL_USES: u16 = 5;
 
 pub fn render(frame: &mut Frame, app: &mut App) {
     let area = frame.area();
@@ -34,65 +34,77 @@ pub fn render(frame: &mut Frame, app: &mut App) {
 fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let title = if app.show_scanning {
         " Scanning... ".to_string()
-    } else if !app.filter.is_empty() {
-        format!(" {}▌  ({}) ", app.filter, app.filtered.len())
+    } else if app.filter_active {
+        format!(" /{}▌  ({}) ", app.filter, app.filtered.len())
     } else {
         format!(" Tools ({}) ", app.filtered.len())
     };
 
-    let list_width = area.width.saturating_sub(2) as usize; // subtract borders
+    let header = Row::new(vec![
+        Cell::from("DATE"),
+        Cell::from("NAME"),
+        Cell::from("SOURCE"),
+        Cell::from("USES"),
+        Cell::from("DESCRIPTION"),
+    ])
+    .style(
+        Style::default()
+            .fg(Color::DarkGray)
+            .add_modifier(Modifier::BOLD),
+    );
 
-    let items: Vec<ListItem> = app
+    let rows: Vec<Row> = app
         .filtered
         .iter()
         .map(|&idx| {
             let p = &app.packages[idx];
             let uses = app.counts.get(&p.name).copied().unwrap_or(0);
-            make_list_item(p, uses, list_width)
+            make_row(p, uses)
         })
         .collect();
 
-    let list = List::new(items)
+    let widths = [
+        Constraint::Length(COL_DATE),
+        Constraint::Length(COL_NAME),
+        Constraint::Length(COL_SOURCE),
+        Constraint::Length(COL_USES),
+        Constraint::Min(0),
+    ];
+
+    let table = Table::new(rows, widths)
+        .header(header)
         .block(
             Block::default()
                 .borders(Borders::ALL)
                 .border_style(Style::default().fg(Color::DarkGray))
                 .title(Span::styled(title, Style::default().fg(Color::White))),
         )
-        .highlight_style(
+        .row_highlight_style(
             Style::default()
                 .bg(Color::DarkGray)
                 .add_modifier(Modifier::BOLD),
-        );
+        )
+        .column_spacing(1);
 
-    frame.render_stateful_widget(list, area, &mut app.list_state);
+    frame.render_stateful_widget(table, area, &mut app.list_state);
 }
 
-fn make_list_item(p: &crate::collect::Package, uses: usize, width: usize) -> ListItem<'static> {
-    let date_str = format!("{:<width$} ", p.date_str(), width = COL_DATE as usize);
-    let name_str = format!("{:<width$} ", truncate(&p.name, COL_NAME as usize), width = COL_NAME as usize);
-    let source_str = format!("{:<width$} ", truncate(&p.source, COL_SOURCE as usize), width = COL_SOURCE as usize);
-    let uses_str = format!("{:>width$} ", uses, width = COL_USES as usize);
-
-    let fixed_len = date_str.len() + name_str.len() + source_str.len() + uses_str.len();
-    let desc_width = width.saturating_sub(fixed_len);
-    let desc_str = truncate(&p.description, desc_width).to_string();
-
+fn make_row(p: &crate::collect::Package, uses: usize) -> Row<'static> {
     let uses_style = if uses > 0 {
         Style::default().fg(Color::Green)
     } else {
         Style::default().fg(Color::DarkGray)
     };
 
-    let line = Line::from(vec![
-        Span::styled(date_str, Style::default().fg(Color::DarkGray)),
-        Span::styled(name_str, Style::default().fg(Color::White)),
-        Span::styled(source_str, Style::default().fg(Color::Cyan)),
-        Span::styled(uses_str, uses_style),
-        Span::styled(desc_str, Style::default().fg(Color::DarkGray)),
-    ]);
-
-    ListItem::new(line)
+    Row::new(vec![
+        Cell::from(p.date_str()).style(Style::default().fg(Color::DarkGray)),
+        Cell::from(truncate(&p.name, COL_NAME as usize).to_string())
+            .style(Style::default().fg(Color::White)),
+        Cell::from(truncate(&p.source, COL_SOURCE as usize).to_string())
+            .style(Style::default().fg(Color::Cyan)),
+        Cell::from(if uses > 0 { uses.to_string() } else { String::new() }).style(uses_style),
+        Cell::from(p.description.clone()).style(Style::default().fg(Color::DarkGray)),
+    ])
 }
 
 fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
@@ -132,16 +144,26 @@ fn render_preview(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect)
     frame.render_widget(paragraph, area);
 }
 
-fn render_status(frame: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
-    let parts: Vec<(&str, &str)> = vec![
-        ("jk", " nav "),
-        ("type", " filter "),
-        ("Esc", " clear "),
-        ("PgDn/Up", " scroll "),
-        ("Alt+hl", " resize "),
-        ("r", " refresh "),
-        ("q", " quit"),
-    ];
+fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
+    let parts: Vec<(&str, &str)> = if app.filter_active {
+        vec![
+            ("j / k", " nav "),
+            ("type", " filter "),
+            ("Esc", " clear "),
+            ("PgDn/Up", " scroll "),
+            ("Alt+hl", " resize "),
+        ]
+    } else {
+        vec![
+            ("j / k", " nav "),
+            ("/", " filter "),
+            ("Esc", " quit "),
+            ("PgDn/Up", " scroll "),
+            ("Alt+hl", " resize "),
+            ("r", " refresh "),
+            ("q", " quit"),
+        ]
+    };
 
     let mut spans = Vec::new();
     for (key, desc) in parts {

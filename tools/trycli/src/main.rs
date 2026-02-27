@@ -107,14 +107,16 @@ fn run_app(
                     app.show_scanning = false;
 
                     let old_filter = app.filter.clone();
+                    let old_filter_active = app.filter_active;
                     let pkgs = collect::build_packages();
                     collect::save_cache(&pkgs);
                     let counts = audit::get_counts();
                     let auditd_ok = audit::is_running();
                     *app = App::new(pkgs, counts, !auditd_ok);
 
-                    if !old_filter.is_empty() {
+                    if !old_filter.is_empty() || old_filter_active {
                         app.filter = old_filter;
+                        app.filter_active = old_filter_active;
                         app.apply_filter();
                     }
                 }

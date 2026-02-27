@@ -54,3 +54,4 @@ rash ALL = NOPASSWD: /usr/bin/install -m 0640 *
 rash ALL = NOPASSWD: /usr/bin/systemctl enable auditd
 rash ALL = NOPASSWD: /usr/bin/systemctl start auditd
 rash ALL = NOPASSWD: /usr/bin/augenrules --load
+rash ALL = NOPASSWD: /usr/bin/ausearch -k trycli --raw

@@ -1,5 +1,5 @@
 use crossterm::event::{KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
-use ratatui::widgets::ListState;
+use ratatui::widgets::TableState;
 use std::collections::HashMap;
 use std::process::Command;
 
@@ -15,8 +15,9 @@ pub struct App {
     pub packages: Vec<Package>,
     pub counts: HashMap<String, usize>,
     pub filtered: Vec<usize>,
-    pub list_state: ListState,
+    pub list_state: TableState,
     pub filter: String,
+    pub filter_active: bool,
     pub preview_scroll: u16,
     pub help_cache: HashMap<String, String>,
     pub show_scanning: bool,
@@ -27,7 +28,7 @@ pub struct App {
 impl App {
     pub fn new(packages: Vec<Package>, counts: HashMap<String, usize>, auditd_warning: bool) -> Self {
         let filtered: Vec<usize> = (0..packages.len()).collect();
-        let mut list_state = ListState::default();
+        let mut list_state = TableState::default();
         if !filtered.is_empty() {
             list_state.select(Some(0));
         }
@@ -37,6 +38,7 @@ impl App {
             filtered,
             list_state,
             filter: String::new(),
+            filter_active: false,
             preview_scroll: 0,
             help_cache: HashMap::new(),
             show_scanning: false,
@@ -116,35 +118,40 @@ impl App {
             KeyCode::Char('l') if alt => {
                 self.split_pct = (self.split_pct + 5).min(85);
             }
-            // Esc: clear filter if non-empty, otherwise quit
+            // Esc: exit filter mode (and clear filter), or quit in normal mode
             KeyCode::Esc => {
-                if !self.filter.is_empty() {
+                if self.filter_active {
                     self.filter.clear();
+                    self.filter_active = false;
                     self.apply_filter();
                 } else {
                     return Action::Quit;
                 }
             }
-            // vim navigation — always active
+            // Navigation always works in normal mode; also works in filter mode
             KeyCode::Char('j') | KeyCode::Down => self.next(),
             KeyCode::Char('k') | KeyCode::Up => self.prev(),
-            KeyCode::Char('g') | KeyCode::Home => self.first(),
-            KeyCode::Char('G') | KeyCode::End => self.last(),
-            // preview scroll
+            KeyCode::Char('g') | KeyCode::Home if !self.filter_active => self.first(),
+            KeyCode::Char('G') | KeyCode::End if !self.filter_active => self.last(),
+            // Preview scroll
             KeyCode::Char('d') if ctrl => self.scroll_preview_down(),
             KeyCode::Char('u') if ctrl => self.scroll_preview_up(),
             KeyCode::PageDown => self.scroll_preview_down(),
             KeyCode::PageUp => self.scroll_preview_up(),
-            // filter editing
-            KeyCode::Backspace => {
+            // Enter filter mode
+            KeyCode::Char('/') if !self.filter_active => {
+                self.filter_active = true;
+            }
+            // Filter editing (only in filter mode)
+            KeyCode::Backspace if self.filter_active => {
                 self.filter.pop();
                 self.apply_filter();
             }
-            // reserved single-key actions (only when filter is empty)
-            KeyCode::Char('q') if self.filter.is_empty() => return Action::Quit,
-            KeyCode::Char('r') if self.filter.is_empty() => return Action::Refresh,
-            // everything else goes to the filter
-            KeyCode::Char(c) => {
+            // Single-key actions (only in normal mode)
+            KeyCode::Char('q') if !self.filter_active => return Action::Quit,
+            KeyCode::Char('r') if !self.filter_active => return Action::Refresh,
+            // Characters go to filter only in filter mode
+            KeyCode::Char(c) if self.filter_active => {
                 self.filter.push(c);
                 self.apply_filter();
             }

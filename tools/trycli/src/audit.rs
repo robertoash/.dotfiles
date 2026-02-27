@@ -17,7 +17,7 @@ pub fn get_counts() -> HashMap<String, usize> {
         return counts;
     }
 
-    let output = match Command::new("ausearch").args(["-k", "trycli", "--raw"]).output() {
+    let output = match Command::new("sudo").args(["ausearch", "-k", "trycli", "--raw"]).output() {
         Ok(o) => o,
         Err(_) => return counts,
     };
