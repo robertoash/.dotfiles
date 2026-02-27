@@ -22,22 +22,28 @@ pub fn get_counts() -> HashMap<String, usize> {
         Err(_) => return counts,
     };
 
-    // ausearch --raw groups records per-event separated by "----" lines.
-    // Each event has a SYSCALL record (exe= field) and an EXECVE record (a0=, a1=, ... args).
-    // We skip events where any argument is "--help" or "-h".
+    // ausearch --raw outputs one record per line with no "----" separators.
+    // Records belonging to the same event share the same serial number in
+    // msg=audit(TIMESTAMP:SERIAL). We group by serial to detect event boundaries.
     let raw = String::from_utf8_lossy(&output.stdout);
     let mut current_exe: Option<String> = None;
+    let mut current_id: u64 = 0;
     let mut is_help = false;
 
     for line in raw.lines() {
+        // "----" may appear in non-raw ausearch output; handle it defensively.
         if line == "----" {
-            if let Some(exe) = current_exe.take() {
-                if !is_help {
-                    *counts.entry(exe).or_insert(0) += 1;
-                }
-            }
-            is_help = false;
+            commit(&mut current_exe, &mut is_help, &mut counts);
+            current_id = 0;
             continue;
+        }
+
+        // New event when serial number changes.
+        if let Some(id) = event_serial(line) {
+            if id != current_id {
+                commit(&mut current_exe, &mut is_help, &mut counts);
+                current_id = id;
+            }
         }
 
         if line.starts_with("type=SYSCALL") {
@@ -72,14 +78,29 @@ pub fn get_counts() -> HashMap<String, usize> {
         }
     }
 
-    // Handle final event if output doesn't end with "----"
-    if let Some(exe) = current_exe {
-        if !is_help {
-            *counts.entry(exe).or_insert(0) += 1;
+    commit(&mut current_exe, &mut is_help, &mut counts);
+    counts
+}
+
+fn commit(exe: &mut Option<String>, is_help: &mut bool, counts: &mut HashMap<String, usize>) {
+    if let Some(name) = exe.take() {
+        if !*is_help {
+            *counts.entry(name).or_insert(0) += 1;
         }
     }
+    *is_help = false;
+}
 
-    counts
+/// Extract the audit event serial number from `msg=audit(TIMESTAMP:SERIAL):`.
+fn event_serial(line: &str) -> Option<u64> {
+    let start = line.find("msg=audit(")? + 10;
+    let rest = &line[start..];
+    let colon = rest.find(':')?;
+    let end = rest.find(')')?;
+    if colon >= end {
+        return None;
+    }
+    rest[colon + 1..end].parse().ok()
 }
 
 fn has_ausearch() -> bool {
