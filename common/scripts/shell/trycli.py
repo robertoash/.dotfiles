@@ -286,6 +286,7 @@ def run_fzf(packages, counts):
 def main():
     parser = argparse.ArgumentParser(description="Browse recently installed CLI tools")
     parser.add_argument("-r", "--refresh", action="store_true", help="Force rebuild cache")
+    parser.add_argument("--stdout", action="store_true", help="Print package list to stdout (for scripting)")
     args = parser.parse_args()
 
     if args.refresh or (packages := load_cache()) is None:
@@ -293,6 +294,12 @@ def main():
         packages = build_packages()
         save_cache(packages)
         print(f"Found {len(packages)} CLI tools.", file=sys.stderr)
+
+    if args.stdout:
+        counts = get_atuin_counts()
+        for p in packages:
+            print(format_line(p, counts))
+        return
 
     counts = get_atuin_counts()
     run_fzf(packages, counts)
