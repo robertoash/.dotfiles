@@ -41,7 +41,7 @@ impl App {
             help_cache: HashMap::new(),
             show_scanning: false,
             auditd_warning,
-            split_pct: 38,
+            split_pct: 50,
         }
     }
 

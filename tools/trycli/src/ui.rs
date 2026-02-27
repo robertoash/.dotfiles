@@ -147,9 +147,9 @@ fn render_status(frame: &mut Frame, _app: &App, area: ratatui::layout::Rect) {
     for (key, desc) in parts {
         spans.push(Span::styled(
             format!(" {} ", key),
-            Style::default().fg(Color::Black).bg(Color::DarkGray).add_modifier(Modifier::BOLD),
+            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
         ));
-        spans.push(Span::styled(desc, Style::default().fg(Color::Gray)));
+        spans.push(Span::styled(desc, Style::default().fg(Color::White)));
     }
 
     let line = Line::from(spans);
