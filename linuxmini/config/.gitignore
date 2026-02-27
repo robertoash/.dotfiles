@@ -305,6 +305,7 @@ fish/tests
 fish/themes
 fzf/fzf_preview.sh
 git
+gitui
 gtk-2.0
 gtk-3.0
 gtk-4.0
