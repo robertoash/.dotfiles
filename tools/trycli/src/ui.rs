@@ -13,9 +13,22 @@ const COL_NAME: u16 = 22;
 const COL_SOURCE: u16 = 8;
 const COL_USES: u16 = 5;
 
-// Stripe colors for alternating row backgrounds
-const ROW_BG_EVEN: Color = Color::Rgb(20, 20, 20);
-const ROW_BG_ODD: Color = Color::Rgb(34, 34, 34);
+// Alternating column backgrounds (applied per-cell so they survive row highlight)
+const COL_BG_DARK: Color = Color::Rgb(18, 18, 18);
+const COL_BG_LIGHT: Color = Color::Rgb(30, 30, 30);
+const COL_BG_SEL: Color = Color::Rgb(60, 60, 60);
+
+// Column indices: 0=DATE, 1=NAME, 2=SOURCE, 3=USES, 4=DESCRIPTION
+// Even index → dark, odd index → light
+fn col_bg(col: usize, is_selected: bool) -> Color {
+    if is_selected {
+        COL_BG_SEL
+    } else if col % 2 == 0 {
+        COL_BG_DARK
+    } else {
+        COL_BG_LIGHT
+    }
+}
 
 pub fn render(frame: &mut Frame, app: &mut App) {
     let area = frame.area();
@@ -42,19 +55,17 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         format!(" Tools ({}) ", app.filtered.len())
     };
 
+    let header_style = Style::default().fg(Color::DarkGray).add_modifier(Modifier::BOLD);
     let header = Row::new(vec![
-        Cell::from("DATE"),
-        Cell::from("NAME"),
-        Cell::from("SOURCE"),
-        Cell::from(Text::raw(center_str("USES", COL_USES as usize))),
-        Cell::from("DESCRIPTION"),
-    ])
-    .style(
-        Style::default()
-            .fg(Color::DarkGray)
-            .add_modifier(Modifier::BOLD),
-    );
+        Cell::from("DATE").style(header_style.bg(col_bg(0, false))),
+        Cell::from("NAME").style(header_style.bg(col_bg(1, false))),
+        Cell::from("SOURCE").style(header_style.bg(col_bg(2, false))),
+        Cell::from(Text::raw(center_str("USES", COL_USES as usize)))
+            .style(header_style.bg(col_bg(3, false))),
+        Cell::from("DESCRIPTION").style(header_style.bg(col_bg(4, false))),
+    ]);
 
+    let selected = app.list_state.selected();
     let rows: Vec<Row> = app
         .filtered
         .iter()
@@ -62,7 +73,7 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         .map(|(i, &idx)| {
             let p = &app.packages[idx];
             let uses = app.counts.get(&p.name).copied().unwrap_or(0);
-            make_row(p, uses, i)
+            make_row(p, uses, selected == Some(i))
         })
         .collect();
 
@@ -82,23 +93,18 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
                 .border_style(Style::default().fg(Color::DarkGray))
                 .title(Span::styled(title, Style::default().fg(Color::White))),
         )
-        .row_highlight_style(
-            Style::default()
-                .bg(Color::DarkGray)
-                .add_modifier(Modifier::BOLD),
-        )
+        // Only apply BOLD on selection; bg is handled per-cell to preserve column stripes
+        .row_highlight_style(Style::default().add_modifier(Modifier::BOLD))
         .column_spacing(1);
 
     frame.render_stateful_widget(table, area, &mut app.list_state);
 }
 
-fn make_row(p: &crate::collect::Package, uses: usize, row_index: usize) -> Row<'static> {
-    let bg = if row_index % 2 == 0 { ROW_BG_EVEN } else { ROW_BG_ODD };
-
+fn make_row(p: &crate::collect::Package, uses: usize, is_selected: bool) -> Row<'static> {
     let uses_style = if uses > 0 {
-        Style::default().fg(Color::Green).bg(bg)
+        Style::default().fg(Color::Green).bg(col_bg(3, is_selected))
     } else {
-        Style::default().fg(Color::DarkGray).bg(bg)
+        Style::default().fg(Color::DarkGray).bg(col_bg(3, is_selected))
     };
 
     let uses_str = if uses > 0 {
@@ -108,13 +114,15 @@ fn make_row(p: &crate::collect::Package, uses: usize, row_index: usize) -> Row<'
     };
 
     Row::new(vec![
-        Cell::from(p.date_str()).style(Style::default().fg(Color::DarkGray).bg(bg)),
+        Cell::from(p.date_str())
+            .style(Style::default().fg(Color::DarkGray).bg(col_bg(0, is_selected))),
         Cell::from(truncate(&p.name, COL_NAME as usize).to_string())
-            .style(Style::default().fg(Color::White).bg(bg)),
+            .style(Style::default().fg(Color::White).bg(col_bg(1, is_selected))),
         Cell::from(truncate(&p.source, COL_SOURCE as usize).to_string())
-            .style(Style::default().fg(Color::Cyan).bg(bg)),
+            .style(Style::default().fg(Color::Cyan).bg(col_bg(2, is_selected))),
         Cell::from(uses_str).style(uses_style),
-        Cell::from(p.description.clone()).style(Style::default().fg(Color::DarkGray).bg(bg)),
+        Cell::from(p.description.clone())
+            .style(Style::default().fg(Color::DarkGray).bg(col_bg(4, is_selected))),
     ])
 }
 
@@ -176,7 +184,7 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         ]
     };
 
-    let key_bg = Color::Rgb(55, 50, 20);
+    let key_bg = Color::Rgb(45, 45, 45);
 
     let mut spans = Vec::new();
     for (key, desc) in parts {
@@ -201,7 +209,7 @@ fn center_str(s: &str, width: usize) -> String {
         return s.to_string();
     }
     let pad_total = width - len;
-    let pad_left = pad_total / 2;
+    let pad_left = (pad_total + 1) / 2; // round up so extra space goes on the right
     let pad_right = pad_total - pad_left;
     format!("{}{}{}", " ".repeat(pad_left), s, " ".repeat(pad_right))
 }
