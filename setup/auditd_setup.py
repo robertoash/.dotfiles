@@ -60,8 +60,10 @@ def setup_auditd(dotfiles_dir):
 
     # Already running — reload rules
     print("  🔄 Reloading audit rules...")
-    result = subprocess.run(["sudo", "augenrules", "--load"])
-    if result.returncode == 0:
-        print("  ✅ Audit rules reloaded")
+    result = subprocess.run(["sudo", "augenrules", "--load"], capture_output=True, text=True)
+    output = result.stdout + result.stderr
+    if result.returncode == 0 or "No change" in output:
+        print("  ✅ Audit rules current")
     else:
         print("  ⚠️  augenrules --load failed")
+        print(f"     {output.strip()}")
