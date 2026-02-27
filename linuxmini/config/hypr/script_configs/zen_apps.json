@@ -43,7 +43,7 @@
         "float": true,
         "pin": true,
         "size": "1025 775",
-        "move": "(monitor_w-window_w-26) 26"
+        "move": "(monitor_w-window_w-26) 78"
       }
     },
     "google_calendar": {

@@ -84,15 +84,23 @@ def generate_windowrules_for_app(
     # Add comment for the app
     lines.append(f"# {app_name} ({app_type})")
 
+    # Pre-compute window dimensions from size rule for use in move expressions.
+    # window_w/window_h at rule-fire time reflect pre-resize dimensions, so we
+    # substitute the known pixel values from the size rule at generation time.
+    window_w, window_h = None, None
+    if "size" in window_rules:
+        parts = str(window_rules["size"]).split()
+        if len(parts) == 2:
+            window_w, window_h = parts[0], parts[1]
+
     # Generate rules in a consistent order
     rule_order = ["workspace", "float", "pin", "size", "move", "keep_aspect_ratio"]
     for rule_type in rule_order:
         if rule_type in window_rules:
-            rule_line = generate_window_rule_line(
-                rule_type,
-                window_rules[rule_type],
-                match_pattern
-            )
+            value = window_rules[rule_type]
+            if rule_type == "move" and window_w is not None:
+                value = str(value).replace("window_w", window_w).replace("window_h", window_h)
+            rule_line = generate_window_rule_line(rule_type, value, match_pattern)
             lines.append(rule_line)
 
     return lines
