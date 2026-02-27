@@ -13,14 +13,16 @@ const COL_NAME: u16 = 22;
 const COL_SOURCE: u16 = 8;
 const COL_USES: u16 = 5;
 
+// Stripe colors for alternating row backgrounds
+const ROW_BG_EVEN: Color = Color::Rgb(20, 20, 20);
+const ROW_BG_ODD: Color = Color::Rgb(34, 34, 34);
+
 pub fn render(frame: &mut Frame, app: &mut App) {
     let area = frame.area();
 
-    // Outer layout: main body + status bar
     let [main_area, status_area] =
         Layout::vertical([Constraint::Min(0), Constraint::Length(1)]).areas(area);
 
-    // Body: list pane (left) + preview pane (right)
     let pct = app.split_pct;
     let [list_area, preview_area] =
         Layout::horizontal([Constraint::Percentage(pct), Constraint::Percentage(100 - pct)])
@@ -44,7 +46,7 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
         Cell::from("DATE"),
         Cell::from("NAME"),
         Cell::from("SOURCE"),
-        Cell::from("USES"),
+        Cell::from(Text::raw(center_str("USES", COL_USES as usize))),
         Cell::from("DESCRIPTION"),
     ])
     .style(
@@ -56,10 +58,11 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let rows: Vec<Row> = app
         .filtered
         .iter()
-        .map(|&idx| {
+        .enumerate()
+        .map(|(i, &idx)| {
             let p = &app.packages[idx];
             let uses = app.counts.get(&p.name).copied().unwrap_or(0);
-            make_row(p, uses)
+            make_row(p, uses, i)
         })
         .collect();
 
@@ -89,21 +92,29 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     frame.render_stateful_widget(table, area, &mut app.list_state);
 }
 
-fn make_row(p: &crate::collect::Package, uses: usize) -> Row<'static> {
+fn make_row(p: &crate::collect::Package, uses: usize, row_index: usize) -> Row<'static> {
+    let bg = if row_index % 2 == 0 { ROW_BG_EVEN } else { ROW_BG_ODD };
+
     let uses_style = if uses > 0 {
-        Style::default().fg(Color::Green)
+        Style::default().fg(Color::Green).bg(bg)
     } else {
-        Style::default().fg(Color::DarkGray)
+        Style::default().fg(Color::DarkGray).bg(bg)
+    };
+
+    let uses_str = if uses > 0 {
+        center_str(&uses.to_string(), COL_USES as usize)
+    } else {
+        " ".repeat(COL_USES as usize)
     };
 
     Row::new(vec![
-        Cell::from(p.date_str()).style(Style::default().fg(Color::DarkGray)),
+        Cell::from(p.date_str()).style(Style::default().fg(Color::DarkGray).bg(bg)),
         Cell::from(truncate(&p.name, COL_NAME as usize).to_string())
-            .style(Style::default().fg(Color::White)),
+            .style(Style::default().fg(Color::White).bg(bg)),
         Cell::from(truncate(&p.source, COL_SOURCE as usize).to_string())
-            .style(Style::default().fg(Color::Cyan)),
-        Cell::from(if uses > 0 { uses.to_string() } else { String::new() }).style(uses_style),
-        Cell::from(p.description.clone()).style(Style::default().fg(Color::DarkGray)),
+            .style(Style::default().fg(Color::Cyan).bg(bg)),
+        Cell::from(uses_str).style(uses_style),
+        Cell::from(p.description.clone()).style(Style::default().fg(Color::DarkGray).bg(bg)),
     ])
 }
 
@@ -165,11 +176,16 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         ]
     };
 
+    let key_bg = Color::Rgb(55, 50, 20);
+
     let mut spans = Vec::new();
     for (key, desc) in parts {
         spans.push(Span::styled(
             format!(" {} ", key),
-            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(Color::Yellow)
+                .bg(key_bg)
+                .add_modifier(Modifier::BOLD),
         ));
         spans.push(Span::styled(desc, Style::default().fg(Color::White)));
     }
@@ -177,6 +193,17 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
     let line = Line::from(spans);
     let paragraph = Paragraph::new(line);
     frame.render_widget(paragraph, area);
+}
+
+fn center_str(s: &str, width: usize) -> String {
+    let len = s.chars().count();
+    if len >= width {
+        return s.to_string();
+    }
+    let pad_total = width - len;
+    let pad_left = pad_total / 2;
+    let pad_right = pad_total - pad_left;
+    format!("{}{}{}", " ".repeat(pad_left), s, " ".repeat(pad_right))
 }
 
 fn truncate(s: &str, max: usize) -> &str {
