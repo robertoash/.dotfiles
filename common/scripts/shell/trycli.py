@@ -188,11 +188,47 @@ def build_packages():
 
 # --- Usage counts via auditd execve tracking ---
 
+def _auditd_install_hint():
+    import platform
+    system = platform.system()
+    if system == "Darwin":
+        return (
+            "  macOS: auditd is built-in but disabled by default.\n"
+            "  Enable it with:\n"
+            "    sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.auditd.plist"
+        )
+    else:
+        return (
+            "  Arch Linux: run setup.py (it installs and enables auditd automatically).\n"
+            "  Manual fallback:\n"
+            "    sudo pacman -S audit\n"
+            "    sudo systemctl enable --now auditd"
+        )
+
+
 def get_audit_counts():
     """Count binary invocations from auditd execve log (key=trycli).
-    Falls back to empty counts if auditd is not available."""
+    Warns to stderr if auditd is not available or not running."""
     if not shutil.which("ausearch"):
+        print(
+            "warning: ausearch not found — usage counts unavailable.\n"
+            + _auditd_install_hint(),
+            file=sys.stderr,
+        )
         return Counter()
+
+    is_active = subprocess.run(
+        ["systemctl", "is-active", "--quiet", "auditd"],
+        capture_output=True,
+    ).returncode == 0
+    if not is_active:
+        print(
+            "warning: auditd is not running — usage counts unavailable.\n"
+            + _auditd_install_hint(),
+            file=sys.stderr,
+        )
+        return Counter()
+
     try:
         result = subprocess.run(
             ["ausearch", "-k", "trycli", "--raw"],
@@ -200,8 +236,6 @@ def get_audit_counts():
         )
         counts = Counter()
         for line in result.stdout.splitlines():
-            # EXECVE records contain a0="<binary>" or a0=<hex>
-            # SYSCALL records contain exe="/path/to/binary"
             if line.startswith("type=SYSCALL") and "exe=" in line:
                 for part in line.split():
                     if part.startswith("exe="):
