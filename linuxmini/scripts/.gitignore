@@ -1,6 +1,7 @@
 # === AUTO-GENERATED SYMLINKS (do not edit) ===
 claude
 decrypt-secrets.sh
+shell/trycli.py
 waybar
 zellij-open-file.sh
 # === END AUTO-GENERATED SYMLINKS ===

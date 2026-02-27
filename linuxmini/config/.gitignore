@@ -296,6 +296,7 @@ fish/functions/ssh-copy.fish
 fish/functions/sunshine-with-ipad.fish
 fish/functions/svtp.fish
 fish/functions/tailscale.fish
+fish/functions/trycli.fish
 fish/functions/tt.fish
 fish/functions/video-tools.fish
 fish/functions/welcome-banner.fish
