@@ -265,11 +265,12 @@ fn home_dir() -> PathBuf {
 }
 
 fn date_to_epoch(year: i64, month: u32, day: u32, hour: u32, min: u32, sec: u32) -> u64 {
-    let y = if month <= 2 { year - 1 } else { year };
-    let m = if month <= 2 { month as i64 + 12 } else { month as i64 };
-    let d = day as i64;
-    let jdn = d + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
-    let unix_day = jdn - 2440588;
+    // Standard Julian Day Number algorithm (Gregorian calendar)
+    let a = (14 - month as i64) / 12;
+    let y = year + 4800 - a;
+    let m = month as i64 + 12 * a - 3;
+    let jdn = day as i64 + (153 * m + 2) / 5 + 365 * y + y / 4 - y / 100 + y / 400 - 32045;
+    let unix_day = jdn - 2440588; // JDN of Unix epoch (1970-01-01)
     if unix_day < 0 {
         return 0;
     }
