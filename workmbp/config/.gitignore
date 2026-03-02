@@ -98,6 +98,7 @@ fish/tests
 fzf
 gcalcli
 git
+gitui
 gtk-2.0
 gtk-3.0
 gtk-4.0
@@ -129,6 +130,7 @@ task
 tealdeer
 thoth
 transmission
+ttydal
 visidata
 w3m
 wallpapers
