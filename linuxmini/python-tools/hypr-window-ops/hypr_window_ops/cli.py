@@ -500,6 +500,23 @@ Examples:
         """,
     )
 
+    # Setup PiP window by PID
+    setup_pip_parser = subparsers.add_parser(
+        "setup-pip",
+        help="Float, resize, pin and snap a window to a corner by PID",
+        description="Waits for a window with the given PID to appear, then configures it as a PiP overlay.",
+    )
+    setup_pip_parser.add_argument("--pid", type=int, required=True, help="Process ID to wait for")
+    setup_pip_parser.add_argument(
+        "--corner",
+        choices=["lower-left", "lower-right", "upper-left", "upper-right"],
+        default="lower-left",
+        help="Corner to snap to (default: lower-left)",
+    )
+    setup_pip_parser.add_argument(
+        "--timeout", type=float, default=15, help="Timeout in seconds (default: %(default)s)"
+    )
+
     # Wait for window by PID
     window_wait_parser = subparsers.add_parser(
         "window-wait",
@@ -607,6 +624,8 @@ Examples:
         return monitor_toggle.toggle_active_monitor()
     elif args.command == "cycle-windows":
         return window_cycling.cycle_windows()
+    elif args.command == "setup-pip":
+        return window_properties.setup_pip(args.pid, corner=args.corner, timeout=args.timeout)
     elif args.command == "window-wait":
         address = window_manager.wait_for_window_by_pid(args.pid, timeout=args.timeout)
         return 0 if address else 1

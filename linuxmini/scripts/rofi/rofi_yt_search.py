@@ -82,7 +82,11 @@ def select_result(results):
 def launch_url(url, title):
     """Open URL with the configured launcher."""
     full_cmd = LAUNCH_CMD + [f"--title=rofi_ytsearch - {title}", "--ytdl-raw-options=cookies-from-browser=brave:app", url]
-    subprocess.Popen(full_cmd)
+    proc = subprocess.Popen(full_cmd)
+    subprocess.Popen(
+        ["hypr-window-ops", "setup-pip", "--pid", str(proc.pid)],
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
 
 # --- MAIN ---

@@ -56,6 +56,44 @@ def get_mpv_video_aspect_ratio():
     return None
 
 
+def setup_pip(pid, corner="lower-left", timeout=15):
+    """Set up a window as a PiP overlay by PID.
+
+    Waits for the window to appear, then floats, resizes, pins, and snaps
+    it to a corner. Intended for use by launch scripts as a replacement
+    for per-app windowrules.
+
+    Returns 0 on success, 1 if the window never appeared.
+    """
+    address = window_manager.wait_for_window_by_pid(pid, timeout=timeout)
+    if not address:
+        return 1
+
+    window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{address}"])
+    time.sleep(0.05)
+
+    width = 1228
+    height = 691
+    clients = window_manager.get_clients()
+    window_info = next((c for c in clients if c["address"] == address), None)
+    if window_info:
+        window_class = window_info.get("class", "").lower()
+        if "mpv" in window_class or "vlc" in window_class:
+            aspect_ratio = get_mpv_video_aspect_ratio()
+            if aspect_ratio:
+                height = int(width / aspect_ratio)
+
+    window_manager.run_hyprctl_command([
+        "dispatch", "resizewindowpixel",
+        f"exact {width} {height},address:{address}"
+    ])
+    window_manager.run_hyprctl_command(["dispatch", "pin", f"address:{address}"])
+    window_manager.run_hyprctl_command(["setprop", f"address:{address}", "nodim", "1"])
+    window_manager.run_hyprctl_command(["setprop", f"address:{address}", "keepaspectratio", "1"])
+    snap_windows.snap_window_to_corner(corner=corner, window_address=address)
+    return 0
+
+
 def pin_window_without_dimming(relative_floating=False, sneaky=False):
     """Pin a floating window without dimming, toggling if already pinned."""
     window_info = window_manager.get_target_window(relative_floating)

@@ -244,9 +244,8 @@ def play_video(url, debug_mode=False):
             stderr=subprocess.DEVNULL
         )
 
-        # Wait for window to appear
         wait_result = subprocess.run(
-            ['hypr-window-ops', 'window-wait', '--pid', str(process.pid)],
+            ['hypr-window-ops', 'setup-pip', '--pid', str(process.pid)],
             capture_output=True
         )
 

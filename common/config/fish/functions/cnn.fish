@@ -17,5 +17,9 @@ function cnn -d "Launch CNN stream with rofi_xtream MPV parameters"
         --wayland-app-id=cli_stream \
         --title='CNN Live' \
         http://uri69635.cdn-kok.me/live/48f07785de/f165bbc27a/324963.ts \
-        >/dev/null 2>&1 & disown
+        >/dev/null 2>&1 &
+    set -l mpv_pid $last_pid
+    disown $mpv_pid
+    hypr-window-ops setup-pip --pid $mpv_pid &
+    disown
 end

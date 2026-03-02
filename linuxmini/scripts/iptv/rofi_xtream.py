@@ -278,7 +278,7 @@ def launch_mpv(stream_url, title):
     logging.debug(f"[DEBUG] Stream URL: {stream_url}")
 
     try:
-        subprocess.Popen([
+        proc = subprocess.Popen([
             "mpv",
             "--force-window=immediate",
             "--cache=yes",
@@ -298,6 +298,11 @@ def launch_mpv(stream_url, title):
             f"--title=Xtream - {title}",
             stream_url
         ], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+
+        subprocess.Popen(
+            ["hypr-window-ops", "setup-pip", "--pid", str(proc.pid)],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True
+        )
 
         # Copy URL to clipboard
         subprocess.run(["wl-copy", stream_url])
