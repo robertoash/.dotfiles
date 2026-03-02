@@ -96,3 +96,7 @@ common/.claude/commands/gsd/
 
 .tasks.md
 /common/config/nvim/lazy-lock.json
+
+# Dolt database files (added by bd init)
+.dolt/
+*.db
