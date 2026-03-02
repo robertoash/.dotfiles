@@ -152,16 +152,17 @@ def get_kitchen_status():
 
     # Check for any mounted cookies
     try:
-        from .cookie_ops import get_all_cookies, DINNER_TABLE
+        from .cookie_ops import get_all_cookies, get_cookie_recipe
 
         all_cookies = get_all_cookies()
 
         if all_cookies:
-            # Check which cookies are actually mounted (plates have contents)
+            # Check which cookies are actually mounted
             served_cookies = []
             for cookie in all_cookies:
-                plate_path = DINNER_TABLE / cookie
-                if plate_path.exists() and any(plate_path.iterdir()):
+                recipe = get_cookie_recipe(cookie)
+                plate_path = Path(recipe["plate"])
+                if plate_path.exists() and os.path.ismount(plate_path):
                     served_cookies.append(cookie)
 
             if served_cookies:
