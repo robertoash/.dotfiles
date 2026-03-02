@@ -25,7 +25,7 @@ pub fn get_counts() -> HashMap<String, usize> {
         .saturating_sub(30 * 86400);
 
     let output = match Command::new("sudo")
-        .args(["ausearch", "-k", "trycli", "--raw", "-ts", "this-month"])
+        .args(["ausearch", "-k", "trycli", "--raw"])
         .output()
     {
         Ok(o) => o,

@@ -1,5 +1,5 @@
 use ratatui::{
-    layout::{Constraint, Layout},
+    layout::{Alignment, Constraint, Layout},
     style::{Color, Modifier, Style},
     text::{Line, Span, Text},
     widgets::{Block, Borders, Cell, Paragraph, Row, Table, Wrap},
@@ -62,14 +62,18 @@ fn render_list(frame: &mut Frame, app: &mut App, area: ratatui::layout::Rect) {
     let header_style = Style::default().fg(Color::DarkGray).add_modifier(Modifier::BOLD);
     let sort_style = Style::default().fg(Color::White).add_modifier(Modifier::BOLD);
     let s = app.sort_by;
+    let dir = if app.sort_asc { " ▲" } else { " ▼" };
     let header = Row::new(vec![
-        Cell::from(if s == SortBy::Date { "DATE ▼" } else { "DATE" })
+        Cell::from(if s == SortBy::Date { format!("DATE{dir}") } else { "DATE".into() })
             .style(if s == SortBy::Date { sort_style } else { header_style }.bg(col_bg(0, false))),
-        Cell::from(if s == SortBy::Name { "NAME ▼" } else { "NAME" })
+        Cell::from(if s == SortBy::Name { format!("NAME{dir}") } else { "NAME".into() })
             .style(if s == SortBy::Name { sort_style } else { header_style }.bg(col_bg(1, false))),
-        Cell::from(if s == SortBy::Source { "SRC ▼" } else { "SOURCE" })
+        Cell::from(if s == SortBy::Source { format!("SRC{dir}") } else { "SOURCE".into() })
             .style(if s == SortBy::Source { sort_style } else { header_style }.bg(col_bg(2, false))),
-        Cell::from(Text::raw(center_str(if s == SortBy::Uses { "USE▼" } else { "USES" }, COL_USES as usize)))
+        Cell::from(Text::raw({
+            let uses_hdr = if s == SortBy::Uses { format!("USE{dir}") } else { "USES".into() };
+            center_str(&uses_hdr, COL_USES as usize)
+        }))
             .style(if s == SortBy::Uses { sort_style } else { header_style }.bg(col_bg(3, false))),
         Cell::from("DESCRIPTION").style(header_style.bg(col_bg(4, false))),
     ]);
@@ -230,7 +234,26 @@ fn render_status(frame: &mut Frame, app: &App, area: ratatui::layout::Rect) {
         spans.push(Span::styled(desc, Style::default().fg(Color::White)));
     }
 
-    frame.render_widget(Paragraph::new(Line::from(spans)), area);
+    if app.show_scanning {
+        // Right-aligned "Refreshing…" indicator.
+        let notice = "  Refreshing…  ";
+        let notice_style = Style::default()
+            .fg(Color::Black)
+            .bg(Color::Yellow)
+            .add_modifier(Modifier::BOLD);
+        let [left_area, right_area] = Layout::horizontal([
+            Constraint::Min(0),
+            Constraint::Length(notice.chars().count() as u16),
+        ])
+        .areas(area);
+        frame.render_widget(Paragraph::new(Line::from(spans)), left_area);
+        frame.render_widget(
+            Paragraph::new(notice).style(notice_style).alignment(Alignment::Right),
+            right_area,
+        );
+    } else {
+        frame.render_widget(Paragraph::new(Line::from(spans)), area);
+    }
 }
 
 fn center_str(s: &str, width: usize) -> String {

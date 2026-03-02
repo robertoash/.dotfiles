@@ -22,6 +22,16 @@ pub enum SortBy {
     Uses,
 }
 
+impl SortBy {
+    /// Default ascending direction for this column (false = descending).
+    fn default_asc(self) -> bool {
+        match self {
+            SortBy::Date | SortBy::Uses => false, // newest/most-used first
+            SortBy::Name | SortBy::Source => true, // A-Z
+        }
+    }
+}
+
 pub struct App {
     pub packages: Vec<Package>,
     pub counts: HashMap<String, usize>,
@@ -37,6 +47,7 @@ pub struct App {
     pub auditd_warning: bool,
     pub split_pct: u16,
     pub sort_by: SortBy,
+    pub sort_asc: bool,
     pub pending_sort: bool,
     preview_rx: Option<mpsc::Receiver<(String, String)>>,
     prefetch_tx: mpsc::Sender<(String, String)>,
@@ -67,6 +78,7 @@ impl App {
             auditd_warning,
             split_pct: 65,
             sort_by: SortBy::Date,
+            sort_asc: SortBy::Date.default_asc(),
             pending_sort: false,
             preview_rx: None,
             prefetch_tx,
@@ -102,18 +114,22 @@ impl App {
         let packages = &self.packages;
         let counts = &self.counts;
         let sort_by = self.sort_by;
-        self.filtered.sort_by(|&a, &b| match sort_by {
-            SortBy::Date => packages[b].epoch.cmp(&packages[a].epoch),
-            SortBy::Name => packages[a].name.cmp(&packages[b].name),
-            SortBy::Source => packages[a]
-                .source
-                .cmp(&packages[b].source)
-                .then(packages[b].epoch.cmp(&packages[a].epoch)),
-            SortBy::Uses => {
-                let ua = counts.get(&packages[a].name).copied().unwrap_or(0);
-                let ub = counts.get(&packages[b].name).copied().unwrap_or(0);
-                ub.cmp(&ua).then(packages[b].epoch.cmp(&packages[a].epoch))
-            }
+        let asc = self.sort_asc;
+        self.filtered.sort_by(|&a, &b| {
+            // Primary sort: always computed low→high, then reversed if descending.
+            let primary = match sort_by {
+                SortBy::Date => packages[a].epoch.cmp(&packages[b].epoch),
+                SortBy::Name => packages[a].name.cmp(&packages[b].name),
+                SortBy::Source => packages[a].source.cmp(&packages[b].source),
+                SortBy::Uses => {
+                    let ua = counts.get(&packages[a].name).copied().unwrap_or(0);
+                    let ub = counts.get(&packages[b].name).copied().unwrap_or(0);
+                    ua.cmp(&ub)
+                }
+            };
+            let ordered = if asc { primary } else { primary.reverse() };
+            // Secondary: always by date DESC for ties.
+            ordered.then(packages[b].epoch.cmp(&packages[a].epoch))
         });
     }
 
@@ -221,24 +237,23 @@ impl App {
         if self.pending_sort {
             self.pending_sort = false;
             if !self.filter_active {
-                match key.code {
-                    KeyCode::Char('d') => {
-                        self.sort_by = SortBy::Date;
-                        self.apply_sort();
+                let new_sort = match key.code {
+                    KeyCode::Char('d') => Some(SortBy::Date),
+                    KeyCode::Char('n') => Some(SortBy::Name),
+                    KeyCode::Char('s') => Some(SortBy::Source),
+                    KeyCode::Char('u') => Some(SortBy::Uses),
+                    _ => None,
+                };
+                if let Some(col) = new_sort {
+                    if col == self.sort_by {
+                        // Same column: toggle direction
+                        self.sort_asc = !self.sort_asc;
+                    } else {
+                        // New column: switch and reset to default direction
+                        self.sort_by = col;
+                        self.sort_asc = col.default_asc();
                     }
-                    KeyCode::Char('n') => {
-                        self.sort_by = SortBy::Name;
-                        self.apply_sort();
-                    }
-                    KeyCode::Char('s') => {
-                        self.sort_by = SortBy::Source;
-                        self.apply_sort();
-                    }
-                    KeyCode::Char('u') => {
-                        self.sort_by = SortBy::Uses;
-                        self.apply_sort();
-                    }
-                    _ => {}
+                    self.apply_sort();
                 }
             }
             return Action::None;

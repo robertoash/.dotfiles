@@ -46,10 +46,9 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    let counts = audit::get_counts();
-    let auditd_ok = audit::is_running();
-
     if stdout_mode {
+        let counts = audit::get_counts();
+        let auditd_ok = audit::is_running();
         let packages = load_packages(refresh);
         if packages.is_empty() {
             eprintln!("No CLI tools found.");
@@ -72,21 +71,16 @@ fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    // TUI — start with cached packages, then refresh on entry inside the TUI
-    let packages = load_packages(refresh);
-    if packages.is_empty() {
-        eprintln!("No CLI tools found.");
-        std::process::exit(1);
-    }
-
+    // TUI — enter alternate screen immediately so the terminal isn't blank
+    // while we load data. The loading indicator is shown via show_scanning=true.
     enable_raw_mode()?;
     let mut stdout = io::stdout();
     execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
     let backend = CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
 
-    let mut app = App::new(packages, counts, !auditd_ok);
-    let result = run_app(&mut terminal, &mut app);
+    let mut app = App::new(vec![], std::collections::HashMap::new(), false);
+    let result = run_app(&mut terminal, &mut app, refresh);
 
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
@@ -98,9 +92,10 @@ fn main() -> anyhow::Result<()> {
 fn run_app(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut App,
+    force_refresh: bool,
 ) -> anyhow::Result<()> {
-    // Always refresh on entry to show current state
-    do_refresh(terminal, app)?;
+    // Initial load — uses cache unless force_refresh was requested.
+    do_refresh(terminal, app, force_refresh)?;
 
     loop {
         terminal.draw(|frame| ui::render(frame, app))?;
@@ -110,7 +105,7 @@ fn run_app(
             match event::read()? {
                 Event::Key(key) => match app.handle_key(key) {
                     Action::Quit => break,
-                    Action::Refresh => do_refresh(terminal, app)?,
+                    Action::Refresh => do_refresh(terminal, app, true)?,
                     Action::None => {}
                 },
                 Event::Mouse(mouse) => {
@@ -130,18 +125,21 @@ fn run_app(
 fn do_refresh(
     terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
     app: &mut App,
+    force: bool,
 ) -> anyhow::Result<()> {
+    // Show loading indicator before blocking work; stays visible until App::new()
+    // resets show_scanning to false.
     app.show_scanning = true;
     terminal.draw(|frame| ui::render(frame, app))?;
-    app.show_scanning = false;
 
     let old_filter = app.filter.clone();
     let old_filter_active = app.filter_active;
     let old_show_preview = app.show_preview;
     let old_split_pct = app.split_pct;
     let old_sort_by = app.sort_by;
+    let old_sort_asc = app.sort_asc;
 
-    let pkgs = collect::build_packages();
+    let pkgs = load_packages(force);
     collect::save_cache(&pkgs);
     let counts = audit::get_counts();
     let auditd_ok = audit::is_running();
@@ -150,6 +148,7 @@ fn do_refresh(
     app.show_preview = old_show_preview;
     app.split_pct = old_split_pct;
     app.sort_by = old_sort_by;
+    app.sort_asc = old_sort_asc;
     app.apply_sort();
 
     if !old_filter.is_empty() || old_filter_active {
