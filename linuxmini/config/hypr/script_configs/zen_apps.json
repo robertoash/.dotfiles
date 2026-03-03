@@ -60,7 +60,7 @@
     },
     "slack": {
       "profile_directory": "app",
-      "app_url": "https://app.slack.com",
+      "app_url": "https://app.slack.com/client",
       "window_rules": {
         "workspace": "special:stash-left"
       }
