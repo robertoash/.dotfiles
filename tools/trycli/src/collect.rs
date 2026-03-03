@@ -1,9 +1,9 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::time::UNIX_EPOCH;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Clone, Debug)]
 pub struct Package {
@@ -48,7 +48,68 @@ pub fn collect_pacman() -> Vec<Package> {
         Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).into_owned(),
         _ => return vec![],
     };
-    parse_pacman_info(&info)
+    let mut packages = parse_pacman_info(&info);
+    let log_dates = parse_pacman_log_install_dates();
+    for pkg in &mut packages {
+        if let Some(&log_epoch) = log_dates.get(&pkg.name) {
+            pkg.epoch = log_epoch;
+        }
+    }
+    packages
+}
+
+/// Parse /var/log/pacman.log and return the first install epoch for each package.
+fn parse_pacman_log_install_dates() -> HashMap<String, u64> {
+    let content = match fs::read_to_string("/var/log/pacman.log") {
+        Ok(c) => c,
+        Err(_) => return HashMap::new(),
+    };
+    let mut first_install: HashMap<String, u64> = HashMap::new();
+    for line in content.lines() {
+        // [2025-12-06T14:48:53+0100] [ALPM] installed rustup (1.27.0-1)
+        let Some(rest) = line.split("] [ALPM] installed ").nth(1) else { continue };
+        let name = rest.split_whitespace().next().unwrap_or("").to_string();
+        if name.is_empty() {
+            continue;
+        }
+        let epoch = parse_log_timestamp(line);
+        if epoch > 0 {
+            first_install.entry(name).or_insert(epoch);
+        }
+    }
+    first_install
+}
+
+fn parse_log_timestamp(line: &str) -> u64 {
+    // [2025-12-06T14:48:53+0100] ...
+    if !line.starts_with('[') {
+        return 0;
+    }
+    let end = line.find(']').unwrap_or(0);
+    if end == 0 {
+        return 0;
+    }
+    let ts = &line[1..end];
+    let t_pos = ts.find('T').unwrap_or(0);
+    if t_pos == 0 {
+        return 0;
+    }
+    let date = &ts[..t_pos];
+    // Strip timezone offset: "14:48:53+0100" or "14:48:53-0500"
+    let time_raw = &ts[t_pos + 1..];
+    let time = time_raw.split(['+', '-']).next().unwrap_or(time_raw);
+    let dp: Vec<&str> = date.split('-').collect();
+    let tp: Vec<&str> = time.split(':').collect();
+    if dp.len() < 3 || tp.len() < 2 {
+        return 0;
+    }
+    let year: i64 = dp[0].parse().unwrap_or(0);
+    let month: u32 = dp[1].parse().unwrap_or(0);
+    let day: u32 = dp[2].parse().unwrap_or(0);
+    let hour: u32 = tp[0].parse().unwrap_or(0);
+    let min: u32 = tp[1].parse().unwrap_or(0);
+    let sec: u32 = tp.get(2).and_then(|s| s.parse().ok()).unwrap_or(0);
+    date_to_epoch(year, month, day, hour, min, sec)
 }
 
 fn parse_pacman_info(info: &str) -> Vec<Package> {
@@ -189,7 +250,7 @@ pub fn collect_brew() -> Vec<Package> {
         }
         let name = formula["name"].as_str().unwrap_or("").to_string();
         let desc = formula["desc"].as_str().unwrap_or("").to_string();
-        let epoch = installed.last().and_then(|i| i["time"].as_u64()).unwrap_or(0);
+        let epoch = installed.first().and_then(|i| i["time"].as_u64()).unwrap_or(0);
         if !name.is_empty() && is_in_path(&name) {
             packages.push(Package { epoch, name, source: "brew".to_string(), description: desc });
         }
@@ -200,6 +261,12 @@ pub fn collect_brew() -> Vec<Package> {
 // --- Build ---
 
 pub fn build_packages() -> Vec<Package> {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0);
+    let cutoff = now.saturating_sub(30 * 86400);
+
     let mut seen = HashSet::new();
     let mut all = Vec::new();
     for pkg in collect_pacman()
@@ -207,7 +274,7 @@ pub fn build_packages() -> Vec<Package> {
         .chain(collect_brew())
         .chain(collect_cargo())
     {
-        if seen.insert(pkg.name.clone()) {
+        if pkg.epoch >= cutoff && seen.insert(pkg.name.clone()) {
             all.push(pkg);
         }
     }
