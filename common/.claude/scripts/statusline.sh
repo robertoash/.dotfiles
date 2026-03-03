@@ -23,9 +23,20 @@ FG_LIGHT=$'\e[38;2;208;214;227m'
 MODEL=$(echo "$DATA" | jq -r '.model.display_name // "?"' | tr '[:upper:] ' '[:lower:]-' | tr -s '-')
 CTX_PCT=$(echo "$DATA" | jq -r '(.context_window.used_percentage // 0) | floor')
 RAW_CWD=$(echo "$DATA" | jq -r '.cwd // "."')
-# CLAUDE_CONFIG_DIR moves the config root; .claude.json lives inside it
-CLAUDE_JSON="${CLAUDE_CONFIG_DIR:+$CLAUDE_CONFIG_DIR/.claude.json}"
-CLAUDE_JSON="${CLAUDE_JSON:-$HOME/.claude.json}"
+# Derive config root from transcript_path (always provided in JSON data,
+# unlike CLAUDE_CONFIG_DIR which may not survive to the statusline subprocess).
+# transcript_path is <config-root>/projects/.../transcript.jsonl
+# The default profile stores .claude.json at $HOME/.claude.json (not inside
+# $HOME/.claude/) while custom profiles store it at $CLAUDE_CONFIG_DIR/.claude.json.
+TRANSCRIPT=$(echo "$DATA" | jq -r '.transcript_path // ""')
+CONFIG_ROOT="${TRANSCRIPT%%/projects/*}"
+if [[ "$CONFIG_ROOT" == "$HOME/.claude" ]]; then
+    CLAUDE_JSON="$HOME/.claude.json"
+elif [[ -n "$CONFIG_ROOT" && -f "$CONFIG_ROOT/.claude.json" ]]; then
+    CLAUDE_JSON="$CONFIG_ROOT/.claude.json"
+else
+    CLAUDE_JSON="$HOME/.claude.json"
+fi
 EMAIL=$(jq -r '.oauthAccount.emailAddress // ""' "$CLAUDE_JSON" 2>/dev/null)
 BRANCH=$(git -C "$RAW_CWD" branch --show-current 2>/dev/null)
 
