@@ -7,8 +7,9 @@ set -euo pipefail
 
 secrets_dir="${XDG_RUNTIME_DIR:-/run/user/$UID}/secrets"
 
-# Wait for sops-secrets.service to finish (secrets written to files + systemd env)
-systemctl --user start sops-secrets.service
+# Decrypt secrets directly (faster than waiting for systemd service ordering).
+# This also sets the systemd user env so services that start later get them too.
+"$HOME/.dotfiles/common/scripts/decrypt-secrets.sh"
 
 # Load secrets into our process env so Hyprland inherits them
 if [[ -d "$secrets_dir" ]]; then
