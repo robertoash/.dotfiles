@@ -20,6 +20,6 @@ function cnn -d "Launch CNN stream with rofi_xtream MPV parameters"
         >/dev/null 2>&1 &
     set -l mpv_pid $last_pid
     disown $mpv_pid
-    hypr-window-ops setup-pip --pid $mpv_pid &
+    hypr-window-ops setup-pip --pid $mpv_pid >/dev/null 2>&1 &
     disown
 end
