@@ -145,8 +145,8 @@ keymap = [
   # Copy
   { on = [ "c", "d" ],   run = "copy dirname",                 desc = "Copy the directory path" },
   { on = [ "c", "f" ],   run = "copy filename",                desc = "Copy the filename" },
-  { on = [ "c", "n" ],   run = "copy name_without_ext",        desc = "Copy the filename without extension" },
-  { on = [ "p", "y" ],   run = "copy path",                    desc = "Path yank (full)" },
+  { on = [ "c", "n" ],   run = "copy name_without_ext",        desc = "Copy file basename" },
+  { on = [ "c", "p" ],   run = "copy path",                    desc = "Copy the full path" },
 
   # Filter
   #{ on = "f",           run = "filter --smart",               desc = "Filter files" },
