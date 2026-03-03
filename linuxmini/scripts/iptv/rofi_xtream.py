@@ -21,20 +21,10 @@ FAVORITES_FILE = CACHE_DIR / "favorites.json"
 CACHE_EXPIRY = 12 * 3600  # 12 hours in seconds
 NOTIFICATION_ID = "1719"
 
-# Load Xtream proxy credentials from environment or secrets files
-# Env vars are set in interactive fish sessions; secrets files are the fallback for GUI launchers
-def _get_secret(env_var, secret_key):
-    value = os.getenv(env_var, "")
-    if not value:
-        secrets_dir = Path(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")) / "secrets"
-        secret_file = secrets_dir / secret_key
-        if secret_file.exists():
-            value = secret_file.read_text().strip()
-    return value
-
-XTREAM_PROXY_SERVER = _get_secret("XTREAM_PROXY_SERVER", "xtream-proxy-server")
-XTREAM_PROXY_USERNAME = _get_secret("XTREAM_PROXY_USERNAME", "xtream-proxy-username")
-XTREAM_PROXY_PASSWORD = _get_secret("XTREAM_PROXY_PASSWORD", "xtream-proxy-password")
+# Load Xtream proxy credentials from environment
+XTREAM_PROXY_SERVER = os.getenv("XTREAM_PROXY_SERVER", "")
+XTREAM_PROXY_USERNAME = os.getenv("XTREAM_PROXY_USERNAME", "")
+XTREAM_PROXY_PASSWORD = os.getenv("XTREAM_PROXY_PASSWORD", "")
 
 if not all([XTREAM_PROXY_SERVER, XTREAM_PROXY_USERNAME, XTREAM_PROXY_PASSWORD]):
     raise RuntimeError("❌ Missing proxy credentials (check sops-secrets service)")
