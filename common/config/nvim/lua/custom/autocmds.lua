@@ -44,25 +44,29 @@ vim.api.nvim_create_autocmd("FileType", {
 	desc = "Configure JSON files with no concealment, jq formatter, and no wrapping",
 })
 
+local function jq_format()
+	if vim.fn.executable("jq") ~= 1 then
+		return
+	end
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	local input = table.concat(lines, "\n")
+	local result = vim.fn.systemlist("jq .", { input })
+	if vim.v.shell_error == 0 then
+		vim.api.nvim_buf_set_lines(0, 0, -1, false, result)
+	end
+end
+
 -- Format JSON files on open
 vim.api.nvim_create_autocmd("BufReadPost", {
 	pattern = "*.json",
-	callback = function()
-		if vim.fn.executable("jq") == 1 then
-			vim.cmd([[%!jq]])
-		end
-	end,
+	callback = jq_format,
 	desc = "Auto-format JSON files with jq on open",
 })
 
 -- Format JSON files on save
 vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*.json",
-	callback = function()
-		if vim.fn.executable("jq") == 1 then
-			vim.cmd([[%!jq]])
-		end
-	end,
+	callback = jq_format,
 	desc = "Auto-format JSON files with jq on save",
 })
 
