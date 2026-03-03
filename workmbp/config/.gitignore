@@ -38,6 +38,7 @@ fish/functions/__frecent_unified_widget.fish
 fish/functions/__smart_cd.fish
 fish/functions/__smart_cwd_hook.fish
 fish/functions/__smart_tab_complete.fish
+fish/functions/_word_boundary.py
 fish/functions/accept_next_path_segment.fish
 fish/functions/bk_swap.fish
 fish/functions/bko.fish
@@ -131,6 +132,7 @@ tealdeer
 thoth
 transmission
 ttydal
+vimium
 visidata
 w3m
 wallpapers
