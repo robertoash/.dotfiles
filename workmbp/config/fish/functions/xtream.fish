@@ -1,19 +1,10 @@
 function xtream --description "Browse and watch Xtream IPTV channels with fzf"
-    # Read credentials from sops secrets
-    set -l secrets_dir "$XDG_RUNTIME_DIR/secrets"
+    set -l proxy_server "$XTREAM_SERVER"
+    set -l proxy_user "$XTREAM_USERNAME"
+    set -l proxy_pass "$XTREAM_PASSWORD"
 
-    if not test -d "$secrets_dir"
-        echo "❌ Secrets directory not found: $secrets_dir" >&2
-        echo "Set up the secrets directory or set XDG_RUNTIME_DIR appropriately" >&2
-        return 1
-    end
-
-    set -l proxy_server "http://linuxmini:8080"
-    set -l proxy_user (cat "$secrets_dir/xtream/proxy-users/user2/username" 2>/dev/null)
-    set -l proxy_pass (cat "$secrets_dir/xtream/proxy-users/user2/password" 2>/dev/null)
-
-    if test -z "$proxy_user" -o -z "$proxy_pass"
-        echo "❌ Failed to read proxy credentials from sops" >&2
+    if test -z "$proxy_server" -o -z "$proxy_user" -o -z "$proxy_pass"
+        echo "❌ Missing xtream credentials (check sops-secrets service)" >&2
         return 1
     end
 

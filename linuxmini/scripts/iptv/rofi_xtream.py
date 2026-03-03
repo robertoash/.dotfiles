@@ -22,12 +22,12 @@ CACHE_EXPIRY = 12 * 3600  # 12 hours in seconds
 NOTIFICATION_ID = "1719"
 
 # Load Xtream proxy credentials from environment
-XTREAM_PROXY_SERVER = os.getenv("XTREAM_PROXY_SERVER", "")
-XTREAM_PROXY_USERNAME = os.getenv("XTREAM_PROXY_USERNAME", "")
-XTREAM_PROXY_PASSWORD = os.getenv("XTREAM_PROXY_PASSWORD", "")
+XTREAM_SERVER = os.getenv("XTREAM_PROXY_SERVER", "")
+XTREAM_USERNAME = os.getenv("XTREAM_PROXY_USERNAME", "")
+XTREAM_PASSWORD = os.getenv("XTREAM_PROXY_PASSWORD", "")
 
-if not all([XTREAM_PROXY_SERVER, XTREAM_PROXY_USERNAME, XTREAM_PROXY_PASSWORD]):
-    raise RuntimeError("❌ Missing proxy credentials (check sops-secrets service)")
+if not all([XTREAM_SERVER, XTREAM_USERNAME, XTREAM_PASSWORD]):
+    raise RuntimeError("❌ Missing xtream proxy credentials (check sops-secrets service)")
 
 # ========== UTILS ==========
 
@@ -154,10 +154,10 @@ def make_api_call(action, extra_params=None):
     # Show persistent refreshing notification
     notify("🔄 Refreshing...", f"Updating {action.replace('_', ' ')}")
 
-    url = f"{XTREAM_PROXY_SERVER}/player_api.php"
+    url = f"{XTREAM_SERVER}/player_api.php"
     params = {
-        "username": XTREAM_PROXY_USERNAME,
-        "password": XTREAM_PROXY_PASSWORD,
+        "username": XTREAM_USERNAME,
+        "password": XTREAM_PASSWORD,
         "action": action
     }
     if extra_params:
@@ -263,13 +263,13 @@ def build_stream_url(stream_id, stream_type="live", container_extension=None):
     - Using wrong extension returns HTTP 551
     """
     if stream_type == "live":
-        return f"{XTREAM_PROXY_SERVER}/live/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.ts"
+        return f"{XTREAM_SERVER}/live/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.ts"
     elif stream_type == "movie":
         ext = container_extension or "mkv"  # Fallback to mkv (most common)
-        return f"{XTREAM_PROXY_SERVER}/movie/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.{ext}"
+        return f"{XTREAM_SERVER}/movie/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.{ext}"
     elif stream_type == "series":
         ext = container_extension or "mkv"
-        return f"{XTREAM_PROXY_SERVER}/series/{XTREAM_PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.{ext}"
+        return f"{XTREAM_SERVER}/series/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.{ext}"
 
 def launch_mpv(stream_url, title):
     """Launch MPV with the stream."""
@@ -292,7 +292,7 @@ def launch_mpv(stream_url, title):
             "--stream-lavf-o=follow_redirects=1",
             "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
             "--http-header-fields=Accept: */*",
-            f"--referrer={XTREAM_PROXY_SERVER}",
+            f"--referrer={XTREAM_SERVER}",
             "--wayland-app-id=rofi_xtream",
             f"--title=Xtream - {title}",
             stream_url

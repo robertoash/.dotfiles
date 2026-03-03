@@ -25,28 +25,16 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(me
 UPSTREAM_SERVER = os.getenv('UPSTREAM_SERVER', '')
 UPSTREAM_USERNAME = os.getenv('UPSTREAM_USERNAME', '')
 UPSTREAM_PASSWORD = os.getenv('UPSTREAM_PASSWORD', '')
-ALT_USERNAME = os.getenv('ALT_USERNAME', '')
-ALT_PASSWORD = os.getenv('ALT_PASSWORD', '')
 
-# Multi-user proxy authentication - dynamically load from environment
+# Load proxy users from PROXY_USER{N}_USERNAME/PASSWORD env vars
 PROXY_USERS = {}
-
-# Load proxy users from environment variables
 user_count = 1
 while True:
     username = os.getenv(f'PROXY_USER{user_count}_USERNAME')
     password = os.getenv(f'PROXY_USER{user_count}_PASSWORD')
-    stream_user = os.getenv(f'PROXY_USER{user_count}_STREAM_USER')
-    stream_pass = os.getenv(f'PROXY_USER{user_count}_STREAM_PASS')
-
-    if not all([username, password, stream_user, stream_pass]):
+    if not all([username, password]):
         break
-
-    PROXY_USERS[username] = {
-        "password": password,
-        "stream_user": stream_user,
-        "stream_pass": stream_pass
-    }
+    PROXY_USERS[username] = password
     user_count += 1
 
 if not PROXY_USERS:
@@ -56,16 +44,14 @@ if not all([UPSTREAM_SERVER, UPSTREAM_USERNAME, UPSTREAM_PASSWORD]):
     raise RuntimeError("Missing required environment variables")
 
 def get_user_credentials(username, password):
-    """Get user credentials and return stream credentials if valid."""
-    user_config = PROXY_USERS.get(username)
-    if user_config and user_config["password"] == password:
-        return user_config["stream_user"], user_config["stream_pass"]
+    """Validate proxy credentials and return upstream stream credentials."""
+    if PROXY_USERS.get(username) == password:
+        return UPSTREAM_USERNAME, UPSTREAM_PASSWORD
     return None, None
 
 def validate_proxy_credentials(username, password):
     """Validate proxy user credentials."""
-    user_config = PROXY_USERS.get(username)
-    return user_config and user_config["password"] == password
+    return PROXY_USERS.get(username) == password
 
 # Filter rules from your original script
 NAME_TWEAKS = {

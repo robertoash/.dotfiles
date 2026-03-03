@@ -7,7 +7,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application
-COPY app.py config.py .
+COPY app.py config.py ./
 
 # Create non-root user
 RUN useradd -m -u 1000 xtream && chown -R xtream:xtream /app

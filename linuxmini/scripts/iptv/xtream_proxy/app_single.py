@@ -19,22 +19,14 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
 # Load config from environment
-UPSTREAM_SERVER = os.getenv('UPSTREAM_SERVER', '')
-UPSTREAM_USERNAME = os.getenv('UPSTREAM_USERNAME', '')
-UPSTREAM_PASSWORD = os.getenv('UPSTREAM_PASSWORD', '')
-STREAM_USERNAME = os.getenv('STREAM_USERNAME', '')
-STREAM_PASSWORD = os.getenv('STREAM_PASSWORD', '')
-PROXY_USERNAME = os.getenv('PROXY_USERNAME', 'proxy_user')
-PROXY_PASSWORD = os.getenv('PROXY_PASSWORD', 'proxy_pass')
+XTREAM_SERVER = os.getenv('XTREAM_SERVER', '')
+XTREAM_USERNAME = os.getenv('XTREAM_USERNAME', '')
+XTREAM_PASSWORD = os.getenv('XTREAM_PASSWORD', '')
+PROXY_USERNAME = os.getenv('PROXY_USERNAME', 'proxy')
+XTREAM_XTREAM_PROXY_PASSWORD = os.getenv('XTREAM_XTREAM_PROXY_PASSWORD', '')
 
-if not all([UPSTREAM_SERVER, UPSTREAM_USERNAME, UPSTREAM_PASSWORD]):
+if not all([XTREAM_SERVER, XTREAM_USERNAME, XTREAM_PASSWORD, XTREAM_XTREAM_PROXY_PASSWORD]):
     raise RuntimeError("Missing required environment variables")
-
-# Use STREAM credentials for actual streaming if available
-if not STREAM_USERNAME:
-    STREAM_USERNAME = UPSTREAM_USERNAME
-if not STREAM_PASSWORD:
-    STREAM_PASSWORD = UPSTREAM_PASSWORD
 
 # Filter rules from your original script
 NAME_TWEAKS = {
@@ -141,10 +133,10 @@ def should_include(name, category, group, filter_type="full"):
 
 def make_upstream_call(action, extra_params=None):
     """Make API call to upstream Xtream server."""
-    url = f"{UPSTREAM_SERVER}/player_api.php"
+    url = f"{XTREAM_SERVER}/player_api.php"
     params = {
-        "username": UPSTREAM_USERNAME,
-        "password": UPSTREAM_PASSWORD,
+        "username": XTREAM_USERNAME,
+        "password": XTREAM_PASSWORD,
         "action": action
     }
     if extra_params:
@@ -216,11 +208,11 @@ def generate_m3u_from_streams(streams, stream_type):
 
         # Build stream URL using proxy credentials
         if stream_type == 'live':
-            stream_url = f"{request.host_url.rstrip('/')}/live/{PROXY_USERNAME}/{PROXY_PASSWORD}/{stream_id}.ts"
+            stream_url = f"{request.host_url.rstrip('/')}/live/{PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.ts"
         elif stream_type == 'vod':
-            stream_url = f"{request.host_url.rstrip('/')}/movie/{PROXY_USERNAME}/{PROXY_PASSWORD}/{stream_id}.mp4"
+            stream_url = f"{request.host_url.rstrip('/')}/movie/{PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.mp4"
         elif stream_type == 'series':
-            stream_url = f"{request.host_url.rstrip('/')}/series/{PROXY_USERNAME}/{PROXY_PASSWORD}/{stream_id}.mp4"
+            stream_url = f"{request.host_url.rstrip('/')}/series/{PROXY_USERNAME}/{XTREAM_PROXY_PASSWORD}/{stream_id}.mp4"
 
         # Build M3U entry
         extinf = f'#EXTINF:-1 tvg-id="{stream_id}" tvg-name="{name}" tvg-logo="{icon}" group-title="{category}",{name}'
@@ -238,7 +230,7 @@ def player_api():
     username = request.args.get('username')
     password = request.args.get('password')
 
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return jsonify({"error": "Invalid credentials"}), 401
 
     action = request.args.get('action')
@@ -308,7 +300,7 @@ def get_playlist():
     username = request.args.get('username')
     password = request.args.get('password')
 
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return "Invalid credentials", 401
 
     playlist_type = request.args.get('type', 'm3u_plus')
@@ -326,29 +318,29 @@ def get_playlist():
 @app.route('/live/<username>/<password>/<stream_id>.ts')
 def proxy_live_stream(username, password, stream_id):
     """Proxy live stream to upstream server."""
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return "Invalid credentials", 401
 
     # Redirect to upstream server using real credentials
-    upstream_url = f"{UPSTREAM_SERVER}/live/{STREAM_USERNAME}/{STREAM_PASSWORD}/{stream_id}.ts"
+    upstream_url = f"{XTREAM_SERVER}/live/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.ts"
     return redirect(upstream_url, code=302)
 
 @app.route('/movie/<username>/<password>/<stream_id>.mp4')
 def proxy_movie_stream(username, password, stream_id):
     """Proxy movie stream to upstream server."""
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return "Invalid credentials", 401
 
-    upstream_url = f"{UPSTREAM_SERVER}/movie/{STREAM_USERNAME}/{STREAM_PASSWORD}/{stream_id}.mp4"
+    upstream_url = f"{XTREAM_SERVER}/movie/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.mp4"
     return redirect(upstream_url, code=302)
 
 @app.route('/series/<username>/<password>/<stream_id>.mp4')
 def proxy_series_stream(username, password, stream_id):
     """Proxy series stream to upstream server."""
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return "Invalid credentials", 401
 
-    upstream_url = f"{UPSTREAM_SERVER}/series/{STREAM_USERNAME}/{STREAM_PASSWORD}/{stream_id}.mp4"
+    upstream_url = f"{XTREAM_SERVER}/series/{XTREAM_USERNAME}/{XTREAM_PASSWORD}/{stream_id}.mp4"
     return redirect(upstream_url, code=302)
 
 @app.route('/xmltv.php')
@@ -357,11 +349,11 @@ def proxy_epg():
     username = request.args.get('username')
     password = request.args.get('password')
 
-    if username != PROXY_USERNAME or password != PROXY_PASSWORD:
+    if username != PROXY_USERNAME or password != XTREAM_PROXY_PASSWORD:
         return "Invalid credentials", 401
 
     # Redirect to upstream EPG
-    upstream_url = f"{UPSTREAM_SERVER}/xmltv.php?username={UPSTREAM_USERNAME}&password={UPSTREAM_PASSWORD}"
+    upstream_url = f"{XTREAM_SERVER}/xmltv.php?username={XTREAM_USERNAME}&password={XTREAM_PASSWORD}"
     return redirect(upstream_url, code=302)
 
 @app.route('/health')
