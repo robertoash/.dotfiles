@@ -1,0 +1,10 @@
+{
+  "exclusionRules": [
+    {},
+    {}
+  ],
+  "keyMappings": "# === Scroll ===\n  # Note: set scrollStepSize to 150 in Vimium Options to match j/k feel\n  map j scrollDown\n  map k scrollUp\n  map <c-j> scrollPageDown\n  map <c-k> scrollPageUp\n  map <c-h> scrollLeft\n  map <c-l> scrollRight\n\n# === Tabs ===\n  map J nextTab\n  map K previousTab\n  map <c-s-j> moveTabRight\n  map <c-s-k> moveTabLeft\n  map D duplicateTab\n\n# === Clipboard ===\n  unmap p\n  unmap P\n  map pp openCopiedUrlInCurrentTab\n  map pP openCopiedUrlInNewTab\n\n# === Hints ===\n  map ;f LinkHints.activateMode\n  map ;ll LinkHints.activateMode\n  map ;lt LinkHints.activateModeToOpenInNewTab\n  map ;lb LinkHints.activateModeWithQueue\n  map ;ly LinkHints.activateModeToCopyLinkUrl\n  map ;D LinkHints.activateModeToDownloadLink\n  map ;ii focusInput\n  map ;iI focusInput",
+  "linkHintCharacters": "asdfjklöäqwertuiop",
+  "scrollStepSize": 150,
+  "settingsVersion": "2.4.0"
+}
