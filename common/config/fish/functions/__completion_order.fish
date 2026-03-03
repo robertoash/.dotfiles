@@ -46,14 +46,14 @@ function __completion_order
 
     # Step 1: Immediate children (depth 1)
     if test -d "$search_dir"
-        for item in (fd -Hi --no-ignore $fd_type_flag --max-depth 1 . "$search_dir" 2>/dev/null)
+        for item in (fd -Hi --no-ignore-vcs $fd_type_flag --max-depth 1 . "$search_dir" 2>/dev/null)
             __format_with_label "$item" "[local]" $path_width
         end
     end
 
-    # Step 2: Deeper items (depth 2-3)
+    # Step 2: Deeper items (no depth cap; ~/.config/fd/ignore controls what's excluded)
     if test -d "$search_dir"
-        for item in (fd -Hi --no-ignore $fd_type_flag --min-depth 2 --max-depth 3 . "$search_dir" 2>/dev/null)
+        for item in (fd -Hi --no-ignore-vcs $fd_type_flag --min-depth 2 . "$search_dir" 2>/dev/null)
             __format_with_label "$item" "[fd]" $path_width
         end
     end

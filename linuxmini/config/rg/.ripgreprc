@@ -1,18 +1,5 @@
 --hidden
 --smart-case
 --follow
---glob=!__pycache__/
---glob=!.direnv/
---glob=!venv/
---glob=!node_modules/
---glob=!.git/
---glob=!.vscode/
---glob=!qutebrowser/
---glob=!BraveSoftware/
---glob=!Cursor/
---glob=!vivaldi/
---glob=!"Code - Insiders/"
---glob=!Slack/
---glob=!gcloud/
---glob=!zsh/
---glob=!ticktick/
+--no-messages
+--ignore-file=/home/rash/.config/ignore/ignore
