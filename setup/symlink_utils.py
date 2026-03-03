@@ -2,6 +2,7 @@
 Symlink utilities for dotfiles setup.
 """
 
+import os
 import subprocess
 from pathlib import Path
 
@@ -60,19 +61,19 @@ def merge_common_into_machine(common_dir, machine_dir, config_root, dotfiles_dir
 
     # Clean up broken symlinks that were created by setup.py
     # (i.e., symlinks pointing to locations within dotfiles directory)
-    if machine_dir.exists():
-        for item in machine_dir.iterdir():
-            if item.is_symlink() and not item.exists():
-                # Broken symlink - check if it points within dotfiles
-                try:
-                    target = item.resolve(strict=False)
-                    if str(target).startswith(str(dotfiles_dir)):
-                        # This was created by setup.py, safe to remove
-                        item.unlink()
-                        if level == 0:
-                            print(f"🗑️  Removed broken symlink: {item.name}")
-                except (OSError, RuntimeError):
-                    pass
+    # Run recursive scan once at the top level to catch nested broken symlinks.
+    if machine_dir.exists() and level == 0:
+        for dirpath, dirnames, filenames in os.walk(str(machine_dir), followlinks=False):
+            for name in (*dirnames, *filenames):
+                item = Path(dirpath) / name
+                if item.is_symlink() and not item.exists():
+                    try:
+                        target = item.resolve(strict=False)
+                        if str(target).startswith(str(dotfiles_dir)):
+                            item.unlink()
+                            print(f"🗑️  Removed broken symlink: {item.relative_to(machine_dir)}")
+                    except (OSError, RuntimeError):
+                        pass
 
     if symlink_paths is None:
         symlink_paths = []
