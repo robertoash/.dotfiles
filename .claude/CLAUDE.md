@@ -28,36 +28,13 @@ vim ~/.dotfiles/common/config/nvim/init.lua
 cd ~/.dotfiles && python setup.py
 ```
 
-<!-- CODEGRAPH_START -->
-## CodeGraph
+## Environment Variable Propagation (linuxmini)
 
-CodeGraph builds a semantic knowledge graph of codebases for faster, smarter code exploration.
+Env vars flow through two layers. Full details in `system/env_vars.yaml`.
 
-### If `.codegraph/` exists in the project
+1. **systemd user env** — `environment.d/env_vars.conf` (global vars) + `sops-secrets.service` (secrets). Used by systemd services and imported by fish (`00_environment.fish`).
+2. **Hyprland process env** — `start-session.sh` wrapper (called by greetd) imports secrets + systemd env before exec'ing Hyprland. All keybind-launched processes inherit automatically.
 
-**Use codegraph tools for faster exploration.** These tools provide instant lookups via the code graph instead of scanning files:
+**Do NOT use `hyprctl keyword env` at runtime** — it doesn't propagate to child processes ([hyprwm/Hyprland#8403](https://github.com/hyprwm/Hyprland/issues/8403)). If Hyprland children need new env vars, add them to the wrapper or systemd env.
 
-| Tool | Use For |
-|------|---------|
-| `codegraph_search` | Find symbols by name (functions, classes, types) |
-| `codegraph_context` | Get relevant code context for a task |
-| `codegraph_callers` | Find what calls a function |
-| `codegraph_callees` | Find what a function calls |
-| `codegraph_impact` | See what's affected by changing a symbol |
-| `codegraph_node` | Get details + source code for a symbol |
-
-**When spawning Explore agents in a codegraph-enabled project:**
-
-Tell the Explore agent to use codegraph tools for faster exploration.
-
-**For quick lookups in the main session:**
-- Use `codegraph_search` instead of grep for finding symbols
-- Use `codegraph_callers`/`codegraph_callees` to trace code flow
-- Use `codegraph_impact` before making changes to see what's affected
-
-### If `.codegraph/` does NOT exist
-
-At the start of a session, ask the user if they'd like to initialize CodeGraph:
-
-"I notice this project doesn't have CodeGraph initialized. Would you like me to run `codegraph init -i` to build a code knowledge graph?"
-<!-- CODEGRAPH_END -->
+Scripts launched from Hyprland keybinds should never need to load secrets themselves — they inherit from Hyprland's process environment.
