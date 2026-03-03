@@ -333,16 +333,10 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                 print("❌ Could not determine window's monitor")
                 return
 
-            # Get usable area using shared utilities
+            # Calculate max available size for aspect-ratio-preserving scale
             usable_area = monitor_utils.get_monitor_usable_area(monitor)
-            usable_min_x = usable_area["min_x"]
-            usable_min_y = usable_area["min_y"]
-            usable_max_x = usable_area["max_x"]
-            usable_max_y = usable_area["max_y"]
-
-            # Calculate max available size
-            max_available_width = usable_max_x - usable_min_x
-            max_available_height = usable_max_y - usable_min_y
+            max_available_width = usable_area["max_x"] - usable_area["min_x"]
+            max_available_height = usable_area["max_y"] - usable_area["min_y"]
 
             # Calculate doubled size, maintaining aspect ratio if capped
             target_width = current_width * 2
@@ -368,81 +362,20 @@ def toggle_double_size(relative_floating=False, sneaky=False):
                     f.write(f"{addr}:{state['width']}:{state['height']}:{state['x']}:{state['y']}\n")
 
             # Resize using resizewindowpixel with address (no focus change needed)
+            # Note: resizewindowpixel exact anchors at the window center, not top-left
             window_manager.run_hyprctl_command([
                 "dispatch", "resizewindowpixel",
                 f"exact {new_width} {new_height},address:{window_id}"
             ])
 
-            # Calculate offset based on anchoring strategy
-            x_offset = 0
-            y_offset = 0
-
+            # Re-position after resize
             if corner:
-                # Window is snapped to a corner - anchor at that corner
-                # Offset by the actual size increase to keep corner in place
-                width_increase = new_width - current_width
-                height_increase = new_height - current_height
-
-                if corner in ["upper-right", "lower-right"]:
-                    x_offset = -width_increase
-                if corner in ["lower-left", "lower-right"]:
-                    y_offset = -height_increase
+                # Snap to corner - movewindow handles exact positioning
+                snap_windows.snap_window_to_corner(corner=corner, window_address=window_id)
                 anchor_type = f"corner: {corner}"
             else:
-                # Window is not snapped - anchor at center
-                # Offset by half the size increase to keep center in the same position
-                width_increase = new_width - current_width
-                height_increase = new_height - current_height
-                x_offset = -width_increase // 2
-                y_offset = -height_increase // 2
+                # Center anchor: resizewindowpixel already keeps the center fixed, no move needed
                 anchor_type = "center"
-
-            # Calculate new position after offset
-            new_x = current_x + x_offset
-            new_y = current_y + y_offset
-            new_right = new_x + new_width
-            new_bottom = new_y + new_height
-
-            # Clamp to monitor bounds, but respect corner anchoring
-            # When corner-anchored, don't clamp the anchored edges
-            if corner:
-                # Only clamp the edges opposite to the anchored corner
-                if corner in ["upper-left", "lower-left"]:
-                    # Left is anchored, only check right
-                    if new_right > usable_max_x:
-                        x_offset -= (new_right - usable_max_x)
-                else:  # upper-right, lower-right
-                    # Right is anchored, only check left
-                    if new_x < usable_min_x:
-                        x_offset += (usable_min_x - new_x)
-
-                if corner in ["upper-left", "upper-right"]:
-                    # Top is anchored, only check bottom
-                    if new_bottom > usable_max_y:
-                        y_offset -= (new_bottom - usable_max_y)
-                else:  # lower-left, lower-right
-                    # Bottom is anchored, only check top
-                    if new_y < usable_min_y:
-                        y_offset += (usable_min_y - new_y)
-            else:
-                # No corner anchor (center mode), clamp all edges
-                if new_x < usable_min_x:
-                    x_offset += (usable_min_x - new_x)
-                elif new_right > usable_max_x:
-                    x_offset -= (new_right - usable_max_x)
-
-                if new_y < usable_min_y:
-                    y_offset += (usable_min_y - new_y)
-                elif new_bottom > usable_max_y:
-                    y_offset -= (new_bottom - usable_max_y)
-
-            # Apply offset if needed
-            if x_offset != 0 or y_offset != 0:
-                window_manager.run_hyprctl_command([
-                    "dispatch", "movewindowpixel",
-                    "--",
-                    f"{x_offset} {y_offset},address:{window_id}"
-                ])
 
             # Apply large-video tag for mpv/vlc windows when doubling
             if "mpv" in window_class or "vlc" in window_class:
@@ -461,16 +394,10 @@ def toggle_double_size(relative_floating=False, sneaky=False):
             print("❌ Could not determine window's monitor")
             return
 
-        # Get usable area using shared utilities
+        # Calculate max available size for aspect-ratio-preserving scale
         usable_area = monitor_utils.get_monitor_usable_area(monitor)
-        usable_min_x = usable_area["min_x"]
-        usable_min_y = usable_area["min_y"]
-        usable_max_x = usable_area["max_x"]
-        usable_max_y = usable_area["max_y"]
-
-        # Calculate max available size
-        max_available_width = usable_max_x - usable_min_x
-        max_available_height = usable_max_y - usable_min_y
+        max_available_width = usable_area["max_x"] - usable_area["min_x"]
+        max_available_height = usable_area["max_y"] - usable_area["min_y"]
 
         # Calculate doubled size, maintaining aspect ratio if capped
         target_width = current_width * 2
@@ -490,81 +417,20 @@ def toggle_double_size(relative_floating=False, sneaky=False):
             f.write(f"{window_id}:{current_width}:{current_height}:{current_x}:{current_y}\n")
 
         # Resize using resizewindowpixel with address (no focus change needed)
+        # Note: resizewindowpixel exact anchors at the window center, not top-left
         window_manager.run_hyprctl_command([
             "dispatch", "resizewindowpixel",
             f"exact {new_width} {new_height},address:{window_id}"
         ])
 
-        # Calculate offset based on anchoring strategy
-        x_offset = 0
-        y_offset = 0
-
+        # Re-position after resize
         if corner:
-            # Window is snapped to a corner - anchor at that corner
-            # Offset by the actual size increase to keep corner in place
-            width_increase = new_width - current_width
-            height_increase = new_height - current_height
-
-            if corner in ["upper-right", "lower-right"]:
-                x_offset = -width_increase
-            if corner in ["lower-left", "lower-right"]:
-                y_offset = -height_increase
+            # Snap to corner - movewindow handles exact positioning
+            snap_windows.snap_window_to_corner(corner=corner, window_address=window_id)
             anchor_type = f"corner: {corner}"
         else:
-            # Window is not snapped - anchor at center
-            # Offset by half the size increase to keep center in the same position
-            width_increase = new_width - current_width
-            height_increase = new_height - current_height
-            x_offset = -width_increase // 2
-            y_offset = -height_increase // 2
+            # Center anchor: resizewindowpixel already keeps the center fixed, no move needed
             anchor_type = "center"
-
-        # Calculate new position after offset
-        new_x = current_x + x_offset
-        new_y = current_y + y_offset
-        new_right = new_x + new_width
-        new_bottom = new_y + new_height
-
-        # Clamp to monitor bounds, but respect corner anchoring
-        # When corner-anchored, don't clamp the anchored edges
-        if corner:
-            # Only clamp the edges opposite to the anchored corner
-            if corner in ["upper-left", "lower-left"]:
-                # Left is anchored, only check right
-                if new_right > usable_max_x:
-                    x_offset -= (new_right - usable_max_x)
-            else:  # upper-right, lower-right
-                # Right is anchored, only check left
-                if new_x < usable_min_x:
-                    x_offset += (usable_min_x - new_x)
-
-            if corner in ["upper-left", "upper-right"]:
-                # Top is anchored, only check bottom
-                if new_bottom > usable_max_y:
-                    y_offset -= (new_bottom - usable_max_y)
-            else:  # lower-left, lower-right
-                # Bottom is anchored, only check top
-                if new_y < usable_min_y:
-                    y_offset += (usable_min_y - new_y)
-        else:
-            # No corner anchor (center mode), clamp all edges
-            if new_x < usable_min_x:
-                x_offset += (usable_min_x - new_x)
-            elif new_right > usable_max_x:
-                x_offset -= (new_right - usable_max_x)
-
-            if new_y < usable_min_y:
-                y_offset += (usable_min_y - new_y)
-            elif new_bottom > usable_max_y:
-                y_offset -= (new_bottom - usable_max_y)
-
-        # Apply offset if needed
-        if x_offset != 0 or y_offset != 0:
-            window_manager.run_hyprctl_command([
-                "dispatch", "movewindowpixel",
-                "--",
-                f"{x_offset} {y_offset},address:{window_id}"
-            ])
 
         # Apply large-video tag for mpv/vlc windows when doubling
         if "mpv" in window_class or "vlc" in window_class:

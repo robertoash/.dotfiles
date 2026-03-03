@@ -96,7 +96,10 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
     # Get target window
     original_active_address = None
     if window_address:
-        # Explicit address provided - find and focus it
+        # Explicit address provided - save current focus, then focus target
+        active = window_manager.run_hyprctl(["activewindow", "-j"])
+        if active and active.get("address") != window_address:
+            original_active_address = active.get("address")
         clients = window_manager.get_clients()
         window_info = next((c for c in clients if c["address"] == window_address), None)
         if not window_info:
