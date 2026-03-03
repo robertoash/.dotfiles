@@ -238,9 +238,11 @@ fish/functions/__completion_sources.fish
 fish/functions/__dot_expand_widget.fish
 fish/functions/__fd_unified_widget.fish
 fish/functions/__frecent_unified_widget.fish
+fish/functions/__pycache__
 fish/functions/__smart_cd.fish
 fish/functions/__smart_cwd_hook.fish
 fish/functions/__smart_tab_complete.fish
+fish/functions/_word_boundary.py
 fish/functions/accept_next_path_segment.fish
 fish/functions/bk_swap.fish
 fish/functions/bko.fish
