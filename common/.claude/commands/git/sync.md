@@ -1,5 +1,5 @@
 ---
-argument-hint: [--all-changes | --session (default)] [--all-repos | --repo (default)]
+argument-hint: [--all] [--all-changes | --session (default)] [--all-repos | --repo (default)]
 ---
 Git sync command. Args: $ARGUMENTS
 
@@ -13,7 +13,7 @@ Parse the arguments to determine behavior along two axes:
 - `--all-repos` → operate on all project repos (working directory + additional working directories configured for this session — not unrelated repos elsewhere on disk)
 - `--repo` (default) → operate on the current working directory's repo only
 
-If no arguments are provided, default to `--session --repo`.
+`--all` is equivalent to `--all-changes --all-repos`. If no arguments are provided, default to `--session --repo`.
 
 Then proceed:
 - Group changes into logical commits by feature/fix/purpose
