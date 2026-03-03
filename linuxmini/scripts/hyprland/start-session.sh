@@ -23,10 +23,13 @@ if [[ -d "$secrets_dir" ]]; then
 fi
 
 # Import global vars from systemd user environment (EDITOR, BROWSER, etc.)
+# Skip compositor-set vars that persist from a previous session — stale values
+# for WAYLAND_DISPLAY, DISPLAY, etc. would confuse the new start-hyprland.
 while IFS= read -r line; do
-    # Skip empty lines and read-only vars
     case "${line%%=*}" in
         ""|PATH|HOME|USER|LOGNAME|SHELL|TERM|SHLVL|PWD|_) continue ;;
+        WAYLAND_DISPLAY|DISPLAY|HYPRLAND_INSTANCE_SIGNATURE) continue ;;
+        HYPRLAND_CMD|XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE) continue ;;
     esac
     export "$line"
 done < <(systemctl --user show-environment 2>/dev/null)
