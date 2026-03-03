@@ -6,6 +6,11 @@ if command -v starship >/dev/null 2>&1
     starship init fish | source
 end
 
+# Hook direnv into fish (auto-loads .envrc files)
+if command -v direnv >/dev/null 2>&1
+    direnv hook fish | source
+end
+
 # Initialize smart cwd on startup
 __smart_cwd_hook
 
