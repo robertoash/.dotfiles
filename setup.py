@@ -29,7 +29,7 @@ from merge_setup import (
 from auditd_setup import setup_auditd
 from nftables_setup import setup_nftables
 from tools_setup import setup_tools
-from pacman_setup import setup_pacman
+from package_setup import setup_pacman, check_required_packages
 from pam_setup import setup_pam
 from security_setup import setup_security
 from ssh_setup import setup_ssh
@@ -91,6 +91,10 @@ if machine_config["is_linux"]:
 # Step 6.3: Setup PAM configuration (Linux only)
 if machine_config["is_linux"]:
     setup_pam(dotfiles_dir)
+
+# Step 6.3.5: Ensure required system packages are installed (Linux only)
+if machine_config["is_linux"]:
+    check_required_packages()
 
 # Step 6.4: Setup pacman configuration (Arch Linux only)
 if machine_config["is_linux"]:

@@ -41,6 +41,12 @@ def setup_nftables(dotfiles_dir, hostname):
             print(f"  🔥 Installing nftables.conf to /etc/ (requires sudo)...")
             print(f"     Validating nftables syntax...")
 
+            # nft -c (check mode) doesn't trigger kernel module auto-loading,
+            # so it fails for valid rules when the nft expression modules aren't
+            # loaded yet. Pre-load the base table and common expression modules.
+            for mod in ["nf_tables", "nft_ct", "nft_limit", "nft_reject_inet"]:
+                subprocess.run(["sudo", "modprobe", mod], capture_output=True)
+
             # Validate nftables syntax
             validate_result = subprocess.run(
                 ["sudo", "nft", "-c", "-f", str(nftables_source_file)],

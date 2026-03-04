@@ -1,13 +1,70 @@
 """
-Setup pacman configuration including unofficial repositories.
+Setup system package management across distros.
 
 This module manages:
-- Chaotic-AUR repository configuration
-- Other unofficial repositories as needed
+- Required packages (auto-install on Arch and Debian/Ubuntu, warn elsewhere)
+- Chaotic-AUR repository configuration (Arch only)
 """
 
+import shutil
 import subprocess
 from pathlib import Path
+
+# Packages required on all Linux systems managed by this dotfiles, per package manager.
+REQUIRED_PACKAGES = {
+    "arch":   ["inetutils"],      # provides hostname -I
+    "debian": ["inetutils-bin"],  # provides hostname -I on Ubuntu/Debian
+}
+
+
+def check_required_packages():
+    """Ensure required system packages are installed. Auto-installs on Arch and Debian/Ubuntu."""
+    print("\n📦 Step 6.3.5: Checking required system packages...")
+
+    is_arch   = shutil.which("pacman") is not None
+    is_debian = shutil.which("apt-get") is not None
+
+    if is_arch:
+        missing = [
+            pkg for pkg in REQUIRED_PACKAGES["arch"]
+            if subprocess.run(["pacman", "-Q", pkg], capture_output=True).returncode != 0
+        ]
+        if missing:
+            print(f"  📦 Installing missing packages: {', '.join(missing)}")
+            result = subprocess.run(
+                ["sudo", "pacman", "-S", "--noconfirm"] + missing,
+                capture_output=True, text=True
+            )
+            if result.returncode == 0:
+                print(f"  ✅ Installed: {', '.join(missing)}")
+            else:
+                print(f"  ⚠️  Failed to install {', '.join(missing)}: {result.stderr.strip()}")
+        else:
+            print(f"  ✅ All required packages present")
+    elif is_debian:
+        missing = [
+            pkg for pkg in REQUIRED_PACKAGES["debian"]
+            if subprocess.run(["dpkg", "-s", pkg], capture_output=True).returncode != 0
+        ]
+        if missing:
+            print(f"  📦 Installing missing packages: {', '.join(missing)}")
+            result = subprocess.run(
+                ["sudo", "apt-get", "install", "-y"] + missing,
+                capture_output=True, text=True
+            )
+            if result.returncode == 0:
+                print(f"  ✅ Installed: {', '.join(missing)}")
+            else:
+                print(f"  ⚠️  Failed to install {', '.join(missing)}: {result.stderr.strip()}")
+        else:
+            print(f"  ✅ All required packages present")
+    else:
+        # Unknown distro: warn if anything critical is missing
+        if (not shutil.which("hostname") or
+                subprocess.run(["hostname", "-I"], capture_output=True).returncode != 0):
+            print(f"  ⚠️  'hostname -I' unavailable — install inetutils or equivalent")
+        else:
+            print(f"  ✅ All required packages present")
 
 
 def setup_pacman(dotfiles_dir):
