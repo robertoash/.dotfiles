@@ -61,8 +61,8 @@ def check_required_packages():
     else:
         # Unknown distro: warn if anything critical is missing
         if (not shutil.which("hostname") or
-                subprocess.run(["hostname", "-I"], capture_output=True).returncode != 0):
-            print(f"  ⚠️  'hostname -I' unavailable — install inetutils or equivalent")
+                subprocess.run(["hostname", "-i"], capture_output=True).returncode != 0):
+            print(f"  ⚠️  'hostname -i' unavailable — install inetutils or equivalent")
         else:
             print(f"  ✅ All required packages present")
 
