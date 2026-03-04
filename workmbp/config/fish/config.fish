@@ -19,3 +19,4 @@ fish_add_path /Users/rash/.local/bin
 alias dbtf=/Users/rash/.local/bin/dbt
 fish_add_path /Users/rash/.local/bin
 fish_add_path /Users/rash/.local/bin
+fish_add_path /Users/rash/.local/bin
