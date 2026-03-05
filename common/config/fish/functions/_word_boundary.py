@@ -5,7 +5,7 @@ Called by fish functions to compute backward/forward word deletion.
 Handles delimiters: / space " ' ` ( ) [ ] { } -
 
 Usage: _word_boundary.py <direction> <before_cursor> [<after_cursor>]
-  direction: "back" or "forward"
+  direction: "back", "forward", or "accept"
   Outputs: <cursor_pos>\n<new_commandline>
 """
 
@@ -85,7 +85,7 @@ def delete_forward(before, after=""):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: _word_boundary.py <back|forward> <before> [after]", file=sys.stderr)
+        print("Usage: _word_boundary.py <back|forward|accept> <before> [after]", file=sys.stderr)
         sys.exit(1)
 
     direction = sys.argv[1]
@@ -100,6 +100,10 @@ if __name__ == "__main__":
         keep_after, new_line = delete_forward(before, after)
         print(len(before))
         print(new_line, end="")
+    elif direction == "accept":
+        # How many chars to accept from the start of `after` (same boundary as forward delete)
+        keep_after, _ = delete_forward("", after)
+        print(len(after) - len(keep_after))
     else:
         print(f"Unknown direction: {direction}", file=sys.stderr)
         sys.exit(1)
