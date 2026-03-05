@@ -9,32 +9,18 @@ layout {
         }
     }
 
-    tab name="workmbp" focus=true {
+    tab name="account_daily" focus=true {
         pane split_direction="horizontal" {
             pane size="65%" command="fish" {
-                args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
-                name "growth_report_migration"
+                args "-c" "ssh -t workmbp 'cd ~/dev/rash/projects/account_daily && nvim; exec fish'"
+                name "editor"
             }
             pane size="35%" split_direction="vertical" {
-                pane size="50%" split_direction="horizontal" {
-                    pane command="fish" {
-                        args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
-                        name "growth_report_migration"
-                    }
-                    pane command="fish" {
-                        args "-c" "ssh -t workmbp 'cd ~/dev/dbt/dbt_production && exec fish'"
-                        name "dbt_production"
-                    }
+                pane command="fish" {
+                    args "-c" "ssh -t workmbp 'cd ~/dev/rash/projects/account_daily && exec fish'"
                 }
-                pane size="50%" split_direction="horizontal" {
-                    pane command="fish" {
-                        args "-c" "ssh -t workmbp 'cd ~/dev/rash/growth_report_migration && exec fish'"
-                        name "growth_report_migration"
-                    }
-                    pane command="fish" {
-                        args "-c" "ssh -t workmbp 'cd ~/dev/dbt/dbt_production && exec fish'"
-                        name "dbt_production"
-                    }
+                pane command="fish" {
+                    args "-c" "ssh -t workmbp 'cd ~/dev/rash/projects/account_daily && exec fish'"
                 }
             }
         }
