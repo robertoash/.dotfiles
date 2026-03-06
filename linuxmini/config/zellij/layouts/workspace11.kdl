@@ -12,7 +12,7 @@ layout {
     tab name="account_daily" focus=true {
         pane split_direction="horizontal" {
             pane size="65%" command="fish" {
-                args "-c" "ssh -t workmbp 'cd ~/dev/rash/projects/account_daily && nvim; exec fish'"
+                args "-c" "ssh -t workmbp 'cd ~/dev/rash/projects/account_daily && exec fish'"
                 name "editor"
             }
             pane size="35%" split_direction="vertical" {
