@@ -96,17 +96,6 @@ def snap_class_to_corner(window_class, corner, delay=0.3):
     if delay:
         time.sleep(delay)
 
-    corner_map = {
-        "lower-left": ["d", "l"],
-        "lower-right": ["d", "r"],
-        "upper-left": ["u", "l"],
-        "upper-right": ["u", "r"],
-    }
-    corner_directions = corner_map.get(corner)
-    if not corner_directions:
-        print(f"Invalid corner: {corner}")
-        return 1
-
     clients = window_manager.get_clients()
     window_info = next((c for c in clients if c.get("class") == window_class), None)
     if not window_info:
@@ -119,9 +108,7 @@ def snap_class_to_corner(window_class, corner, delay=0.3):
         window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{address}"])
         time.sleep(0.05)
 
-    move_window_to_corner(corner_directions, address)
-    print(f"Window '{window_class}' snapped to {corner}")
-    return 0
+    return snap_window_to_corner(corner=corner, window_address=address)
 
 
 def snap_window_to_corner(corner=None, window_address=None, relative_floating=False, sneaky=False):
