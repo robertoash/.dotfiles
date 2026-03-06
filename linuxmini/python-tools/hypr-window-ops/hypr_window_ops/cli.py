@@ -517,6 +517,26 @@ Examples:
         "--timeout", type=float, default=15, help="Timeout in seconds (default: %(default)s)"
     )
 
+    # Watch for window open by class and snap to corner
+    watch_parser = subparsers.add_parser(
+        "watch-window-open",
+        help="Watch for a window class to open and snap it to a corner (runs indefinitely)",
+        description="Listens on Hyprland IPC socket2 for openwindow events. When a window with the given class opens, snaps it to the specified corner. Intended as an exec-once replacement for windowrule exec.",
+    )
+    watch_parser.add_argument("--class", dest="window_class", required=True, help="Window class to watch for")
+    watch_parser.add_argument(
+        "--corner",
+        choices=["lower-left", "lower-right", "upper-left", "upper-right"],
+        required=True,
+        help="Corner to snap to when window opens",
+    )
+    watch_parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.3,
+        help="Seconds to wait after window opens before snapping (default: %(default)s)",
+    )
+
     # Snap window by class to corner
     snap_class_parser = subparsers.add_parser(
         "snap-class-to-corner",
@@ -646,6 +666,13 @@ Examples:
         return window_cycling.cycle_windows()
     elif args.command == "setup-pip":
         return window_properties.setup_pip(args.pid, corner=args.corner, timeout=args.timeout)
+    elif args.command == "watch-window-open":
+        snap_windows.watch_class_snap_corner(
+            window_class=args.window_class,
+            corner=args.corner,
+            snap_delay=args.delay,
+        )
+        return 0
     elif args.command == "snap-class-to-corner":
         return snap_windows.snap_class_to_corner(
             window_class=args.window_class,

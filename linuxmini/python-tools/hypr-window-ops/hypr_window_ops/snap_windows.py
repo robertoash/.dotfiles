@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+import os
+import socket
+import sys
+import time
+
 from . import monitor_utils, window_manager
 
 CORNER_THRESHOLD = 50  # px
@@ -203,3 +208,40 @@ def snap_window_to_corner(corner=None, window_address=None, relative_floating=Fa
         window_manager.focus_window(original_active_address)
 
     return 0
+
+
+def watch_class_snap_corner(window_class, corner, snap_delay=0.3):
+    """Listen on Hyprland's IPC socket2 for openwindow events.
+
+    When a window with the given class opens, snaps it to the specified corner.
+    Runs indefinitely, reconnecting on socket errors.
+    """
+    runtime_dir = os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}")
+    hypr_sig = os.environ.get("HYPRLAND_INSTANCE_SIGNATURE")
+    if not hypr_sig:
+        print("HYPRLAND_INSTANCE_SIGNATURE not set", file=sys.stderr)
+        sys.exit(1)
+
+    socket_path = f"{runtime_dir}/hypr/{hypr_sig}/.socket2.sock"
+
+    buf = ""
+    while True:
+        try:
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as sock:
+                sock.connect(socket_path)
+                while True:
+                    chunk = sock.recv(4096)
+                    if not chunk:
+                        break
+                    buf += chunk.decode("utf-8", errors="ignore")
+                    while "\n" in buf:
+                        line, buf = buf.split("\n", 1)
+                        if line.startswith("openwindow>>"):
+                            # format: openwindow>>ADDRESS,WORKSPACENAME,CLASS,TITLE
+                            parts = line[len("openwindow>>"):].split(",", 3)
+                            if len(parts) >= 3 and parts[2] == window_class:
+                                snap_class_to_corner(window_class, corner, delay=snap_delay)
+        except Exception as e:
+            print(f"IPC error: {e}, reconnecting in 5s...", file=sys.stderr)
+            time.sleep(5)
+            buf = ""
