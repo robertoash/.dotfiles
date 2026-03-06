@@ -79,6 +79,46 @@ def infer_corner_from_cursor(window_info):
         return None  # Cursor not near any corner
 
 
+def snap_class_to_corner(window_class, corner, delay=0.3):
+    """Find a window by class and snap it to a corner.
+
+    Intended for use via Hyprland execl windowrules, where the window has just
+    opened and other rules (float, pin, size) have been applied by Hyprland.
+    The delay allows Hyprland to finish applying those rules before snapping.
+    """
+    import time
+
+    if delay:
+        time.sleep(delay)
+
+    corner_map = {
+        "lower-left": ["d", "l"],
+        "lower-right": ["d", "r"],
+        "upper-left": ["u", "l"],
+        "upper-right": ["u", "r"],
+    }
+    corner_directions = corner_map.get(corner)
+    if not corner_directions:
+        print(f"Invalid corner: {corner}")
+        return 1
+
+    clients = window_manager.get_clients()
+    window_info = next((c for c in clients if c.get("class") == window_class), None)
+    if not window_info:
+        print(f"No window found with class '{window_class}'")
+        return 1
+
+    address = window_info["address"]
+
+    if not window_info.get("floating"):
+        window_manager.run_hyprctl_command(["dispatch", "setfloating", f"address:{address}"])
+        time.sleep(0.05)
+
+    move_window_to_corner(corner_directions, address)
+    print(f"Window '{window_class}' snapped to {corner}")
+    return 0
+
+
 def snap_window_to_corner(corner=None, window_address=None, relative_floating=False, sneaky=False):
     """
     Snap a window to a specific corner or auto-detect based on cursor position.

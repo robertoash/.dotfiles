@@ -517,6 +517,26 @@ Examples:
         "--timeout", type=float, default=15, help="Timeout in seconds (default: %(default)s)"
     )
 
+    # Snap window by class to corner
+    snap_class_parser = subparsers.add_parser(
+        "snap-class-to-corner",
+        help="Find a window by class and snap it to a corner",
+        description="Find a window matching the given class and snap it to a corner. Intended for use via Hyprland execl windowrules.",
+    )
+    snap_class_parser.add_argument("--class", dest="window_class", required=True, help="Window class to target")
+    snap_class_parser.add_argument(
+        "--corner",
+        choices=["lower-left", "lower-right", "upper-left", "upper-right"],
+        required=True,
+        help="Corner to snap to",
+    )
+    snap_class_parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.3,
+        help="Seconds to wait before snapping (default: %(default)s)",
+    )
+
     # Wait for window by PID
     window_wait_parser = subparsers.add_parser(
         "window-wait",
@@ -626,6 +646,12 @@ Examples:
         return window_cycling.cycle_windows()
     elif args.command == "setup-pip":
         return window_properties.setup_pip(args.pid, corner=args.corner, timeout=args.timeout)
+    elif args.command == "snap-class-to-corner":
+        return snap_windows.snap_class_to_corner(
+            window_class=args.window_class,
+            corner=args.corner,
+            delay=args.delay,
+        )
     elif args.command == "window-wait":
         address = window_manager.wait_for_window_by_pid(args.pid, timeout=args.timeout)
         return 0 if address else 1
