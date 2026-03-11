@@ -28,6 +28,7 @@ from merge_setup import (
 )
 from auditd_setup import setup_auditd
 from nftables_setup import setup_nftables
+from samba_setup import setup_samba
 from tools_setup import setup_tools
 from package_setup import setup_pacman, check_required_packages
 from pam_setup import setup_pam
@@ -115,6 +116,10 @@ if machine_config["is_linux"]:
 # Step 6.4.2b: Setup auditd for trycli usage tracking (Linux only)
 if machine_config["is_linux"]:
     setup_auditd(dotfiles_dir)
+
+# Step 6.4.2c: Setup Samba configuration (Linux only)
+if machine_config["is_linux"]:
+    setup_samba(dotfiles_dir, hostname)
 
 # Step 6.5: Setup Claude Code configuration
 setup_claude_config(dotfiles_dir, hostname)

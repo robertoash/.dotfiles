@@ -59,3 +59,9 @@ rash ALL = NOPASSWD: /usr/bin/systemctl enable auditd
 rash ALL = NOPASSWD: /usr/bin/systemctl start auditd
 rash ALL = NOPASSWD: /usr/bin/augenrules --load
 rash ALL = NOPASSWD: /usr/bin/ausearch -k trycli --raw
+
+# Samba setup
+rash ALL = NOPASSWD: /usr/bin/mkdir -p /etc/samba
+rash ALL = NOPASSWD: /usr/bin/diff * /etc/samba/smb.conf
+rash ALL = NOPASSWD: /usr/bin/systemctl reload smb
+rash ALL = NOPASSWD: /usr/bin/systemctl reload smbd
